@@ -20,7 +20,7 @@ Large language models (LLMs) are an exciting technology. However, transitioning 
 
 
 
-##### Stage 1: Meta-prompting and Data Generation
+##### Stage 1: Self-improvement through meta-prompting
 
 ###### System
 
@@ -31,7 +31,7 @@ Large language models (LLMs) are an exciting technology. However, transitioning 
 
 ###### User(s)
 
-##### Stage 2: Fine-tuning 
+##### Stage 2: Fine-tuning on self-generated data
 tbd
 
 
