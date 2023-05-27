@@ -17,7 +17,7 @@ Large language models (LLMs) are an exciting technologoy. However, achieving ver
 
 ###### User(s)
 
-##### Stage 2: Fine-tuning pre-trained model on generated dataset
+##### Stage 2: Fine-tuning 
 tbd
 
 

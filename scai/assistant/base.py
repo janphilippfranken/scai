@@ -1,5 +1,10 @@
-"""Chain for applying constitutional principles to the outputs of another chain."""
-from typing import Any, Dict, List, Optional
+"""The Meta-Pompting AI Assistant Chain."""
+from typing import (
+    Any,
+    Dict,
+    List, 
+    Optional
+)
 
 from langchain.base_language import BaseLanguageModel
 from langchain.callbacks.manager import CallbackManagerForChainRun
@@ -12,7 +17,7 @@ from langchain.prompts.base import BasePromptTemplate
 
 
 class ConstitutionalChain(Chain):
-    """Chain for applying constitutional principles.
+    """Chain for applying the AI Assitant.
 
     Example:
         .. code-block:: python

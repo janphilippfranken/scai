@@ -1,8 +1,11 @@
-"""Models for the SCAI System chain."""
+"""Models for the System Contract."""
 from pydantic import BaseModel
 
 
-class scaiSystem(BaseModel):
-    """Class for a SCAI System."""
-    
-    name: str = "SCAI System"
+class SystemContract(BaseModel):
+    """Class for a system contract."""
+
+    name: str = "contract/system message name"
+    role: str = "system"
+
+    content: str
