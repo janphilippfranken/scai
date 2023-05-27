@@ -21,6 +21,9 @@ Large language models (LLMs) are an exciting technologoy. However, achieving ver
 ###### System
 
 ###### Assistant
+<p align="left">
+    <img src="assets/assistant.jpg" alt="contract" width="20%">
+</p>
 
 ###### User(s)
 
