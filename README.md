@@ -5,7 +5,11 @@
 Bottom-up Alignment of Language Agents Through Self-Improvement. Written in [LangChain](https://github.com/hwchase17/langchain).
 
 #### 📖 Background
-Large language models (LLMs) are an exciting technologoy. However, achieving vertical momentum from a pre-trained base model to instruction-following and chat models is a challenging process. This momentum is primarily driven by human-annotated data, such as preference labels used for supervised fine-tuning. As LLMs become more capable, the effectiveness of methods relying on human annotators may decrease.
+<p align="left">
+    <img src="assets/stack.jpg" alt="contract" width="20%">
+</p>
+
+Large language models (LLMs) are an exciting technologoy. However, achieving vertical momentum of the LLM stack from a pre-trained base model to instruction-following and chat models is a challenging process. This momentum is primarily driven by human-annotated data, such as preference labels used for supervised fine-tuning. As LLMs become more capable, the effectiveness of methods relying on human annotators may decrease.
 
 #### The SCAI Approach
 
