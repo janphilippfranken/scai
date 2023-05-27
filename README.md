@@ -1,28 +1,26 @@
-#  🕉️ SCAI: Social Contract AI
-
-Bottom-up Alignment of Language Agents Through Self-Improvement
+##  🕉️ SCAI: Social Contract AI
 
 
-## 🧐 What is this?
+### 🧐 What is this?
 
-### 📖 Background
-There are still no reliable methods for effectively steering LLMs. Let's change this! :p
+#### 📖 Background
+Bottom-up Alignment of Language Agents Through Self-Improvement.
 
-### The SCAI Approach
+#### The SCAI Approach
 
-#### Stage 1: Meta-prompting and Data Generation
+##### Stage 1: Meta-prompting and Data Generation
 
-##### System
+###### System
 
-##### Assistant
+###### Assistant
 
-##### User(s)
+###### User(s)
 
-#### Stage 2: Fine-tuning pre-trained model on generated dataset
+##### Stage 2: Fine-tuning pre-trained model on generated dataset
 tbd
 
 
-## 📖 Documentation 
+### 📖 Documentation 
 
 tbd
 

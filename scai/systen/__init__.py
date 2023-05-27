@@ -1,3 +1,3 @@
-"""Chain instantiates a user for social contract ai simulations.
+"""Chain instantiates a system for social contract ai simulations.
 
 """
