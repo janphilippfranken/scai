@@ -10,9 +10,10 @@ Large language models (LLMs) are an exciting technologoy. However, achieving ver
 #### The SCAI Approach
 
 ##### The Contract
-<p align="center">
-    img src="assets/contract.jpg" alt="contract" width="20%">
+<p align="left">
+    <img src="assets/contract.jpg" alt="contract" width="20%">
 </p>
+
 
 
 ##### Stage 1: Meta-prompting and Data Generation
