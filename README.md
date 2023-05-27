@@ -2,7 +2,7 @@
 
 
 ### 🧐 What is this?
-Useful, self-improving agents. Written in [LangChain](https://github.com/hwchase17/langchain).
+Useful, self-improving language agents. Written in [LangChain](https://github.com/hwchase17/langchain).
 
 #### 📖 Background
 <p align="left">
