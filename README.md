@@ -2,7 +2,7 @@
 
 
 ### 🧐 What is this?
-Bottom-up Alignment of Language Agents Through Self-Improvement. Written in [LangChain](https://github.com/hwchase17/langchain).
+Useful, self-improving agents. Written in [LangChain](https://github.com/hwchase17/langchain).
 
 #### 📖 Background
 <p align="left">
