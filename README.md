@@ -2,8 +2,7 @@
 
 Useful, self-improving language agents. Insipred by [meta-prompt](https://noahgoodman.substack.com/p/meta-prompt-a-simple-self-improving). Written in [LangChain](https://github.com/hwchase17/langchain).
 
-#### ‼️@dev team: Please read the [documentation](#documentation) below.
- 
+### 🧐 What is this?
 #### 📖 Background
 Large Language Models (LLMs) are exciting 🚀😍. However, as these models continue to advance, current fine-tuning methods that depend on human oversight [e.g. [1](https://proceedings.neurips.cc/paper_files/paper/2022/file/b1efde53be364a73914f58805a001731-Paper-Conference.pdf)] might become less effective [e.g. [2](https://arxiv.org/pdf/1606.06565.pdf), [3](https://arxiv.org/pdf/2211.03540.pdf), [4](https://arxiv.org/pdf/2212.08073.pdf)]. This opens up exciting new possibilities for self-improvement methods [e.g. [5](https://noahgoodman.substack.com/p/meta-prompt-a-simple-self-improving)].
 
