@@ -12,7 +12,7 @@ A framework for useful, self-improving language agents.
 Getting Started
 ---------------
 
-- `Quickstart Guide <./getting_started/getting_started.rst>`_
+- `Quickstart Guide <./getting_started/getting_started.html>`_
 
 .. toctree::
    :maxdepth: 2
@@ -20,20 +20,24 @@ Getting Started
    :name: getting_started
    :hidden:
 
-   getting_started/getting_started.html
+   getting_started/getting_started.rst
+
 
 Models
 -----------
 
-- `Models <./models/models.rst>`_
+- `Models <./models/models.html>`_
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Models
+   :maxdepth: 2
+   :caption: models
    :name: scai_models
    :hidden:
 
-   ./models/models.html
+   models/models
+   models/system/system
+   models/users/users
+   models/assistant/assistant
 
 
 Additional Resources
