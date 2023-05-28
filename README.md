@@ -1,6 +1,6 @@
 ##  🕉️ SCAI: Social Contract AI
 
-Useful, self-improving language agents. Written in [LangChain](https://github.com/hwchase17/langchain).
+Useful, self-improving language agents. Insipred by [meta-prompt](https://noahgoodman.substack.com/p/meta-prompt-a-simple-self-improving). Written in [LangChain](https://github.com/hwchase17/langchain).
 
 #### ‼️@dev team: Please read the [documentation](#documentation) below.
  
