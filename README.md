@@ -39,12 +39,16 @@ tbd
 ### 📖 Documentation 
 
 Currently only available locally.
-Run open docs/build/index.html to see the documentation.
+
+To build docs from source/open docs, run `sphinx-build -b html docs/source docs/build`.
+Thereafter, run `open docs/build/index.html` to open docs. 
 
 As we are working on this in a bigger team, its important to keep this up to date.
 
-When you are adding a new class or make modifications to an important functionality, please document them in `docs`.
-Thereafter, run sphinx-build -b html docs/source docs/build (from the main) to update the docs.
+When you are adding a new class or make modifications to an important functionality, please document them in `docs/source`. 
+E.g., if you changed smth to a model class such as the `assistant`, please document this `docs/source/models/models.rst`.
+
+Thereafter, run `sphinx-build -b html docs/source docs/build` to update the docs.
 
 
 
