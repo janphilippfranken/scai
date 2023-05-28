@@ -30,7 +30,7 @@ Modules
 
 .. toctree::
    :maxdepth: 2
-   :caption: modules
+   :caption: Modules
    :name: scai_modules
    :hidden:
 
