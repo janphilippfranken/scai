@@ -21,7 +21,7 @@ Large language models (LLMs) are 😍🚀. Transitioning from a base model to us
 
 
 
-##### Stage 1: Self-improvement through meta-prompting
+##### Stage 1: Self-improvement with meta-prompting
 
 ###### System
 
