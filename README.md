@@ -41,21 +41,8 @@ tbd
 ### 📖 Documentation
 <a name="documentation"></a>
 
-#### Updating Docs (/docs)
-Currently only available locally.
-
-To build docs from source/open docs, run:
-`sphinx-build -b html docs/source docs/build`. Thereafter, run `open docs/build/index.html` to open docs. 
-
-As we are working on this in a bigger team, its important to keep this up to date.
-
-When you are adding a new class or make modifications to an important functionality, please document them in `docs/source`. 
-E.g., if you changed smth to a model class such as the `assistant`, please document this in `docs/source/models/models.rst`.
-
-Thereafter, run `sphinx-build -b html docs/source docs/build` to update the docs.
-
-#### Getting started 
-##### Using miniconda, try
+#### 🚀 Getting started 
+##### Using miniconda
 1. `curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh`
 2. `bash Miniconda3-latest-MacOSX-x86_64.sh`
 3. close and reopen terminal
@@ -68,3 +55,9 @@ Thereafter, run `sphinx-build -b html docs/source docs/build` to update the docs
 1. `curl -sSL https://install.python-poetry.org | python -`
 2. `export PATH="/Users/YOUR_NAM/.local/bin:$PATH`
 3. `poetry install`
+
+#### 📖 Updating Docs (we still have to finish the steup)
+1. `sphinx-build -b html docs/source docs/build` (build docs)
+2. `open docs/build/index.html` to open docs locally.  
+
+When you are adding a new class or make modifications to an important functionality, please document them in `docs/source`. Thereafter, run `sphinx-build -b html docs/source docs/build` to update the docs.
