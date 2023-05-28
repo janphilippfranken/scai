@@ -9,8 +9,8 @@ from typing import (
 from langchain.chains.base import Chain
 from langchain.chains.llm import LLMChain
 
-from modules.user.models import UserContract
-from modules.user.user_contract import USER_CONTRACT
+from scai.modules.user.models import UserContract
+from scai.modules.user.user_contract import USER_CONTRACT
 
 
 class UserChain(Chain):

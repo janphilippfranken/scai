@@ -9,8 +9,8 @@ from typing import (
 from langchain.chains.base import Chain
 from langchain.chains.llm import LLMChain
 
-from modules.system.models import SystemContract
-from modules.system.system_contract import SYSTEM_CONTRACT
+from scai.modules.system.models import SystemContract
+from scai.modules.system.system_contract import SYSTEM_CONTRACT
 
 
 class SystemChain(Chain):

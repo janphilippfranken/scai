@@ -3,7 +3,7 @@ The Assistant Contract.
 """
 from typing import Dict
     
-from modules.assistant.models import AssistantContract
+from scai.modules.assistant.models import AssistantContract
 
 ASSISTANT_CONTRACT: Dict[str, AssistantContract] = {
     "assistant_message_1": AssistantContract(

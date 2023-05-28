@@ -9,8 +9,8 @@ from typing import (
 from langchain.chains.base import Chain
 from langchain.chains.llm import LLMChain
 
-from modules.assistant.models import AssistantContract
-from modules.assistant.assistant_contract import ASSISTANT_CONTRACT
+from scai.modules.assistant.models import AssistantContract
+from scai.modules.assistant.assistant_contract import ASSISTANT_CONTRACT
 
 
 class AssistantChain(Chain):

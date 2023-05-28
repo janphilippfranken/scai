@@ -3,7 +3,7 @@ The System Contract.
 """
 from typing import Dict
     
-from modules.system.models import SystemContract
+from scai.modules.system.models import SystemContract
 
 SYSTEM_CONTRACT: Dict[str, SystemContract] = {
     "system_message_1": SystemContract(

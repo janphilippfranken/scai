@@ -3,7 +3,7 @@ The User Contract.
 """
 from typing import Dict
     
-from modules.user.models import UserContract
+from scai.modules.user.models import UserContract
 
 USER_CONTRACT: Dict[str, UserContract] = {
     "user_message_1": UserContract(

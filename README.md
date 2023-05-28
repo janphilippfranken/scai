@@ -55,20 +55,16 @@ E.g., if you changed smth to a model class such as the `assistant`, please docum
 Thereafter, run `sphinx-build -b html docs/source docs/build` to update the docs.
 
 #### Getting started 
-Install miniconda e.g. 
+##### Using miniconda, try
 1. `curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh`
 2. `bash Miniconda3-latest-MacOSX-x86_64.sh`
 3. close and reopen terminal
 4. `source ~/.bashrc`
+5. `conda create --name name-of-my-env python==3.10`
+6. `conda activate name-of-my-env`
+7. `pip install -e .` 
 
-Create a virtual environment with a python version such as 3.10, e.g. 
-1. `conda create --name name-of-my-env python==3.10`
-2. `conda activate name-of-my-env`
-3. `pip install -r requirements.txt`
-
-<!-- install poetry
-curl -sSL https://install.python-poetry.org | python -
-export PATH="/Users/jan-philippfranken/.local/bin:$PATH
-poetry install -->
-
-
+##### Using poetry (currently not supported)
+1. `curl -sSL https://install.python-poetry.org | python -`
+2. `export PATH="/Users/YOUR_NAM/.local/bin:$PATH`
+3. `poetry install`
