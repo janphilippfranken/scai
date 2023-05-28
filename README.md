@@ -66,3 +66,9 @@ Create a virtual environment with a python version such as 3.10, e.g.
 2. `conda activate name-of-my-env`
 3. `pip install -r requirements.txt`
 
+<!-- install poetry
+curl -sSL https://install.python-poetry.org | python -
+export PATH="/Users/jan-philippfranken/.local/bin:$PATH
+poetry install -->
+
+
