@@ -2,7 +2,7 @@
 
 Useful, self-improving language agents. Written in [LangChain](https://github.com/hwchase17/langchain).
 
-#### @dev team: Please read the [documentation](#documentation) below.
+#### [@dev team]: Please read the [documentation](#documentation) below.
 
 #### 📖 Background
 Large Language Models (LLMs) are exciting 😍🚀. Transforming base models into useful instruction-following and chat models requires additional fine-tuning. This vertical momentum is primarily driven by data like human demonstrations or preference labels  [e.g. [1](https://proceedings.neurips.cc/paper_files/paper/2022/file/b1efde53be364a73914f58805a001731-Paper-Conference.pdf)]. However, as LLMs become more capable, the effectiveness of methods relying on human oversight is likely going to decrease [e.g. [2](https://arxiv.org/pdf/1606.06565.pdf), [3](https://arxiv.org/pdf/2211.03540.pdf), [4](https://arxiv.org/pdf/2212.08073.pdf)]. This opens up exciting possibilities for new data-generation methods based on self-improvement [e.g. [5](https://noahgoodman.substack.com/p/meta-prompt-a-simple-self-improving)].
@@ -36,8 +36,9 @@ Large Language Models (LLMs) are exciting 😍🚀. Transforming base models int
 ##### Stage 2: Fine-tuning on self-generated data
 tbd
 
-<a name="documentation"></a>
+
 ### 📖 [Documentation] ‼️
+<a name="documentation"></a>
 Currently only available locally.
 
 To build docs from source/open docs, run `sphinx-build -b html docs/source docs/build`.
@@ -49,6 +50,8 @@ When you are adding a new class or make modifications to an important functional
 E.g., if you changed smth to a model class such as the `assistant`, please document this in `docs/source/models/models.rst`.
 
 Thereafter, run `sphinx-build -b html docs/source docs/build` to update the docs.
+
+
 
 
 
