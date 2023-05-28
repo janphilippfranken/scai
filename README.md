@@ -50,7 +50,7 @@ tbd
 6. `conda activate name-of-my-env`
 7. `pip install -e .` 
 
-#### Using poetry (currently not supported)
+##### Using poetry (currently not supported)
 1. `curl -sSL https://install.python-poetry.org | python -`
 2. `export PATH="/Users/YOUR_NAM/.local/bin:$PATH`
 3. `poetry install`
