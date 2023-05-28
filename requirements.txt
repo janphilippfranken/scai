@@ -1,0 +1,3 @@
+sphinx
+langchain
+git+crfm-helm@git+https://github.com/stanford-crfm/helm.git@main

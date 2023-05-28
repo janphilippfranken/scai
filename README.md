@@ -38,7 +38,15 @@ tbd
 
 ### 📖 Documentation 
 
-tbd
+Currently only available locally.
+Run open docs/build/index.html to see the documentation.
+
+As we are working on this in a bigger team, its important to keep this up to date.
+
+When you are adding a new class or make modifications to an important functionality, please document them in `docs`.
+Thereafter, run sphinx-build -b html docs/source docs/build (from the main) to update the docs.
+
+
 
 
 
