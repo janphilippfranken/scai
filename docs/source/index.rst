@@ -20,7 +20,7 @@ Getting Started
    :name: getting_started
    :hidden:
 
-   getting_started/getting_started.rst
+   getting_started/getting_started.html
 
 Models
 -----------
@@ -33,7 +33,7 @@ Models
    :name: scai_models
    :hidden:
 
-   ./models/models.rst
+   ./models/models.html
 
 
 Additional Resources
