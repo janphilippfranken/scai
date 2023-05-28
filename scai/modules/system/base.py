@@ -27,6 +27,6 @@ class SystemChain(Chain):
     system_contract: List[SystemContract]
     system_chain: LLMChain
 
-    # TODO: @sam: build this class, take inspiration from https://github.com/hwchase17/langchain/blob/master/langchain/chains/constitutional_ai/base.py
+    # TODO: @team: build this class, take inspiration from https://github.com/hwchase17/langchain/blob/master/langchain/chains/constitutional_ai/base.py
 
-    raise NotImplementedError("SystemChain is not implemented yet.")
+    raise NotImplementedError("SystemChain is not implemented yet. Please implement it.")
