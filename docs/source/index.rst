@@ -23,21 +23,21 @@ Getting Started
    getting_started/getting_started.rst
 
 
-Models
+Modules
 -----------
 
-- `Models <./models/models.html>`_
+- `Modules <./modules/modules.html>`_
 
 .. toctree::
    :maxdepth: 2
-   :caption: models
-   :name: scai_models
+   :caption: modules
+   :name: scai_modules
    :hidden:
 
-   models/models
-   models/system/system
-   models/users/users
-   models/assistant/assistant
+   modules/modules
+   modules/system/system
+   modules/users/users
+   modules/assistant/assistant
 
 
 Additional Resources
