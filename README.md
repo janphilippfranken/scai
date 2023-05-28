@@ -59,4 +59,4 @@ tbd
 1. `sphinx-build -b html docs/source docs/build` (build docs)
 2. `open docs/build/index.html` to open docs locally.  
 
-When you are adding a new class or make modifications to an important functionality, please document them in `docs/source`. Thereafter, run `sphinx-build -b html docs/source docs/build` to update the docs.
+When you are adding a new class or make modifications to an important functionality, please document them in `docs/source`. Run `sphinx-build -b html docs/source docs/build` to update the docs.
