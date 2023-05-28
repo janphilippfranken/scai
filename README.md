@@ -39,10 +39,12 @@ tbd
 
 ### 📖 Documentation
 <a name="documentation"></a>
+
+#### Updating Docs (/docs)
 Currently only available locally.
 
-To build docs from source/open docs, run `sphinx-build -b html docs/source docs/build`.
-Thereafter, run `open docs/build/index.html` to open docs. 
+To build docs from source/open docs, run:
+`sphinx-build -b html docs/source docs/build`. Thereafter, run `open docs/build/index.html` to open docs. 
 
 As we are working on this in a bigger team, its important to keep this up to date.
 
@@ -51,8 +53,15 @@ E.g., if you changed smth to a model class such as the `assistant`, please docum
 
 Thereafter, run `sphinx-build -b html docs/source docs/build` to update the docs.
 
+#### Getting started 
+Install miniconda e.g. 
+1. `curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh`
+2. `bash Miniconda3-latest-MacOSX-x86_64.sh`
+3. close and reopen terminal
+4. `source ~/.bashrc`
 
-
-
-
+Create a virtual environment with a python version such as 3.10, e.g. 
+1. `conda create --name name-of-my-env python==3.10`
+2. `conda activate name-of-my-env`
+3. `pip install -r requirements.txt`
 
