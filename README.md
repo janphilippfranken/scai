@@ -37,7 +37,7 @@ Large Language Models (LLMs) are exciting 😍🚀. Transforming base models int
 tbd
 
 <a name="documentation"></a>
-### 📖 [Documentation]#documentation ‼️
+### 📖 [Documentation] ‼️
 Currently only available locally.
 
 To build docs from source/open docs, run `sphinx-build -b html docs/source docs/build`.
