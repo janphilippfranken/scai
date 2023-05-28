@@ -37,7 +37,7 @@ Large Language Models (LLMs) are exciting 😍🚀. Transforming base models int
 tbd
 
 
-### 📖 [Documentation] 
+### 📖 Documentation
 <a name="documentation"></a>
 Currently only available locally.
 
