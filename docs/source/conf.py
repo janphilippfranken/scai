@@ -26,3 +26,8 @@ exclude_patterns = []
 
 html_theme = 'sphinx_book_theme'
 html_static_path = ['_static']
+
+# For keeping the github icon
+html_js_files = [
+    'custom.html',
+]

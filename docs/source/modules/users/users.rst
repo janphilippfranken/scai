@@ -3,8 +3,10 @@ User Classes
 
 Users
 --------------------------------
-**Definition**: A simulated human user with a persona whose preferences are determined by the user’s individual/personalized version of the social contract. 
-**Properties**: Collaborates with other users and the AI Assistant to complete. Can provide reward signals to the AI Assistant in the form of language feedback.
+The personalized/individual user’s version of the shared contract (i.e. persona) which may overlap with other users.
+This is the key thing people can contribute, i.e. create personas that we can use in our simulations.
 
-Describe code / class here.
 
+.. code-block:: bash
+
+   Describe classes here.

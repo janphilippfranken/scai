@@ -9,6 +9,24 @@ Welcome to scai's documentation!
 
 A framework for useful, self-improving language agents.
 
+
+Modules
+-----------
+
+- `Modules Overview <./modules/modules.html>`_
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Modules Overview
+   :name: scai_modules
+   :hidden:
+
+   modules/modules
+   modules/system/system
+   modules/users/users
+   modules/assistant/assistant
+
+
 Getting Started
 ---------------
 
@@ -23,30 +41,31 @@ Getting Started
    getting_started/getting_started.rst
 
 
-Modules
------------
-
-- `Modules <./modules/modules.html>`_
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Modules
-   :name: scai_modules
-   :hidden:
-
-   modules/modules
-   modules/system/system
-   modules/users/users
-   modules/assistant/assistant
-
-
 Additional Resources
 --------------------
 
-- `noah's meta-prompt <https://noahgoodman.substack.com/p/meta-prompt-a-simple-self-improving>`_
+- `noah goodman's meta-prompt <https://noahgoodman.substack.com/p/meta-prompt-a-simple-self-improving>`_
 
 .. toctree::
    :maxdepth: 1
    :caption: Additional Resources
-   :name: resources
+   :name: resources_meta_prompt
    :hidden:
+
+- `langchain <https://python.langchain.com/en/latest/>`_
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Additional Resources
+   :name: resources_langchain
+   :hidden:
+
+
+.. <!-- Github button -->
+.. <button onclick="location.href='https://github.com/janphilippfranken/scai'"
+..   class="btn btn-sm btn-repo-button"
+..   title="Visit our GitHub repository"
+..   data-bs-placement="bottom" data-bs-toggle="tooltip"
+.. >
+..   <i class="fab fa-github"></i>
+.. </button>
