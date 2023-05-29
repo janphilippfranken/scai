@@ -2,7 +2,7 @@
 
 Useful, self-improving language agents. Insipred by [meta-prompt](https://noahgoodman.substack.com/p/meta-prompt-a-simple-self-improving). Written in [LangChain](https://github.com/hwchase17/langchain).
 
-@patrick/sam–to get started, please check out the [documentation](#documentation) below.
+@patrick/sam–to get started, please check out the miniconda section in the [documentation](#documentation) below.
 
 ### 🧐 What is this?
 
