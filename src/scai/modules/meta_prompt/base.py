@@ -7,9 +7,10 @@ from typing import (
 )
 
 
-from langchain.memory import ConversationBufferWindowMemory
 
-memory = ConversationBufferWindowMemory(k=1)
+from scai.modules.memory.buffer import CustomConversationBufferWindowMemory
+
+memory = CustomConversationBufferWindowMemory(k=1)
 memory.save_context({"system": "you are a helpful ai assistant"}, {"user": "hi"}, {"assistant": "how are you"})
 
 
