@@ -42,53 +42,54 @@ def _convert_message_to_dict(message: BaseMessage) -> dict:
         message_dict["name"] = message.additional_kwargs["name"]
     return message_dict
 
+
 class MetaPromptModel():
     """Code for running meta-prompt.
-
     Example:
         .. code-block:: python
     """
 
-    def __init__(
-            self,
-            llm,
-    ) -> None:
+    def __init__(self, llm) -> None:
         self.llm = llm
 
     @classmethod
     def get_prompts(
         cls, names: Optional[List[str]] = None
     ) -> List[MetaPrompt]:
-        if names is None:
-            return list(META_PROMPTS.values())
-        else:
-            return [META_PROMPTS[name] for name in names]
+        return list(META_PROMPTS.values()) if names is None else [META_PROMPTS[name] for name in names]
     
     @classmethod 
     def get_template(
-            cls, name: str
+        cls, name: str
     ) -> str:
         """Get meta-prompt (i.e. meta system message) based on name."""
         return cls.get_prompts([name])[0].content
-    
+
     def run(
-            self,
-            name: str,
-            buffer: CustomConversationBufferWindowMemory,
-            turns: int = 1,
-    ) -> str: # TODO: add the meta human and meta assistant for 1 shot examples, clean up this part and dont hardcode anything in here.
-        # also: add turns!
+        self,
+        name: str,
+        buffer: CustomConversationBufferWindowMemory,
+        turns: int = 1,
+    ) -> str:
         """Run meta-prompt."""
+        # get a meta system template (i.e. message for meta prompt agent)
         meta_system_template = self.get_template(name=name)
+        # convert into dict
         message_dict = [_convert_message_to_dict(m) for m in buffer.chat_memory.messages]
-        chat_history = """\n""".join([f"{m['role']}: {m['content']}" for m in message_dict])
-        meta_human_template_0 = """Please return a revised system message for the AI assistant to imporve the quality of the conversation.
+        # crate chat history from dict TODO: remove system? 
+        chat_history = "\n".join([f"{m['role']}: {m['content']}" for m in message_dict])
+        # TODO: need to remove the templates to another file
+        meta_human_template_0 = """Please return a revised system message for the AI assistant to improve the quality of the conversation.
         Write it next to response below.
         Response:"""
+        #
+        # create prompt 
         meta_system_message_prompt = SystemMessagePromptTemplate.from_template(meta_system_template)
         meta_human_message_prompt_0 = HumanMessagePromptTemplate.from_template(meta_human_template_0)
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_system_message_prompt, meta_human_message_prompt_0])
+        
+        # run meta-prompt
         chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
         response = chain.run(chat_history=chat_history, stop=["System:"])
+        
         return response
-
