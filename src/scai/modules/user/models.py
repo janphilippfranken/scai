@@ -5,7 +5,7 @@ from pydantic import BaseModel
 class UserContract(BaseModel):
     """Class for a User contract."""
 
-    name: str = "contract/user message name"
-    role: str = "user"
+    name: str = "user contrac name"
+    role: str = "system"
 
     content: str

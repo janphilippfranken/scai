@@ -5,7 +5,7 @@ from pydantic import BaseModel
 class AssistantContract(BaseModel):
     """Class for a assistant contract."""
 
-    name: str = "contract/assistant message name"
-    role: str = "assistant"
+    name: str = "assistant contract name"
+    role: str = "system"
 
     content: str

@@ -19,36 +19,35 @@ class CustomBaseChatMemory(BaseMemory, ABC):
     system_key: Optional[str] = None
     user_key: Optional[str] = None
     assistant_key: Optional[str] = None
-    return_messages: bool = False
-
-    def _get_input_output(
-        self, system: Dict[str, Any], user: Dict[str, Any], assistant: Dict[str, Any]
-    ) -> Tuple[str, str]:
-        """Get content of the system, user, and assistant messages."""
-        if self.system_key is None:
-            system_key = get_prompt_input_key(system, self.memory_variables)
-        else:
-            system_key = self.system_key
-        if self.user_key is None:
-            user_key = get_prompt_input_key(user, self.memory_variables)
-        else:
-            user_key = self.user_key
-        if self.assistant_key is None:
-            if len(assistant) != 1:
-                raise ValueError(f"One assitant key expected, got {assistant.keys()}")
-            assistant_key = list(assistant.keys())[0]
-        else:
-            assistant_key = self.assistant_key
-        return system[system_key], user[user_key], assistant[assistant_key]
-
-    def save_context(self, system: Dict[str, Any], user: Dict[str, Any], assistant: Dict[str, Any]) -> None:
+    return_messages: bool = True
+ 
+    def save_context(
+            self, 
+            system: Optional[Dict[str, Any]] = None, 
+            user: Optional[Dict[str, Any]] = None,
+            assistant: Optional[Dict[str, Any]] = None,
+        ) -> None:
         """Save context from this conversation to buffer of type  List[BaseMessage] = []."""
-        system_str, user_str, assistant_str = self._get_input_output(system, user, assistant)
-        self.chat_memory.add_system_message(system_str)
-        self.chat_memory.add_user_message(user_str)
-        self.chat_memory.add_assistant_message(assistant_str)
+        """Get content of the system, user, and assistant messages."""
+        if system is not None:
+            if self.system_key is None:
+                system_key = get_prompt_input_key(system, self.memory_variables)   
+            else:
+                system_key = self.system_key
+            self.chat_memory.add_system_message(system[system_key])
+        if user is not None:
+            if self.user_key is None:
+                user_key = get_prompt_input_key(user, self.memory_variables)   
+            else:
+                user_key = self.user_key
+            self.chat_memory.add_user_message(user[user_key])
+        if assistant is not None:
+            if self.assistant_key is None:
+                assistant_key = get_prompt_input_key(assistant, self.memory_variables)   
+            else:
+                assistant_key = self.assistant_key
+            self.chat_memory.add_assistant_message(assistant[assistant_key])            
 
     def clear(self) -> None:
         """Clear memory contents."""
         self.chat_memory.clear()
-
