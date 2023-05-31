@@ -50,6 +50,14 @@ tbd
 6. `conda activate name-of-my-env`
 7. `pip install -e .` 
 
+
+
+##### Recommended extensions
+1. `gitlens` (to track changes when writing code / know who did what)
+2. `copilot` 
+
+
+
 ##### Using poetry (currently not supported)
 1. `curl -sSL https://install.python-poetry.org | python -`
 2. `export PATH="/Users/YOUR_NAM/.local/bin:$PATH`
