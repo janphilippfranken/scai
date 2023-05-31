@@ -76,7 +76,8 @@ class MetaPromptModel():
             name: str,
             buffer: CustomConversationBufferWindowMemory,
             turns: int = 1,
-    ) -> str: # TODO: add the meta human and meta assistant for 1 shot examples
+    ) -> str: # TODO: add the meta human and meta assistant for 1 shot examples, clean up this part and dont hardcode anything in here.
+        # also: add turns!
         """Run meta-prompt."""
         meta_system_template = self.get_template(name=name)
         message_dict = [_convert_message_to_dict(m) for m in buffer.chat_memory.messages]
