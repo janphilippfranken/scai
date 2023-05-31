@@ -13,28 +13,9 @@ Large Language Models (LLMs) are exciting 🚀😍. However, as these models con
     <img src="assets/stack.jpg" alt="contract" width="20%">
 </p>
 
-
-#### The SCAI Approach
-
-
-##### The Contract
-<p align="left">
-    <img src="assets/contract.jpg" alt="contract" width="20%">
-</p>
+### 📖 Repro structure
 
 
-##### Stage 1: Self-improvement with meta-prompting
-###### System
-###### Assistant
-<p align="left">
-    <img src="assets/assistant.jpg" alt="contract" width="20%">
-</p>
-
-###### User(s)
-
-
-##### Stage 2: Fine-tuning on self-generated data
-tbd
 
 
 ### 📖 Documentation
@@ -50,41 +31,12 @@ tbd
 6. `conda activate name-of-my-env`
 7. `pip install -e .` 
 
-
-
-##### @Patrick and Sam: Recommended vs  code extensions
-1. `gitlens` (to track changes when writing code / know who did what)
-2. `copilot` 
-3. use debugger. set your `launch.json` to smth like this: 
-
-```json
-{
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "pythonPath": "/Users/jan-philippfranken/miniforge3/envs/scai/bin/python",
-            "cwd": "${workspaceFolder}"
-        }
-    ]
-}
-```
-
-and replace `pythonPath` with your path which you get via typing `which python` after activating your virtual environment.
-
-
-
-
-##### Using poetry (currently not supported)
+##### Using poetry (will update this later)
 1. `curl -sSL https://install.python-poetry.org | python -`
 2. `export PATH="/Users/YOUR_NAM/.local/bin:$PATH`
 3. `poetry install`
 
-#### 📖 Updating Docs
+#### 📖 Updating Docs (will update this later)
 1. `sphinx-build -b html docs/source docs/build` (build docs)
 2. `open docs/build/index.html` to open docs locally.  
 
