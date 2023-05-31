@@ -7,10 +7,10 @@ Useful, self-improving language agents. Insipred by [meta-prompt](https://noahgo
 ### 🧐 What is this?
 
 
-#### 📖 Background
+#### 🚀 Motivation
 TODO: write high-level summary.
 
-### 📖 Repro structure
+### 📂 Repro structure
 
 ```
 ├── src                  
