@@ -52,9 +52,30 @@ tbd
 
 
 
-##### Recommended extensions
+##### @Patrick and Sam: Recommended vs  code extensions
 1. `gitlens` (to track changes when writing code / know who did what)
 2. `copilot` 
+3. use debugger. set your `launch.json` to smth like this: 
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "pythonPath": "/Users/jan-philippfranken/miniforge3/envs/scai/bin/python",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
+```
+
+and replace `pythonPath` with your path which you get via typing `which python` after activating your virtual environment.
+
 
 
 
