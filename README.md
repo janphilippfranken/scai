@@ -15,7 +15,20 @@ Large Language Models (LLMs) are exciting 🚀😍. However, as these models con
 
 ### 📖 Repro structure
 
-
+.
+├── src                  
+│   └── scai      
+│       ├── modules           
+│       ├── data  
+│       ├── custom_chat_models   
+│       └── hugging_face_models
+├── docs                
+│   ├── build            
+│   └── source           
+├── experiments         
+├── LICENSE              
+├── requirements.txt      
+└── .gitignore           
 
 
 ### 📖 Documentation
