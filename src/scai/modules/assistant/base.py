@@ -22,12 +22,12 @@ from langchain.schema import (
 )
 
 from scai.modules.assistant.models import AssistantPrompt
-from scai.modules.assistant.assistant_prompt import ASSISTANT_PROMPTS
+from scai.modules.assistant.prompts import ASSISTANT_PROMPTS
 from scai.modules.memory.buffer import CustomConversationBufferWindowMemory
 
 from langchain.chains.llm import LLMChain
 
-class AssistantChain():
+class AssistantModel():
     """Chain for applying the AI Assitant.
 
     Example:
