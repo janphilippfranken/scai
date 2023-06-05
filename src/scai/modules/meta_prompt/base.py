@@ -27,21 +27,6 @@ from scai.modules.memory.buffer import CustomConversationBufferWindowMemory
 
 from langchain import LLMChain
 
-def _convert_message_to_dict(message: BaseMessage) -> dict:
-    if isinstance(message, ChatMessage):
-        message_dict = {"role": message.role, "content": message.content}
-    elif isinstance(message, HumanMessage):
-        message_dict = {"role": "user", "content": message.content}
-    elif isinstance(message, AIMessage):
-        message_dict = {"role": "assistant", "content": message.content}
-    elif isinstance(message, SystemMessage):
-        message_dict = {"role": "system", "content": message.content}
-    else:
-        raise ValueError(f"Got unknown type {message}")
-    if "name" in message.additional_kwargs:
-        message_dict["name"] = message.additional_kwargs["name"]
-    return message_dict
-
 
 class MetaPromptModel():
     """Code for running meta-prompt.
@@ -64,19 +49,34 @@ class MetaPromptModel():
     ) -> str:
         """Get meta-prompt (i.e. meta system message) based on name."""
         return cls.get_prompts([name])[0].content
+    
+    def _convert_message_to_dict(message: BaseMessage) -> dict:
+        if isinstance(message, ChatMessage):
+            message_dict = {"role": message.role, "content": message.content}
+        elif isinstance(message, HumanMessage):
+            message_dict = {"role": "user", "content": message.content}
+        elif isinstance(message, AIMessage):
+            message_dict = {"role": "assistant", "content": message.content}
+        elif isinstance(message, SystemMessage):
+            message_dict = {"role": "system", "content": message.content}
+        else:
+            raise ValueError(f"Got unknown type {message}")
+        if "name" in message.additional_kwargs:
+            message_dict["name"] = message.additional_kwargs["name"]
+        return message_dict
 
     def run(
         self,
         name: str,
         buffer: CustomConversationBufferWindowMemory,
-        turns: int = 1,
+        turns: int = 1, # how many turns to feed into the prompt
     ) -> str:
         """Run meta-prompt."""
         # get a meta system template (i.e. message for meta prompt agent)
         meta_system_template = self.get_template(name=name)
         meta_system_message_prompt = SystemMessagePromptTemplate.from_template(meta_system_template)
         # convert conversation into dict
-        message_dict = [_convert_message_to_dict(m) for m in buffer.chat_memory.messages]
+        message_dict = [self._convert_message_to_dict(m) for m in buffer.chat_memory.messages]
         # crate chat history from dict TODO: remove system? 
         chat_history = "\n".join([f"{m['role']}: {m['content']}" for m in message_dict])
         # TODO: need to remove the meta human templates to another file
