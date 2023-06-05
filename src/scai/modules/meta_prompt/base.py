@@ -74,20 +74,18 @@ class MetaPromptModel():
         """Run meta-prompt."""
         # get a meta system template (i.e. message for meta prompt agent)
         meta_system_template = self.get_template(name=name)
-        # convert into dict
+        meta_system_message_prompt = SystemMessagePromptTemplate.from_template(meta_system_template)
+        # convert conversation into dict
         message_dict = [_convert_message_to_dict(m) for m in buffer.chat_memory.messages]
         # crate chat history from dict TODO: remove system? 
         chat_history = "\n".join([f"{m['role']}: {m['content']}" for m in message_dict])
-        # TODO: need to remove the templates to another file
+        # TODO: need to remove the meta human templates to another file
         meta_human_template_0 = """Please return a revised system message for the AI assistant to improve the quality of the conversation.
         Write it next to response below.
         Response:"""
-        #
-        # create prompt 
-        meta_system_message_prompt = SystemMessagePromptTemplate.from_template(meta_system_template)
         meta_human_message_prompt_0 = HumanMessagePromptTemplate.from_template(meta_human_template_0)
+        # create prompt 
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_system_message_prompt, meta_human_message_prompt_0])
-        
         # run meta-prompt
         chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
         response = chain.run(chat_history=chat_history, stop=["System:"])

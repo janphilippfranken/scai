@@ -1,4 +1,4 @@
-"""The user/Developer Contract."""
+"""The user/Developer Prompt."""
 from typing import (
     Any,
     Dict,
@@ -9,8 +9,8 @@ from typing import (
 from langchain.chains.base import Chain
 from langchain.chains.llm import LLMChain
 
-from scai.modules.user.models import UserContract
-from scai.modules.user.user_contract import USER_CONTRACT
+from scai.modules.user.models import UserPrompt
+from scai.modules.user.user_prompt import USER_PROMPT
 
 
 class UserChain(Chain):
@@ -24,7 +24,7 @@ class UserChain(Chain):
     """
 
     chain: LLMChain
-    user_contract: List[UserContract]
+    user_Prompt: List[UserPrompt]
     user_chain: LLMChain
 
     # TODO: @sam: build this class, take inspiration from https://github.com/hwchase17/langchain/blob/master/langchain/chains/constitutional_ai/base.py
