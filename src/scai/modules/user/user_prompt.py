@@ -5,7 +5,7 @@ from typing import Dict
     
 from scai.modules.user.models import UserPrompt
 
-USER_CONTRACT: Dict[str, UserPrompt] = {
+USER_PROMPT: Dict[str, UserPrompt] = {
     "user_prompt_1": UserPrompt(
         name="user_prompt_1",
         role="system",
