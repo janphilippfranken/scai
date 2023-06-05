@@ -10,8 +10,7 @@ Useful, self-improving language agents. Insipred by [meta-prompt](https://noahgo
 #### 🚀 Motivation
 As Large Language Models (LLMs) advance, human-dependent fine-tuning techniques like RLHF (e.g., Christiano et al. 2017; Ouyang et al. 2022) are becoming less effective (e.g., Amodei et al., 2016; Bowman et al. 2022; Bowman et al., 2023). This necessitates the adoption of self-improvement methods such as Constitutional AI (CAI; Bai et al., 2022), which combine AI-supervised fine-tuning with RLAIF for the development of helpful, harmless, and honest language agents like Claude.
 
-#### 🧘🏾‍♀️ Our Proposal 
-Our Proposal: A bottom-up alternative to Constitutional AI 
+#### 🧘🏾‍♀️ Our Proposal: A bottom-up alternative to Constitutional AI 
 The details within the "constitutions" employed in paradigms like CAI are increasingly important for defining the values, behavioral boundaries, and capabilities of LLMs. These are typically developed top-down and in isolation by corporations. We offer a democratic alternative: social contract AI (scai), an open-ended platform enabling multiple (simulated) users to interact and collaboratively define a model's constitution via meta-prompting. We explain the construction of our simulator and demonstrate its potential for exploring trade-offs between users (with crowd-sourced personas), eliciting subtle constitutional aspects, and evaluating different utility metrics.
 
 #### ✅ Expected outcome
