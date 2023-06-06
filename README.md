@@ -1,6 +1,6 @@
 ##  🕉️ SCAI: Social Contract AI
 
-Effective human--AI collaboration through democratically aligned language agents.
+Supporting effective human—AI collaboration through democratically aligned language agents.
 
 @patrick/sam–to get started, please check out the miniconda section in the [documentation](#documentation) below.
 
