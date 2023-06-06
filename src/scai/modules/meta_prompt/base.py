@@ -50,7 +50,7 @@ class MetaPromptModel():
         """Get meta-prompt (i.e. meta system message) based on name."""
         return cls.get_prompts([name])[0].content
     
-    def _convert_message_to_dict(message: BaseMessage) -> dict:
+    def _convert_message_to_dict(self, message: BaseMessage) -> dict:
         if isinstance(message, ChatMessage):
             message_dict = {"role": message.role, "content": message.content}
         elif isinstance(message, HumanMessage):
