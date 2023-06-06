@@ -8,7 +8,7 @@ Useful, self-improving language agents. Insipred by [meta-prompt](https://noahgo
 
 
 #### 🚀 Motivation
-As Large Language Models (LLMs) advance, human-dependent fine-tuning techniques like RLHF [e.g., [1](https://proceedings.neurips.cc/paper_files/paper/2017/file/d5e2c0adad503c91f91df240d0cd4e49-Paper.pdf), [2](https://proceedings.neurips.cc/paper_files/paper/2022/file/b1efde53be364a73914f58805a001731-Paper-Conference.pdf)] are becoming less effective (3: https://arxiv.org/pdf/1606.06565.pdf, 4: https://arxiv.org/pdf/2304.00612.pdf). This necessitates the adoption of self-improvement methods such as Constitutional AI (5: https://arxiv.org/pdf/2212.08073.pdf), which combine AI-supervised fine-tuning with RLAIF for the development of helpful, harmless, and honest language agents like Claude.
+As Large Language Models (LLMs) advance, human-dependent fine-tuning techniques like RLHF [e.g. [1](https://proceedings.neurips.cc/paper_files/paper/2017/file/d5e2c0adad503c91f91df240d0cd4e49-Paper.pdf), [2](https://proceedings.neurips.cc/paper_files/paper/2022/file/b1efde53be364a73914f58805a001731-Paper-Conference.pdf)] are becoming less effective [e.g. [3](https://arxiv.org/pdf/1606.06565.pdf, [4](https://arxiv.org/pdf/2304.00612.pdf)]. This necessitates the adoption of self-improvement methods such as Constitutional AI [[5](https://arxiv.org/pdf/2212.08073.pdf)], which combine AI-supervised fine-tuning with RLAIF for the development of helpful, harmless, and honest language agents like Claude.
 
 
 #### 🧘🏾‍♀️ Our Proposal: A bottom-up alternative to Constitutional AI 
