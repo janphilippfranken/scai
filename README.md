@@ -1,7 +1,6 @@
 ##  🕉️ SCAI: Social Contract AI
 
-Supporting effective human—AI collaboration through democratically aligned language agents.
-
+Bootstrapping "system messages" with meta-prompt.
 
 ### 🧐 What is this?
 
