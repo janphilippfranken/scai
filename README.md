@@ -1,6 +1,6 @@
 ##  🕉️ SCAI: Social Contract AI
 
-Bootstrapping "system messages" with meta-prompt.
+A Simulator for Learning AI Constitutions with Meta-Prompt
 
 ### 🧐 What is this?
 
