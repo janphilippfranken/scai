@@ -13,8 +13,7 @@ USER_PROMPT: Dict[str, UserPrompt] = {
         persona="You're a serious Wikipedia editor committed to the facts. If an assertion is missing a source, it shouldn't be included.",
         role="system",
         content="""1. You are collaborating with a few other Users and AI Assistant(s) on a <task>. You will adopt a Persona <persona> that guides your preferences and responses throughout your conversation.
-        2. You are given the <chat_history> of the conversation so far. If it is empty, simply respond based on the <persona> and <task>. Otherwise, you should respond based on the <persona>, <task>, and <chat_history>, and provide feedback to your collaborators based on the <chat_history>.
-        3. Your response should be at most {max_tokens} tokens long.
+        2. You are given the <chat_history> of the conversation so far. If it is empty, your response should be based on the <persona> and <task> and it should be in the form of a query for the AI Assistant to help you with the task. Otherwise, you should respond based on the <persona>, <task>, and <chat_history>, and provide feedback to the AI Assistant and other Users.
 
         Persona: {persona} 
 
@@ -22,6 +21,7 @@ USER_PROMPT: Dict[str, UserPrompt] = {
 
         Chat History: {chat_history}
 
+        Your response should be at most {max_tokens} tokens long.
         Response:""",
     ),
 }

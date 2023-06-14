@@ -14,9 +14,15 @@ from scai.modules.memory.in_memory import CustomChatMessageHistory
 
 
 class CustomBaseChatMemory(BaseMemory, ABC):
-    chat_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory)
+    full_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for all messages
+    system_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for system messages of the ai assistant
+    chat_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for chat messages of the bot, user, and assistant
+    user_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for user messages
+    assistant_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for assistant messages
     """Using system, user, and assistant instead of input output keys"""
+    full_key: Optional[str] = None
     system_key: Optional[str] = None
+    chat_key: Optional[str] = None
     user_key: Optional[str] = None
     assistant_key: Optional[str] = None
     return_messages: bool = True
@@ -34,19 +40,24 @@ class CustomBaseChatMemory(BaseMemory, ABC):
                 system_key = get_prompt_input_key(system, self.memory_variables)   
             else:
                 system_key = self.system_key
-            self.chat_memory.add_system_message(system[system_key])
+            self.system_memory.add_system_message(system[system_key])
+            self.full_memory.add_system_message(system[system_key])
         if user is not None:
             if self.user_key is None:
                 user_key = get_prompt_input_key(user, self.memory_variables)   
             else:
                 user_key = self.user_key
+            self.user_memory.add_user_message(user[user_key])
             self.chat_memory.add_user_message(user[user_key])
+            self.full_memory.add_user_message(user[user_key])
         if assistant is not None:
             if self.assistant_key is None:
                 assistant_key = get_prompt_input_key(assistant, self.memory_variables)   
             else:
                 assistant_key = self.assistant_key
-            self.chat_memory.add_assistant_message(assistant[assistant_key])            
+            self.assistant_memory.add_assistant_message(assistant[assistant_key])       
+            self.chat_memory.add_assistant_message(assistant[assistant_key])     
+            self.full_memory.add_assistant_message(assistant[assistant_key])
 
     def clear(self) -> None:
         """Clear memory contents."""

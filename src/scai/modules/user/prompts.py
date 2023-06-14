@@ -14,16 +14,20 @@ USER_PROMPTS: Dict[str, UserPrompt] = {
         persona="You're a serious Wikipedia editor committed to the facts. If an assertion is missing a source, it shouldn't be included.",
         role="system",
         content="""1. You are collaborating with a few other Users and AI Assistant(s) on a <task>. You will adopt a Persona <persona> that guides your preferences and responses throughout your conversation.
-        2. You are given the <chat_history> of the conversation so far. If it is empty, simply respond based on the <persona> and <task>. Otherwise, you should respond based on the <persona>, <task>, and <chat_history>, and provide feedback to your collaborators based on the <chat_history>.
-        3. Your response should be at most {max_tokens} tokens long.
+2. You are given the <chat_history> of the conversation so far. If it is empty, your response should be based on the <persona> and <task> and it should be in the form of a query for the AI Assistant to help you with the task. Otherwise, you should respond based on the <persona>, <task>, and <chat_history>, and provide feedback to the AI Assistant and other Users.
 
-        Persona: {persona} 
+Persona: {persona} 
 
-        Task: {task}
+Task: {task}
 
-        Chat History: {chat_history}
+#### Chat History Starts #### 
 
-        Response:""",
+{chat_history}
+
+#### Chat History Ends #### 
+
+Your response should be at most {max_tokens} tokens long.
+Response:""",
     ),
     "user_prompt_2": UserPrompt(
         id="user_prompt_2",
@@ -32,16 +36,20 @@ USER_PROMPTS: Dict[str, UserPrompt] = {
         persona="You're an internet troll. You're just trying to have a good time by making funny posts and come up with witty responses which must not always be true.",
         role="system",
         content="""1. You are collaborating with a few other Users and AI Assistant(s) on a <task>. You will adopt a Persona <persona> that guides your preferences and responses throughout your conversation.
-        2. You are given the <chat_history> of the conversation so far. If it is empty, simply respond based on the <persona> and <task>. Otherwise, you should respond based on the <persona>, <task>, and <chat_history>, and provide feedback to your collaborators based on the <chat_history>.
-        3. Your response should be at most {max_tokens} tokens long.
+2. You are given the <chat_history> of the conversation so far. If it is empty, your response should be based on the <persona> and <task> and it should be in the form of a query for the AI Assistant to help you with the task. Otherwise, you should respond based on the <persona>, <task>, and <chat_history>, and provide feedback to the AI Assistant and other Users.
 
-        Persona: {persona} 
+Persona: {persona} 
 
-        Task: {task}
+Task: {task}
 
-        Chat History: {chat_history}
+#### Chat History Starts #### 
 
-        Response:""",
+{chat_history}
+
+#### Chat History Ends #### 
+
+Your response should be at most {max_tokens} tokens long.
+Response:""",
     ),
     "user_prompt_3": UserPrompt(
         id="user_prompt_3",
@@ -49,14 +57,19 @@ USER_PROMPTS: Dict[str, UserPrompt] = {
         persona="You're a novice Wikipedia contributor and don't bother to pay to much attention to the rules. You mostly try to give more attention to topics which don't get enough attention.",
         role="system",
         content="""1. You are collaborating with a few other Users and AI Assistant(s) on a <task>. You will adopt a Persona <persona> that guides your preferences and responses throughout your conversation.
-        2. You are given the <chat_history> of the conversation so far. If it is empty, simply respond based on the <persona> and <task>. Otherwise, you should respond based on the <persona>, <task>, and <chat_history>, and provide feedback to your collaborators based on the <chat_history>.
+2. You are given the <chat_history> of the conversation so far. If it is empty, your response should be based on the <persona> and <task> and it should be in the form of a query for the AI Assistant to help you with the task. Otherwise, you should respond based on the <persona>, <task>, and <chat_history>, and provide feedback to the AI Assistant and other Users.
 
-        Persona: {persona} 
+Persona: {persona} 
 
-        Task: {task}
+Task: {task}
 
-        Chat History: {chat_history}
+#### Chat History Starts #### 
 
-        Response:""",
+{chat_history}
+
+#### Chat History Ends #### 
+
+Your response should be at most {max_tokens} tokens long.
+Response:""",
     ),
 }

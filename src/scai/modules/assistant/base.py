@@ -39,21 +39,8 @@ class AssistantModel():
 
     def __init__(self, llm) -> None:
         self.llm = llm
-
-    @classmethod
-    def get_prompts(
-        cls, names: Optional[List[str]] = None
-    ) -> List[AssistantPrompt]:
-        return list(ASSISTANT_PROMPTS.values()) if names is None else [ASSISTANT_PROMPTS[name] for name in names]
     
-    @classmethod 
-    def get_template(
-        cls, name: str
-    ) -> str:
-        """Get meta-prompt (i.e. meta system message) based on name."""
-        return cls.get_prompts([name])[0].content
-    
-    def _convert_message_to_dict(message: BaseMessage) -> dict:
+    def _convert_message_to_dict(self, message: BaseMessage) -> dict:
         if isinstance(message, ChatMessage):
             message_dict = {"role": message.role, "content": message.content}
         elif isinstance(message, HumanMessage):
@@ -70,24 +57,29 @@ class AssistantModel():
 
     def run(
         self,
-        name: str,
-        buffer: Optional[CustomConversationBufferWindowMemory],
-        revised_assistant_prompt: Optional[AssistantPrompt], # this is the optional revised assistant template
-        turns: Optional[int] = 1, # how many turns to feed into the prompt
+        buffer: CustomConversationBufferWindowMemory,
+        assistant_prompt: AssistantPrompt,
+        max_tokens: int = 100, # max tokens to generate
     ) -> str:
         """Run assistant."""
-        # get the assistant system message
-        assistant_system_message = SystemMessage(content=self.get_template(name=name).content)
-        # if the revised assistant prompt is not none, update the assistant's system message
-        if revised_assistant_prompt is not None:
-            assistant_system_message.content = revised_assistant_prompt.content
-        # get messages
-        messages = [assistant_system_message] + buffer.chat_memory.messages[1:] # removing the old system message
-        # convert to dict
-        message_dict = [self._convert_message_to_dict(m) for m in messages]
-        # run assistant 
-        chain = LLMChain(llm=self.llm, prompt=message_dict)
-        response = chain.run(stop=["System:"])
-        
-        return response
-    
+        assistant_prompt_template = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
+        # convert chat into dict
+        chat_message_dict = [self._convert_message_to_dict(m) for m in buffer.load_memory_variables(var_type="chat")['history']]
+        # crate chat history
+        chat_history = "\n".join([f"{m['role']}: {m['content']}" for m in chat_message_dict])
+        # convert system message into dict
+        system_message_dict = [self._convert_message_to_dict(m) for m in buffer.load_memory_variables(var_type="system", use_assistant_k=True)['history']] # only care about assistants system messages
+        # create system message
+        system_history = "\n".join([f"{m['role']}: {m['content']}" for m in system_message_dict]) # only care about last system message
+        # create prompt 
+        assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_prompt_template])
+        # template
+        template = assistant_chat_prompt.format(system_message=system_history,
+                                                chat_history=chat_history,
+                                                max_tokens=max_tokens)
+
+        return template
+         # # run asssiastant
+        # chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
+        # response = chain.run(system_message=system_history, chat_history=chat_history, max_tokens=max_tokens, stop=["System:"])
+        # return response
