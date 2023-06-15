@@ -77,18 +77,17 @@ class UserModel():
         task_prompt: TaskPrompt,
         max_tokens: int = 100, # max tokens to generate
     ) -> str:
-        """Run meta-prompt."""
-        user_prompt_template = SystemMessagePromptTemplate.from_template(user_prompt.content)
-        # convert chat into dict
+        """Run user."""
+        # user system message
+        user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content) 
+        # get chat history
         chat_message_dict = [self._convert_message_to_dict(m) for m in buffer.load_memory_variables(var_type="chat")['history']]
         # crate chat history
-        chat_history = "\n".join([f"{m['role']}: {m['content']}" for m in chat_message_dict])
+        
         # create prompt 
-        user_chat_prompt = ChatPromptTemplate.from_messages([user_prompt_template])
+        user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt])
         template = user_chat_prompt.format(persona=user_prompt.persona,
-                                           task=task_prompt.content,
-                                           chat_history=chat_history,  
-                                           max_tokens=max_tokens)
+                                           task=task_prompt.content)
         return template
         # # run meta-prompt
         # chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)

@@ -13,9 +13,6 @@ ASSISTANT_PROMPTS: Dict[str, AssistantPrompt] = {
         name="helpful_assistant",
         max_tokens=100,
         role="system",
-        content="""{system_message}
-{chat_history}
-Your response should be at most {max_tokens} tokens long.
-Response:""",
+        content="""{system_message}""",
     ),
 }

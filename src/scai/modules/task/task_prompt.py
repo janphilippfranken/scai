@@ -11,8 +11,6 @@ TASK_PROMPT: Dict[str, TaskPrompt] = {
         task_type="write_wikipedia_article",
         name="openai_change_response_based_on_location_or_culture",
         role="system",
-        content="""Your are collaborating with a few other Users and Assitant(s) to write a Wikipedia article on the following topic:
-        "What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?"
-    """,
+        content="""Your are collaborating with a few other Users and Assitant(s) to write a Wikipedia article on the following topic: Which categories of content, if any, do you believe creators of AI models should focus on limiting or denying? What criteria should be used to determine these restrictions?""",
     ),
 }

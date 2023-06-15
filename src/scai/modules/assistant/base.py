@@ -62,7 +62,7 @@ class AssistantModel():
         max_tokens: int = 100, # max tokens to generate
     ) -> str:
         """Run assistant."""
-        assistant_prompt_template = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
+        assistant_system_prompt = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
         # convert chat into dict
         chat_message_dict = [self._convert_message_to_dict(m) for m in buffer.load_memory_variables(var_type="chat")['history']]
         # crate chat history
@@ -72,11 +72,9 @@ class AssistantModel():
         # create system message
         system_history = "\n".join([f"{m['role']}: {m['content']}" for m in system_message_dict]) # only care about last system message
         # create prompt 
-        assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_prompt_template])
+        assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt])
         # template
-        template = assistant_chat_prompt.format(system_message=system_history,
-                                                chat_history=chat_history,
-                                                max_tokens=max_tokens)
+        template = assistant_chat_prompt.format(system_message=system_history)
 
         return template
          # # run asssiastant
