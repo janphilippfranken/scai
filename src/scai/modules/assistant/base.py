@@ -39,8 +39,9 @@ class AssistantModel():
 
     """
 
-    def __init__(self, llm) -> None:
+    def __init__(self, llm, conversation_id) -> None:
         self.llm = llm
+        self.conversation_id = conversation_id
     
     def _convert_message_to_dict(self, message: BaseMessage) -> dict:
         if isinstance(message, ChatMessage):
@@ -65,22 +66,27 @@ class AssistantModel():
     ) -> str:
         """Run assistant."""
         assistant_system_prompt = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
-        # get chat history
-        chat_history_prompts = [m for m in buffer.load_memory_variables(var_type="assistant")['history']]  
+        # get chat history for the specific conversation
+        chat_history_prompts = [
+            message
+            for message, message_id in zip(
+                buffer.load_memory_variables(var_type="assistant")["history"],
+                buffer.chat_memory.message_ids
+            )
+            if self.conversation_id in message_id
+        ]
         # get system history
         system_history_prompts = [m for m in buffer.load_memory_variables(var_type="system", use_assistant_system_k = True)['history']]
         # prompt to generate next completion based on history
-        generate_next = """Provide a response using no more than {max_tokens} tokens."""
+        generate_next = """Provide a response using no more than {max_tokens} tokens. If previous Human/Users message(s) are provided, use these messages as feedback to revise your response."""
         generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
         # build prompt template
         assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts, generate_next_prompt])
         response = assistant_chat_prompt.format(system_message=system_history_prompts[-1].content, # for now just take content of latest system message
                                                 task=task_prompt.content,
                                                 max_tokens=assistant_prompt.max_tokens)
-
-
         return response
-         # # run asssiastant
+        # # run asssiastant
         # chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
         # response = chain.run(system_message=system_history, chat_history=chat_history, max_tokens=max_tokens, stop=["System:"])
         # return response

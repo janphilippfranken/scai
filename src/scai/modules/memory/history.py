@@ -1,7 +1,7 @@
 """
 Custom version of langchain that allows to store the system message https://github.com/hwchase17/langchain/blob/master/langchain/schema.py
 """
-from typing import List
+from typing import List, Optional
 
 from abc import ABC, abstractmethod
 
@@ -43,19 +43,28 @@ class CustomBaseChatMessageHistory(ABC):
 
     messages: List[BaseMessage]
 
-    def add_system_message(self, message: str) -> None:
+    def add_system_message(self, message: str, system_message_id: Optional[str]) -> None:
         """Add a system message to the store"""
-        self.add_message(SystemMessage(content=message))
+        if system_message_id is not None:
+            self.add_message(SystemMessage(content=message), message_id=system_message_id)
+        else:
+            self.add_message(SystemMessage(content=message))
 
-    def add_user_message(self, message: str) -> None:
+    def add_user_message(self, message: str, user_message_id: Optional[str]) -> None:
         """Add a user message to the store"""
-        self.add_message(HumanMessage(content=message))
+        if user_message_id is not None:
+            self.add_message(HumanMessage(content=message), message_id=user_message_id)
+        else:
+            self.add_message(HumanMessage(content=message))
 
-    def add_assistant_message(self, message: str) -> None:
+    def add_assistant_message(self, message: str, assistant_message_id: Optional[str]) -> None:
         """Add an AI message to the store"""
-        self.add_message(AIMessage(content=message))
+        if assistant_message_id is not None:
+            self.add_message(AIMessage(content=message), message_id=assistant_message_id)
+        else:
+            self.add_message(AIMessage(content=message))
 
-    def add_message(self, message: BaseMessage) -> None:
+    def add_message(self, message: BaseMessage, message_id: Optional[str]) -> None:
         """Add a self-created message to the store"""
         raise NotImplementedError
 

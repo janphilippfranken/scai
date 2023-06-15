@@ -14,37 +14,37 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         max_tokens=100,
         persona="", # TODO: add meta personas (ie what style of criticism to use)
         role="system",
-        content="""Assistant has just had the below interaction with the User. Both Assistant and User followed their system message closely to answer a question together. 
+        content="""Assistant has just had the below conversation(s) with User(s). The Assistant followed their system message closely to help each user with the following Task:
+
+#### Task Description Starts ####
+{task}
+#### Task Description Ends ####
         
-Your job is to critique Assistant's performance and provide new system message so that Assistant can correctly and quickly respond in the future.
+Your job is to critique the Assistant's performance and provide a new 'system message' so that Assistant can correctly and quickly respond in the future. 
 
-#### Chat History Starts #### 
-
+#### Conversation History Starts ####
 {chat_history}
-
-#### Chat History Ends #### 
+#### Conversation History Ends ####
 
 Your first task is to critique Assistan's performance: 
-1. What could Assistant have done better to satisfy User? 
-2. Was Assistant effective in answering the question posed? 
-3. Was Assistant receptive to User's feedback? 
-4. Did Assistant satisfy User as correctly and quickly as possible? 
+1. What could Assistant have done better to satisfy User(s)? 
+2. Was Assistant effective in completing the Task as requested by User(s)? 
+3. Was Assistant receptive to feedback provided by User(s)? 
+4. Did Assistant satisfy User(s) as correctly and quickly as possible? 
 
 You should indicate this feedback with “Critique: ...”.
 
-Your next task is to revise Assistant's system message. Older system messages including previous revisions are shown below. 
+Your next task is to revise Assistant's 'system message'. Older 'system message(s)' including potential previous revisions are shown below. 
 
-#### Assistant's old system message(s) Start #### 
-
+#### Assistant's Old System Message(s) Start #### 
 {system_history}
+#### Assistant's Old System Message(s) End #### 
 
-#### Assistant's old system message(s) End #### 
+You must ensure that the Assistant can correctly and quickly respond in the future to accomodate for the needs of Users.
 
-You must ensure that the Assistant can correctly and quickly respond in the future. 
+Given your revised system message message, Assistant should be able to satisfy Users in as few interactions as possible. 
 
-Given your revised system message message, Assistant should be able to satisfy User in as few interactions as possible. 
-
-Assistant will only see the new system message, not the 'Chat History' or the 'Old System Messages' so any important message must be included in the system new message. 
+Assistant will only see the new system message, not the 'Conversation History' or the 'Old System Messages' so any important message must be included in the system new message. 
 
 Please remember to include important details from Assistant's current message as well. 
 
