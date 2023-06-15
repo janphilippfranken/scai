@@ -11,8 +11,8 @@ ASSISTANT_PROMPTS: Dict[str, AssistantPrompt] = {
     "assistant_prompt_1": AssistantPrompt(
         id="assistant_prompt_1",
         name="helpful_assistant",
-        max_tokens=100,
+        max_tokens=50,
         role="system",
-        content="""{system_message}""",
+        content="""{system_message} {task}""",
     ),
 }

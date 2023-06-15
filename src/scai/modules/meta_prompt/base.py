@@ -56,7 +56,6 @@ class MetaPromptModel():
         self,
         buffer: CustomConversationBufferWindowMemory,
         meta_prompt: MetaPrompt,
-        max_tokens: int = 100, # max tokens to generate
     ) -> str:
         """Run meta-prompt."""
         meta_prompt_template = SystemMessagePromptTemplate.from_template(meta_prompt.content)
@@ -72,7 +71,7 @@ class MetaPromptModel():
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template])
         template = meta_chat_prompt.format(chat_history=chat_history,  
                                            system_history=system_history,
-                                           max_tokens=max_tokens)
+                                           max_tokens=meta_prompt.max_tokens)
         return template
         # # run meta-prompt
         # chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)

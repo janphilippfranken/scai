@@ -55,46 +55,30 @@ class UserModel():
         """Get prompt (i.e. meta system message) based on name."""
         return cls.get_prompts([name])[0].content
     
-    def _convert_message_to_dict(self, message: BaseMessage) -> dict:
-        if isinstance(message, ChatMessage):
-            message_dict = {"role": message.role, "content": message.content}
-        elif isinstance(message, HumanMessage):
-            message_dict = {"role": "user", "content": message.content}
-        elif isinstance(message, AIMessage):
-            message_dict = {"role": "assistant", "content": message.content}
-        elif isinstance(message, SystemMessage):
-            message_dict = {"role": "system", "content": message.content}
-        else:
-            raise ValueError(f"Got unknown type {message}")
-        if "name" in message.additional_kwargs:
-            message_dict["name"] = message.additional_kwargs["name"]
-        return message_dict
-    
     def run(
         self,
         buffer: CustomConversationBufferWindowMemory,
         user_prompt: UserPrompt,
         task_prompt: TaskPrompt,
-        max_tokens: int = 100, # max tokens to generate
     ) -> str:
         """Run user."""
         # user system message
         user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content) 
         # get chat history
-        chat_message_dict = [self._convert_message_to_dict(m) for m in buffer.load_memory_variables(var_type="chat")['history']]
-        # crate chat history
-        
-        # create prompt 
-        user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt])
-        template = user_chat_prompt.format(persona=user_prompt.persona,
-                                           task=task_prompt.content)
-        return template
-        # # run meta-prompt
-        # chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
+        chat_history_prompts = [m for m in buffer.load_memory_variables(var_type="user")['history']]      
+        # prompt to generate next completion based on history
+        generate_next = """Provide a response including feedback using no more than {max_tokens} tokens."""
+        generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
+        # build prompt template
+        user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts, generate_next_prompt])
+        response = user_chat_prompt.format(persona=user_prompt.persona,
+                                           task=task_prompt.content,
+                                           max_tokens=user_prompt.max_tokens)
+        # run user
+        # chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
         # response = chain.run(persona=user_prompt.persona,
         #                      task=task_prompt.content,
         #                      chat_history=chat_history,
         #                      max_tokens=max_tokens,
         #                      stop=["System:"])
-        # return response
-    
+        return response

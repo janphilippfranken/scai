@@ -45,6 +45,7 @@ class CustomConversationBufferWindowMemory(CustomBaseChatMemory):
     chat_k: int = 5 # how much we will go back in the chat history (bot user and assistant)
     user_k: int = 5 # how much we will go back in the user chat history
     assistant_k: int = 5 # how much we will go back in the assistant chat history
+    assistant_system_k: int = 5 # how much we will go back in the assistant system history
 
     @property
     def full_buffer(self) -> List[BaseMessage]:
@@ -64,12 +65,12 @@ class CustomConversationBufferWindowMemory(CustomBaseChatMemory):
     @property
     def user_buffer(self) -> List[BaseMessage]:
         """String buffer of memory."""
-        return self.user_memory.messages
+        return self.user_chat_memory.messages
     
     @property
     def assistant_buffer(self) -> List[BaseMessage]:
         """String buffer of memory."""
-        return self.assistant_memory.messages
+        return self.assistant_chat_memory.messages
 
     @property
     def memory_variables(self) -> List[str]:
@@ -79,19 +80,19 @@ class CustomConversationBufferWindowMemory(CustomBaseChatMemory):
         """
         return [self.memory_key]
     
-    def load_memory_variables(self, var_type: str="system", use_assistant_k: bool=False) -> Dict[str, str]:
+    def load_memory_variables(self, var_type: str="system", use_assistant_system_k: bool=False) -> Dict[str, str]:
         """Return history buffer for system."""
         if var_type == "system":
-            if use_assistant_k is True:
-                buffer: Any = self.system_buffer[-self.assistant_k :] if self.assistant_k > 0 else []
+            if use_assistant_system_k is True:
+                buffer: Any = self.system_buffer[-self.assistant_system_k :] if self.assistant_system_k > 0 else []
             else:
                 buffer: Any = self.system_buffer[-self.system_k :] if self.system_k > 0 else [] 
         elif var_type == "chat":
             buffer: Any = self.chat_buffer[-self.chat_k * 2 :] if self.chat_k > 0 else []
         elif var_type == "user":
-            buffer: Any = self.user_buffer[-self.user_k :] if self.user_k > 0 else []
+            buffer: Any = self.user_buffer[-self.user_k * 2 :] if self.user_k > 0 else []
         elif var_type == "assistant":
-            buffer: Any = self.assistant_buffer[-self.assistant_k :] if self.assistant_k > 0 else []
+            buffer: Any = self.assistant_buffer[-self.assistant_k * 2  :] if self.assistant_k > 0 else []
         elif var_type == "full":
             buffer: Any = self.full_buffer
        

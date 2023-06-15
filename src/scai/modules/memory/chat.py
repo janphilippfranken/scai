@@ -16,9 +16,9 @@ from scai.modules.memory.in_memory import CustomChatMessageHistory
 class CustomBaseChatMemory(BaseMemory, ABC):
     full_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for all messages
     system_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for system messages of the ai assistant
-    chat_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for chat messages of the bot, user, and assistant
-    user_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for user messages
-    assistant_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for assistant messages
+    chat_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # memory for all chat messages
+    user_chat_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # chat memory from perspective of user
+    assistant_chat_memory: CustomBaseChatMessageHistory = Field(default_factory=CustomChatMessageHistory) # chat memory from perspective of assistant
     """Using system, user, and assistant instead of input output keys"""
     full_key: Optional[str] = None
     system_key: Optional[str] = None
@@ -47,7 +47,8 @@ class CustomBaseChatMemory(BaseMemory, ABC):
                 user_key = get_prompt_input_key(user, self.memory_variables)   
             else:
                 user_key = self.user_key
-            self.user_memory.add_user_message(user[user_key])
+            self.user_chat_memory.add_assistant_message(user[user_key])
+            self.assistant_chat_memory.add_user_message(user[user_key])
             self.chat_memory.add_user_message(user[user_key])
             self.full_memory.add_user_message(user[user_key])
         if assistant is not None:
@@ -55,8 +56,9 @@ class CustomBaseChatMemory(BaseMemory, ABC):
                 assistant_key = get_prompt_input_key(assistant, self.memory_variables)   
             else:
                 assistant_key = self.assistant_key
-            self.assistant_memory.add_assistant_message(assistant[assistant_key])       
-            self.chat_memory.add_assistant_message(assistant[assistant_key])     
+            self.assistant_chat_memory.add_assistant_message(assistant[assistant_key])       
+            self.user_chat_memory.add_user_message(assistant[assistant_key])     
+            self.chat_memory.add_assistant_message(assistant[assistant_key])
             self.full_memory.add_assistant_message(assistant[assistant_key])
 
     def clear(self) -> None:
