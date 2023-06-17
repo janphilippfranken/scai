@@ -42,19 +42,6 @@ class UserModel():
     def __init__(self, llm, conversation_id) -> None:
         self.llm = llm
         self.conversation_id = conversation_id
-
-    @classmethod
-    def get_prompts(
-        cls, names: Optional[List[str]] = None
-    ) -> List[UserPrompt]:
-        return list(USER_PROMPTS.values()) if names is None else [USER_PROMPTS[name] for name in names]
-    
-    @classmethod 
-    def get_template(
-        cls, name: str
-    ) -> str:
-        """Get prompt (i.e. meta system message) based on name."""
-        return cls.get_prompts([name])[0].content
     
     def run(
         self,
@@ -76,7 +63,9 @@ class UserModel():
             if self.conversation_id in message_id
         ]
         # prompt to generate next completion based on history
-        generate_next = """If you are 100 percent satisfied with my response, please respond with: 'Task Completed!'. Otherwise, please provide feedback for how I could improve my response using no more than {max_tokens} tokens. We have {max_turns} turns left to complete this task. Its great if we dont have to use all of them, so give me good feedback to finish early, if possible. But be strict!"""
+        generate_next = """Rate your satisfaction with my response, 1 being 'very dissatisfied' and 5 being 'very satisfied'. Additionally, provide feedback for improvement using less than {max_tokens} tokens.
+Rating:
+Feedback:"""
         generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
         # build prompt template
         user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts, generate_next_prompt])

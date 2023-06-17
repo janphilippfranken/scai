@@ -78,7 +78,7 @@ class AssistantModel():
         # get system history
         system_history_prompts = [m for m in buffer.load_memory_variables(var_type="system", use_assistant_system_k = True)['history']]
         # prompt to generate next completion based on history
-        generate_next = """Provide a response using no more than {max_tokens} tokens. If previous Human/Users message(s) are provided, use these messages as feedback to revise your response."""
+        generate_next = """Respond within {max_tokens} tokens, using prior user messages as feedback for revision."""
         generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
         # build prompt template
         assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts, generate_next_prompt])
