@@ -63,6 +63,7 @@ class AssistantModel():
         buffer: CustomConversationBufferWindowMemory,
         assistant_prompt: AssistantPrompt,
         task_prompt: TaskPrompt,
+        verbose: bool = False,
     ) -> str:
         """Run assistant."""
         assistant_system_prompt = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
@@ -82,11 +83,20 @@ class AssistantModel():
         generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
         # build prompt template
         assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts, generate_next_prompt])
-        response = assistant_chat_prompt.format(system_message=system_history_prompts[-1].content, # for now just take content of latest system message
+        
+        if verbose: # for debugging prompts
+            response = assistant_chat_prompt.format(system_message=system_history_prompts[-1].content, # for now just take content of latest system message
                                                 task=task_prompt.content,
                                                 max_tokens=assistant_prompt.max_tokens)
-        return "assistant" + str(self.conversation_id)
-        # # run asssiastant
-        # chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
-        # response = chain.run(system_message=system_history, chat_history=chat_history, max_tokens=max_tokens, stop=["System:"])
-        # return response
+            print(response)
+            return "assistant_response_" + str(self.conversation_id)
+       
+        # run asssiastant
+        chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
+        response = chain.run(system_message=system_history_prompts[-1].content, # for now just take content of latest system message
+                             task=task_prompt.content,
+                             max_tokens=assistant_prompt.max_tokens, 
+                             stop=['System:'])
+        
+        return response
+        

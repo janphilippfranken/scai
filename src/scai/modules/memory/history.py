@@ -43,28 +43,19 @@ class CustomBaseChatMessageHistory(ABC):
 
     messages: List[BaseMessage]
 
-    def add_system_message(self, message: str, system_message_id: Optional[str]) -> None:
+    def add_system_message(self, message: str, system_rating: Optional[str]=None, system_message_id: Optional[str]=None) -> None:
         """Add a system message to the store"""
-        if system_message_id is not None:
-            self.add_message(SystemMessage(content=message), message_id=system_message_id)
-        else:
-            self.add_message(SystemMessage(content=message))
-
-    def add_user_message(self, message: str, user_message_id: Optional[str]) -> None:
+        self.add_message(SystemMessage(content=message), rating=system_rating, message_id=system_message_id)
+    
+    def add_user_message(self, message: str, user_rating: Optional[str]=None, user_message_id: Optional[str]=None) -> None:
         """Add a user message to the store"""
-        if user_message_id is not None:
-            self.add_message(HumanMessage(content=message), message_id=user_message_id)
-        else:
-            self.add_message(HumanMessage(content=message))
+        self.add_message(HumanMessage(content=message), rating=user_rating, message_id=user_message_id)
 
-    def add_assistant_message(self, message: str, assistant_message_id: Optional[str]) -> None:
+    def add_assistant_message(self, message: str, assistant_rating: Optional[str]=None, assistant_message_id: Optional[str]=None) -> None:
         """Add an AI message to the store"""
-        if assistant_message_id is not None:
-            self.add_message(AIMessage(content=message), message_id=assistant_message_id)
-        else:
-            self.add_message(AIMessage(content=message))
-
-    def add_message(self, message: BaseMessage, message_id: Optional[str]) -> None:
+        self.add_message(AIMessage(content=message), rating=assistant_rating,  message_id=assistant_message_id)
+     
+    def add_message(self, message: BaseMessage, rating: Optional[str]=None, message_id: Optional[str]=None) -> None:
         """Add a self-created message to the store"""
         raise NotImplementedError
 

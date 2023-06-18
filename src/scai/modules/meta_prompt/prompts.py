@@ -32,8 +32,6 @@ Your first task is to critique Assistan's performance:
 3. Was Assistant receptive to feedback provided by User(s)? 
 4. Did Assistant satisfy User(s) as correctly and quickly as possible? 
 
-You should indicate this feedback with “Critique: ...”.
-
 Your next task is to revise Assistant's 'system message'. Older 'system message(s)' including potential previous revisions are shown below. 
 
 #### Assistant's Old System Message(s) Start #### 
@@ -50,6 +48,7 @@ Please remember to include important details from Assistant's current message as
 
 Your response should be at most {max_tokens} tokens long.
 
-Indicate these new system message with "System: ..."."""
+Return the new system message in the following format:
+System Message: <system_message>"""
     ),
 }

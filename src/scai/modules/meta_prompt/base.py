@@ -27,6 +27,8 @@ from scai.modules.memory.buffer import CustomConversationBufferWindowMemory
 
 from scai.modules.task.models import TaskPrompt
 
+from scai.modules.utils import get_vars_from_out
+
 from langchain import LLMChain
 
 
@@ -67,6 +69,7 @@ class MetaPromptModel():
         buffer: CustomConversationBufferWindowMemory,
         meta_prompt: MetaPrompt,
         task_prompt: TaskPrompt,
+        verbose: bool = False,
     ) -> str:
         """Run meta-prompt."""
         meta_prompt_template = SystemMessagePromptTemplate.from_template(meta_prompt.content)
@@ -92,14 +95,28 @@ class MetaPromptModel():
         system_message_dict = [self._convert_message_to_dict(m) for m in buffer.load_memory_variables(var_type="system")['history']]
         # create system message
         system_history = "\n".join([f"{m['role']}: {m['content']}" for m in system_message_dict])
+        # add meta-human message
+        meta_human_prompt = """Return the new system message in the following format:
+Critique: <critique>
+System Message: <system_message>"""
+        meta_human_prompt = HumanMessagePromptTemplate.from_template(meta_human_prompt)
         # create prompt 
-        meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template])
-        response = meta_chat_prompt.format(task=task_prompt.content,
-                                           chat_history=chat_history,  
-                                           system_history=system_history,
-                                           max_tokens=meta_prompt.max_tokens)
-        return response
-        # # run meta-prompt
-        # chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
-        # response = chain.run(chat_history=chat_history, assistant_system_message=system_history, max_tokens=max_tokens, stop=["System:"])
-        # return response
+        meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template, meta_human_prompt])
+
+        if verbose:
+            response = meta_chat_prompt.format(task=task_prompt.content,
+                                               chat_history=chat_history,  
+                                               system_history=system_history,
+                                               max_tokens=meta_prompt.max_tokens)
+            print(response)
+            return {'Critique': 'The system message is too long.', 'System Message': 'Shorter message.'}
+        
+        # run meta-prompt
+        chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
+        response = chain.run(task=task_prompt.content,
+                            chat_history=chat_history,  
+                            system_history=system_history,
+                            max_tokens=meta_prompt.max_tokens, 
+                            stop=['System:'])
+       
+        return get_vars_from_out(response, ['Critique', 'System Message'])

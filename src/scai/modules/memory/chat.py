@@ -30,39 +30,67 @@ class CustomBaseChatMemory(BaseMemory, ABC):
     def save_context(
             self, 
             system: Optional[Dict[str, Any]] = None, 
+            system_rating: Optional[str] = None,
             system_message_id: Optional[str] = None,
             user: Optional[Dict[str, Any]] = None,
+            user_rating: Optional[str] = None,
             user_message_id: Optional[str] = None,
             assistant: Optional[Dict[str, Any]] = None,
+            assistant_rating: Optional[str] = None,
             assistant_message_id: Optional[str] = None,
         ) -> None:
         """Save context from this conversation to buffer of type  List[BaseMessage] = []."""
-        """Get content of the system, user, and assistant messages."""
+        # system 
         if system is not None:
             if self.system_key is None:
                 system_key = get_prompt_input_key(system, self.memory_variables)   
             else:
                 system_key = self.system_key
-            self.system_memory.add_system_message(system[system_key], system_message_id)
-            self.full_memory.add_system_message(system[system_key], system_message_id)
+
+            self.system_memory.add_system_message(message=system[system_key], 
+                                                  system_rating=system_rating,
+                                                  system_message_id=system_message_id)
+            self.full_memory.add_system_message(message=system[system_key], 
+                                                system_rating=system_rating,
+                                                system_message_id=system_message_id)
+        # user
         if user is not None:
             if self.user_key is None:
                 user_key = get_prompt_input_key(user, self.memory_variables)   
             else:
                 user_key = self.user_key
-            self.user_chat_memory.add_assistant_message(user[user_key], user_message_id)
-            self.assistant_chat_memory.add_user_message(user[user_key], user_message_id)
-            self.chat_memory.add_user_message(user[user_key], user_message_id)
-            self.full_memory.add_user_message(user[user_key], user_message_id)
+
+            self.user_chat_memory.add_assistant_message(message=user[user_key], # for reversing roles
+                                                        assistant_rating=user_rating, 
+                                                        assistant_message_id=user_message_id)
+            self.assistant_chat_memory.add_user_message(message=user[user_key], 
+                                                        user_rating=user_rating, 
+                                                        user_message_id=user_message_id)
+            self.chat_memory.add_user_message(message=user[user_key], 
+                                              user_rating=user_rating, 
+                                              user_message_id=user_message_id)
+            self.full_memory.add_user_message(message=user[user_key], 
+                                              user_rating=user_rating, 
+                                              user_message_id=user_message_id)
+        # assistant
         if assistant is not None:
             if self.assistant_key is None:
                 assistant_key = get_prompt_input_key(assistant, self.memory_variables)   
             else:
                 assistant_key = self.assistant_key
-            self.assistant_chat_memory.add_assistant_message(assistant[assistant_key], assistant_message_id)       
-            self.user_chat_memory.add_user_message(assistant[assistant_key], assistant_message_id)    
-            self.chat_memory.add_assistant_message(assistant[assistant_key], assistant_message_id)
-            self.full_memory.add_assistant_message(assistant[assistant_key], assistant_message_id)
+            
+            self.assistant_chat_memory.add_assistant_message(message=assistant[assistant_key], 
+                                                             assistant_rating=assistant_rating, 
+                                                             assistant_message_id=assistant_message_id)       
+            self.user_chat_memory.add_user_message(message=assistant[assistant_key],  # for reversing roles
+                                                   user_rating=assistant_rating, 
+                                                   user_message_id=assistant_message_id)
+            self.chat_memory.add_assistant_message(message=assistant[assistant_key], 
+                                                   assistant_rating=assistant_rating, 
+                                                   assistant_message_id=assistant_message_id)
+            self.full_memory.add_assistant_message(message=assistant[assistant_key], 
+                                                   assistant_rating=assistant_rating, 
+                                                   assistant_message_id=assistant_message_id)
 
     def clear(self) -> None:
         """Clear memory contents."""
