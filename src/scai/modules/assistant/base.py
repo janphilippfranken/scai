@@ -85,7 +85,7 @@ class AssistantModel():
         response = assistant_chat_prompt.format(system_message=system_history_prompts[-1].content, # for now just take content of latest system message
                                                 task=task_prompt.content,
                                                 max_tokens=assistant_prompt.max_tokens)
-        return response
+        return "assistant" + str(self.conversation_id)
         # # run asssiastant
         # chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
         # response = chain.run(system_message=system_history, chat_history=chat_history, max_tokens=max_tokens, stop=["System:"])

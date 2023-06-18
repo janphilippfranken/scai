@@ -81,4 +81,4 @@ Feedback:"""
         #                      chat_history=chat_history,
         #                      max_tokens=max_tokens,
         #                      stop=["System:"])
-        return response
+        return "user" + str(self.conversation_id)
