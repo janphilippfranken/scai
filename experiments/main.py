@@ -79,7 +79,7 @@ def main(args: DictConfig) -> None:
         save_as_csv(episode, DATA_DIR, args.sim.episode_id, args.sim.model)
 
     # plot user ratings
-    df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_gpt4.csv'))
+    df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model}.csv'))
     plot_user_ratings(df, plot_dir=DATA_DIR, episode_id=args.sim.episode_id, model=args.sim.model)
 
 if __name__ == '__main__':
