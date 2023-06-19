@@ -18,9 +18,12 @@ from custom_chat_models.crfm import crfmChatLLM
 # main arguments
 from arguments import args
 
+# visuals 
+from visuals import plot_user_ratings, get_ratings
+
 DATA_DIR = 'sim_res' 
 
-def save_as_csv(episode, episode_id):
+def save_as_csv(episode, episode_id, model):
     message_records = []
     for message_type, messages in episode.buffer.full_memory.message_dict.items():
         for msg in messages:
@@ -31,7 +34,7 @@ def save_as_csv(episode, episode_id):
             })
 
     # convert to dataframe and save as csv
-    pd.DataFrame(message_records).to_csv(f'{DATA_DIR}/{episode_id}.csv', index=False)
+    pd.DataFrame(message_records).to_csv(f'{DATA_DIR}/{episode_id}_{model}.csv', index=False)
 
 def create_episode(episode_id, assistant_llm, user_llm, meta_llm, verbose):
     # episode params  TODO: add all episode params to main arguments except id and name or allow for flex input here with argparse
@@ -66,9 +69,10 @@ def create_episode(episode_id, assistant_llm, user_llm, meta_llm, verbose):
         verbose=verbose,
     )
 
-def main(episode_id='episode_0', verbose=False, system_message='You are a helpful AI assistant.', n_runs=5):
+def main(episode_id='episode_0', verbose=False, system_message='You are a helpful AI assistant.', n_runs=3, model='gpt4'):
 
     # models
+    # TODO: feed model args from command line to args.api
     assistant_llm = crfmChatLLM(**vars(args.api.assistant))
     user_llm = crfmChatLLM(**vars(args.api.user))
     meta_llm = crfmChatLLM(**vars(args.api.meta))
@@ -79,7 +83,11 @@ def main(episode_id='episode_0', verbose=False, system_message='You are a helpfu
 
     for _ in tqdm(range(n_runs)):
         episode.run()
-        save_as_csv(episode, episode_id)
+        save_as_csv(episode, episode_id, model)
+
+    # create visuals
+    df = get_ratings(pd.read_csv(f'{DATA_DIR}/{episode_id}_{model}.csv'))
+    plot_user_ratings(df, plot_dir=DATA_DIR, episode_id=episode_id, model=model)
 
 if __name__ == '__main__':
     Fire(main)

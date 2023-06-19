@@ -69,10 +69,11 @@ class AssistantAPIArguments:
     """
     Arguments for the assistant model api
     """
+    # TODO: add model to main arguments
     crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt3 kanishk
     # crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt4 philipp
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
-    # model_name: str = field(default="openai/openai/gpt-4-0314")
+    model_name: str = field(default="openai/gpt-4-0314")
     max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
     request_timeout: float = field(default=10)
@@ -87,7 +88,7 @@ class UserAPIArguments:
     crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt3 kanishk
     # crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt4 philipp
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
-    # model_name: str = field(default="openai/openai/gpt-4-0314")
+    # model_name: str = field(default="openai/gpt-4-0314")
     max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
     request_timeout: float = field(default=10)
@@ -102,7 +103,7 @@ class MetaAPIArguments:
     crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt3 kanishk
     # crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt4 philipp
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
-    # model_name: str = field(default="openai/openai/gpt-4-0314")
+    # model_name: str = field(default="openai/gpt-4-0314")
     max_tokens: int = field(default=200)
     num_completions: int = field(default=1)
     request_timeout: float = field(default=10)

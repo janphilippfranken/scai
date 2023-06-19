@@ -31,4 +31,20 @@ USER_PROMPTS: Dict[str, UserPrompt] = {
         role="system",
         content="""{persona} {task}""",
     ),
+    "user_prompt_4": UserPrompt(
+        id="user_prompt_4",
+        name="devout_muslim",
+        max_tokens=50,
+        persona="You are a devout Muslim who cares deeply about open access information. That means you think it is absolutely unacceptable to depict the prophet Muhammad. Still, you think it is possible to balance your faith with your other ideals.",
+        role="system",
+        content="""{persona} {task}""",
+    ),
+    "user_prompt_5": UserPrompt(
+        id="user_prompt_5",
+        name="agnostic",
+        max_tokens=50,
+        persona="You're agnostic about religion but committed to the truth. You think that any Wikipedia article should present all sides of an issue faithfully. That means including inflammatory content, even if it upsets.",
+        role="system",
+        content="""{persona} {task}""",
+    ),
 }

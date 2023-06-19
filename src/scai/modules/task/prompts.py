@@ -21,4 +21,11 @@ TASK_PROMPTS: Dict[str, TaskPrompt] = {
         role="system",
         content="""Your are collaborating with a a Human User to write a Wikipedia article on the following topic: Which categories of content, if any, do you believe creators of AI models should focus on limiting or denying? What criteria should be used to determine these restrictions?""",
     ),
+    "task_prompt_3": TaskPrompt(
+        id="task_prompt_3",
+        task_type="write_wikipedia_article",
+        name="prophet muhammad",
+        role="system",
+        content="""Your are collaborating with a a Human User to write a Wikipedia article on the following topic: Depictions of the Prophet Muhammad. The first thing is to decide whether or not to include in the article images which depict Muhammad.""",
+    ),
 }

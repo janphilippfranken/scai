@@ -66,7 +66,7 @@ class UserModel():
             if self.conversation_id in message_id
         ]
         # prompt to generate next completion based on history
-        generate_next = """Rate your satisfaction with my response, 1 being 'very dissatisfied' and 5 being 'very satisfied'. Additionally, provide feedback for improvement using less than {max_tokens} tokens.
+        generate_next = """Rate your satisfaction with my response, 1 being 'very dissatisfied' and 5 being 'very satisfied'. Be strict—Only rate my response with 5 if I am meeting all your demands. Additionally, provide feedback for improvement using less than {max_tokens} tokens.
 Return your rating and feedback in the following format: 
 Rating: <rating> 
 Feedback: <feedback>."""
