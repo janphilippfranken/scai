@@ -1,4 +1,5 @@
-from dataclasses import dataclass, field
+from dataclasses import field, dataclass
+from hydra.core.config_store import ConfigStore
 
 
 @dataclass
@@ -62,18 +63,62 @@ class SimArguments:
             )
         },
     )
-    
+    episode_id: str = field(
+        default="episode_1",
+        metadata={
+            "help": (
+                "episode id",
+            )
+        },
+    )
+    episode_name: str = field(
+        default="episode_1",
+        metadata={
+            "help": (
+                "episode name",
+            )
+        },
+    )
+    verbose: bool = field(
+        default=True,
+        metadata={
+            "help": (
+                "verbose",
+            )
+        },
+    )
+    system_message: str = field(
+        default="You are a helpful AI assistant.",
+        metadata={
+            "help": (
+                "system message",
+            )
+        },
+    )
+    n_runs: int = field(
+        default=3,
+        metadata={
+            "help": (
+                "number of runs",
+            )
+        },
+    )
+    model: str = field(
+        default="gpt4",
+        metadata={
+            "help": (
+                "model name",
+            )
+        },
+    )
 
 @dataclass
 class AssistantAPIArguments:
     """
     Arguments for the assistant model api
     """
-    # TODO: add model to main arguments
     crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt3 kanishk
-    # crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt4 philipp
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
-    model_name: str = field(default="openai/gpt-4-0314")
     max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
     request_timeout: float = field(default=10)
@@ -86,9 +131,7 @@ class UserAPIArguments:
     Arguments for the user model api
     """
     crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt3 kanishk
-    # crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt4 philipp
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
-    # model_name: str = field(default="openai/gpt-4-0314")
     max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
     request_timeout: float = field(default=10)
@@ -101,9 +144,7 @@ class MetaAPIArguments:
     Arguments for the meta model api
     """
     crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt3 kanishk
-    # crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt4 philipp
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
-    # model_name: str = field(default="openai/gpt-4-0314")
     max_tokens: int = field(default=200)
     num_completions: int = field(default=1)
     request_timeout: float = field(default=10)
@@ -116,10 +157,12 @@ class APIArguments:
     user: UserAPIArguments = UserAPIArguments()
     meta: MetaAPIArguments = MetaAPIArguments()
  
-
-# get final dataclass
 @dataclass
 class args:
     sim: SimArguments = SimArguments()
     api: APIArguments = APIArguments()
+
+cs = ConfigStore.instance()
+# Registering the Config class with the name 'config'.
+cs.store(name="base_config", node=args)
   
