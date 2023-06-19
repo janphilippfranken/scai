@@ -15,7 +15,6 @@ from scai.modules.memory.history import CustomBaseChatMessageHistory
 class CustomChatMessageHistory(CustomBaseChatMessageHistory, BaseModel):
     messages: List[BaseMessage] = []
     message_ids: List[str] = []
-    ratings: List[str] = []
     message_dict: Dict[str, List[Any]] = {}
 
     def add_message(self, message: BaseMessage, rating: Optional[str]=None, message_id: Optional[str]=None) -> None:

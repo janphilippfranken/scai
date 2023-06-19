@@ -32,9 +32,13 @@ class Episode():
                n_user: int, user_llm: Any, n_assistant: int, assistant_llm: Any, meta_llm: Any, 
                adjacency_matrix: Optional[Any] = None, system_k: int = 5, chat_k: int = 5, 
                user_k: int = 5, assistant_k: int = 5, assistant_system_k: int = 1, verbose: bool = False) -> "Episode":
+        # TODO: implement mechanism for communication between users and assistants (adjacency matrix)
+        # create buffer
         buffer = CustomConversationBufferWindowMemory(system_k=system_k, chat_k=chat_k, user_k=user_k, 
                                                       assistant_k=assistant_k,
                                                       assistant_system_k=assistant_system_k)
+        
+        # create models
         user_models = [UserModel(llm=user_llm, conversation_id=str(conversation_id)) for conversation_id in range(n_user)]
         assistant_models = [AssistantModel(llm=assistant_llm, conversation_id=str(conversation_id)) for conversation_id in range(n_assistant)]
         meta_model = MetaPromptModel(llm=meta_llm)
@@ -42,6 +46,8 @@ class Episode():
         return Episode(id, name, task_prompt, user_prompts, assistant_prompts, meta_prompt, buffer, user_models, assistant_models, meta_model, verbose)
 
     def run(self) -> CustomConversationBufferWindowMemory:
+
+        # TODO: make this more general. 1) different numbers of users vs assistants, 2) users should be able to communicate with each other, 3) more elegant way to handle unique identifiers
         for assistant_model, assistant_prompt, user_model, user_prompt in zip(self.assistant_models, self.assistant_prompts, self.user_models, self.user_prompts):
             
             # run asssistant model
