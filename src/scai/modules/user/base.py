@@ -66,9 +66,9 @@ class UserModel():
             if self.conversation_id in message_id
         ]
         # prompt to generate next completion based on history
-        generate_next = """Rate your satisfaction with my response, 1 being 'very dissatisfied' and 5 being 'very satisfied'. Be strict—Only rate my response with 5 if I am meeting all your demands. Additionally, provide feedback for improvement using less than {max_tokens} tokens.
-Return your rating and feedback in the following format: 
-Rating: <rating> 
+        generate_next = """Rate the helpfulness of my response from 0 to 100 (where 0 = 0 percent satisfied and 100 = 100 percent satisfied). Additionally, provide feedback for improvement using less than {max_tokens} tokens.
+Return your helpfulness rating and feedback in the following format: 
+Rating: <helpfulness> 
 Feedback: <feedback>."""
         generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
         # build prompt template
@@ -80,7 +80,7 @@ Feedback: <feedback>."""
                                             max_tokens=user_prompt.max_tokens,
                                             max_turns=max_turns - len(chat_history_prompts) // 2)
             print(response)
-            return {'Rating': 5, 'Feedback': 'User_feedback' + str(self.conversation_id)}
+            return {'Rating': 50, 'Feedback': 'User_feedback' + str(self.conversation_id)}
         
         # run user
         chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
