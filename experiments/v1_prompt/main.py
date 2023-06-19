@@ -82,5 +82,7 @@ def main(args: DictConfig) -> None:
     df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model}.csv'))
     plot_user_ratings(df, plot_dir=DATA_DIR, episode_id=args.sim.episode_id, model=args.sim.model)
 
+    # python main.py ++sim.verbose=false
+
 if __name__ == '__main__':
     main()
