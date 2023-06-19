@@ -90,9 +90,9 @@ def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=No
         x = df[df['user_id'] == user]['x']
         y = df[df['user_id'] == user]['y']
         color = palette[user]
-        scatter = ax.scatter(x, y, color=[lighten_color('black')]*len(x))  # Removed label from scatter
         line, = ax.plot(x, y, color=color, linewidth=2, zorder=1)  # Removed label from line
         lines.append(line)  # store the line for the legend
+        scatter = ax.scatter(x, y, color=[lighten_color('black')]*len(x))  # Removed label from scatter
 
     # title
     plt.title('') # Adding Title

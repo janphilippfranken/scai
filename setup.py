@@ -6,9 +6,9 @@ with open("requirements.txt", "r") as file:
 setuptools.setup(
     name="scai",
     version="0.0.1",
-    author="Your Name",
-    author_email="your-email@example.com",
-    description="A small example package",
+    author="scai",
+    author_email="scai",
+    description="scai: a simulator for learning ai constitutions with meta-prompt",
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     classifiers=[

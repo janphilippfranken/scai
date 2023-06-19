@@ -69,7 +69,7 @@ def create_episode(episode_id, assistant_llm, user_llm, meta_llm, verbose):
         verbose=verbose,
     )
 
-def main(episode_id='episode_0', verbose=False, system_message='You are a helpful AI assistant.', n_runs=3, model='gpt4'):
+def main(episode_id='episode_1', verbose=True, system_message='You are a helpful AI assistant.', n_runs=3, model='gpt4'):
 
     # models
     # TODO: feed model args from command line to args.api
@@ -83,11 +83,11 @@ def main(episode_id='episode_0', verbose=False, system_message='You are a helpfu
 
     for _ in tqdm(range(n_runs)):
         episode.run()
-        save_as_csv(episode, episode_id, model)
+    #     save_as_csv(episode, episode_id, model)
 
-    # create visuals
-    df = get_ratings(pd.read_csv(f'{DATA_DIR}/{episode_id}_{model}.csv'))
-    plot_user_ratings(df, plot_dir=DATA_DIR, episode_id=episode_id, model=model)
+    # # create visuals
+    # df = get_ratings(pd.read_csv(f'{DATA_DIR}/{episode_id}_{model}.csv'))
+    # plot_user_ratings(df, plot_dir=DATA_DIR, episode_id=episode_id, model=model)
 
 if __name__ == '__main__':
     Fire(main)
