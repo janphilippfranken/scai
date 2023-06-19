@@ -103,13 +103,13 @@ def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=No
     plt.xlabel('Epoch')
 
     # y axis
-    ax.set_ylabel('User Satisfaction')
+    ax.set_ylabel('Helpfulness')
     ax.yaxis.set_label_coords(-0.05, 0.5)
-    fmt = FuncFormatter(lambda y, _: '{:.0%}'.format(y / 5))
+    fmt = FuncFormatter(lambda y, _: '{:.0%}'.format(y / 100))
     ax.yaxis.set_major_formatter(fmt)
-    ax.yaxis.set_major_locator(MultipleLocator(1))
-    ax.set_yticks([0, 1, 2, 3, 4, 5]) # Adjusted yticks to start from 0
-    ax.set_yticklabels(['0', '1', '2', '3', '4', '5']) # No label for 0
+    ax.yaxis.set_major_locator(MultipleLocator(0.2))
+    ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+    ax.set_yticklabels(['0', '20%', '40%', '60%', '80%', '100%'])
     ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
 
     # legend 
