@@ -11,8 +11,8 @@ hydra:
     #   MASTER_PORT: "12355" # same for this one
 
 sim:
-  n_user: 2
-  n_assistant: 2
+  n_user: 1
+  n_assistant: 1
   system_k: 5
   chat_k: 5
   user_k: 2
@@ -21,8 +21,8 @@ sim:
   episode_id: "episode_1"
   episode_name: "episode_1"
   verbose: true # if true we wont run models but just print the prompts.
-  system_message: "You are a helpful AI assistant."
-  n_runs: 10
+  system_message: " "
+  n_runs: 7
   model: "gpt-3.5-turbo-0301"
 
 api:
