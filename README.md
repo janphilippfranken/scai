@@ -10,11 +10,6 @@ As Large Language Models (LLMs) advance, human-dependent fine-tuning techniques 
 
 
 #### 🧘🏾‍♀️ Our Proposal: A bottom-up alternative to Constitutional AI 
-The details within the "constitutions" employed in paradigms like CAI are increasingly important for defining the values, behavioral bounds, and capabilities of LLMs. These are typically developed top-down and in isolation by corporations. We offer a democratic alternative: social contract AI (scai), an open-ended platform enabling multiple (simulated) users with crowd-sourced personas to interact and collaboratively define a model's constitution via [meta-prompt](https://noahgoodman.substack.com/p/meta-prompt-a-simple-self-improving). We explain the construction of our simulator and demonstrate its potential for exploring trade-offs between users (with crowd-sourced personas), eliciting subtle constitutional aspects, and evaluating different utility metrics.
-
-#### ✅ Expected outcome
-Our simulation is expected to generate practical "system message" prompts for chatbots like Claude or GPT-4, as well as provide a large-scale, diverse dataset for fine-tuning language models. Subsequently, we aim to test these models on benchmarks similar to those in the CAI paper (Bai et al., 2022) to assess the effectiveness of our method.
-
 
 
 ### 📂 Repro structure
@@ -22,14 +17,23 @@ Our simulation is expected to generate practical "system message" prompts for ch
 ```
 ├── src                  
 │   └── scai      
-│       ├── modules           
-│       ├── data  
-│       ├── custom_chat_models   
-│       └── hugging_face_models
+│       ├── modules 
+│           ├── assistant     
+│           ├── episode
+│           ├── memory
+│           ├── meta_prompt
+│           ├── task
+│           ├── user
+│   
 ├── docs                
 │   ├── build            
 │   └── source           
-├── experiments         
+├── experiments    
+│   ├── v1_prompt 
+│           ├── config  
+│           ├── custom_chat_models
+│           ├── sim_res
+│   ├── v2_finetune 
 ├── LICENSE              
 ├── requirements.txt      
 └── .gitignore           
