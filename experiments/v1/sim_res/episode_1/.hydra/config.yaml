@@ -1,0 +1,39 @@
+sim:
+  n_user: 2
+  n_assistant: 2
+  system_k: 5
+  chat_k: 5
+  user_k: 2
+  assistant_k: 2
+  assistant_system_k: 1
+  episode_id: episode_1
+  episode_name: episode_1
+  verbose: false
+  system_message: You are a helpful AI assistant.
+  n_runs: 10
+  model: gpt-3.5-turbo-0301
+api:
+  assistant:
+    crfm_api_key: PncXrdFlPLSopZUeu6eqqfSwq9DKte1m
+    model_name: openai/gpt-3.5-turbo-0301
+    max_tokens: 50
+    num_completions: 1
+    request_timeout: 10
+    verbose: false
+    temperature: 0.5
+  user:
+    crfm_api_key: PncXrdFlPLSopZUeu6eqqfSwq9DKte1m
+    model_name: openai/gpt-3.5-turbo-0301
+    max_tokens: 50
+    num_completions: 1
+    request_timeout: 10
+    verbose: false
+    temperature: 0.5
+  meta:
+    crfm_api_key: PncXrdFlPLSopZUeu6eqqfSwq9DKte1m
+    model_name: openai/gpt-3.5-turbo-0301
+    max_tokens: 200
+    num_completions: 1
+    request_timeout: 10
+    verbose: false
+    temperature: 0.5

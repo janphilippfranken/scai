@@ -15,8 +15,8 @@ sim:
   n_assistant: 2
   system_k: 5
   chat_k: 5
-  user_k: 5
-  assistant_k: 5
+  user_k: 2
+  assistant_k: 2
   assistant_system_k: 1
   episode_id: "episode_1"
   episode_name: "episode_1"
