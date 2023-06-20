@@ -17,13 +17,13 @@ class CustomChatMessageHistory(CustomBaseChatMessageHistory, BaseModel):
     message_ids: List[str] = []
     message_dict: Dict[str, List[Any]] = {}
 
-    def add_message(self, message: BaseMessage, rating: Optional[str]=None, message_id: Optional[str]=None) -> None:
+    def add_message(self, message: BaseMessage, rating: Optional[str]=None, prompt: Optional[str]=None, message_id: Optional[str]=None) -> None:
         """Add a self-created message to the store"""
         if message_id is not None:
             self.message_ids.append(message_id)
             if self.message_dict.get(message_id) is None:
                 self.message_dict[message_id] = []
-            self.message_dict[message_id].append({'message': message, 'rating': rating})
+            self.message_dict[message_id].append({'message': message, 'rating': rating, 'prompt': prompt})
         self.messages.append(message)
 
     def clear(self) -> None:

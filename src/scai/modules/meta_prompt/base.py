@@ -102,21 +102,29 @@ System Message: <system_message>"""
         meta_human_prompt = HumanMessagePromptTemplate.from_template(meta_human_prompt)
         # create prompt 
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template, meta_human_prompt])
-
+        # full prompt fed into the model
+        prompt = meta_chat_prompt.format(task=task_prompt.content,
+                                         chat_history=chat_history,  
+                                         system_history=system_history,
+                                         max_tokens=meta_prompt.max_tokens)
+        # if verbose we just print the prompt and return it
         if verbose:
-            response = meta_chat_prompt.format(task=task_prompt.content,
-                                               chat_history=chat_history,  
-                                               system_history=system_history,
-                                               max_tokens=meta_prompt.max_tokens)
-            print(response)
-            return {'Critique': 'The system message is too long.', 'System Message': 'Shorter message.'}
+            print()
+            print(f'META')
+            print(prompt)
+            print()
+            return {'Prompt': prompt, 'Critique': 'meta-critique', 'System Message': 'system-message'}
         
-        # run meta-prompt
+        # build chain
         chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
+        # run chain
         response = chain.run(task=task_prompt.content,
                             chat_history=chat_history,  
                             system_history=system_history,
                             max_tokens=meta_prompt.max_tokens, 
                             stop=['System:'])
-       
-        return get_vars_from_out(response, ['Critique', 'System Message'])
+        # get variables from output
+        response = get_vars_from_out(response, ['Critique', 'System Message'])
+
+
+        return {'Prompt': prompt, 'Critique': response['Critique'], 'System Message': response['System Message']}

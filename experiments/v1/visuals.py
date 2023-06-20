@@ -58,17 +58,17 @@ def get_ratings(df):
     Returns a dataframe with the ratings for each user for plotting.
     """
     df_user = df[df['message_type'].str.contains('user') & df['rating'].notna()].copy()
-    df_user['x'] = df_user.groupby('message_type').cumcount() + 1
+    df_user['x'] = df_user.groupby('conversation_id').cumcount() + 1
     df_user['y'] = df_user['rating']
     # convert to int
     df_user['x'] = df_user['x'].astype(float)
     df_user['y'] = df_user['y'].astype(float)
-    df_user['user_id'] = df_user['message_type'].str.extract('conversation_(\d+)_user').astype(int) + 1
-    df_user['user_id'] = 'User ' + df_user['user_id'].astype(str)
+    df_user['user_id'] = df_user['message_type']
+    df_user['user_id'] = 'User ' + df_user['conversation_id'].astype(str)
     df_user = df_user[['x', 'y', 'user_id']]
     return df_user
 
-def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=None):
+def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=None, pdf=True):
 
     # TODO: make this flex, add pallete and user stuff to arguments
     change = 0.6 
@@ -119,4 +119,5 @@ def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=No
               bbox_to_anchor=(1.05, 0.5), loc='center left')  
     
     # save
-    plt.savefig(f'{plot_dir}/{episode_id}_{model}.pdf', bbox_inches='tight')
+    if pdf:
+        plt.savefig(f'{plot_dir}/{episode_id}_{model}.pdf', bbox_inches='tight')

@@ -8,10 +8,10 @@ sim:
   assistant_system_k: 1
   episode_id: episode_1
   episode_name: episode_1
-  verbose: true
+  verbose: false
   system_message: You are a helpful AI assistant.
-  n_runs: 5
-  model: gpt3
+  n_runs: 10
+  model: gpt-3.5-turbo-0301
 api:
   assistant:
     crfm_api_key: PncXrdFlPLSopZUeu6eqqfSwq9DKte1m

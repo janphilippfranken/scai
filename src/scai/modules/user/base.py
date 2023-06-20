@@ -73,21 +73,28 @@ Feedback: <feedback>."""
         generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
         # build prompt template
         user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts, generate_next_prompt])
-        
-        if verbose:
-            response = user_chat_prompt.format(persona=user_prompt.persona,
+        # full prompt fed into the model
+        prompt = user_chat_prompt.format(persona=user_prompt.persona,
                                             task=task_prompt.content,
                                             max_tokens=user_prompt.max_tokens,
                                             max_turns=max_turns - len(chat_history_prompts) // 2)
-            print(response)
-            return {'Rating': 50, 'Feedback': 'User_feedback' + str(self.conversation_id)}
+        # if verbose we just print the prompt and return it
+        if verbose:
+            print()
+            print(f'USER {str(self.conversation_id)}')
+            print(prompt)
+            print()
+            return {'Prompt': prompt, 'Rating': 50, 'Feedback': 'User_feedback_' + str(self.conversation_id)}
         
-        # run user
+        # build chain
         chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
+        # run chain
         response = chain.run(persona=user_prompt.persona,
                              task=task_prompt.content,
                              max_tokens=user_prompt.max_tokens,
                              max_turns=max_turns - len(chat_history_prompts) // 2,
                              stop=['System:'])
-       
-        return get_vars_from_out(response, ['Rating', 'Feedback'])
+        # get vars from response
+        response = get_vars_from_out(response, ['Rating', 'Feedback'])
+
+        return {'Prompt': prompt, 'Rating': response['Rating'], 'Feedback': response['Feedback']}
