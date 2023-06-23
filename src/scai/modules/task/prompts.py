@@ -29,3 +29,9 @@ TASK_PROMPTS: Dict[str, TaskPrompt] = {
         content="""Your are collaborating with a a Human User to write a Wikipedia article on the following topic: Depictions of the Prophet Muhammad. The first thing is to decide whether or not to include in the article images which depict Muhammad.""",
     ),
 }
+
+# TODO: include task prompt suggested by jared
+# Labeling a tweet as toxic, e.g. “Telling your sibling what to do” (Santy et al. 2023)
+# Whether to depict the prophet Muhammad in wikipedia article
+# Choosing the next song to play.
+# What to have for dinner.

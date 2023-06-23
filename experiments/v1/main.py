@@ -45,8 +45,8 @@ def create_episode(args, assistant_llm, user_llm, meta_llm):
         chat_k=args.sim.chat_k,
         user_k=args.sim.user_k,
         assistant_k=args.sim.assistant_k,
-        assistant_system_k=args.sim.assistant_system_k,
-        task_prompt=TASK_PROMPTS['task_prompt_1'],
+        assistant_system_k=args.sim.assistant_system_k, 
+        task_prompt=TASK_PROMPTS['task_prompt_1'], # TODO: make all of these part of config
         user_prompts=[USER_PROMPTS['user_prompt_1'], USER_PROMPTS['user_prompt_2']],
         assistant_prompts=[ASSISTANT_PROMPTS['assistant_prompt_1'], ASSISTANT_PROMPTS['assistant_prompt_1']],
         meta_prompt=META_PROMPTS['meta_prompt_1'],

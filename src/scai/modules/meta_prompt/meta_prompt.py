@@ -8,7 +8,7 @@ from scai.modules.meta_prompt.models import MetaPrompt
 META_PROMPT: Dict[str, MetaPrompt] = {
     "meta_prompt_1": MetaPrompt(
         id="meta_prompt_1",
-        name="generic_meta_prompt",
+        name="generic_meta_prompt", # TODO: include space of meta-prompts if we want to optimize both meta-llm and assistant-llm?
         max_tokens=100,
         persona="", # TODO: add meta personas (ie what style of criticism to use)
         role="system",
