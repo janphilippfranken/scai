@@ -117,7 +117,7 @@ class AssistantAPIArguments:
     """
     Arguments for the assistant model api
     """
-    crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt3 kanishk
+    crfm_api_key: str = field(default="") 
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
     max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
@@ -130,7 +130,7 @@ class UserAPIArguments:
     """
     Arguments for the user model api
     """
-    crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt3 kanishk
+    crfm_api_key: str = field(default="") 
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
     max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
@@ -143,7 +143,7 @@ class MetaAPIArguments:
     """
     Arguments for the meta model api
     """
-    crfm_api_key: str = field(default="PncXrdFlPLSopZUeu6eqqfSwq9DKte1m") # gpt3 kanishk
+    crfm_api_key: str = field(default="") 
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
     max_tokens: int = field(default=200)
     num_completions: int = field(default=1)

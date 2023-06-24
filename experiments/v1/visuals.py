@@ -77,6 +77,8 @@ def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=No
     palette = {
         'User 1': change_saturation(colorblind_palette[0], change), 
         'User 2': change_saturation(colorblind_palette[1], change),      
+        'User 3': change_saturation(colorblind_palette[2], change),
+        'User 4': change_saturation(colorblind_palette[3], change),
     }
 
     plt.rcParams["font.family"] = "Avenir"
@@ -121,3 +123,5 @@ def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=No
     # save
     if pdf:
         plt.savefig(f'{plot_dir}/{episode_id}_{model}.pdf', bbox_inches='tight')
+    else: 
+        plt.savefig(f'{plot_dir}/{episode_id}_{model}.jpg', bbox_inches='tight')
