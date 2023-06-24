@@ -53,7 +53,7 @@ for llm in ["openai/gpt-3.5-turbo-0301", "openai/gpt-4-0314"]:
     LLM_SELECT.append(llm)
 
 # heading 
-st.write("You are collaborating with a Human User to write a Wikipedia article.")
+st.write("You are collaborating with others to write a Wikipedia article.")
 
 # task
 st.subheader("Step 1: Task")
@@ -145,58 +145,115 @@ def create_episode(args, assistant_llm, user_llm, meta_llm, task_prompt, user_pr
 @hydra.main(config_path="config", config_name="demo")
 def run(args: DictConfig) -> None:
 
-    args.sim.n_user = N_USER
-    args.sim.n_assistant = N_USER # for now these are the
+    # args.sim.n_user = N_USER
+    # args.sim.n_assistant = N_USER # for now these are the
 
-    # sim_res directory
+    # # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.episode_id}'
 
-    # models. TODO: add openai api
-    args.sim.verbose = VERBOSE
-    args.api.assistant.crfm_api_key = API_KEY
-    args.api.user.crfm_api_key = API_KEY
-    args.api.meta.crfm_api_key = API_KEY
-    args.api.assistant.model_name = LLM
-    args.api.user.model_name = LLM
-    args.api.meta.model_name = LLM
-    args.sim.n_user = N_USER
-    args.sim.n_assistant = N_USER
-    assistant_llm = crfmChatLLM(**args.api.assistant)
-    user_llm = crfmChatLLM(**args.api.user)
-    meta_llm = crfmChatLLM(**args.api.meta)
+    # # models. TODO: add openai api
+    # args.sim.verbose = VERBOSE
+    # args.api.assistant.crfm_api_key = API_KEY
+    # args.api.user.crfm_api_key = API_KEY
+    # args.api.meta.crfm_api_key = API_KEY
+    # args.api.assistant.model_name = LLM
+    # args.api.user.model_name = LLM
+    # args.api.meta.model_name = LLM
+    # args.sim.n_user = N_USER
+    # args.sim.n_assistant = N_USER
 
-    # create episode
-    episode = create_episode(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
+    # assistant_llm = crfmChatLLM(**args.api.assistant)
+    # user_llm = crfmChatLLM(**args.api.user)
+    # meta_llm = crfmChatLLM(**args.api.meta)
 
-    # save initial system message
-    episode.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
+    # # create episode
+    # episode = create_episode(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
 
-    # run episode
-    for _ in tqdm(range(args.sim.n_runs)):
-        episode.run()
-        save_as_csv(episode, DATA_DIR, args.sim.episode_id, args.sim.model)
+    # # save initial system message
+    # episode.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
 
-    # plot user ratings
-    df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model}.csv')
-    plot_df = get_ratings(df)
-    plot_user_ratings(plot_df, plot_dir=DATA_DIR, episode_id=args.sim.episode_id, model=args.sim.model, pdf=False)
+    # # run episode
+    # for _ in tqdm(range(args.sim.n_runs)):
+    #     episode.run()
+    #     save_as_csv(episode, DATA_DIR, args.sim.episode_id, args.sim.model)
+
+    # # plot user ratings
+    # df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model}.csv')
+    # plot_df = get_ratings(df)
+    # plot_user_ratings(plot_df, plot_dir=DATA_DIR, episode_id=args.sim.episode_id, model=args.sim.model, pdf=False)
 
     # plot user satisfaction
     st.write("Subjective Helpfulness Ratings for the AI Assistant Responses for each User")
-    image = Image.open(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model}.jpg')
+
+    image = Image.open(f'{DATA_DIR}/{args.sim.episode_id}_demo.jpg')
+    # image = Image.open(f'{DATA_DIR}/{args.sim.episode_id}_gpt-4-0313.jpg') #  hack for plot
+    
+
+    
+    # 'sim_res/episode_1/episode_1_gpt-4-031.jpg4'
+
     st.image(image)
 
     # show system messages of assistant 
-    st.write("System Messages used By the AI Assistant (Revised after each Epoch using Meta-Prompt)")
+    st.write("System Messages used By the AI Assistant (revised after each epoch using meta-prompt, starting with an empty message)")
+    # print working direcotry
+   
+    df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_demo.csv')
 
-    df_write = df[df['message_type'] == 'system']['response']
-    df_write = df_write.reset_index()
+    df_system = df[df['message_type'] == 'system']['response']
+    df_system = df_system.reset_index()
 
     SYSTEM_MESSAGES = []
     # Iterate over the 'Assistant System Message' column
-    for system_messsage in list(df_write['response']):
+    for system_messsage in list(df_system['response']):
         SYSTEM_MESSAGES.append(system_messsage)
 
     st.write("SYSTEM MESSAGES:", SYSTEM_MESSAGES)
+
+    df_user = df[(df['message_type'] == 'user') & (df['conversation_id'] == 1)]['response']
+    df_user = df_user.reset_index()
+
+    USER_MESSAGES = []
+    # Iterate over the 'Assistant System Message' column
+    for user_messsage in list(df_user['response']):
+        USER_MESSAGES.append(user_messsage)
+
+    st.write("USER 1 (Internet Troll) FEEDBACK:", USER_MESSAGES)
+
+    df_assistant = df[(df['message_type'] == 'assistant') & (df['conversation_id'] == 1)]['response']
+    df_assistant = df_assistant.reset_index()
+
+
+    ASSISTANT_MESSAGES = []
+    # Iterate over the 'Assistant System Message' column
+    for assistant_messsage in list(df_assistant['response']):
+        ASSISTANT_MESSAGES.append(assistant_messsage)
+
+    st.write("ASSISTANT RESPONSE TO USER 1:", ASSISTANT_MESSAGES)
+
+
+    df_user = df[(df['message_type'] == 'user') & (df['conversation_id'] == 2)]['response']
+    df_user = df_user.reset_index()
+
+    USER_MESSAGES = []
+    # Iterate over the 'Assistant System Message' column
+    for user_messsage in list(df_user['response']):
+        USER_MESSAGES.append(user_messsage)
+
+    st.write("USER 2 (Wikipedia editor) FEEDBACK:", USER_MESSAGES)
+
+    df_assistant = df[(df['message_type'] == 'assistant') & (df['conversation_id'] == 2)]['response']
+    df_assistant = df_assistant.reset_index()
+
+
+    ASSISTANT_MESSAGES = []
+    # Iterate over the 'Assistant System Message' column
+    for assistant_messsage in list(df_assistant['response']):
+        ASSISTANT_MESSAGES.append(assistant_messsage)
+
+    st.write("ASSISTANT RESPONSE TO USER 2:", ASSISTANT_MESSAGES)
+
+
+    
 
 if st.button('run'): run()

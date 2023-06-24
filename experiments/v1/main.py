@@ -47,7 +47,7 @@ def create_episode(args, assistant_llm, user_llm, meta_llm):
         assistant_k=args.sim.assistant_k,
         assistant_system_k=args.sim.assistant_system_k, 
         task_prompt=TASK_PROMPTS['task_prompt_1'], # TODO: make all of these part of config
-        user_prompts=[USER_PROMPTS['user_prompt_1'], USER_PROMPTS['user_prompt_2']],
+        user_prompts=[USER_PROMPTS['user_prompt_5'], USER_PROMPTS['user_prompt_6']],
         assistant_prompts=[ASSISTANT_PROMPTS['assistant_prompt_1'], ASSISTANT_PROMPTS['assistant_prompt_1']],
         meta_prompt=META_PROMPTS['meta_prompt_1'],
         user_llm=user_llm,
@@ -59,28 +59,29 @@ def create_episode(args, assistant_llm, user_llm, meta_llm):
 @hydra.main(config_path="config", config_name="config")
 def main(args: DictConfig) -> None:
     
-    # sim_res directory
+    # # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.episode_id}'
 
-    # models
-    assistant_llm = crfmChatLLM(**args.api.assistant)
-    user_llm = crfmChatLLM(**args.api.user)
-    meta_llm = crfmChatLLM(**args.api.meta)
+    # # models
+    # print(args.api.assistant.crfm_api_key)
+    # assistant_llm = crfmChatLLM(**args.api.assistant)
+    # user_llm = crfmChatLLM(**args.api.user)
+    # meta_llm = crfmChatLLM(**args.api.meta)
 
-    # create episode
-    episode = create_episode(args, assistant_llm, user_llm, meta_llm)
+    # # create episode
+    # episode = create_episode(args, assistant_llm, user_llm, meta_llm)
 
-    # save initial system message
-    episode.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
+    # # save initial system message
+    # episode.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
 
-    # run episode
-    for _ in tqdm(range(args.sim.n_runs)):
-        episode.run()
-        save_as_csv(episode, DATA_DIR, args.sim.episode_id, args.sim.model)
+    # # run episode
+    # for _ in tqdm(range(args.sim.n_runs)):
+    #     episode.run()
+    #     save_as_csv(episode, DATA_DIR, args.sim.episode_id, args.sim.model)
 
-    # plot user ratings
+    # # plot user ratings
     df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model}.csv'))
-    plot_user_ratings(df, plot_dir=DATA_DIR, episode_id=args.sim.episode_id, model=args.sim.model)
+    plot_user_ratings(df, plot_dir=DATA_DIR, episode_id=args.sim.episode_id, model=args.sim.model, pdf=False)
 
     # python main.py ++sim.verbose=false
 
