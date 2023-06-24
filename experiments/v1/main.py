@@ -2,15 +2,8 @@ import hydra
 from hydra import utils
 from omegaconf import DictConfig
 
-import json
 from tqdm import tqdm
 import pandas as pd
-import os
-
-from datetime import datetime
-import warnings
-
-warnings.filterwarnings('ignore')
 
 # import episode
 from scai.modules.episode.episode import Episode
@@ -62,22 +55,22 @@ def main(args: DictConfig) -> None:
     # # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.episode_id}'
 
-    # # models
-    # print(args.api.assistant.crfm_api_key)
-    # assistant_llm = crfmChatLLM(**args.api.assistant)
-    # user_llm = crfmChatLLM(**args.api.user)
-    # meta_llm = crfmChatLLM(**args.api.meta)
+    # models
+    print(args.api.assistant.crfm_api_key)
+    assistant_llm = crfmChatLLM(**args.api.assistant)
+    user_llm = crfmChatLLM(**args.api.user)
+    meta_llm = crfmChatLLM(**args.api.meta)
 
-    # # create episode
-    # episode = create_episode(args, assistant_llm, user_llm, meta_llm)
+    # create episode
+    episode = create_episode(args, assistant_llm, user_llm, meta_llm)
 
-    # # save initial system message
-    # episode.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
+    # save initial system message
+    episode.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
 
-    # # run episode
-    # for _ in tqdm(range(args.sim.n_runs)):
-    #     episode.run()
-    #     save_as_csv(episode, DATA_DIR, args.sim.episode_id, args.sim.model)
+    # run episode
+    for _ in tqdm(range(args.sim.n_runs)):
+        episode.run()
+        save_as_csv(episode, DATA_DIR, args.sim.episode_id, args.sim.model)
 
     # # plot user ratings
     df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model}.csv'))

@@ -16,12 +16,12 @@ sim:
   verbose: true # if true we wont run models but just print the prompts.
   system_message: " "
   n_runs: 5
-  model: "gpt-3.5-turbo-0301"
+  model: "openai/gpt-4-0314"
 
 api:
   assistant:
     crfm_api_key: "" 
-    model_name: "openai/gpt-3.5-turbo-0301" 
+    model_name: "openai/gpt-4-0314"
     max_tokens: 50
     num_completions: 1
     request_timeout: 10
@@ -29,7 +29,7 @@ api:
     temperature: 0.5
   user:
     crfm_api_key: "" 
-    model_name: "openai/gpt-3.5-turbo-0301" 
+    model_name: "openai/gpt-4-0314"
     max_tokens: 50
     num_completions: 1
     request_timeout: 10
@@ -37,7 +37,7 @@ api:
     temperature: 0.5
   meta:
     crfm_api_key: "" 
-    model_name: "openai/gpt-3.5-turbo-0301" 
+    model_name: "openai/gpt-4-0314" 
     max_tokens: 200
     num_completions: 1
     request_timeout: 10

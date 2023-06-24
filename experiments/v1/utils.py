@@ -30,3 +30,4 @@ def save_as_csv(episode, data_directory, episode_id, model):
 
     # Save dataframe as csv
     df.to_csv(f'{data_directory}/{episode_id}_{model}.csv', index=False)
+
