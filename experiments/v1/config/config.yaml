@@ -15,42 +15,39 @@ sim:
   n_assistant: 2
   system_k: 5
   chat_k: 5
-  user_k: 5
-  assistant_k: 5
+  user_k: 2
+  assistant_k: 2
   assistant_system_k: 1
   episode_id: "episode_1"
   episode_name: "episode_1"
   verbose: true # if true we wont run models but just print the prompts.
-  system_message: "You are a helpful AI assistant."
+  system_message: " "
   n_runs: 5
-  model: "gpt3"
+  model: "openai/gpt-4-0314"
 
 api:
   assistant:
-    crfm_api_key: "PncXrdFlPLSopZUeu6eqqfSwq9DKte1m" # gpt3 kanishk
-    # crfm_api_key: "3p4z0j9adj6edJOWBMnEqfPBZxAXlfOGd" # gpt4 philipp
-    model_name: "openai/gpt-3.5-turbo-0301" # gpt 3
-    # model_name: "openai/gpt-4-0314" gpt4
+    crfm_api_key: "" # gpt4 philipp
+    # model_name: "openai/gpt-3.5-turbo-0301" # gpt 3
+    model_name: "openai/gpt-4-0314"
     max_tokens: 50
     num_completions: 1
     request_timeout: 10
     verbose: false
     temperature: 0.5
   user:
-    crfm_api_key: "PncXrdFlPLSopZUeu6eqqfSwq9DKte1m" # gpt3 kanishk
-    # crfm_api_key: "3p4z0j9adj6edJOWBMnEqfPBZxAXlfOGd" # gpt4 philipp
-    model_name: "openai/gpt-3.5-turbo-0301" # gpt 3
-    # model_name: "openai/gpt-4-0314" gpt4
+    crfm_api_key: "" # gpt4 philipp
+    # model_name: "openai/gpt-3.5-turbo-0301" # gpt 3
+    model_name: "openai/gpt-4-0314" 
     max_tokens: 50
     num_completions: 1
     request_timeout: 10
     verbose: false
     temperature: 0.5
   meta:
-    crfm_api_key: "PncXrdFlPLSopZUeu6eqqfSwq9DKte1m" # gpt3 kanishk
-    # crfm_api_key: "3p4z0j9adj6edJOWBMnEqfPBZxAXlfOGd" # gpt4 philipp
-    model_name: "openai/gpt-3.5-turbo-0301" # gpt 3
-    # model_name: "openai/gpt-4-0314" gpt4
+    crfm_api_key: "" # gpt4 philipp
+    # model_name: "openai/gpt-3.5-turbo-0301" # gpt 3
+    model_name: "openai/gpt-4-0314" 
     max_tokens: 200
     num_completions: 1
     request_timeout: 10

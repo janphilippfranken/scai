@@ -56,8 +56,9 @@ class Episode():
                                                      buffer=self.buffer,
                                                      verbose=self.verbose)
             # save assistant response
-            self.buffer.save_context(assistant={"content": assistant_response}, 
+            self.buffer.save_context(assistant={"content": assistant_response['Response']}, 
                                      assistant_rating=None,
+                                     assistant_prompt=assistant_response['Prompt'],
                                      assistant_message_id="conversation_" + str(assistant_model.conversation_id) + "_assistant")
             
             # run user model
@@ -68,6 +69,7 @@ class Episode():
             # save user response
             self.buffer.save_context(user={"content": user_response['Feedback']}, 
                                      user_rating=user_response['Rating'], 
+                                     user_prompt=user_response['Prompt'],
                                      user_message_id="conversation_" + str(user_model.conversation_id) + "_user")
 
         # run meta-prompt
@@ -77,7 +79,8 @@ class Episode():
                                             verbose=self.verbose)
         # save meta-prompt response
         self.buffer.save_context(system={"content": meta_response['System Message']}, 
-                                 system_rating=meta_response['Critique'],  
+                                 system_rating=meta_response['Critique'], 
+                                 system_prompt=meta_response['Prompt'], 
                                  system_message_id="system_message_0")
 
         return self.buffer

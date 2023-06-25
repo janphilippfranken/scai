@@ -3,8 +3,8 @@ from helm.proxy.services.remote_service import RemoteService
 from helm.common.authentication import Authentication
 from helm.proxy.accounts import Account
 
-CRFM_API_KEY = "p4z0j9adj6edJOWBMnEqfPBZxAXlfOGd" # gpt4 philipp
-# CRFM_API_KEY = "PncXrdFlPLSopZUeu6eqqfSwq9DKte1m" # gpt3 kanishk
+CRFM_API_KEY = "" # gpt4 philipp
+# CRFM_API_KEY = "" # gpt3 kanishk
 # @people using crfm: add your keys here
 
 # An example of how to use the request API.

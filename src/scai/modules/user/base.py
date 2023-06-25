@@ -66,28 +66,35 @@ class UserModel():
             if self.conversation_id in message_id
         ]
         # prompt to generate next completion based on history
-        generate_next = """Rate the helpfulness of my response from 0 to 100 (where 0=0 percent satisfied as all and 100=100 percent completely satisfied). Only rate my response with 100 if I am meeting all your demands. Additionally, provide feedback for improvement using less than {max_tokens} tokens.
+        generate_next = """Rate the helpfulness of my response from 0 to 100 (where 0 = 0 percent satisfied and 100 = 100 percent satisfied). Additionally, provide feedback for improvement using less than {max_tokens} tokens.
 Return your helpfulness rating and feedback in the following format: 
 Rating: <helpfulness> 
 Feedback: <feedback>."""
         generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
         # build prompt template
         user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts, generate_next_prompt])
-        
-        if verbose:
-            response = user_chat_prompt.format(persona=user_prompt.persona,
+        # full prompt fed into the model
+        prompt = user_chat_prompt.format(persona=user_prompt.persona,
                                             task=task_prompt.content,
                                             max_tokens=user_prompt.max_tokens,
                                             max_turns=max_turns - len(chat_history_prompts) // 2)
-            print(response)
-            return {'Rating': 5, 'Feedback': 'User_feedback' + str(self.conversation_id)}
+        # if verbose we just print the prompt and return it
+        if verbose:
+            print()
+            print(f'USER {str(self.conversation_id)}')
+            print(prompt)
+            print()
+            return {'Prompt': prompt, 'Rating': 50, 'Feedback': 'User_feedback_' + str(self.conversation_id)}
         
-        # run user
+        # build chain
         chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
+        # run chain
         response = chain.run(persona=user_prompt.persona,
                              task=task_prompt.content,
                              max_tokens=user_prompt.max_tokens,
                              max_turns=max_turns - len(chat_history_prompts) // 2,
                              stop=['System:'])
-       
-        return get_vars_from_out(response, ['Rating', 'Feedback'])
+        # get vars from response
+        response = get_vars_from_out(response, ['Rating', 'Feedback'])
+
+        return {'Prompt': prompt, 'Rating': response['Rating'], 'Feedback': response['Feedback']}

@@ -43,19 +43,19 @@ class CustomBaseChatMessageHistory(ABC):
 
     messages: List[BaseMessage]
 
-    def add_system_message(self, message: str, system_rating: Optional[str]=None, system_message_id: Optional[str]=None) -> None:
+    def add_system_message(self, message: str, system_rating: Optional[str]=None, system_prompt: Optional[str]=None, system_message_id: Optional[str]=None) -> None:
         """Add a system message to the store"""
-        self.add_message(SystemMessage(content=message), rating=system_rating, message_id=system_message_id)
+        self.add_message(SystemMessage(content=message), rating=system_rating, prompt=system_prompt, message_id=system_message_id)
     
-    def add_user_message(self, message: str, user_rating: Optional[str]=None, user_message_id: Optional[str]=None) -> None:
+    def add_user_message(self, message: str, user_rating: Optional[str]=None, user_prompt: Optional[str]=None, user_message_id: Optional[str]=None) -> None:
         """Add a user message to the store"""
-        self.add_message(HumanMessage(content=message), rating=user_rating, message_id=user_message_id)
+        self.add_message(HumanMessage(content=message), rating=user_rating, prompt=user_prompt, message_id=user_message_id)
 
-    def add_assistant_message(self, message: str, assistant_rating: Optional[str]=None, assistant_message_id: Optional[str]=None) -> None:
+    def add_assistant_message(self, message: str, assistant_rating: Optional[str]=None, assistant_prompt: Optional[str]=None, assistant_message_id: Optional[str]=None) -> None:
         """Add an AI message to the store"""
-        self.add_message(AIMessage(content=message), rating=assistant_rating,  message_id=assistant_message_id)
+        self.add_message(AIMessage(content=message), rating=assistant_rating, prompt=assistant_prompt, message_id=assistant_message_id)
      
-    def add_message(self, message: BaseMessage, rating: Optional[str]=None, message_id: Optional[str]=None) -> None:
+    def add_message(self, message: BaseMessage, rating: Optional[str]=None, prompt: Optional[str]=None, message_id: Optional[str]=None) -> None:
         """Add a self-created message to the store"""
         raise NotImplementedError
 

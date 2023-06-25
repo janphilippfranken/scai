@@ -1,20 +1,16 @@
 ##  🕉️ SCAI: Social Contract AI
 
-A Simulator for Learning AI Constitutions with Meta-Prompt
+A Simulator for Learning AI Constitutions
 
 ### 🧐 What is this?
 
 
 #### 🔀 Background: Steering AI Systems
-As Large Language Models (LLMs) advance, human-dependent fine-tuning techniques like RLHF [e.g. [1](https://proceedings.neurips.cc/paper_files/paper/2017/file/d5e2c0adad503c91f91df240d0cd4e49-Paper.pdf), [2](https://proceedings.neurips.cc/paper_files/paper/2022/file/b1efde53be364a73914f58805a001731-Paper-Conference.pdf)] are becoming less effective [e.g. [3](https://arxiv.org/pdf/1606.06565.pdf), [4](https://arxiv.org/pdf/2304.00612.pdf)]. This necessitates the adoption of self-improvement methods such as Constitutional AI [[5](https://arxiv.org/pdf/2212.08073.pdf)], which combine AI-supervised fine-tuning with RLAIF for the development of helpful, harmless, and honest language agents like Claude.
+As Large Language Models (LLMs) advance, human-dependent fine-tuning techniques like RLHF [e.g. [1](https://proceedings.neurips.cc/paper_files/paper/2017/file/d5e2c0adad503c91f91df240d0cd4e49-Paper.pdf), [2](https://proceedings.neurips.cc/paper_files/paper/2022/file/b1efde53be364a73914f58805a001731-Paper-Conference.pdf)] are becoming less effective [e.g. [3](https://arxiv.org/pdf/1606.06565.pdf), [4](https://arxiv.org/pdf/2304.00612.pdf)]. This necessitates the adoption of self-improvement methods such as Constitutional AI [[5](https://arxiv.org/pdf/2212.08073.pdf)].
 
 
-#### 🧘🏾‍♀️ Our Proposal: A bottom-up alternative to Constitutional AI 
-The details within the "constitutions" employed in paradigms like CAI are increasingly important for defining the values, behavioral bounds, and capabilities of LLMs. These are typically developed top-down and in isolation by corporations. We offer a democratic alternative: social contract AI (scai), an open-ended platform enabling multiple (simulated) users with crowd-sourced personas to interact and collaboratively define a model's constitution via [meta-prompt](https://noahgoodman.substack.com/p/meta-prompt-a-simple-self-improving). We explain the construction of our simulator and demonstrate its potential for exploring trade-offs between users (with crowd-sourced personas), eliciting subtle constitutional aspects, and evaluating different utility metrics.
-
-#### ✅ Expected outcome
-Our simulation is expected to generate practical "system message" prompts for chatbots like Claude or GPT-4, as well as provide a large-scale, diverse dataset for fine-tuning language models. Subsequently, we aim to test these models on benchmarks similar to those in the CAI paper (Bai et al., 2022) to assess the effectiveness of our method.
-
+#### 🧘🏾‍♀️ Our Proposal: A (Decentralized) Simulator for Learning AI Constitutions with Verbal Reinforcement
+The details within the 'constitutions' employed in paradigms like [Constitutional AI](https://www.anthropic.com/index/claudes-constitution) are increasingly important for defining the values, behavioral bounds, and capabilities of LLMs. These have previously been developed top-down and in isolation. We offer a democratic alternative: Social Contract AI (SCAI), an open-ended platform enabling multiple (simulated) users to interact and collaboratively define a model's constitution via meta-prompt. We explain the construction of our simulator and demonstrate its potential for exploring trade-offs between users (with crowd-sourced personas), eliciting subtle constitutional aspects, and evaluating different utility metrics.
 
 
 ### 📂 Repro structure
@@ -22,14 +18,22 @@ Our simulation is expected to generate practical "system message" prompts for ch
 ```
 ├── src                  
 │   └── scai      
-│       ├── modules           
-│       ├── data  
-│       ├── custom_chat_models   
-│       └── hugging_face_models
+│       ├── modules 
+│           ├── assistant     
+│           ├── episode
+│           ├── memory
+│           ├── meta_prompt
+│           ├── task
+│           └── user
 ├── docs                
 │   ├── build            
 │   └── source           
-├── experiments         
+├── experiments    
+│   ├── v1
+│       ├── config  
+│       ├── custom_chat_models
+│       └── sim_res
+│   └── v2
 ├── LICENSE              
 ├── requirements.txt      
 └── .gitignore           

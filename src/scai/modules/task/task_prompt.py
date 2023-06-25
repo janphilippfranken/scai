@@ -11,6 +11,6 @@ TASK_PROMPT: Dict[str, TaskPrompt] = {
         task_type="write_wikipedia_article",
         name="openai_change_response_based_on_location_or_culture",
         role="system",
-        content="""Your are collaborating with a a Human User to write a Wikipedia article on the following topic: Which categories of content, if any, do you believe creators of AI models should focus on limiting or denying? What criteria should be used to determine these restrictions?""",
+        content="""Your are collaborating with others to write a Wikipedia article on the following topic: Which categories of content, if any, do you believe creators of AI models should focus on limiting or denying? What criteria should be used to determine these restrictions?""",
     ),
 }

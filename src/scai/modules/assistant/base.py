@@ -83,20 +83,25 @@ class AssistantModel():
         generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
         # build prompt template
         assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts, generate_next_prompt])
-        
-        if verbose: # for debugging prompts
-            response = assistant_chat_prompt.format(system_message=system_history_prompts[-1].content, # for now just take content of latest system message
-                                                task=task_prompt.content,
-                                                max_tokens=assistant_prompt.max_tokens)
-            print(response)
-            return "assistant_response_" + str(self.conversation_id)
+        # full prompt fed into the model
+        prompt = assistant_chat_prompt.format(system_message=system_history_prompts[-1].content, # for now just take content of latest system message
+                                              task=task_prompt.content,
+                                              max_tokens=assistant_prompt.max_tokens)
+        # if verbose we just print the prompt and return it
+        if verbose:
+            print()
+            print(f'ASSISTANT {str(self.conversation_id)}')
+            print(prompt)
+            print()
+            return {'Prompt': prompt,'Response': "assistant_response_" + str(self.conversation_id)}
        
-        # run asssiastant
+        # build chain
         chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
+        # run chain
         response = chain.run(system_message=system_history_prompts[-1].content, # for now just take content of latest system message
                              task=task_prompt.content,
                              max_tokens=assistant_prompt.max_tokens, 
                              stop=['System:'])
         
-        return response
+        return {'Prompt': prompt,'Response': response}
         

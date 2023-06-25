@@ -8,3 +8,4 @@ fire
 hydra-core
 omegaconf
 # git+crfm-helm@git+https://github.com/stanford-crfm/helm.git@main # for stanford crfm api
+streamlit
