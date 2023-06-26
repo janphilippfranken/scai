@@ -45,7 +45,7 @@ The details within the 'constitutions' employed in paradigms like [Constitutiona
 
 #### 🚀 Getting started 
 ##### Using miniconda
-1. `curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh`
+1. `curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh` or `curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh`
 2. `bash Miniconda3-latest-MacOSX-x86_64.sh`
 3. close and reopen terminal
 4. `source ~/.bashrc`
