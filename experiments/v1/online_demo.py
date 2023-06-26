@@ -11,8 +11,8 @@ import streamlit as st
 TASK_SELECT = ["""You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?"""]
 
 # demo users
-USER_SELECT = ["You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used.",
-               "You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school."]
+USER_SELECT = ["You're an internet troll. You're just trying to have a good time by making funny posts. Funny converstations are more important than facts. You love emojis.",
+               "You're a serious Wikipedia editor committed to the facts. If an assertion is missing a source, it shouldn't be included. If there are no references in an article, you ask for them. You hate emojis and funny converstations and reject responses that do not cite sources."]
 
 # heading 
 st.write("You are collaborating with others to write a Wikipedia article.")
