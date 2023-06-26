@@ -7,7 +7,7 @@ from PIL import Image
 from arguments import args
 
 
-class TaskPrompt(BaseModel):
+class TaskPrompt():
     """Class for a Task Prompt."""
 
     id: str = "id of the task prompt"
@@ -17,7 +17,7 @@ class TaskPrompt(BaseModel):
 
     content: str
 
-class UserPrompt(BaseModel):
+class UserPrompt():
     """Class for a User prompt (i.e. contract / persona)."""
     
     id: str = "id of the user prompt"
