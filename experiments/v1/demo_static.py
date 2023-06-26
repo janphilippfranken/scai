@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 from PIL import Image
 from arguments import args
-from pydantic import BaseModel
+
 
 class TaskPrompt(BaseModel):
     """Class for a Task Prompt."""
