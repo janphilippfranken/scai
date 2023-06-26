@@ -2,6 +2,7 @@ sphinx
 # transformers
 huggingface_hub
 sphinx_book_theme
+path
 langchain
 pandas
 fire

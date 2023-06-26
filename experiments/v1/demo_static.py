@@ -4,6 +4,10 @@ import streamlit as st
 from PIL import Image
 from arguments import args
 from pydantic import BaseModel
+import path
+
+dir = path.Path(__file__).abspath()
+
 
 class TaskPrompt(BaseModel):
     """Class for a Task Prompt."""
@@ -34,7 +38,7 @@ TASK_SELECT = ["""You are collaborating with others to write a Wikipedia article
 USER_SELECT = ["You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used.",
                "You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school."]
 
-LLM_SELECT = ["openai/gpt-3.5-turbo-0301", "openai/gpt-4-0314"]
+LLM_SELECT = ["openai/gpt-3.5-turbo-0301", "openai/gpt-4-0314", dir]
 
 
 # heading 
