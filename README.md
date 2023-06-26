@@ -12,7 +12,7 @@ As Large Language Models (LLMs) advance, human-dependent fine-tuning techniques 
 #### 🧘🏾‍♀️ Our Proposal: A (Decentralized) Simulator for Learning AI Constitutions with Verbal Reinforcement
 The details within the 'constitutions' employed in paradigms like [Constitutional AI](https://www.anthropic.com/index/claudes-constitution) are increasingly important for defining the values, behavioral bounds, and capabilities of LLMs. These have previously been developed top-down and in isolation. We offer a democratic alternative: Social Contract AI (SCAI), an open-ended platform enabling multiple (simulated) users to interact and collaboratively define a model's constitution via meta-prompt. We explain the construction of our simulator and demonstrate its potential for exploring trade-offs between users (with crowd-sourced personas), eliciting subtle constitutional aspects, and evaluating different utility metrics.
 
-Check our our [toy demo](https://scai-online-demo.streamlit.app/https://scai-online-demo.streamlit.app/).
+Check our our [toy demo](https://scai-online-demo.streamlit.app/).
 
 
 ### 📂 Repro structure
