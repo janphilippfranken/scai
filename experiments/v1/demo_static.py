@@ -120,7 +120,7 @@ def run() -> None:
     #  plot user satisfaction
     st.write("User Helpfulness Ratings for the Assistant's responses")
 
-    image = Image.open(f'{DATA_DIR}/demo_1_demo.jpg')
+    image = Image.open('demo_1_demo.jpg')
 
     st.image(image)
 
