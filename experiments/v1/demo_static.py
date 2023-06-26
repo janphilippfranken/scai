@@ -1,6 +1,4 @@
 # written by patrick and philipp
-import hydra
-from omegaconf import DictConfig
 import pandas as pd
 import streamlit as st
 from PIL import Image
@@ -113,23 +111,23 @@ def display_messages(df, message_type, user_number=None):
         st.write(f"SYSTEM MESSAGES:", list(df_selected['response']))
 
 # run
-@hydra.main(config_path="config", config_name="demo")
-def run(args: DictConfig) -> None:
+
+def run() -> None:
 
     # sim_res directory
-    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.episode_id}'
+    DATA_DIR = 'sim_res/demo_1'
 
     #  plot user satisfaction
     st.write("User Helpfulness Ratings for the Assistant's responses")
 
-    image = Image.open(f'{DATA_DIR}/{args.sim.episode_id}_demo.jpg')
+    image = Image.open(f'{DATA_DIR}/demo_1_demo.jpg')
 
     st.image(image)
 
     # show messages
     st.write("System Messages used By the AI Assistant (revised after each epoch using meta-prompt, starting with an empty message)")
    
-    df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_demo.csv')
+    df = pd.read_csv(f'{DATA_DIR}/demo_1_demo.csv')
     # df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model_name}.csv')
 
     # system
