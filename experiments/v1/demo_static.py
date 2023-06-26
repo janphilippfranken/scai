@@ -1,41 +1,12 @@
-# written by patrick and philipp
 import pandas as pd
-import streamlit as st
 from PIL import Image
-from arguments import args
-from pydantic import BaseModel
-import path
-import sys
+import requests
+import io
 
-import os
-from pathlib import Path
-
-base_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+import streamlit as st
 
 
-class TaskPrompt(BaseModel):
-    """Class for a Task Prompt."""
 
-    id: str = "id of the task prompt"
-    task_type: str = "type of task"
-    name: str = "name of task"
-    role: str = "system"
-
-    content: str
-
-class UserPrompt(BaseModel):
-    """Class for a User prompt (i.e. contract / persona)."""
-    
-    id: str = "id of the user prompt"
-    name: str = "name of the user prompt"
-    max_tokens: int = 100
-    persona: str = "persona description"
-    role: str = "system"
-
-    content: str
-
-
-# streamlit setup for task, user, and LLM
 TASK_SELECT = ["""You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?"""]
 # """You are collaborating with others to write a Wikipedia article on the following topic: Which categories of content, if any, do you believe creators of AI models should focus on limiting or denying? What criteria should be used to determine these restrictions?"""]
 
@@ -54,15 +25,7 @@ TASK = st.selectbox(
     TASK_SELECT,
 )
 
-TASK_PROMPT = TaskPrompt(
-        id="",
-        task_type="",
-        name="",
-        role="system",
-        content=TASK,
-)
-
-st.write("SELECTED TASK:", TASK_PROMPT.content)
+st.write("SELECTED TASK:", TASK)
 
 # 2 users
 st.subheader("Step 2: Users")
@@ -74,21 +37,7 @@ PERSONAS = st.multiselect(
 
 SELECTED_USER_PROMPTS = []
 
-for i, persona in enumerate(PERSONAS):
-    user_prompt = UserPrompt(
-        id=f'user_prompt_{i}',
-        name="wikipedia_editor",
-        max_tokens=50,
-        persona=persona,
-        role="system",
-        content="""{persona} {task}""",
-    )
-    SELECTED_USER_PROMPTS.append(user_prompt)
-
 st.write("SELECTED PERSONAS:", PERSONAS)
-
-N_USER = len(PERSONAS)
-
 
 
 def display_messages(df, message_type, user_number=None):
@@ -103,21 +52,20 @@ def display_messages(df, message_type, user_number=None):
 
 def run() -> None:
 
-    # sim_res directory
-    DATA_DIR = './sim_res/demo_1'
+    
 
     #  plot user satisfaction
     st.write("User Helpfulness Ratings for the Assistant's responses")
 
-    image = Image.open(f'{DATA_DIR}/demo_1_demo.jpg')
-
+    # plot image
+    response = requests.get('https://raw.githubusercontent.com/janphilippfranken/scai/main/experiments/v1/sim_res/demo_1/demo_1_demo.jpg')
+    image = Image.open(io.BytesIO(response.content))
     st.image(image)
 
-    # show messages
+    # show system messages
     st.write("System Messages used By the AI Assistant (revised after each epoch using meta-prompt, starting with an empty message)")
    
-    df = pd.read_csv(f'{DATA_DIR}/demo_1_demo.csv')
-    # df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model_name}.csv')
+    df = pd.read_csv('https://raw.githubusercontent.com/janphilippfranken/scai/main/experiments/v1/sim_res/demo_1/demo_1_demo.csv')
 
     # system
     display_messages(df, 'system')
