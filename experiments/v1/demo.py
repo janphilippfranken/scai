@@ -188,15 +188,13 @@ def run(args: DictConfig) -> None:
     #  plot user satisfaction
     st.write("User Helpfulness Ratings for the Assistant's responses")
 
-    image = Image.open(f'{DATA_DIR}/{args.sim.episode_id}_demo.jpg')
-    # image = Image.open(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model_name}.jpg')
+    image = Image.open(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model_name}.jpg')
     st.image(image)
 
     # show messages
     st.write("System Messages used By the AI Assistant (revised after each epoch using meta-prompt, starting with an empty message)")
-   
-    df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_demo.csv')
-    # df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model_name}.csv')
+
+    df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model_name}.csv')
 
     # system
     display_messages(df, 'system')
