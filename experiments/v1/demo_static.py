@@ -5,8 +5,10 @@ from PIL import Image
 from arguments import args
 from pydantic import BaseModel
 import path
+import sys
 
 dir = path.Path(__file__).abspath()
+sys.append.path(dir.parent.parent)
 
 
 class TaskPrompt(BaseModel):
