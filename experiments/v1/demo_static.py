@@ -38,8 +38,6 @@ TASK_SELECT = ["""You are collaborating with others to write a Wikipedia article
 USER_SELECT = ["You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used.",
                "You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school.", dir]
 
-LLM_SELECT = ["openai/gpt-3.5-turbo-0301", "openai/gpt-4-0314"]
-
 
 # heading 
 st.write("You are collaborating with others to write a Wikipedia article.")
@@ -87,23 +85,6 @@ st.write("SELECTED PERSONAS:", PERSONAS)
 
 N_USER = len(PERSONAS)
 
-# 3 llm
-st.subheader("Step 3: LLM")
-
-LLM = st.selectbox(    
-    'Select LLM (currently only supports crfm openai API):',
-    LLM_SELECT,
-)
-
-API_KEY = st.text_input(    
-    'Enter Key:',
-    'DEMO_KEY'
-)
-
-VERBOSE = st.selectbox(    
-    'Verbose (if false, this willl use tokens!):',
-    [True],
-)
 
 
 def display_messages(df, message_type, user_number=None):
@@ -119,7 +100,7 @@ def display_messages(df, message_type, user_number=None):
 def run() -> None:
 
     # sim_res directory
-    DATA_DIR = 'sim_res/demo_1'
+    DATA_DIR = './sim_res/demo_1'
 
     #  plot user satisfaction
     st.write("User Helpfulness Ratings for the Assistant's responses")
