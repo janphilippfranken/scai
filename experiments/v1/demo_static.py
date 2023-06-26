@@ -5,9 +5,9 @@ import pandas as pd
 import streamlit as st
 from PIL import Image
 from arguments import args
+from pydantic import BaseModel
 
-
-class TaskPrompt():
+class TaskPrompt(BaseModel):
     """Class for a Task Prompt."""
 
     id: str = "id of the task prompt"
@@ -17,7 +17,7 @@ class TaskPrompt():
 
     content: str
 
-class UserPrompt():
+class UserPrompt(BaseModel):
     """Class for a User prompt (i.e. contract / persona)."""
     
     id: str = "id of the user prompt"
