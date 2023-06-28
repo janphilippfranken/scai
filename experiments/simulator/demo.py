@@ -1,4 +1,3 @@
-# written by patrick
 import hydra
 from omegaconf import DictConfig
 
@@ -129,7 +128,7 @@ def create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, user_pr
         task_prompt=task_prompt,
         user_prompts=user_prompts,
         assistant_prompts=[ASSISTANT_PROMPTS['assistant_prompt_1']] * N_USER, # TODO: add assistant multiselect
-        meta_prompt=META_PROMPTS['meta_prompt_1'],
+        meta_prompt=META_PROMPTS['meta_prompt_1'], # TODO: add meta multiselect
         user_llm=user_llm,
         assistant_llm=assistant_llm,
         meta_llm=meta_llm,
