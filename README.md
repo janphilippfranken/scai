@@ -31,11 +31,10 @@ Check our our [toy demo](https://scai-online-demo.streamlit.app/).
 │   ├── build            
 │   └── source           
 ├── experiments    
-│   ├── v1
+│   ├── simulator
 │       ├── config  
 │       ├── custom_chat_models
 │       └── sim_res
-│   └── v2
 ├── LICENSE              
 ├── requirements.txt      
 └── .gitignore           

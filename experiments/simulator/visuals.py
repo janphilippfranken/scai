@@ -84,7 +84,7 @@ def plot_user_ratings(df, palette=None, plot_dir=None, context_id=None, model=No
     plt.rcParams["font.family"] = "Avenir"
     plt.rcParams["font.size"] = 24
 
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(7, 5))
 
     lines = []  # to store the lines for the legend
 

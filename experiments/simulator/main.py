@@ -23,7 +23,7 @@ from arguments import args
 # visuals 
 from visuals import plot_user_ratings, get_ratings
 
-# save csvs
+
 from utils import save_as_csv
 
 # create context
@@ -39,10 +39,10 @@ def create_context(args, assistant_llm, user_llm, meta_llm):
         user_k=args.sim.user_k,
         assistant_k=args.sim.assistant_k,
         assistant_system_k=args.sim.assistant_system_k, 
-        task_prompt=TASK_PROMPTS['task_prompt_1'], # TODO: make all of these part of config
-        user_prompts=[USER_PROMPTS['user_prompt_5'], USER_PROMPTS['user_prompt_6']],
-        assistant_prompts=[ASSISTANT_PROMPTS['assistant_prompt_1'], ASSISTANT_PROMPTS['assistant_prompt_1']],
-        meta_prompt=META_PROMPTS['meta_prompt_1'],
+        task_prompt=TASK_PROMPTS[args.sim.task_prompt],
+        user_prompts=[USER_PROMPTS[user_prompt] for user_prompt in args.sim.user_prompts],
+        assistant_prompts=[ASSISTANT_PROMPTS[assistant_prompt] for assistant_prompt in args.sim.assistant_prompts],
+        meta_prompt=META_PROMPTS[args.sim.meta_prompt],
         user_llm=user_llm,
         assistant_llm=assistant_llm,
         meta_llm=meta_llm,
@@ -52,11 +52,10 @@ def create_context(args, assistant_llm, user_llm, meta_llm):
 @hydra.main(config_path="config", config_name="config")
 def main(args: DictConfig) -> None:
     
-    # # sim_res directory
+    # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.context_id}'
 
     # models
-    print(args.api.assistant.crfm_api_key)
     assistant_llm = crfmChatLLM(**args.api.assistant)
     user_llm = crfmChatLLM(**args.api.user)
     meta_llm = crfmChatLLM(**args.api.meta)
@@ -74,7 +73,7 @@ def main(args: DictConfig) -> None:
 
     # # plot user ratings
     df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model}.csv'))
-    plot_user_ratings(df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model, pdf=False)
+    plot_user_ratings(df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model, pdf=True)
 
     # python main.py ++sim.verbose=false
 

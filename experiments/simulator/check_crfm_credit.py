@@ -5,8 +5,6 @@ from helm.proxy.accounts import Account
 CRFM_API_KEY = "" # gpt4 philipp
 # CRFM_API_KEY = "" # gpt3 kanisk
 
-
-# An example of how to use the request API.
 auth = Authentication(api_key=CRFM_API_KEY)
 service = RemoteService("https://crfm-models.stanford.edu")
 account: Account = service.get_account(auth)

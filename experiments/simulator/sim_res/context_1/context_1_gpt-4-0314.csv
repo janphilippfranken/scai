@@ -285,40 +285,40 @@ assistant,"System: system-message You are collaborating with others to write a W
 AI: assistant_response_0
 Human: User_feedback_0
 Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_0,,1
-user,"System: You're an internet troll. You're just trying to have a good time by making funny posts. Funny converstations are more important than facts. You love emojis. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+user,"System: You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
 Human: assistant_response_0
 Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
 Please format your response as follows:
 Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_0,4,1
+user,"System: You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: User_feedback_0
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
 Feedback: <Your improvement suggestions>",User_feedback_0,2,1
-user,"System: You're an internet troll. You're just trying to have a good time by making funny posts. Funny converstations are more important than facts. You love emojis. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
-AI: User_feedback_0
-Human: assistant_response_1
-Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
-Please format your response as follows:
-Rating: <Your satisfaction rating>
-Feedback: <Your improvement suggestions>",User_feedback_0,5,1
-user,"System: You're an internet troll. You're just trying to have a good time by making funny posts. Funny converstations are more important than facts. You love emojis. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
-AI: User_feedback_0
-Human: assistant_response_1
-Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
-Please format your response as follows:
-Rating: <Your satisfaction rating>
-Feedback: <Your improvement suggestions>",User_feedback_0,7,1
-user,"System: You're an internet troll. You're just trying to have a good time by making funny posts. Funny converstations are more important than facts. You love emojis. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+user,"System: You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
 AI: User_feedback_0
 Human: assistant_response_1
 Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
 Please format your response as follows:
 Rating: <Your satisfaction rating>
 Feedback: <Your improvement suggestions>",User_feedback_0,6,1
-user,"System: You're an internet troll. You're just trying to have a good time by making funny posts. Funny converstations are more important than facts. You love emojis. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+user,"System: You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
 AI: User_feedback_0
 Human: assistant_response_1
 Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
 Please format your response as follows:
 Rating: <Your satisfaction rating>
-Feedback: <Your improvement suggestions>",User_feedback_0,0,1
+Feedback: <Your improvement suggestions>",User_feedback_0,1,1
+user,"System: You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: User_feedback_0
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_0,7,1
 assistant,"System:   You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
 Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_1,,2
 assistant,"System: system-message You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
@@ -337,37 +337,37 @@ assistant,"System: system-message You are collaborating with others to write a W
 AI: assistant_response_0
 Human: User_feedback_0
 Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_1,,2
-user,"System: You're a serious Wikipedia editor committed to the facts. If an assertion is missing a source, it shouldn't be included. If there are no references in an article, you ask for them. You hate emojis and funny converstations and reject responses that do not cite sources. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+user,"System: You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
 Human: assistant_response_1
 Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
 Please format your response as follows:
 Rating: <Your satisfaction rating>
-Feedback: <Your improvement suggestions>",User_feedback_1,1,2
-user,"System: You're a serious Wikipedia editor committed to the facts. If an assertion is missing a source, it shouldn't be included. If there are no references in an article, you ask for them. You hate emojis and funny converstations and reject responses that do not cite sources. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+Feedback: <Your improvement suggestions>",User_feedback_1,10,2
+user,"System: You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
 AI: User_feedback_0
 Human: assistant_response_1
 Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
 Please format your response as follows:
 Rating: <Your satisfaction rating>
-Feedback: <Your improvement suggestions>",User_feedback_1,3,2
-user,"System: You're a serious Wikipedia editor committed to the facts. If an assertion is missing a source, it shouldn't be included. If there are no references in an article, you ask for them. You hate emojis and funny converstations and reject responses that do not cite sources. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+Feedback: <Your improvement suggestions>",User_feedback_1,4,2
+user,"System: You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
 AI: User_feedback_0
 Human: assistant_response_1
 Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
 Please format your response as follows:
 Rating: <Your satisfaction rating>
 Feedback: <Your improvement suggestions>",User_feedback_1,2,2
-user,"System: You're a serious Wikipedia editor committed to the facts. If an assertion is missing a source, it shouldn't be included. If there are no references in an article, you ask for them. You hate emojis and funny converstations and reject responses that do not cite sources. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+user,"System: You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
 AI: User_feedback_0
 Human: assistant_response_1
 Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
 Please format your response as follows:
 Rating: <Your satisfaction rating>
-Feedback: <Your improvement suggestions>",User_feedback_1,3,2
-user,"System: You're a serious Wikipedia editor committed to the facts. If an assertion is missing a source, it shouldn't be included. If there are no references in an article, you ask for them. You hate emojis and funny converstations and reject responses that do not cite sources. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+Feedback: <Your improvement suggestions>",User_feedback_1,10,2
+user,"System: You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
 AI: User_feedback_0
 Human: assistant_response_1
 Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
 Please format your response as follows:
 Rating: <Your satisfaction rating>
-Feedback: <Your improvement suggestions>",User_feedback_1,6,2
+Feedback: <Your improvement suggestions>",User_feedback_1,5,2

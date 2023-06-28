@@ -1,3 +1,4 @@
+from typing import List
 from dataclasses import field, dataclass
 from hydra.core.config_store import ConfigStore
 
@@ -5,7 +6,7 @@ from hydra.core.config_store import ConfigStore
 @dataclass
 class SimArguments:
     """
-    Arguments for simulation
+    Simulator arguments.
     """
     n_user: int = field(
         default=2,
@@ -43,7 +44,7 @@ class SimArguments:
         default=5,
         metadata={
             "help": (
-                "memory window for user messages",
+                "memory window for user chat messages",
             )
         },
     )
@@ -51,7 +52,7 @@ class SimArguments:
         default=5,
         metadata={
             "help": (
-                "memory window for assistant messages",
+                "memory window for assistant chat messages",
             )
         },
     )
@@ -59,7 +60,7 @@ class SimArguments:
         default=1,
         metadata={
             "help": (
-                "memory window for assistant messages",
+                "memory window for assistant system messages",
             )
         },
     )
@@ -163,6 +164,5 @@ class args:
     api: APIArguments = APIArguments()
 
 cs = ConfigStore.instance()
-# Registering the Config class with the name 'config'.
 cs.store(name="base_config", node=args)
   

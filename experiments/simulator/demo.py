@@ -1,4 +1,4 @@
-# written by patrick and philipp
+# written by patrick
 import hydra
 from omegaconf import DictConfig
 
