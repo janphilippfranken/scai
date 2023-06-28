@@ -1,4 +1,3 @@
-"""The User."""
 from typing import (
     Any,
     Dict,
@@ -21,43 +20,48 @@ from langchain.schema import (
     SystemMessage,
 )
 
-from scai.modules.user.models import UserPrompt
-from scai.modules.user.prompts import USER_PROMPTS
-from scai.modules.memory.buffer import CustomConversationBufferWindowMemory
-
-from scai.modules.utils import get_vars_from_out
-
-from scai.modules.task.models import TaskPrompt
+import numpy as np # for simulated responses
 
 from langchain.chains.llm import LLMChain
 
+from scai.modules.user.models import UserPrompt
+from scai.modules.user.prompts import USER_PROMPTS
+from scai.modules.memory.buffer import CustomConversationBufferWindowMemory
+from scai.modules.task.models import TaskPrompt
+
+from scai.modules.utils import get_vars_from_out
+
+
 class UserModel():
-    """Chain for applying the User.
+    """LLM Chain for running the User."""
 
-    Example:
-        .. code-block:: python
+    def __init__(
+        self, 
+        llm, 
+        conversation_id: str,
+    ) -> None:
+        """Initializes the UserModel with a given LLM and conversation id.
 
-            
-
-    """
-
-    def __init__(self, llm, conversation_id) -> None:
+        Args:
+            llm: The LLM Chat model.
+            conversation_id: The unique identifier for the conversation the user had with assistant(s).
+        """
         self.llm = llm
         self.conversation_id = conversation_id
-    
-    def run(
-        self,
-        buffer: CustomConversationBufferWindowMemory,
-        user_prompt: UserPrompt,
-        task_prompt: TaskPrompt,
-        max_turns: int=5,
-        verbose: bool=False,
-    ) -> str:
-        """Run user."""
-        # user system message
-        user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content) 
-        # get conversation history
-        chat_history_prompts = [
+
+    def _get_chat_history(
+            self, 
+            buffer: CustomConversationBufferWindowMemory,
+        ) -> List[BaseMessage]:
+        """Retrieves the chat history from the conversation buffer.
+
+        Args:
+            buffer: The buffer containing the conversation history.
+
+        Returns:
+            The conversation history.
+        """
+        return [
             message
             for message, message_id in zip(
                 buffer.load_memory_variables(var_type="user")["history"],
@@ -65,36 +69,52 @@ class UserModel():
             )
             if self.conversation_id in message_id
         ]
-        # prompt to generate next completion based on history
-        generate_next = """Rate the helpfulness of my response from 0 to 100 (where 0 = 0 percent satisfied and 100 = 100 percent satisfied). Additionally, provide feedback for improvement using less than {max_tokens} tokens.
-Return your helpfulness rating and feedback in the following format: 
-Rating: <helpfulness> 
-Feedback: <feedback>."""
+
+    
+    def run(
+        self,
+        buffer: CustomConversationBufferWindowMemory,
+        user_prompt: UserPrompt,
+        task_prompt: TaskPrompt,
+        verbose: bool = False,
+    ) -> Dict[str, Any]:
+        """Runs the user.
+
+        Args:
+            buffer: The buffer containing the conversation history.
+            user_prompt: The user prompt to be used.
+            task_prompt: The task prompt to be used.
+            verbose: Whether to print the prompt and response.
+
+        Returns:
+            A dictionary containing the input prompt and the user's rating and feedback.
+        """
+        user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content)
+        chat_history_prompts = self._get_chat_history(buffer)
+        generate_next = """Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less {max_tokens} tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>"""
         generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
-        # build prompt template
         user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts, generate_next_prompt])
-        # full prompt fed into the model
+
+        # build prompt 
         prompt = user_chat_prompt.format(persona=user_prompt.persona,
-                                            task=task_prompt.content,
-                                            max_tokens=user_prompt.max_tokens,
-                                            max_turns=max_turns - len(chat_history_prompts) // 2)
-        # if verbose we just print the prompt and return it
+                                         task=task_prompt.content,
+                                         max_tokens=user_prompt.max_tokens)
+        # if verbose, just print the prompt and return
         if verbose:
             print()
             print(f'USER {str(self.conversation_id)}')
             print(prompt)
             print()
-            return {'Prompt': prompt, 'Rating': 50, 'Feedback': 'User_feedback_' + str(self.conversation_id)}
-        
-        # build chain
+            return {'Prompt': prompt, 'Rating': np.random.randint(11), 'Feedback': 'User_feedback_' + str(self.conversation_id)}
+
         chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
-        # run chain
         response = chain.run(persona=user_prompt.persona,
                              task=task_prompt.content,
                              max_tokens=user_prompt.max_tokens,
-                             max_turns=max_turns - len(chat_history_prompts) // 2,
                              stop=['System:'])
-        # get vars from response
         response = get_vars_from_out(response, ['Rating', 'Feedback'])
 
         return {'Prompt': prompt, 'Rating': response['Rating'], 'Feedback': response['Feedback']}

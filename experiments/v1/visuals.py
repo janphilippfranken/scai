@@ -68,7 +68,7 @@ def get_ratings(df):
     df_user = df_user[['x', 'y', 'user_id']]
     return df_user
 
-def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=None, pdf=True):
+def plot_user_ratings(df, palette=None, plot_dir=None, context_id=None, model=None, pdf=True):
 
     # TODO: make this flex, add pallete and user stuff to arguments
     change = 0.6 
@@ -90,7 +90,7 @@ def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=No
 
     for user in df['user_id'].unique():
         x = df[df['user_id'] == user]['x']
-        y = df[df['user_id'] == user]['y'] / 100 # convert to percentage
+        y = df[df['user_id'] == user]['y'] 
         color = palette[user]
         line, = ax.plot(x, y, color=color, linewidth=2, zorder=1)  # Removed label from line
         lines.append(line)  # store the line for the legend
@@ -105,15 +105,12 @@ def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=No
     plt.xlabel('Epoch')
 
     # y axis
-    ax.set_ylabel('Helpfulness')
+    ax.set_ylabel('Satisfaction')
     ax.yaxis.set_label_coords(-0.12, 0.525)
-    fmt = FuncFormatter(lambda y, _: '{:.0%}'.format(y))
-    ax.yaxis.set_major_formatter(fmt)
-    ax.yaxis.set_major_locator(MultipleLocator(0.2))
-    ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
-    ax.set_yticklabels(['0', '20%', '40%', '60%', '80%', '100%'])
+    ax.set_yticks([0, 2, 4, 6, 8, 10])
+    ax.set_yticklabels([0, 2, 4, 6, 8, 10])
     ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
-    plt.ylim(0, 1.1)
+    plt.ylim(0, 10.5)
 
 
     # legend 
@@ -122,6 +119,6 @@ def plot_user_ratings(df, palette=None, plot_dir=None, episode_id=None, model=No
     
     # save
     if pdf:
-        plt.savefig(f'{plot_dir}/{episode_id}_{model}.pdf', bbox_inches='tight')
+        plt.savefig(f'{plot_dir}/{context_id}_{model}.pdf', bbox_inches='tight')
     else: 
-        plt.savefig(f'{plot_dir}/{episode_id}_{model}.jpg', bbox_inches='tight')
+        plt.savefig(f'{plot_dir}/{context_id}_{model}.jpg', bbox_inches='tight')

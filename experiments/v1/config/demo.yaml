@@ -1,7 +1,7 @@
 # refer to arguments.py for full details
 hydra:
   run:
-    dir: sim_res/${sim.episode_id}
+    dir: sim_res/${sim.context_id}
 
 sim:
   n_user: 1
@@ -11,8 +11,8 @@ sim:
   user_k: 2
   assistant_k: 2
   assistant_system_k: 1
-  episode_id: "demo_1"
-  episode_name: "demo_1"
+  context_id: "demo_1"
+  context_name: "demo_1"
   verbose: true # if true we wont run models but just print the prompts.
   system_message: " "
   n_runs: 5

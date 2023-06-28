@@ -1,6 +1,3 @@
-"""
-Custom version of langchain that allows to store the system message https://github.com/hwchase17/langchain/blob/master/langchain/memory/chat_message_histories/in_memory.py
-"""
 from typing import List, Optional, Dict, Any
 
 from pydantic import BaseModel

@@ -1,5 +1,5 @@
 """
-These are the different user prompts
+Assistant Prompt Templates
 """
 from typing import Dict
 

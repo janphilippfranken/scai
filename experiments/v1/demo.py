@@ -11,8 +11,8 @@ import streamlit as st
 from PIL import Image
 
 
-# import episode
-from scai.modules.episode.episode import Episode
+# import context
+from scai.modules.context.context import Context
 
 # import prompt models
 from scai.modules.task.models import TaskPrompt
@@ -113,12 +113,12 @@ VERBOSE = st.selectbox(
     [True, False],
 )
 
-# create episode
-def create_episode(args, assistant_llm, user_llm, meta_llm, task_prompt, user_prompts):
-    # episode params 
-    return Episode.create(
-        id=args.sim.episode_id,
-        name=args.sim.episode_name,
+# create context
+def create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, user_prompts):
+    # context params 
+    return Context.create(
+        id=args.sim.context_id,
+        name=args.sim.context_name,
         n_assistant=args.sim.n_assistant,
         n_user=args.sim.n_user,
         system_k=args.sim.system_k,
@@ -152,7 +152,7 @@ def run(args: DictConfig) -> None:
     args.sim.n_assistant = N_USER 
 
     # sim_res directory
-    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.episode_id}'
+    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.context_id}'
 
     # models. TODO: add openai api
     args.sim.verbose = VERBOSE
@@ -169,32 +169,32 @@ def run(args: DictConfig) -> None:
     user_llm = crfmChatLLM(**args.api.user)
     meta_llm = crfmChatLLM(**args.api.meta)
 
-    # create episode
-    episode = create_episode(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
+    # create context
+    context = create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
 
     # save initial system message
-    episode.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
+    context.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
 
-    # run episode
+    # run context
     for _ in tqdm(range(args.sim.n_runs)):
-        episode.run()
-        save_as_csv(episode, DATA_DIR, args.sim.episode_id, args.sim.model)
+        context.run()
+        save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model)
 
     # plot user ratings
-    df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model}.csv')
+    df = pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model}.csv')
     plot_df = get_ratings(df)
-    plot_user_ratings(plot_df, plot_dir=DATA_DIR, episode_id=args.sim.episode_id, model=args.sim.model, pdf=False)
+    plot_user_ratings(plot_df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model, pdf=False)
 
     #  plot user satisfaction
     st.write("User Helpfulness Ratings for the Assistant's responses")
 
-    image = Image.open(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model_name}.jpg')
+    image = Image.open(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.jpg')
     st.image(image)
 
     # show messages
     st.write("System Messages used By the AI Assistant (revised after each epoch using meta-prompt, starting with an empty message)")
 
-    df = pd.read_csv(f'{DATA_DIR}/{args.sim.episode_id}_{args.sim.model_name}.csv')
+    df = pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.csv')
 
     # system
     display_messages(df, 'system')

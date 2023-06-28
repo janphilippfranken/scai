@@ -1,11 +1,11 @@
-"""
-Adapted from https://github.com/hwchase17/langchain/blob/master/langchain/memory/buffer_window.py
-"""
-from typing import Any, Dict, List, Optional
+from typing import (
+    Any, 
+    Dict, 
+    List, 
+    Optional,
+)
 
-from scai.modules.memory.chat import CustomBaseChatMemory
-from langchain.schema import BaseMessage
-
+from scai.modules.memory.chat import CustomBaseChatMemory 
 
 from langchain.schema import (
     AIMessage,
@@ -17,9 +17,22 @@ from langchain.schema import (
 
 
 def custom_get_buffer_string(
-    messages: List[BaseMessage], system_prefix: str = "System", human_prefix: str = "Human", ai_prefix: str = "AI"
+    messages: List[BaseMessage], 
+    system_prefix: str = "System",
+    human_prefix: str = "Human", 
+    ai_prefix: str = "AI"
 ) -> str:
-    """Get buffer string of messages."""
+    """Get buffer string of messages.
+
+    Args:
+        messages: List of messages (following structure of https://platform.openai.com/docs/guides/gpt/chat-completions-api.).
+        system_prefix: Prefix for system messages.
+        human_prefix: Prefix for human messages.
+        ai_prefix: Prefix for AI messages.
+
+    Returns:
+        String of messages.
+    """
     string_messages = []
     for m in messages:
         if isinstance(m, HumanMessage):
@@ -36,52 +49,56 @@ def custom_get_buffer_string(
     return "\n".join(string_messages)
 
 class CustomConversationBufferWindowMemory(CustomBaseChatMemory):
-    """Buffer for storing conversation memory."""
+    """Custom buffer for storing conversation memory.
+    Adapted from https://github.com/hwchase17/langchain/blob/master/langchain/memory/buffer_window.py.
+    """
     system_prefix: str = "System"
     user_prefix: str = "Human"
     assistant_prefix: str = "AI"
-    memory_key: str = "history"  #: :meta private:
-    system_k: int = 5 # how much we will go back in the system history
-    chat_k: int = 5 # how much we will go back in the chat history (bot user and assistant)
-    user_k: int = 5 # how much we will go back in the user chat history
-    assistant_k: int = 5 # how much we will go back in the assistant chat history
-    assistant_system_k: int = 5 # how much we will go back in the assistant system history
+    memory_key: str = "history"  # key for memory variables
+    system_k: int = 5 # how much we will go back in the system history (i.e. meta-prompt memory)
+    chat_k: int = 5 # how much we will go back in the chat history (ie joint user and assistant memory)
+    user_k: int = 5 # how much we will go back in the user chat history (i.e. user memory)
+    assistant_k: int = 5 # how much we will go back in the assistant chat history (i.e. assistant memory)
+    assistant_system_k: int = 5 # how much we will go back in the assistant system history (i.e. assistant's system message memory)
 
     @property
     def full_buffer(self) -> List[BaseMessage]:
-        """String buffer of memory."""
         return self.full_memory.messages
     
     @property
     def system_buffer(self) -> List[BaseMessage]:
-        """String buffer of memory."""
         return self.system_memory.messages
     
     @property
     def chat_buffer(self) -> List[BaseMessage]:
-        """String buffer of memory."""
         return self.chat_memory.messages
     
     @property
     def user_buffer(self) -> List[BaseMessage]:
-        """String buffer of memory."""
         return self.user_chat_memory.messages
     
     @property
     def assistant_buffer(self) -> List[BaseMessage]:
-        """String buffer of memory."""
         return self.assistant_chat_memory.messages
 
     @property
     def memory_variables(self) -> List[str]:
-        """Will always return list of memory variables.
-
-        :meta private:
-        """
         return [self.memory_key]
     
-    def load_memory_variables(self, var_type: str="system", use_assistant_system_k: bool=False) -> Dict[str, str]:
-        """Return history buffer for system."""
+    def load_memory_variables(self, 
+                              var_type: str="system", 
+                              use_assistant_system_k: bool=False,
+    ) -> Dict[str, str]:
+        """Return history buffer for system.
+        
+        Args:
+            var_type: Type of memory variable to return.
+            use_assistant_system_k: Whether to use assistant system k or not.
+            
+        Returns:
+            Dictionary of memory variables.
+        """
         if var_type == "system":
             if use_assistant_system_k is True:
                 buffer: Any = self.system_buffer[-self.assistant_system_k :] if self.assistant_system_k > 0 else []

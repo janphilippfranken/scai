@@ -1,5 +1,5 @@
 """
-The Assistant Prompt.
+Assistant Prompt Template.
 """
 from typing import Dict
     

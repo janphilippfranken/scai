@@ -1,7 +1,7 @@
-"""
-Custom version of langchain that allows to store the system message https://github.com/hwchase17/langchain/blob/master/langchain/schema.py
-"""
-from typing import List, Optional
+from typing import (
+    List, 
+    Optional,
+)
 
 from abc import ABC, abstractmethod
 

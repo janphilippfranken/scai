@@ -1,6 +1,5 @@
 """
-These are the different meta prompt (i.e. system messages for meta prompt) used for revising the 
-assistant's system message upon reflecting on the assistant-user discussions.
+Meta Prompt Templates
 """
 from typing import Dict
 

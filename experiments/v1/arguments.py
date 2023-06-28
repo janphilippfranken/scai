@@ -63,19 +63,19 @@ class SimArguments:
             )
         },
     )
-    episode_id: str = field(
-        default="episode_1",
+    context_id: str = field(
+        default="context_1",
         metadata={
             "help": (
-                "episode id",
+                "context id",
             )
         },
     )
-    episode_name: str = field(
-        default="episode_1",
+    context_name: str = field(
+        default="context_1",
         metadata={
             "help": (
-                "episode name",
+                "context name",
             )
         },
     )

@@ -1,5 +1,5 @@
 """
-The Meta Prompt Template. We can also have a bunch of differeent meta-prompt versions?
+The Meta Prompt Template.
 """
 from typing import Dict
     

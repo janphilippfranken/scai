@@ -1,10 +1,10 @@
-"""Models for the User Prompt."""
 from pydantic import BaseModel
 
 
 class UserPrompt(BaseModel):
-    """Class for a User prompt (i.e. contract / persona)."""
-    
+    """
+    User Prompt Class
+    """
     id: str = "id of the user prompt"
     name: str = "name of the user prompt"
     max_tokens: int = 100

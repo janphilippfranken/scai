@@ -1,5 +1,5 @@
 """
-The User Contract.
+User Prompt Template.
 """
 from typing import Dict
     

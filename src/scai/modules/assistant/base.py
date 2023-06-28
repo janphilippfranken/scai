@@ -1,4 +1,3 @@
-"""The Assistant."""
 from typing import (
     Any,
     Dict,
@@ -21,28 +20,31 @@ from langchain.schema import (
     SystemMessage,
 )
 
+from langchain.chains.llm import LLMChain
+
 from scai.modules.assistant.models import AssistantPrompt
 from scai.modules.assistant.prompts import ASSISTANT_PROMPTS
 from scai.modules.memory.buffer import CustomConversationBufferWindowMemory
-
 from scai.modules.task.models import TaskPrompt
 
-from langchain.chains.llm import LLMChain
 
 class AssistantModel():
-    """Chain for applying the AI Assitant.
+    """LLM Chain for applying the AI Assitant."""
 
-    Example:
-        .. code-block:: python
+    def __init__(
+        self, 
+        llm, 
+        conversation_id: str,
+    ) -> None:
+        """Initializes the assistant model with a given LLM and conversation id.
 
-            
-
-    """
-
-    def __init__(self, llm, conversation_id) -> None:
+        Args:
+            llm: The LLM Chat model (e.g., crfm or openai).
+            conversation_id: The unique identifier for the conversation (i.e., chats) the assistant had with user(s).
+        """
         self.llm = llm
         self.conversation_id = conversation_id
-    
+
     def _convert_message_to_dict(self, message: BaseMessage) -> dict:
         if isinstance(message, ChatMessage):
             message_dict = {"role": message.role, "content": message.content}
@@ -58,17 +60,20 @@ class AssistantModel():
             message_dict["name"] = message.additional_kwargs["name"]
         return message_dict
 
-    def run(
-        self,
+
+    def _get_chat_history(
+        self, 
         buffer: CustomConversationBufferWindowMemory,
-        assistant_prompt: AssistantPrompt,
-        task_prompt: TaskPrompt,
-        verbose: bool = False,
-    ) -> str:
-        """Run assistant."""
-        assistant_system_prompt = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
-        # get chat history for the specific conversation
-        chat_history_prompts = [
+    ) -> List[BaseMessage]:
+        """Retrieves the chat history from the conversation buffer.
+
+        Args:
+            buffer: The buffer containing the conversation history (i.e., chat memory).
+
+        Returns:
+            Returns the conversation history
+        """
+        return [
             message
             for message, message_id in zip(
                 buffer.load_memory_variables(var_type="assistant")["history"],
@@ -76,32 +81,64 @@ class AssistantModel():
             )
             if self.conversation_id in message_id
         ]
-        # get system history
-        system_history_prompts = [m for m in buffer.load_memory_variables(var_type="system", use_assistant_system_k = True)['history']]
-        # prompt to generate next completion based on history
-        generate_next = """Respond within {max_tokens} tokens, using prior user messages as feedback for revision."""
-        generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
-        # build prompt template
+
+    def _get_system_history_messages(
+        self, 
+        buffer: CustomConversationBufferWindowMemory,
+    ) -> List[BaseMessage]:
+        """Retrieves the system message history from the conversation buffer.
+
+        Args:
+            buffer: The buffer containing the conversation history (i.e., chat memory).
+
+        Returns:
+            Returns the system message history
+        """
+        return [
+            m 
+            for m in buffer.load_memory_variables(var_type="system", use_assistant_system_k=True)['history']
+        ]
+
+    def run(
+        self,
+        buffer: CustomConversationBufferWindowMemory,
+        assistant_prompt: AssistantPrompt,
+        task_prompt: TaskPrompt,
+        verbose: bool = False,
+    ) -> str:
+        """Runs the assistant.
+
+        Args:
+            buffer: The buffer containing the conversation history (i.e., chat memory).
+            assistant_prompt: The assistant prompt to be used. The content of the prompt is used as a 'system message' for the assistant and will be revised by the meta-prompt.
+            task_prompt: The task prompt to be used. The content of the prompt is used as a 'human message' for the assistant.
+
+            verbose: Whether to print the prompt and response.
+        Returns:
+            Returns the assistant's response.
+        """
+        assistant_system_prompt = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
+        chat_history_prompts = self._get_chat_history(buffer)
+        generate_next_prompt = HumanMessagePromptTemplate.from_template("Respond within {max_tokens} tokens, using prior user messages as feedback for revision.")
         assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts, generate_next_prompt])
-        # full prompt fed into the model
-        prompt = assistant_chat_prompt.format(system_message=system_history_prompts[-1].content, # for now just take content of latest system message
+        system_history_messages = self._get_system_history_messages(buffer)
+
+        # build prompt
+        prompt = assistant_chat_prompt.format(system_message=system_history_messages[-1].content,
                                               task=task_prompt.content,
                                               max_tokens=assistant_prompt.max_tokens)
-        # if verbose we just print the prompt and return it
+        # if verbose, just print the prompt and return
         if verbose:
             print()
             print(f'ASSISTANT {str(self.conversation_id)}')
             print(prompt)
             print()
             return {'Prompt': prompt,'Response': "assistant_response_" + str(self.conversation_id)}
-       
-        # build chain
+
         chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
-        # run chain
-        response = chain.run(system_message=system_history_prompts[-1].content, # for now just take content of latest system message
+        response = chain.run(system_message=system_history_messages[-1].content, 
                              task=task_prompt.content,
                              max_tokens=assistant_prompt.max_tokens, 
                              stop=['System:'])
-        
+
         return {'Prompt': prompt,'Response': response}
-        

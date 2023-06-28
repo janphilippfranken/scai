@@ -1,4 +1,3 @@
-"""meta-prompt."""
 from typing import (
     Any,
     Dict,
@@ -24,7 +23,6 @@ from langchain.schema import (
 from scai.modules.meta_prompt.models import MetaPrompt
 from scai.modules.meta_prompt.prompts import META_PROMPTS
 from scai.modules.memory.buffer import CustomConversationBufferWindowMemory
-
 from scai.modules.task.models import TaskPrompt
 
 from scai.modules.utils import get_vars_from_out
@@ -33,12 +31,16 @@ from langchain import LLMChain
 
 
 class MetaPromptModel():
-    """Code for running meta-prompt.
-    Example:
-        .. code-block:: python
-    """
+    """LLM Chain for applying the meta-prompt agent."""
 
-    def __init__(self, llm) -> None:
+    def __init__(
+        self, 
+        llm,
+    ) -> None:
+        """
+        Args:
+            llm: The LLM Chat model (e.g., crfm or openai).
+        """
         self.llm = llm
     
     def _convert_message_to_dict(self, message: BaseMessage) -> dict:
@@ -55,7 +57,7 @@ class MetaPromptModel():
         if "name" in message.additional_kwargs:
             message_dict["name"] = message.additional_kwargs["name"]
         return message_dict
-
+    
     def sort_message(self, item):
         """
         Sort by messages by conversation id.
