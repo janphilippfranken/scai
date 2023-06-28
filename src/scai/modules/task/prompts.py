@@ -1,5 +1,5 @@
 """
-These are the different task prompts
+Task Prompt Templates
 """
 from typing import Dict
 
