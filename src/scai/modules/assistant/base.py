@@ -73,10 +73,6 @@ class AssistantModel():
         Returns:
             Returns the conversation history
         """
-        print("TEST")
-        print(self.conversation_id)
-        print(buffer.chat_memory.message_ids)
-        print(buffer.load_memory_variables(var_type="assistant")["history"])
         chat_history = [
             message
             for message, message_id in zip(
@@ -85,7 +81,6 @@ class AssistantModel():
             )
             if self.conversation_id in message_id
         ]
-        print(chat_history)
         return chat_history
 
     def _get_system_history_messages(
@@ -130,12 +125,13 @@ class AssistantModel():
         # the chat history between user and asssitant (for conversational == conversation_id)
         chat_history_prompts = self._get_chat_history(buffer)
 
+        # print(self.conversation_id, chat_history_prompts)
 
         if chat_history_prompts == []:
             chat_history_prompts.append(HumanMessagePromptTemplate.from_template(str(self.conversation_id) + " " + task_prompt.content + " " + """Respond within {max_tokens} tokens."""))
             assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts])
         else:   
-            human_task_prompt = HumanMessagePromptTemplate.from_template(str(self.conversation_id) + " " + task_prompt.content)
+            human_task_prompt = HumanMessagePromptTemplate.from_template(task_prompt.content)
             chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + " " + """Respond within {max_tokens} tokens.""")
             assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, human_task_prompt, *chat_history_prompts])
 

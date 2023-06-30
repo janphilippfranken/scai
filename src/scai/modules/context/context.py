@@ -153,5 +153,5 @@ class Context():
                                  system_rating=meta_response['Critique'], 
                                  system_prompt=meta_response['Prompt'], 
                                  system_message_id="system_message_0")
-
+        
         return self.buffer

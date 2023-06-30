@@ -101,15 +101,15 @@ class CustomConversationBufferWindowMemory(CustomBaseChatMemory):
         """
         if var_type == "system":
             if use_assistant_system_k is True:
-                buffer: Any = self.system_buffer[-self.assistant_system_k :] if self.assistant_system_k > 0 else []
+                buffer: Any = self.system_buffer
             else:
-                buffer: Any = self.system_buffer[-self.system_k :] if self.system_k > 0 else [] 
+                buffer: Any = self.system_buffer
         elif var_type == "chat":
-            buffer: Any = self.chat_buffer[-self.chat_k * 2 :] if self.chat_k > 0 else []
+            buffer: Any = self.chat_buffer
         elif var_type == "user":
-            buffer: Any = self.user_buffer[-self.user_k * 2 :] if self.user_k > 0 else []
+            buffer: Any = self.user_buffer
         elif var_type == "assistant":
-            buffer: Any = self.assistant_buffer[-self.assistant_k * 2  :] if self.assistant_k > 0 else []
+            buffer: Any = self.assistant_buffer
         elif var_type == "full":
             buffer: Any = self.full_buffer
        

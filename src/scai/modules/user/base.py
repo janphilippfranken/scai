@@ -115,10 +115,10 @@ class UserModel():
                                          max_tokens=user_prompt.max_tokens)
         # if test_prompt, just print the prompt and return without using tokens
         if test_run:
-            # print()
-            # print(f'USER {str(self.conversation_id)}')
-            # print(prompt)
-            # print()
+            print()
+            print(f'USER {str(self.conversation_id)}')
+            print(prompt)
+            print()
             return {'Prompt': prompt, 'Rating': np.random.randint(11), 'Feedback': 'User_feedback_' + str(self.conversation_id) + "."}
 
         chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
