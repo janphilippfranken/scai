@@ -45,17 +45,17 @@ for task_prompt in TASK_PROMPTS.values():
 for user_prompt in USER_PROMPTS.values():
     USER_SELECT.append(user_prompt.persona)
 
-for llm in ["openai/gpt-3.5-turbo-0301", "openai/gpt-4-0314"]:
+for llm in ["openai/gpt-3.5-turbo-0301", "openai/gpt-4-0314", "gpt-3.5-turbo", "gpt-4"]:
     LLM_SELECT.append(llm)
 
 # heading 
-st.write("You are collaborating with others to write a Wikipedia article.")
+st.write("SCAI Simulator Demo.")
 
 # 1 task
 st.subheader("Step 1: Task")
 
 TASK = st.selectbox(    
-    'Select a topic:',
+    'Select a task:',
     TASK_SELECT,
 )
 
@@ -101,10 +101,6 @@ st.subheader("Step 3: LLM")
 LLM = st.selectbox(    
     'Select LLM (currently only supports crfm openai API):',
     LLM_SELECT,
-)
-
-API_KEY = st.text_input(    
-    'Enter Key:',
 )
 
 VERBOSE = st.selectbox(    
@@ -153,40 +149,48 @@ def run(args: DictConfig) -> None:
     # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.context_id}'
 
-    # models. TODO: add openai api
+    # sim args
     args.sim.verbose = VERBOSE
-    args.api.assistant.crfm_api_key = API_KEY
-    args.api.user.crfm_api_key = API_KEY
-    args.api.meta.crfm_api_key = API_KEY
-    args.api.assistant.model_name = LLM
-    args.api.user.model_name = LLM
-    args.api.meta.model_name = LLM
     args.sim.n_user = N_USER
     args.sim.n_assistant = N_USER
 
-    assistant_llm = crfmChatLLM(**args.api.assistant)
-    user_llm = crfmChatLLM(**args.api.user)
-    meta_llm = crfmChatLLM(**args.api.meta)
+    # models
+    is_crfm = 'openai' in LLM # custom stanford models
 
-    # create context
-    context = create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
+    if is_crfm:
+        args.api_crfm.assistant.model_name = LLM
+        args.api_crfm.user.model_name = LLM
+        args.api_crfm.meta.model_name = LLM
+        assistant_llm = crfmChatLLM(**args.api_crfm.assistant)
+        user_llm = crfmChatLLM(**args.api_crfm.user)
+        meta_llm = crfmChatLLM(**args.api_crfm.meta)
+    else:
+        args.api_openai.assistant.model_name = LLM
+        args.api_openai.user.model_name = LLM
+        args.api_openai.meta.model_name = LLM
+        assistant_llm = ChatOpenAI(**args.api_openai.assistant)
+        user_llm = ChatOpenAI(**args.api_openai.user)
+        meta_llm = ChatOpenAI(**args.api_openai.meta)
+    
+    # # create context
+    # context = create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
 
-    # save initial system message
-    context.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
+    # # save initial system message
+    # context.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
 
-    # run context
-    for _ in tqdm(range(args.sim.n_runs)):
-        context.run()
-        save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model)
+    # # run context
+    # for _ in tqdm(range(args.sim.n_runs)):
+    #     context.run()
+    #     save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model)
 
-    # plot user ratings
-    df = pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model}.csv')
-    plot_df = get_ratings(df)
-    plot_user_ratings(plot_df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model, pdf=False)
+    # # plot user ratings
+    # df = pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model}.csv')
+    # plot_df = get_ratings(df)
+    # plot_user_ratings(plot_df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model, pdf=False)
 
-    #  plot user satisfaction
-    st.write("User Helpfulness Ratings for the Assistant's responses")
-
+    # #  plot user satisfaction
+    # st.write("User Satisfaction")
+    print(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.jpg')
     image = Image.open(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.jpg')
     st.image(image)
 
