@@ -37,12 +37,6 @@ Given your revised system message message, Assistant should be able to satisfy U
 
 Assistant will only see the new system message, not the 'Conversation History' or the 'Old System Messages' so any important message must be included in the system new message. 
 
-Please remember to include important details from Assistant's current message as well. 
-
-Your response should be at most {max_tokens} tokens long.
-
-Respond in the following format:
-Critique: <critique>
-System Message: <system_message>"""
+Please remember to include important details from Assistant's current message as well."""
     ),
 }

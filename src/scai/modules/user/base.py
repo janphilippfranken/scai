@@ -96,15 +96,12 @@ class UserModel():
         generate_next = """Rate your satisfaction with my current completion of the task on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my performance on the task in less {max_tokens} tokens. Please format the response as follows: Rating: <Your satisfaction rating> Feedback: <Your improvement suggestions>."""
         # print(chat_history_prompts)
         if len(chat_history_prompts) == 1:
-            
             chat_history_prompts = [HumanMessagePromptTemplate.from_template("I am working on the following task: " + task_prompt.content + " This is my first attempt to complete the task: " + chat_history_prompts[-1].content + " " + generate_next)]
             user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])
         else:   
-        #     chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + "\n" + generate_next)
+            chat_history_prompts[0] = HumanMessagePromptTemplate.from_template("I am working on the following task: " + task_prompt.content + " This is my first attempt to complete the task: " + chat_history_prompts[0].content)
+            chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + " " + generate_next)
             user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])
-
-
-
 
         # chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + " " + generate_next)
         # user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])

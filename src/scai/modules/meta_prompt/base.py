@@ -86,7 +86,7 @@ class MetaPromptModel():
         Returns:
             A dictionary containing the input prompt, critique response, and meta-prompt response (i.e. revised system message)
         """
-        meta_prompt_template = SystemMessagePromptTemplate.from_template(meta_prompt.content)
+        meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
         # convert chat into dict
         chat_message_dict = [self._convert_message_to_dict(m) for m in buffer.load_memory_variables(var_type="chat")['history']]
         # sort messages by conversation id
@@ -94,13 +94,14 @@ class MetaPromptModel():
         sorted_pairs = sorted(pairs, key=self.sort_message)
         sorted_chat_message_dict, sorted_message_ids = zip(*sorted_pairs)
         # create chat history
-        chat_history = """"""
+        chat_history = """""" 
         last_conversation_id = None
         for m, m_id in zip(sorted_chat_message_dict, sorted_message_ids):
             current_conversation_id = m_id.split('_')[1]
             if current_conversation_id != last_conversation_id:
                 chat_history += f"\nConversation {current_conversation_id}:\n"
                 last_conversation_id = current_conversation_id
+                chat_history +=  f"User {current_conversation_id}: {task_prompt.task}\n"
             if m['role'] == "user":
                 chat_history += f"User {current_conversation_id}: {m['content']}\n"
             elif m['role'] == "assistant":
@@ -109,8 +110,11 @@ class MetaPromptModel():
         system_message_dict = [self._convert_message_to_dict(m) for m in buffer.load_memory_variables(var_type="system")['history']]
         # create system message
         system_history = "\n".join([f"{m['role']}: {m['content']}" for m in system_message_dict])
-        # create prompt 
-        meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template])
+        generate_next = HumanMessagePromptTemplate.from_template("""Your response should be at most {max_tokens} tokens long.
+Respond in the following format:
+Critique: <critique>
+System Message: <system_message>""")                                      
+        meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template, generate_next])
         # full prompt fed into the model
         prompt = meta_chat_prompt.format(task=task_prompt.content,
                                          chat_history=chat_history,  
@@ -118,10 +122,10 @@ class MetaPromptModel():
                                          max_tokens=meta_prompt.max_tokens)
         # if verbose we just print the prompt and return it
         if test_run:
-            # print()
-            # print(f'META')
-            # print(prompt)
-            # print()
+            print()
+            print(f'META')
+            print(prompt)
+            print()
             return {'Prompt': prompt, 'Critique': 'meta-critique', 'System Message': 'system-message'}
         
         # build chain

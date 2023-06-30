@@ -128,7 +128,7 @@ class AssistantModel():
         # print(self.conversation_id, chat_history_prompts)
 
         if chat_history_prompts == []:
-            chat_history_prompts.append(HumanMessagePromptTemplate.from_template(str(self.conversation_id) + " " + task_prompt.content + " " + """Respond within {max_tokens} tokens."""))
+            chat_history_prompts.append(HumanMessagePromptTemplate.from_template(task_prompt.content + " " + """Respond within {max_tokens} tokens."""))
             assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts])
         else:   
             human_task_prompt = HumanMessagePromptTemplate.from_template(task_prompt.content)
@@ -151,7 +151,7 @@ class AssistantModel():
 
         chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
         response = chain.run(system_message=system_history_messages[-1].content, 
-                             task=task_prompt.content,
+                             task=task_prompt.task,
                              max_tokens=assistant_prompt.max_tokens, 
                              stop=['System:'])
         if verbose:
