@@ -128,5 +128,12 @@ System Message: <system_message>"""
         # get variables from output
         response = get_vars_from_out(response, ['Critique', 'System Message'])
 
-
+        if verbose:
+            print()
+            print("-----------------------------------")
+            print("META PROMPT")
+            print(prompt)
+            print("META RESPONSE")
+            print(response)
+            print("-----------------------------------")
         return {'Prompt': prompt, 'Critique': response['Critique'], 'System Message': response['System Message']}

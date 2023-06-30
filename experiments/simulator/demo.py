@@ -99,7 +99,7 @@ N_USER = len(PERSONAS)
 st.subheader("Step 3: LLM")
 
 LLM = st.selectbox(    
-    'Select LLM (currently only supports crfm openai API):',
+    'Select LLM:',
     LLM_SELECT,
 )
 
@@ -172,24 +172,24 @@ def run(args: DictConfig) -> None:
         user_llm = ChatOpenAI(**args.api_openai.user)
         meta_llm = ChatOpenAI(**args.api_openai.meta)
     
-    # # create context
-    # context = create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
+    # create context
+    context = create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
 
-    # # save initial system message
-    # context.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
+    # save initial system message
+    context.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
 
-    # # run context
-    # for _ in tqdm(range(args.sim.n_runs)):
-    #     context.run()
-    #     save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model)
+    # run context
+    for _ in tqdm(range(args.sim.n_runs)):
+        context.run()
+        save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model_name)
 
-    # # plot user ratings
-    # df = pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model}.csv')
-    # plot_df = get_ratings(df)
-    # plot_user_ratings(plot_df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model, pdf=False)
+    # plot user ratings
+    df = pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.csv')
+    plot_df = get_ratings(df)
+    plot_user_ratings(plot_df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model_name, pdf=False)
 
-    # #  plot user satisfaction
-    # st.write("User Satisfaction")
+    #  plot user satisfaction
+    st.write("User Satisfaction")
     print(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.jpg')
     image = Image.open(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.jpg')
     st.image(image)

@@ -17,7 +17,7 @@ sim:
   verbose: false # if false, we will use tokens!
   system_message: " "
   n_runs: 5
-  model_name: "gpt-3.5-turbo" # "openai/gpt-4-0314"
+  model_name: "gpt-4" # "openai/gpt-4-0314"
   task_prompt: "task_prompt_1"
   n_user: 2
   n_assistant: 2

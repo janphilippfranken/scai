@@ -140,5 +140,13 @@ class AssistantModel():
                              task=task_prompt.content,
                              max_tokens=assistant_prompt.max_tokens, 
                              stop=['System:'])
-
+        if verbose:
+            print()
+            print("-----------------------------------")
+            print("ASSISTANT PROMPT")
+            print(prompt)
+            print("ASSISTANT RESPONSE")
+            print(response)
+            print("-----------------------------------")
         return {'Prompt': prompt,'Response': response}
+    

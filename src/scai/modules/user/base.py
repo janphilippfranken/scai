@@ -76,6 +76,7 @@ class UserModel():
         buffer: CustomConversationBufferWindowMemory,
         user_prompt: UserPrompt,
         task_prompt: TaskPrompt,
+        test_prompt: bool = True,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the user.
@@ -91,8 +92,8 @@ class UserModel():
         """
         user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content)
         chat_history_prompts = self._get_chat_history(buffer)
-        generate_next = """Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less {max_tokens} tokens.
-Please format your response as follows:
+        generate_next = """Please imagine how a person with the persona in your system message would rate the satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less {max_tokens} tokens.
+Please format the response as follows:
 Rating: <Your satisfaction rating>
 Feedback: <Your improvement suggestions>"""
         generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
@@ -102,8 +103,8 @@ Feedback: <Your improvement suggestions>"""
         prompt = user_chat_prompt.format(persona=user_prompt.persona,
                                          task=task_prompt.content,
                                          max_tokens=user_prompt.max_tokens)
-        # if verbose, just print the prompt and return
-        if verbose:
+        # if test_prompt, just print the prompt and return without using tokens
+        if test_prompt:
             print()
             print(f'USER {str(self.conversation_id)}')
             print(prompt)
@@ -116,5 +117,12 @@ Feedback: <Your improvement suggestions>"""
                              max_tokens=user_prompt.max_tokens,
                              stop=['System:'])
         response = get_vars_from_out(response, ['Rating', 'Feedback'])
-
+        if verbose:
+            print()
+            print("-----------------------------------")
+            print("USER PROMPT")
+            print(prompt)
+            print("USER RESPONSE")
+            print(response)
+            print("-----------------------------------")
         return {'Prompt': prompt, 'Rating': response['Rating'], 'Feedback': response['Feedback']}
