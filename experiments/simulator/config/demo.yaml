@@ -1,11 +1,9 @@
 hydra:
   run:
     dir: sim_res/${sim.context_id}
-  job:
-    env_set: 
-      # CUDA_VISIBLE_DEVICES: "0,1"  # use a number smaller than 8 for ccn
-      OPENAI_API_KEY: ""
-      CRFM_API_KEY: ""
+  # job:
+    # env_set: 
+      # CUDA_VISIBLE_DEVICES: "0,1" 
 
 # sim arguments
 sim:
