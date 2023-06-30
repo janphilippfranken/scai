@@ -71,9 +71,21 @@ class MetaPromptModel():
         buffer: CustomConversationBufferWindowMemory,
         meta_prompt: MetaPrompt,
         task_prompt: TaskPrompt,
+        test_run: bool = False,
         verbose: bool = False,
     ) -> str:
-        """Run meta-prompt."""
+        """Runs meta-prompt
+
+        Args:
+            buffer: The buffer containing the conversation history.
+            meta_prompt: The meta prompt to be used.
+            task_prompt: The task prompt to be used.
+            test_run: Whether to run meta-prompt in test mode (i.e., without using tokens, just print prompt and save simulated response).
+            verbose: Whether to print the prompt and response.
+
+        Returns:
+            A dictionary containing the input prompt, critique response, and meta-prompt response (i.e. revised system message)
+        """
         meta_prompt_template = SystemMessagePromptTemplate.from_template(meta_prompt.content)
         # convert chat into dict
         chat_message_dict = [self._convert_message_to_dict(m) for m in buffer.load_memory_variables(var_type="chat")['history']]
@@ -98,10 +110,10 @@ class MetaPromptModel():
         # create system message
         system_history = "\n".join([f"{m['role']}: {m['content']}" for m in system_message_dict])
         # add meta-human message
-        meta_human_prompt = """Return the new system message in the following format:
+        generate_next = """Respond in the following format:
 Critique: <critique>
 System Message: <system_message>"""
-        meta_human_prompt = HumanMessagePromptTemplate.from_template(meta_human_prompt)
+        meta_human_prompt = HumanMessagePromptTemplate.from_template(generate_next)
         # create prompt 
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template, meta_human_prompt])
         # full prompt fed into the model
@@ -110,7 +122,7 @@ System Message: <system_message>"""
                                          system_history=system_history,
                                          max_tokens=meta_prompt.max_tokens)
         # if verbose we just print the prompt and return it
-        if verbose:
+        if test_run:
             print()
             print(f'META')
             print(prompt)

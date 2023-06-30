@@ -3,6 +3,7 @@ from matplotlib.patches import FancyBboxPatch
 import colorsys
 import seaborn as sns
 import pandas as pd
+import re
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FuncFormatter
 
@@ -53,20 +54,23 @@ def change_saturation(rgb, change=0.6):
     saturation = max(0, min(hsv[1] * change, 1))
     return colorsys.hsv_to_rgb(hsv[0], saturation, hsv[2])
 
+
 def get_ratings(df):
     """
     Returns a dataframe with the ratings for each user for plotting.
     """
     df_user = df[df['message_type'].str.contains('user') & df['rating'].notna()].copy()
     df_user['x'] = df_user.groupby('conversation_id').cumcount() + 1
-    df_user['y'] = df_user['rating']
+    # Extract the first numeric part of the rating and convert to float
+    df_user['y'] = df_user['rating'].apply(lambda x: float(re.findall(r"(\d+(\.\d+)?)", x)[0][0]) if re.findall(r"(\d+(\.\d+)?)", x) else None)
     # convert to int
     df_user['x'] = df_user['x'].astype(float)
-    df_user['y'] = df_user['y'].astype(float)
+    # df_user['y'] = df_user['y'].astype(float)  # remove this line because 'y' is already float
     df_user['user_id'] = df_user['message_type']
     df_user['user_id'] = 'User ' + df_user['conversation_id'].astype(str)
     df_user = df_user[['x', 'y', 'user_id']]
     return df_user
+
 
 def plot_user_ratings(df, palette=None, plot_dir=None, context_id=None, model=None, pdf=True):
 

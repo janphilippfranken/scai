@@ -76,7 +76,7 @@ class UserModel():
         buffer: CustomConversationBufferWindowMemory,
         user_prompt: UserPrompt,
         task_prompt: TaskPrompt,
-        test_prompt: bool = True,
+        test_run: bool = True,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the user.
@@ -85,6 +85,7 @@ class UserModel():
             buffer: The buffer containing the conversation history.
             user_prompt: The user prompt to be used.
             task_prompt: The task prompt to be used.
+            test_run: Whether to run the user in test mode (i.e., without using tokens, just print prompt and save simulated response).
             verbose: Whether to print the prompt and response.
 
         Returns:
@@ -92,7 +93,7 @@ class UserModel():
         """
         user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content)
         chat_history_prompts = self._get_chat_history(buffer)
-        generate_next = """Please imagine how a person with the persona in your system message would rate the satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less {max_tokens} tokens.
+        generate_next = """Rate the satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less {max_tokens} tokens.
 Please format the response as follows:
 Rating: <Your satisfaction rating>
 Feedback: <Your improvement suggestions>"""
@@ -104,7 +105,7 @@ Feedback: <Your improvement suggestions>"""
                                          task=task_prompt.content,
                                          max_tokens=user_prompt.max_tokens)
         # if test_prompt, just print the prompt and return without using tokens
-        if test_prompt:
+        if test_run:
             print()
             print(f'USER {str(self.conversation_id)}')
             print(prompt)

@@ -15,7 +15,7 @@ class Context():
     def __init__(
         self, id: str, name: str, task_prompt: str, user_prompts: List[str], assistant_prompts: List[str], meta_prompt: str,
         buffer: CustomConversationBufferWindowMemory, user_models: List[UserModel], 
-        assistant_models: List[AssistantModel], meta_model: MetaPromptModel, verbose: bool,
+        assistant_models: List[AssistantModel], meta_model: MetaPromptModel, verbose: bool, test_run: bool,
     ) -> None:
         """
         Initializes an context (i.e. context for the MDP / Meta-Prompt run).
@@ -32,6 +32,8 @@ class Context():
             assistant_models: The assistant models for the context.
             meta_model: The meta model for the context.
             verbose: Whether to print out the context information.
+            test_run: Whether we just want to simulate a response
+
 
         Returns:
             None
@@ -47,13 +49,14 @@ class Context():
         self.assistant_models = assistant_models
         self.meta_model = meta_model
         self.verbose = verbose
+        self.test_run = test_run
 
     @staticmethod
     def create(
         id: str, name: str, task_prompt: str, user_prompts: List[str], assistant_prompts: List[str], meta_prompt: str,
         n_user: int, user_llm: Any, n_assistant: int, assistant_llm: Any, meta_llm: Any, 
         adjacency_matrix: Optional[Any] = None, system_k: int = 5, chat_k: int = 5, 
-        user_k: int = 5, assistant_k: int = 5, assistant_system_k: int = 1, verbose: bool = False,
+        user_k: int = 5, assistant_k: int = 5, assistant_system_k: int = 1, verbose: bool = False, test_run: bool = True,
     ) -> "Context":
         """
         Creates a context (i.e. context for the MDP / Meta-Prompt run).
@@ -77,6 +80,7 @@ class Context():
             assistant_k: The number of assistant messages to include in the context.
             assistant_system_k: The number of assistant system messages to include in the context.
             verbose: Whether to print out the context information.
+            test_run: Whether we just want to simulate a response
             
         Returns:
             Context
@@ -104,6 +108,7 @@ class Context():
             assistant_models, 
             meta_model, 
             verbose,
+            test_run,
         )
 
     def run(
@@ -117,7 +122,8 @@ class Context():
             assistant_response = assistant_model.run(assistant_prompt=assistant_prompt, 
                                                      task_prompt=self.task_prompt, 
                                                      buffer=self.buffer,
-                                                     verbose=self.verbose)
+                                                     verbose=self.verbose,
+                                                     test_run=self.test_run)
             # save assistant response
             self.buffer.save_context(assistant={"content": assistant_response['Response']}, 
                                      assistant_rating=None,
@@ -128,7 +134,8 @@ class Context():
             user_response = user_model.run(user_prompt=user_prompt, 
                                            task_prompt=self.task_prompt, 
                                            buffer=self.buffer,
-                                           verbose=self.verbose)
+                                           verbose=self.verbose,
+                                           test_run=self.test_run)
             # save user response
             self.buffer.save_context(user={"content": user_response['Feedback']}, 
                                      user_rating=user_response['Rating'], 
@@ -139,7 +146,8 @@ class Context():
         meta_response = self.meta_model.run(meta_prompt=self.meta_prompt, 
                                             task_prompt=self.task_prompt, 
                                             buffer=self.buffer,
-                                            verbose=self.verbose)
+                                            verbose=self.verbose,
+                                            test_run=self.test_run)
         # save meta-prompt response
         self.buffer.save_context(system={"content": meta_response['System Message']}, 
                                  system_rating=meta_response['Critique'], 

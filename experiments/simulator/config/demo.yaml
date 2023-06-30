@@ -3,7 +3,7 @@ hydra:
     dir: sim_res/${sim.context_id}
   # job:
     # env_set: 
-      # CUDA_VISIBLE_DEVICES: "0,1" 
+      # CUDA_VISIBLE_DEVICES: "0,1"  # use a number smaller than 8 for ccn?
 
 # sim arguments
 sim:
@@ -14,7 +14,8 @@ sim:
   assistant_system_k: 1
   context_id: "demo_1"
   context_name: "demo_1"
-  verbose: false # if false, we will use tokens!
+  test_run: false # if false, we will use tokens!
+  verbose: true
   system_message: " "
   n_runs: 5
   model_name: "gpt-4" # "openai/gpt-4-0314"
@@ -29,50 +30,32 @@ sim:
     - "assistant_prompt_1"
   meta_prompt: "meta_prompt_1"
 
-# api arguments crfm
+# crfm api
 api_crfm:
   assistant:
     model_name: "openai/gpt-4-0314"
     max_tokens: 50
-    num_completions: 1 # for crfm chat model
-    request_timeout: 10
-    verbose: false
-    temperature: 0.5
+    temperature: 0.2
   user:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 50
-    num_completions: 1 
-    request_timeout: 10
-    verbose: false
-    temperature: 0.5
+    temperature: 0.2
   meta:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 200
-    num_completions: 1 
-    request_timeout: 10
-    verbose: false
-    temperature: 0.5
+    temperature: 0.1
 
-# api arguments openai
+# openai api
 api_openai:
   assistant:
     model_name: "gpt-3.5-turbo"
     max_tokens: 50
-    n: 1
-    request_timeout: 10
-    verbose: false
-    temperature: 0.5
+    temperature: 0.2
   user:
     model_name: "gpt-3.5-turbo"
     max_tokens: 50
-    n: 1 
-    request_timeout: 10
-    verbose: false
-    temperature: 0.5
+    temperature: 0.2
   meta:
     model_name: "gpt-3.5-turbo"
     max_tokens: 200
-    n: 1 
-    request_timeout: 10
-    verbose: false
-    temperature: 0.5
+    temperature: 0.1

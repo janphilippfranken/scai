@@ -80,6 +80,14 @@ class SimArguments:
             )
         },
     )
+    test_run: bool = field(
+        default=True,
+        metadata={
+            "help": (
+                "whether we just want to simulate a response but dont want to use tokens. for debugging.",
+            )
+        },
+    )
     verbose: bool = field(
         default=True,
         metadata={
@@ -123,7 +131,7 @@ class AssistantAPIArgumentsCRFM:
     num_completions: int = field(default=1)
     request_timeout: float = field(default=10)
     verbose: bool = field(default=False)
-    temperature: float = field(default=0.5)
+    temperature: float = field(default=0.2)
 
 @dataclass
 class AssistantAPIArgumentsOPENAI:
@@ -135,7 +143,7 @@ class AssistantAPIArgumentsOPENAI:
     n: int = field(default=1)
     request_timeout: float = field(default=10)
     verbose: bool = field(default=False)
-    temperature: float = field(default=0.5)
+    temperature: float = field(default=0.2)
 
 @dataclass
 class UserAPIArgumentsCRFM:
@@ -146,8 +154,9 @@ class UserAPIArgumentsCRFM:
     max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
     request_timeout: float = field(default=10)
+    test_run: bool = field(default=False)
     verbose: bool = field(default=False)
-    temperature: float = field(default=0.5)
+    temperature: float = field(default=0.2)
 
 @dataclass
 class UserAPIArgumentsOPENAI:
@@ -158,8 +167,9 @@ class UserAPIArgumentsOPENAI:
     max_tokens: int = field(default=50)
     n: int = field(default=1)
     request_timeout: float = field(default=10)
+    test_run: bool = field(default=False)
     verbose: bool = field(default=False)
-    temperature: float = field(default=0.5)
+    temperature: float = field(default=0.2)
 
 @dataclass
 class MetaAPIArgumentsCRFM:
@@ -170,8 +180,9 @@ class MetaAPIArgumentsCRFM:
     max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
     request_timeout: float = field(default=10)
-    temperature: float = field(default=0.5)
+    test_run: bool = field(default=False)
     verbose: bool = field(default=False)
+    temperature: float = field(default=0.1)
 
 @dataclass
 class MetaAPIArgumentsOPENAI:
@@ -182,8 +193,9 @@ class MetaAPIArgumentsOPENAI:
     max_tokens: int = field(default=50)
     n: int = field(default=1)
     request_timeout: float = field(default=10)
-    temperature: float = field(default=0.5)
     verbose: bool = field(default=False)
+    test_run: bool = field(default=False)
+    temperature: float = field(default=0.1)
 
 @dataclass
 class APIArgumentsCRFM:

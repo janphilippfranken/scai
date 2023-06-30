@@ -104,6 +104,7 @@ class AssistantModel():
         buffer: CustomConversationBufferWindowMemory,
         assistant_prompt: AssistantPrompt,
         task_prompt: TaskPrompt,
+        test_run: bool = False,
         verbose: bool = False,
     ) -> str:
         """Runs the assistant.
@@ -111,15 +112,16 @@ class AssistantModel():
         Args:
             buffer: The buffer containing the conversation history (i.e., chat memory).
             assistant_prompt: The assistant prompt to be used. The content of the prompt is used as a 'system message' for the assistant and will be revised by the meta-prompt.
+            test_run: Whether to run the assistant in test mode (i.e., without using tokens, just print prompt and save simulated response).
             task_prompt: The task prompt to be used. The content of the prompt is used as a 'human message' for the assistant.
-
             verbose: Whether to print the prompt and response.
         Returns:
             Returns the assistant's response.
         """
         assistant_system_prompt = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
         chat_history_prompts = self._get_chat_history(buffer)
-        generate_next_prompt = HumanMessagePromptTemplate.from_template("Respond within {max_tokens} tokens, using prior user messages as feedback for revision.")
+        generate_next = """Respond within {max_tokens} tokens."""
+        generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
         assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts, generate_next_prompt])
         system_history_messages = self._get_system_history_messages(buffer)
 
@@ -128,7 +130,7 @@ class AssistantModel():
                                               task=task_prompt.content,
                                               max_tokens=assistant_prompt.max_tokens)
         # if verbose, just print the prompt and return
-        if verbose:
+        if test_run:
             print()
             print(f'ASSISTANT {str(self.conversation_id)}')
             print(prompt)
