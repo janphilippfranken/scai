@@ -12,8 +12,8 @@ sim:
   user_k: 2
   assistant_k: 2
   assistant_system_k: 1
-  context_id: "context_1"
-  context_name: "context_1"
+  context_id: "demo_1"
+  context_name: "demo_1"
   verbose: false # if false, we will use tokens!
   system_message: " "
   n_runs: 5
