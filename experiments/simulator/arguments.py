@@ -114,11 +114,10 @@ class SimArguments:
     )
 
 @dataclass
-class AssistantAPIArguments:
+class AssistantAPIArgumentsCRFM:
     """
-    Arguments for the assistant model api
+    Arguments for the assistant model api (crfm)
     """
-    crfm_api_key: str = field(default="") 
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
     max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
@@ -127,11 +126,22 @@ class AssistantAPIArguments:
     temperature: float = field(default=0.5)
 
 @dataclass
-class UserAPIArguments:
+class AssistantAPIArgumentsOPENAI:
     """
-    Arguments for the user model api
+    Arguments for the assistant model api (openai)
     """
-    crfm_api_key: str = field(default="") 
+    model_name: str = field(default="openai/gpt-3.5-turbo-0301")
+    max_tokens: int = field(default=50)
+    n: int = field(default=1)
+    request_timeout: float = field(default=10)
+    verbose: bool = field(default=False)
+    temperature: float = field(default=0.5)
+
+@dataclass
+class UserAPIArgumentsCRFM:
+    """
+    Arguments for the user model api (crfm)
+    """
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
     max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
@@ -140,29 +150,58 @@ class UserAPIArguments:
     temperature: float = field(default=0.5)
 
 @dataclass
-class MetaAPIArguments:
+class UserAPIArgumentsOPENAI:
     """
-    Arguments for the meta model api
+    Arguments for the user model api (openai)
     """
-    crfm_api_key: str = field(default="") 
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
-    max_tokens: int = field(default=200)
+    max_tokens: int = field(default=50)
+    n: int = field(default=1)
+    request_timeout: float = field(default=10)
+    verbose: bool = field(default=False)
+    temperature: float = field(default=0.5)
+
+@dataclass
+class MetaAPIArgumentsCRFM:
+    """ 
+    Arguments for the meta model api (crfm)
+    """
+    model_name: str = field(default="openai/gpt-3.5-turbo-0301")
+    max_tokens: int = field(default=50)
     num_completions: int = field(default=1)
     request_timeout: float = field(default=10)
     temperature: float = field(default=0.5)
     verbose: bool = field(default=False)
 
 @dataclass
-class APIArguments:
-    assistant: AssistantAPIArguments = AssistantAPIArguments()
-    user: UserAPIArguments = UserAPIArguments()
-    meta: MetaAPIArguments = MetaAPIArguments()
- 
+class MetaAPIArgumentsOPENAI:
+    """
+    Arguments for the meta model api (openai)
+    """
+    model_name: str = field(default="openai/gpt-3.5-turbo-0301")
+    max_tokens: int = field(default=50)
+    n: int = field(default=1)
+    request_timeout: float = field(default=10)
+    temperature: float = field(default=0.5)
+    verbose: bool = field(default=False)
+
+@dataclass
+class APIArgumentsCRFM:
+    assistant: AssistantAPIArgumentsCRFM = AssistantAPIArgumentsCRFM()
+    user: UserAPIArgumentsCRFM = UserAPIArgumentsCRFM()
+    meta: MetaAPIArgumentsCRFM = MetaAPIArgumentsCRFM()
+
+@dataclass
+class APIArgumentsOPENAI:
+    assistant: AssistantAPIArgumentsOPENAI = AssistantAPIArgumentsOPENAI()
+    user: UserAPIArgumentsOPENAI = UserAPIArgumentsOPENAI()
+    meta: MetaAPIArgumentsOPENAI = MetaAPIArgumentsOPENAI()
+
 @dataclass
 class args:
     sim: SimArguments = SimArguments()
-    api: APIArguments = APIArguments()
-
+    api_crfm: APIArgumentsCRFM = APIArgumentsCRFM()
+    api_openai: APIArgumentsOPENAI = APIArgumentsOPENAI()
+    
 cs = ConfigStore.instance()
 cs.store(name="base_config", node=args)
-  

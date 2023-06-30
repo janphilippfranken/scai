@@ -16,6 +16,7 @@ from scai.modules.meta_prompt.prompts import META_PROMPTS
 
 # llm class
 from custom_chat_models.crfm import crfmChatLLM
+from langchain.chat_models import ChatOpenAI
 
 # main arguments
 from arguments import args
@@ -56,9 +57,17 @@ def main(args: DictConfig) -> None:
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.context_id}'
 
     # models
-    assistant_llm = crfmChatLLM(**args.api.assistant)
-    user_llm = crfmChatLLM(**args.api.user)
-    meta_llm = crfmChatLLM(**args.api.meta)
+    is_crfm = 'openai' in args.sim.model # custom stanford models
+
+    # llm
+    if is_crfm:
+        assistant_llm = crfmChatLLM(**args.api_crfm.assistant)
+        user_llm = crfmChatLLM(**args.api_crfm.user)
+        meta_llm = crfmChatLLM(**args.api_crfm.meta)
+    else:
+        assistant_llm = ChatOpenAI(**args.api_openai.assistant)
+        user_llm = ChatOpenAI(**args.api_openai.user)
+        meta_llm = ChatOpenAI(**args.api_openai.meta)
 
     # create context
     context = create_context(args, assistant_llm, user_llm, meta_llm)

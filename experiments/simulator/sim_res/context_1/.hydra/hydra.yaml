@@ -119,7 +119,9 @@ hydra:
     id: ???
     num: ???
     config_name: config
-    env_set: {}
+    env_set:
+      OPENAI_API_KEY: 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
+      CRFM_API_KEY: ''
     env_copy: []
     config:
       override_dirname:

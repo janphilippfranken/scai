@@ -6,10 +6,10 @@ sim:
   assistant_system_k: 1
   context_id: context_1
   context_name: context_1
-  verbose: true
+  verbose: false
   system_message: ' '
   n_runs: 5
-  model: gpt-4-0314
+  model: gpt-3.5-turbo
   task_prompt: task_prompt_1
   n_user: 2
   n_assistant: 2
@@ -20,9 +20,8 @@ sim:
   - assistant_prompt_1
   - assistant_prompt_1
   meta_prompt: meta_prompt_1
-api:
+api_crfm:
   assistant:
-    crfm_api_key: ''
     model_name: openai/gpt-4-0314
     max_tokens: 50
     num_completions: 1
@@ -30,7 +29,6 @@ api:
     verbose: false
     temperature: 0.5
   user:
-    crfm_api_key: ''
     model_name: openai/gpt-4-0314
     max_tokens: 50
     num_completions: 1
@@ -38,10 +36,31 @@ api:
     verbose: false
     temperature: 0.5
   meta:
-    crfm_api_key: ''
     model_name: openai/gpt-4-0314
     max_tokens: 200
     num_completions: 1
+    request_timeout: 10
+    verbose: false
+    temperature: 0.5
+api_openai:
+  assistant:
+    model_name: gpt-3.5-turbo
+    max_tokens: 50
+    'n': 1
+    request_timeout: 10
+    verbose: false
+    temperature: 0.5
+  user:
+    model_name: gpt-3.5-turbo
+    max_tokens: 50
+    'n': 1
+    request_timeout: 10
+    verbose: false
+    temperature: 0.5
+  meta:
+    model_name: gpt-3.5-turbo
+    max_tokens: 200
+    'n': 1
     request_timeout: 10
     verbose: false
     temperature: 0.5
