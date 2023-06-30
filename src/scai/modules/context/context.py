@@ -92,8 +92,8 @@ class Context():
                                                       assistant_system_k=assistant_system_k)
         
         # create models
-        user_models = [UserModel(llm=user_llm, conversation_id=str(conversation_id)) for conversation_id in range(n_user)]
-        assistant_models = [AssistantModel(llm=assistant_llm, conversation_id=str(conversation_id)) for conversation_id in range(n_assistant)]
+        user_models = [UserModel(llm=user_llm, conversation_id=str(conversation_id + 1)) for conversation_id in range(n_user)]
+        assistant_models = [AssistantModel(llm=assistant_llm, conversation_id=str(conversation_id + 1)) for conversation_id in range(n_assistant)]
         meta_model = MetaPromptModel(llm=meta_llm)
 
         return Context(

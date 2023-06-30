@@ -93,24 +93,33 @@ class UserModel():
         """
         user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content)
         chat_history_prompts = self._get_chat_history(buffer)
-        generate_next = """Rate the satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less {max_tokens} tokens.
-Please format the response as follows:
-Rating: <Your satisfaction rating>
-Feedback: <Your improvement suggestions>"""
-        generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
-        user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts, generate_next_prompt])
+        generate_next = """Rate your satisfaction with my current completion of the task on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my performance on the task in less {max_tokens} tokens. Please format the response as follows: Rating: <Your satisfaction rating> Feedback: <Your improvement suggestions>."""
+        # print(chat_history_prompts)
+        if len(chat_history_prompts) == 1:
+            
+            chat_history_prompts = [HumanMessagePromptTemplate.from_template("I am working on the following task: " + task_prompt.content + " This is my first attempt to complete the task: " + chat_history_prompts[-1].content + " " + generate_next)]
+            user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])
+        else:   
+        #     chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + "\n" + generate_next)
+            user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])
+
+
+
+
+        # chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + " " + generate_next)
+        # user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])
 
         # build prompt 
         prompt = user_chat_prompt.format(persona=user_prompt.persona,
-                                         task=task_prompt.content,
+                                         task=task_prompt.task,
                                          max_tokens=user_prompt.max_tokens)
         # if test_prompt, just print the prompt and return without using tokens
         if test_run:
-            print()
-            print(f'USER {str(self.conversation_id)}')
-            print(prompt)
-            print()
-            return {'Prompt': prompt, 'Rating': np.random.randint(11), 'Feedback': 'User_feedback_' + str(self.conversation_id)}
+            # print()
+            # print(f'USER {str(self.conversation_id)}')
+            # print(prompt)
+            # print()
+            return {'Prompt': prompt, 'Rating': np.random.randint(11), 'Feedback': 'User_feedback_' + str(self.conversation_id) + "."}
 
         chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
         response = chain.run(persona=user_prompt.persona,

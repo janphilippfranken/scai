@@ -12,8 +12,6 @@ ASSISTANT_PROMPTS: Dict[str, AssistantPrompt] = {
         name="helpful_assistant",
         max_tokens=50,
         role="system",
-        content="""{system_message} 
-Together with others, you are collaborating on the following task:
-{task}""",
+        content="""{system_message}""",
     ),
 }

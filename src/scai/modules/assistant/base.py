@@ -73,7 +73,11 @@ class AssistantModel():
         Returns:
             Returns the conversation history
         """
-        return [
+        print("TEST")
+        print(self.conversation_id)
+        print(buffer.chat_memory.message_ids)
+        print(buffer.load_memory_variables(var_type="assistant")["history"])
+        chat_history = [
             message
             for message, message_id in zip(
                 buffer.load_memory_variables(var_type="assistant")["history"],
@@ -81,6 +85,8 @@ class AssistantModel():
             )
             if self.conversation_id in message_id
         ]
+        print(chat_history)
+        return chat_history
 
     def _get_system_history_messages(
         self, 
@@ -118,16 +124,26 @@ class AssistantModel():
         Returns:
             Returns the assistant's response.
         """
+        # assistant system message 
         assistant_system_prompt = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
+    
+        # the chat history between user and asssitant (for conversational == conversation_id)
         chat_history_prompts = self._get_chat_history(buffer)
-        generate_next = """Respond within {max_tokens} tokens."""
-        generate_next_prompt = HumanMessagePromptTemplate.from_template(generate_next)
-        assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts, generate_next_prompt])
-        system_history_messages = self._get_system_history_messages(buffer)
 
+
+        if chat_history_prompts == []:
+            chat_history_prompts.append(HumanMessagePromptTemplate.from_template(str(self.conversation_id) + " " + task_prompt.content + " " + """Respond within {max_tokens} tokens."""))
+            assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts])
+        else:   
+            human_task_prompt = HumanMessagePromptTemplate.from_template(str(self.conversation_id) + " " + task_prompt.content)
+            chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + " " + """Respond within {max_tokens} tokens.""")
+            assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, human_task_prompt, *chat_history_prompts])
+
+        # getting the system history messages
+        system_history_messages = self._get_system_history_messages(buffer)
         # build prompt
-        prompt = assistant_chat_prompt.format(system_message=system_history_messages[-1].content,
-                                              task=task_prompt.content,
+        prompt = assistant_chat_prompt.format(system_message=system_history_messages[-1].content, # latest system message
+                                              task=task_prompt.task,
                                               max_tokens=assistant_prompt.max_tokens)
         # if verbose, just print the prompt and return
         if test_run:
@@ -135,7 +151,7 @@ class AssistantModel():
             print(f'ASSISTANT {str(self.conversation_id)}')
             print(prompt)
             print()
-            return {'Prompt': prompt,'Response': "assistant_response_" + str(self.conversation_id)}
+            return {'Prompt': prompt,'Response': "assistant_response_" + str(self.conversation_id) + "."}
 
         chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
         response = chain.run(system_message=system_history_messages[-1].content, 

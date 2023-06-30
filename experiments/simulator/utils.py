@@ -24,7 +24,7 @@ def save_as_csv(episode, data_directory, episode_id, model):
     df['message_type'] = df['message_type'].apply(lambda x: 'system' if 'system_message' in x else x)
 
     # Convert 'NaN' in 'conversation_id' to '-1' and then to integer, and then increment by 1
-    df['conversation_id'] = df['conversation_id'].fillna(-1).astype(int) + 1
+    df['conversation_id'] = df['conversation_id'].fillna(-1).astype(int) 
     # Replace system message conversation id with -1
     df.loc[df['message_type'] == 'system', 'conversation_id'] = -1
 

@@ -14,10 +14,10 @@ sim:
   assistant_system_k: 1
   context_id: "context_1"
   context_name: "context_1"
-  test_run: false # if false, we will use tokens!
+  test_run: true # if false, we will use tokens!
   verbose: true
   system_message: "You are a helpful AI Assistant."
-  n_runs: 5
+  n_runs: 2
   model_name: "gpt-4" # "openai/gpt-4-0314"
   task_prompt: "task_prompt_1"
   n_user: 2

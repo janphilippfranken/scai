@@ -47,7 +47,8 @@ def create_context(args, assistant_llm, user_llm, meta_llm):
         user_llm=user_llm,
         assistant_llm=assistant_llm,
         meta_llm=meta_llm,
-        verbose=args.sim.verbose
+        verbose=args.sim.verbose,
+        test_run=args.sim.test_run,
     )
 
 @hydra.main(config_path="config", config_name="config")
@@ -57,7 +58,7 @@ def main(args: DictConfig) -> None:
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.context_id}'
 
     # models
-    is_crfm = 'openai' in args.sim.model # custom stanford models
+    is_crfm = 'openai' in args.sim.model_name # custom stanford models
 
     # llm
     if is_crfm:
@@ -78,11 +79,11 @@ def main(args: DictConfig) -> None:
     # run context
     for _ in tqdm(range(args.sim.n_runs)):
         context.run()
-        save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model)
+        save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model_name)
 
     # # plot user ratings
-    df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model}.csv'))
-    plot_user_ratings(df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model, pdf=True)
+    df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.csv'))
+    plot_user_ratings(df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model_name, pdf=True)
 
     # python main.py ++sim.verbose=false
 

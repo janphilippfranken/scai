@@ -10,14 +10,9 @@ META_PROMPT: Dict[str, MetaPrompt] = {
         id="meta_prompt_1",
         name="generic_meta_prompt", # TODO: include space of meta-prompts if we want to optimize both meta-llm and assistant-llm?
         max_tokens=100,
-        persona="", # TODO: add meta personas (ie what style of criticism to use)
-        role="system",
-        content="""Assistant has just had the below conversation(s) with User(s). The Assistant followed their system message closely to help each user with the following Task:
+        role="user",
+        content="""An AI Assistant has just had the below conversation(s) with User(s). The Assistant followed their system message closely.
 
-#### Task Description Starts ####
-{task}
-#### Task Description Ends ####
-        
 Your job is to critique the Assistant's performance and provide a new 'system message' so that Assistant can correctly and quickly respond in the future. 
 
 #### Conversation History Starts ####
@@ -44,6 +39,10 @@ Assistant will only see the new system message, not the 'Conversation History' o
 
 Please remember to include important details from Assistant's current message as well. 
 
-Your response should be at most {max_tokens} tokens long."""
+Your response should be at most {max_tokens} tokens long.
+
+Respond in the following format:
+Critique: <critique>
+System Message: <system_message>"""
     ),
 }

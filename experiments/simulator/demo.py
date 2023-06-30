@@ -154,39 +154,39 @@ def run(args: DictConfig) -> None:
     # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.context_id}'
 
-    # # sim args
-    # args.sim.verbose = VERBOSE
-    # args.sim.n_user = N_USER
-    # args.sim.n_assistant = N_USER
+    # sim args
+    args.sim.verbose = VERBOSE
+    args.sim.n_user = N_USER
+    args.sim.n_assistant = N_USER
 
-    # # models
-    # is_crfm = 'openai' in LLM # custom stanford models
+    # models
+    is_crfm = 'openai' in LLM # custom stanford models
 
-    # if is_crfm:
-    #     args.api_crfm.assistant.model_name = LLM
-    #     args.api_crfm.user.model_name = LLM
-    #     args.api_crfm.meta.model_name = LLM
-    #     assistant_llm = crfmChatLLM(**args.api_crfm.assistant)
-    #     user_llm = crfmChatLLM(**args.api_crfm.user)
-    #     meta_llm = crfmChatLLM(**args.api_crfm.meta)
-    # else:
-    #     args.api_openai.assistant.model_name = LLM
-    #     args.api_openai.user.model_name = LLM
-    #     args.api_openai.meta.model_name = LLM
-    #     assistant_llm = ChatOpenAI(**args.api_openai.assistant)
-    #     user_llm = ChatOpenAI(**args.api_openai.user)
-    #     meta_llm = ChatOpenAI(**args.api_openai.meta)
+    if is_crfm:
+        args.api_crfm.assistant.model_name = LLM
+        args.api_crfm.user.model_name = LLM
+        args.api_crfm.meta.model_name = LLM
+        assistant_llm = crfmChatLLM(**args.api_crfm.assistant)
+        user_llm = crfmChatLLM(**args.api_crfm.user)
+        meta_llm = crfmChatLLM(**args.api_crfm.meta)
+    else:
+        args.api_openai.assistant.model_name = LLM
+        args.api_openai.user.model_name = LLM
+        args.api_openai.meta.model_name = LLM
+        assistant_llm = ChatOpenAI(**args.api_openai.assistant)
+        user_llm = ChatOpenAI(**args.api_openai.user)
+        meta_llm = ChatOpenAI(**args.api_openai.meta)
     
-    # # create context
-    # context = create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
+    # create context
+    context = create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
 
-    # # save initial system message
-    # context.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
+    # save initial system message
+    context.buffer.save_context(system={'content': args.sim.system_message}, system_message_id='system_message_0')
 
-    # # run context
-    # for _ in tqdm(range(args.sim.n_runs)):
-    #     context.run()
-    #     save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model_name)
+    # run context
+    for _ in tqdm(range(args.sim.n_runs)):
+        context.run()
+        save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model_name)
 
     # plot user ratings
     df = pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.csv')
