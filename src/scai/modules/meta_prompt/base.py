@@ -110,8 +110,8 @@ class MetaPromptModel():
         system_message_dict = [self._convert_message_to_dict(m) for m in buffer.load_memory_variables(var_type="system")['history']]
         # create system message
         system_history = "\n".join([f"{m['role']}: {m['content']}" for m in system_message_dict])
-        generate_next = HumanMessagePromptTemplate.from_template("""Your response should be at most {max_tokens} tokens long.
-Respond in the following format:
+        generate_next = HumanMessagePromptTemplate.from_template("""Your response should be at most {max_tokens} tokens long. Your response must not include anything about the task. It should help the assistant interact better with users, and not be task dependent!
+The revised System Message must start wity 'You are a...'. Respond in the following format:
 Critique: <critique>
 System Message: <system_message>""")                                      
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template, generate_next])

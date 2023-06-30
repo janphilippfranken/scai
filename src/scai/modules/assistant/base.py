@@ -127,13 +127,13 @@ class AssistantModel():
 
         # print(self.conversation_id, chat_history_prompts)
 
-        if chat_history_prompts == []:
-            chat_history_prompts.append(HumanMessagePromptTemplate.from_template(task_prompt.content + " " + """Respond within {max_tokens} tokens."""))
-            assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts])
-        else:   
-            human_task_prompt = HumanMessagePromptTemplate.from_template(task_prompt.content)
-            chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + " " + """Respond within {max_tokens} tokens.""")
-            assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, human_task_prompt, *chat_history_prompts])
+        # if chat_history_prompts == []:
+        chat_history_prompts.append(HumanMessagePromptTemplate.from_template(task_prompt.content + " " + """Respond within {max_tokens} tokens."""))
+        assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts])
+        # else:   
+        #     human_task_prompt = HumanMessagePromptTemplate.from_template(task_prompt.content)
+        #     chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + " " + """Respond within {max_tokens} tokens.""")
+        #     assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, human_task_prompt, *chat_history_prompts])
 
         # getting the system history messages
         system_history_messages = self._get_system_history_messages(buffer)
