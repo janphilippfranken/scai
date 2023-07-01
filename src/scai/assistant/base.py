@@ -123,6 +123,7 @@ class AssistantModel():
         assistant_system_prompt = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
     
         # the chat history between user and asssitant (for conversational == conversation_id)
+        print('buffer',buffer)
         chat_history_prompts = self._get_chat_history(buffer)
 
         # print(self.conversation_id, chat_history_prompts)

@@ -80,6 +80,7 @@ class Context():
         for assistant_model, assistant_prompt, user_model, user_prompt in zip(self.assistant_models, self.assistant_prompts, self.user_models, self.user_prompts):
             
             # run asssistant model
+            print(self.buffer.load_memory_variables(), 'buffer')
             assistant_response = assistant_model.run(assistant_prompt=assistant_prompt, 
                                                      task_prompt=self.task_prompt, 
                                                      buffer=self.buffer,
@@ -104,6 +105,6 @@ class Context():
                                             verbose=self.verbose,
                                             test_run=self.test_run)
         # save meta-prompt response
-        self.buffer.save_meta_context(meta_message_id="meta_prompt", **meta_response)
+        self.buffer.save_system_context(system_message_id="meta_prompt", **meta_response)
         
         return self.buffer
