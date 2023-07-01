@@ -71,7 +71,7 @@ def main(args: DictConfig) -> None:
     context = create_context(args, assistant_llm, user_llm, meta_llm)
 
     # save initial system message
-    context.buffer.save_system_context(system_message_id='system_message_0', **args.sim.system_message)
+    context.buffer.save_system_context(system_message_id='system_message_0')
 
     # run context
     for _ in tqdm(range(args.sim.n_runs)):
