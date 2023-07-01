@@ -22,10 +22,10 @@ from langchain.schema import (
 
 from langchain.chains.llm import LLMChain
 
-from scai.modules.assistant.models import AssistantPrompt
-from scai.modules.assistant.prompts import ASSISTANT_PROMPTS
-from scai.modules.memory.buffer import CustomConversationBufferWindowMemory
-from scai.modules.task.models import TaskPrompt
+from scai.assistant.models import AssistantPrompt
+from scai.assistant.prompts import ASSISTANT_PROMPTS
+from scai.memory.buffer import ConversationBuffer
+from scai.task.models import TaskPrompt
 
 
 class AssistantModel():
@@ -63,7 +63,7 @@ class AssistantModel():
 
     def _get_chat_history(
         self, 
-        buffer: CustomConversationBufferWindowMemory,
+        buffer: ConversationBuffer,
     ) -> List[BaseMessage]:
         """Retrieves the chat history from the conversation buffer.
 
@@ -85,7 +85,7 @@ class AssistantModel():
 
     def _get_system_history_messages(
         self, 
-        buffer: CustomConversationBufferWindowMemory,
+        buffer: ConversationBuffer,
     ) -> List[BaseMessage]:
         """Retrieves the system message history from the conversation buffer.
 
@@ -102,7 +102,7 @@ class AssistantModel():
 
     def run(
         self,
-        buffer: CustomConversationBufferWindowMemory,
+        buffer: ConversationBuffer,
         assistant_prompt: AssistantPrompt,
         task_prompt: TaskPrompt,
         test_run: bool = False,

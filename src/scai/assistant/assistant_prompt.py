@@ -3,7 +3,7 @@ Assistant Prompt Template.
 """
 from typing import Dict
     
-from scai.modules.assistant.models import AssistantPrompt
+from scai.assistant.models import AssistantPrompt
 
 ASSISTANT_PROMPT: Dict[str, AssistantPrompt] = {
     "assistant_prompt_1": AssistantPrompt(
@@ -11,6 +11,6 @@ ASSISTANT_PROMPT: Dict[str, AssistantPrompt] = {
         name="helpful_assistant",
         max_tokens=50,
         role="system",
-        content="""{system_message}""",
+        content="""Please follow these instructions in all your responses: {system_message}""",
     ),
 }

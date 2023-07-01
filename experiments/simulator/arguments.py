@@ -40,30 +40,6 @@ class SimArguments:
             )
         },
     )
-    user_k: int = field(
-        default=5,
-        metadata={
-            "help": (
-                "memory window for user chat messages",
-            )
-        },
-    )
-    assistant_k: int = field(
-        default=5,
-        metadata={
-            "help": (
-                "memory window for assistant chat messages",
-            )
-        },
-    )
-    assistant_system_k: int = field(
-        default=1,
-        metadata={
-            "help": (
-                "memory window for assistant system messages",
-            )
-        },
-    )
     context_id: str = field(
         default="context_1",
         metadata={

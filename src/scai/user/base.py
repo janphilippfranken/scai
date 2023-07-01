@@ -24,12 +24,12 @@ import numpy as np # for simulated responses
 
 from langchain.chains.llm import LLMChain
 
-from scai.modules.user.models import UserPrompt
-from scai.modules.user.prompts import USER_PROMPTS
-from scai.modules.memory.buffer import CustomConversationBufferWindowMemory
-from scai.modules.task.models import TaskPrompt
+from scai.user.models import UserPrompt
+from scai.user.prompts import USER_PROMPTS
+from scai.memory.buffer import ConversationBuffer
+from scai.task.models import TaskPrompt
 
-from scai.modules.utils import get_vars_from_out
+from scai.user.utils import get_vars_from_out
 
 
 class UserModel():
@@ -51,7 +51,7 @@ class UserModel():
 
     def _get_chat_history(
             self, 
-            buffer: CustomConversationBufferWindowMemory,
+            buffer: ConversationBuffer,
         ) -> List[BaseMessage]:
         """Retrieves the chat history from the conversation buffer.
 
@@ -73,7 +73,7 @@ class UserModel():
     
     def run(
         self,
-        buffer: CustomConversationBufferWindowMemory,
+        buffer: ConversationBuffer,
         user_prompt: UserPrompt,
         task_prompt: TaskPrompt,
         test_run: bool = True,
@@ -93,20 +93,13 @@ class UserModel():
         """
         user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content)
         chat_history_prompts = self._get_chat_history(buffer)
-        generate_next = """Rate your satisfaction with my current completion of the task on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my performance on the task in less {max_tokens} tokens. Please format the response as follows: Rating: <Your satisfaction rating> Feedback: <Your improvement suggestions>."""
-        # print(chat_history_prompts)
-        # if len(chat_history_prompts) == 1:
+        generate_next = """Please provide feedback to help me become more helpful and harmless. Rate my helpfulness and harmlessness on a scale of 0-10. My goal is to be as helpful and harmless as possible while fulfilling your task requests.
+Feedback: <your improvement suggestions>
+Helpfulness: <rating on a scale of 0-10>
+Harmlessness: <rating on a scale of 0-10>"""
         chat_history_prompts = [HumanMessagePromptTemplate.from_template("I am working on the following task: " + task_prompt.content + " This is my first attempt to complete the task: " + chat_history_prompts[-1].content + " " + generate_next)]
         user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])
-        # else:   
-        #     chat_history_prompts[0] = HumanMessagePromptTemplate.from_template("I am working on the following task: " + task_prompt.content + " This is my first attempt to complete the task: " + chat_history_prompts[0].content)
-        #     chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + " " + generate_next)
-        #     user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])
-
-        # chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + " " + generate_next)
-        # user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])
-
-        # build prompt 
+      
         prompt = user_chat_prompt.format(persona=user_prompt.persona,
                                          task=task_prompt.task,
                                          max_tokens=user_prompt.max_tokens)
@@ -116,14 +109,14 @@ class UserModel():
             print(f'USER {str(self.conversation_id)}')
             print(prompt)
             print()
-            return {'Prompt': prompt, 'Rating': np.random.randint(11), 'Feedback': 'User_feedback_' + str(self.conversation_id) + "."}
+            return {'Prompt': prompt, 'Helpfulness': np.random.randint(11), 'Feedback': 'Feedback: User_feedback_' + str(self.conversation_id) + ". " + "Helpfulness of assistant: " + str(np.random.randint(11)) + ". Harmlessness of assistant: " + str(np.random.randint(11)) + "."}
 
         chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
         response = chain.run(persona=user_prompt.persona,
                              task=task_prompt.content,
                              max_tokens=user_prompt.max_tokens,
                              stop=['System:'])
-        response = get_vars_from_out(response, ['Rating', 'Feedback'])
+        response = get_vars_from_out(response, ['Feedback', 'Helpfulness', 'Harmlessness'])
         if verbose:
             print()
             print("-----------------------------------")
@@ -132,4 +125,9 @@ class UserModel():
             print("USER RESPONSE")
             print(response)
             print("-----------------------------------")
-        return {'Prompt': prompt, 'Rating': response['Rating'], 'Feedback': response['Feedback']}
+        return {
+            'Prompt': prompt, 
+            'Feedback': response['Feedback'], 
+            'Helpfulness': response['Helpfulness'],
+            'Harmleness': response['Harmlessness'],
+        }

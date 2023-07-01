@@ -6,7 +6,7 @@ from langchain.schema import (
     BaseMessage,
 )
 
-from scai.modules.memory.history import CustomBaseChatMessageHistory
+from scai.memory.history import CustomBaseChatMessageHistory
 
 
 class CustomChatMessageHistory(CustomBaseChatMessageHistory, BaseModel):

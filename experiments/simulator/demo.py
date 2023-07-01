@@ -11,17 +11,17 @@ from PIL import Image
 
 
 # import context
-from scai.modules.context.context import Context
+from scai.context.context import Context
 
 # import prompt models
-from scai.modules.task.models import TaskPrompt
-from scai.modules.user.models import UserPrompt
+from scai.task.models import TaskPrompt
+from scai.user.models import UserPrompt
 
 # import prompts
-from scai.modules.assistant.prompts import ASSISTANT_PROMPTS 
-from scai.modules.user.prompts import USER_PROMPTS 
-from scai.modules.meta_prompt.prompts import META_PROMPTS
-from scai.modules.task.prompts import TASK_PROMPTS
+from scai.assistant.prompts import ASSISTANT_PROMPTS 
+from scai.user.prompts import USER_PROMPTS 
+from scai.meta_prompt.prompts import META_PROMPTS
+from scai.task.prompts import TASK_PROMPTS
 
 # llm classes
 from custom_chat_models.crfm import crfmChatLLM # custom crfm models

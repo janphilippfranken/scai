@@ -6,13 +6,13 @@ from tqdm import tqdm
 import pandas as pd
 
 # import context
-from scai.modules.context.context import Context
+from scai.context.context import Context
 
 # prompts 
-from scai.modules.task.prompts import TASK_PROMPTS
-from scai.modules.assistant.prompts import ASSISTANT_PROMPTS 
-from scai.modules.user.prompts import USER_PROMPTS 
-from scai.modules.meta_prompt.prompts import META_PROMPTS 
+from scai.task.prompts import TASK_PROMPTS
+from scai.assistant.prompts import ASSISTANT_PROMPTS 
+from scai.user.prompts import USER_PROMPTS 
+from scai.meta_prompt.prompts import META_PROMPTS 
 
 # llm class
 from custom_chat_models.crfm import crfmChatLLM
@@ -37,9 +37,6 @@ def create_context(args, assistant_llm, user_llm, meta_llm):
         n_user=args.sim.n_user,
         system_k=args.sim.system_k,
         chat_k=args.sim.chat_k,
-        user_k=args.sim.user_k,
-        assistant_k=args.sim.assistant_k,
-        assistant_system_k=args.sim.assistant_system_k, 
         task_prompt=TASK_PROMPTS[args.sim.task_prompt],
         user_prompts=[USER_PROMPTS[user_prompt] for user_prompt in args.sim.user_prompts],
         assistant_prompts=[ASSISTANT_PROMPTS[assistant_prompt] for assistant_prompt in args.sim.assistant_prompts],
