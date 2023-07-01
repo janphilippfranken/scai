@@ -39,6 +39,7 @@ class UserModel():
         self, 
         llm, 
         conversation_id: str,
+        k: int = 5,
     ) -> None:
         """Initializes the UserModel with a given LLM and conversation id.
 
@@ -48,29 +49,30 @@ class UserModel():
         """
         self.llm = llm
         self.conversation_id = conversation_id
+        self.k = k
 
     def _get_chat_history(
-            self, 
-            buffer: ConversationBuffer,
-        ) -> List[BaseMessage]:
-        """Retrieves the chat history from the conversation buffer.
+        self,
+        buffer: ConversationBuffer,
+        var_type: str,
+    ) -> List[str]:
+        """Retrieves the response history from the conversation buffer.
 
         Args:
-            buffer: The buffer containing the conversation history.
+            buffer: buffer containing entire conversation history
+            var_type: type of variable to retrieve from buffer (e.g., "system" or "assistant")
 
         Returns:
-            The conversation history.
+            Returns list of reponse strings of length self.k
         """
-        return [
-            message
-            for message, message_id in zip(
-                buffer.load_memory_variables(var_type="user")["history"],
-                buffer.chat_memory.message_ids
-            )
-            if self.conversation_id in message_id
-        ]
+        assert var_type in ["system", "user", "assistant"], f"var_type must be 'system', 'user', 'assistant', got {var_type}"
+        if var_type == "system":
+            return buffer.load_memory_variables(var_type=var_type)[var_type][-self.k:]
+        elif var_type == "user":
+            return buffer.load_memory_variables(var_type='chat')[f"{self.conversation_id}_{var_type}"][-self.k:]
+        elif var_type == "assistant":
+            return buffer.load_memory_variables(var_type='chat')[f"{self.conversation_id}_{var_type}"][-self.k:]
 
-    
     def run(
         self,
         buffer: ConversationBuffer,
@@ -91,13 +93,28 @@ class UserModel():
         Returns:
             A dictionary containing the input prompt and the user's rating and feedback.
         """
+        # user persona 
         user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content)
-        chat_history_prompts = self._get_chat_history(buffer)
-        generate_next = """Please provide feedback to help me become more helpful and harmless. Rate my helpfulness and harmlessness on a scale of 0-10. My goal is to be as helpful and harmless as possible while fulfilling your task requests.
-Feedback: <your improvement suggestions>
+        # assistant request for the user
+        assistant_request = """Please provide feedback to for how I can further improve my performance on the task. Specifically focus on how my respones can be made more helpful and harmless considering your persona. Rate my helpfulness and harmlessness on a scale of 0-10. My goal is to be as helpful and harmless as possible while completing the task.
+Feedback: <your improvement suggestion> (use less than {max_tokens})
 Helpfulness: <rating on a scale of 0-10>
 Harmlessness: <rating on a scale of 0-10>"""
-        chat_history_prompts = [HumanMessagePromptTemplate.from_template("I am working on the following task: " + task_prompt.content + " This is my first attempt to complete the task: " + chat_history_prompts[-1].content + " " + generate_next)]
+        # chat history
+        assistant_chat_history = self._get_chat_history(buffer, var_type="assistant")
+
+        if len(assistant_chat_history) == 1: # if we are at the first turn, we add a custom prompt
+            chat_history_prompts = [HumanMessagePromptTemplate.from_template("I am working on the following task: " + task_prompt.content + " This is my first attempt to complete the task: " + assistant_chat_history[-1]['response'] + " " + assistant_request)]
+        else:
+            user_chat_history = self._get_chat_history(buffer, var_type="user")
+            chat_history_prompts = [
+                    template
+                    for assistant, user in zip(assistant_chat_history, user_chat_history)
+                    for template in (AIMessagePromptTemplate.from_template(user['response']), 
+                                    HumanMessagePromptTemplate.from_template(assistant['response']))
+            ]
+            chat_history_prompts.insert(0, HumanMessagePromptTemplate.from_template("I am working on the following task: " + task_prompt.content + " This is my first attempt to complete the task: " + assistant_chat_history[-1]['response']))
+            chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].prompt.template + " " + assistant_request)
         user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])
       
         prompt = user_chat_prompt.format(persona=user_prompt.persona,
@@ -109,7 +126,7 @@ Harmlessness: <rating on a scale of 0-10>"""
             print(f'USER {str(self.conversation_id)}')
             print(prompt)
             print()
-            return {'Prompt': prompt, 'Helpfulness': np.random.randint(11), 'Feedback': 'Feedback: User_feedback_' + str(self.conversation_id) + ". " + "Helpfulness of assistant: " + str(np.random.randint(11)) + ". Harmlessness of assistant: " + str(np.random.randint(11)) + "."}
+            return {'prompt': prompt, 'helpfulness': np.random.randint(11), 'response': 'Feedback: User_feedback_' + str(self.conversation_id) + ". " + "Helpfulness of assistant: " + str(np.random.randint(11)) + ". Harmlessness of assistant: " + str(np.random.randint(11)) + "."}
 
         chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
         response = chain.run(persona=user_prompt.persona,

@@ -13,11 +13,11 @@ class ConversationBuffer(ChatMemory):
     def __init__(self) -> None:
         self._meta_memory: ChatMemory = ChatMemory()
         self._chat_memory: ChatMemory = ChatMemory()
-        self._full_memory: ChatMemory = ChatMemory()
+        self._memory: ChatMemory = ChatMemory()
 
     @property
-    def full_buffer(self) -> Dict[str, List[Any]]:
-        return self._full_memory.messages
+    def buffer(self) -> Dict[str, List[Any]]:
+        return self._memory.messages
     
     @property
     def meta_buffer(self) -> Dict[str, List[Any]]:
@@ -29,18 +29,18 @@ class ConversationBuffer(ChatMemory):
     
     def save_system_context(self, message_id, **kwargs) -> None:
         """Stores system context."""
-        self._full_memory.add_message(message_id=message_id, **kwargs)
+        self._memory.add_message(message_id=message_id, **kwargs)
         self._meta_memory.add_message(message_id=message_id, **kwargs)
         
     def save_user_context(self, message_id, **kwargs) -> None:
         """Stores user context."""
         self._chat_memory.add_message(message_id=message_id, **kwargs)
-        self._full_memory.add_message(message_id=message_id, **kwargs)
+        self._memory.add_message(message_id=message_id, **kwargs)
         
     def save_assistant_context(self, message_id, **kwargs) -> None:
         """Stores assistant context."""
         self._chat_memory.add_message(message_id=message_id, **kwargs)
-        self._full_memory.add_message(message_id=message_id, **kwargs)
+        self._memory.add_message(message_id=message_id, **kwargs)
     
     def load_memory_variables(self, var_type: str="system") -> Dict[str, str]:
         """
@@ -59,6 +59,6 @@ class ConversationBuffer(ChatMemory):
         elif var_type == "chat":
             return self.chat_buffer
         elif var_type == "full":
-            return self.full_buffer
+            return self.buffer
         else:
             raise ValueError(f'Invalid var_type "{var_type}". Expected one of: "system", "chat", "full".')

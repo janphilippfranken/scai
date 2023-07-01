@@ -62,11 +62,11 @@ class Context():
         Creates a context (i.e. context for the MDP / Meta-Prompt run).
         """
         # create buffer
-        buffer = ConversationBuffer(system_k=system_k, chat_k=chat_k)
+        buffer = ConversationBuffer()
         # create models
-        user_models = [UserModel(llm=user_llm, conversation_id=str(conversation_id)) for conversation_id, _ in enumerate(user_prompts)]
-        assistant_models = [AssistantModel(llm=assistant_llm, conversation_id=str(conversation_id)) for conversation_id, _ in enumerate(assistant_prompts)]
-        meta_model = MetaPromptModel(llm=meta_llm)
+        user_models = [UserModel(llm=user_llm, conversation_id=str(conversation_id), k=chat_k) for conversation_id, _ in enumerate(user_prompts)]
+        assistant_models = [AssistantModel(llm=assistant_llm, conversation_id=str(conversation_id), k=chat_k) for conversation_id, _ in enumerate(assistant_prompts)]
+        meta_model = MetaPromptModel(llm=meta_llm, conversation_id="system", k=system_k)
 
         return Context(
             id, 
@@ -91,21 +91,21 @@ class Context():
             
             # run assistant model
             assistant_response = assistant_model.run(assistant_prompt=assistant_prompt, 
-                                                    task_prompt=self.task_prompt, 
-                                                    buffer=self.buffer,
-                                                    verbose=self.verbose,
-                                                    test_run=self.test_run)
+                                                     task_prompt=self.task_prompt, 
+                                                     buffer=self.buffer,
+                                                     verbose=self.verbose,
+                                                     test_run=self.test_run)
             # save assistant response
-            self.buffer.save_assistant_context(message_id=f"conversation_{assistant_model.conversation_id}_assistant", **assistant_response)
+            self.buffer.save_assistant_context(message_id=f"{assistant_model.conversation_id}_assistant", **assistant_response)
             
             # run user model
             user_response = user_model.run(user_prompt=user_prompt, 
-                                        task_prompt=self.task_prompt, 
-                                        buffer=self.buffer,
-                                        verbose=self.verbose,
-                                        test_run=self.test_run)
+                                           task_prompt=self.task_prompt, 
+                                           buffer=self.buffer,
+                                           verbose=self.verbose,
+                                           test_run=self.test_run)
             # save user response
-            self.buffer.save_user_context(message_id=f"conversation_{user_model.conversation_id}_user", **user_response)
+            self.buffer.save_user_context(message_id=f"{user_model.conversation_id}_user", **user_response)
 
         # run meta-prompt
         meta_response = self.meta_model.run(meta_prompt=self.meta_prompt, 
@@ -114,6 +114,6 @@ class Context():
                                             verbose=self.verbose,
                                             test_run=self.test_run)
         # save meta-prompt response
-        self.buffer.save_system_context(message_id="meta_prompt", **meta_response)
+        self.buffer.save_system_context(message_id="system", **meta_response)
         
         return self.buffer

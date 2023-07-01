@@ -45,12 +45,13 @@ Check our our [toy demo](https://scai-online-demo.streamlit.app/).
 <a name="documentation"></a>
 
 #### 🚀 Getting started 
-##### Using miniconda
-1. `curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh` or `curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh`
-2. `bash Miniconda3-latest-MacOSX-x86_64.sh`
-3. `conda create --name name-of-my-env python==3.10`
-4. `conda activate name-of-my-env`
-5. `pip install -e .` 
+##### Using miniforge
+1. install miniforge from `https://github.com/conda-forge/miniforge` (eg `Miniforge3-MacOSX-arm64`)
+2. `bash Miniforge3-MacOSX-arm64.sh`
+3. close terminal
+4. `conda create --name name-of-my-env python==3.10`
+5. `conda activate name-of-my-env`
+6. `pip install -e .` 
 
 ##### Using poetry (will update this later)
 1. `curl -sSL https://install.python-poetry.org | python -`

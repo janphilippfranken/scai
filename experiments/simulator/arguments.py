@@ -8,22 +8,6 @@ class SimArguments:
     """
     Simulator arguments.
     """
-    n_user: int = field(
-        default=2,
-        metadata={
-            "help": (
-                "Number of users",
-            ),
-        },
-    )
-    n_assistant: int = field(
-        default=2,
-        metadata={
-            "help":(
-                "Number of assistants",
-            )
-        },
-    )
     system_k: int = field(
         default=5,
         metadata={

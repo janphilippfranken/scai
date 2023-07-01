@@ -1,6 +1,8 @@
 from typing import (
     Tuple,
     List, 
+    Dict,
+    Any,
 )
 
 from langchain.prompts.chat import (
@@ -34,27 +36,38 @@ class MetaPromptModel():
     def __init__(
         self, 
         llm,
+        conversation_id: str,
+        k: int = 5,
     ) -> None:
         """
         Args:
             llm: The LLM Chat model (e.g., crfm or openai).
         """
         self.llm = llm
+        self.conversation_id = conversation_id
+        self.k = k
     
-    def _convert_message_to_dict(self, message: BaseMessage) -> dict:
-        if isinstance(message, ChatMessage):
-            message_dict = {"role": message.role, "content": message.content}
-        elif isinstance(message, HumanMessage):
-            message_dict = {"role": "user", "content": message.content}
-        elif isinstance(message, AIMessage):
-            message_dict = {"role": "assistant", "content": message.content}
-        elif isinstance(message, SystemMessage):
-            message_dict = {"role": "system", "content": message.content}
-        else:
-            raise ValueError(f"Got unknown type {message}")
-        if "name" in message.additional_kwargs:
-            message_dict["name"] = message.additional_kwargs["name"]
-        return message_dict
+    def _get_chat_history(
+        self,
+        buffer: ConversationBuffer,
+        var_type: str,
+    ) -> List[str]:
+        """Retrieves the response history from the conversation buffer.
+
+        Args:
+            buffer: buffer containing entire conversation history
+            var_type: type of variable to retrieve from buffer (e.g., "system" or "assistant")
+
+        Returns:
+            Returns list of reponse strings of length self.k
+        """
+        assert var_type in ["system", "user", "assistant"], f"var_type must be 'system', 'user', 'assistant', got {var_type}"
+        if var_type == "system":
+            return buffer.load_memory_variables(var_type=var_type)[self.conversation_id][-self.k:]
+        elif var_type == "user":
+            return buffer.load_memory_variables(var_type='chat')[f"{self.conversation_id}_{var_type}"][-self.k:]
+        elif var_type == "assistant":
+            return buffer.load_memory_variables(var_type='chat')[f"{self.conversation_id}_{var_type}"][-self.k:]
     
     def _get_sorted_message(
         self, 
@@ -75,7 +88,7 @@ class MetaPromptModel():
 
     def _get_n_user(
         self, 
-        sorted_message_ids: List[str],
+        chats: Dict[str, List[Any]],
     ) -> int:
         """Returns the number of users in the conversation.
         
@@ -84,8 +97,33 @@ class MetaPromptModel():
             
         Returns:    
             The number of users in the conversation."""
-        n_conversations = set(id.split('_')[1] for id in sorted_message_ids)
+        n_conversations = set(id.split('_')[0] for id in chats.keys())
         return len(n_conversations)
+    
+    def _get_chat_str(
+        self,
+        chat_history: Dict[str, List[Any]],
+        task_prompt: TaskPrompt,
+    ) -> str:
+        """
+        Formats the chat history into a string.
+        """
+        chat_dict = {}
+        assistant_list = []
+        user_list = []
+        for key, value in chat_history.items():
+            id, role = key.split("_")
+            if id not in chat_dict:
+                chat_dict[id] = [f"Conversation {id}:", f"user: " + task_prompt.task]
+            for v in value:
+                if role == "assistant":
+                    assistant_list.append(f"{role} : {v['response']}")
+                elif role == "user":
+                    user_list.append(f"{role} : {v['response']}")
+        for assistant, user in zip(assistant_list, user_list):
+            chat_dict[id].append(assistant)
+            chat_dict[id].append(user)
+        return "\n".join("\n".join(value) for value in chat_dict.values())
 
     def run(
         self,
@@ -108,36 +146,17 @@ class MetaPromptModel():
             A dictionary containing the input prompt, critique response, and meta-prompt response (i.e. revised system message)
         """
         meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content + '\n' + """Your response should be at most {max_tokens} tokens long.""")
-        # convert chat into dict
-        chat_messages = buffer.load_memory_variables(var_type="chat")['history']
-        chat_message_dict = [self._convert_message_to_dict(m) for m in chat_messages]
-        # sort messages by conversation id
-        pairs = zip(chat_message_dict, buffer.chat_memory.message_ids)
-        sorted_pairs = sorted(pairs, key=self._get_sorted_message)
-        sorted_chat_message_dict, sorted_message_ids = zip(*sorted_pairs)
-        # create chat history
-        chat_history = ""
-        last_conversation_id = None
-        for message, message_id in zip(sorted_chat_message_dict, sorted_message_ids):
-            current_conversation_id = message_id.split('_')[1]
-            if current_conversation_id != last_conversation_id:
-                chat_history += f"\nConversation {current_conversation_id}:\n"
-                last_conversation_id = current_conversation_id
-                chat_history +=  f"user: {task_prompt.task}\n"
-            role = "user" if message['role'] == "user" else "assistant"
-            chat_history += f"{role}: {message['content']}\n"
-        # convert system message into dict
-        system_messages = buffer.load_memory_variables(var_type="system")['history']
-        system_message_dict = [self._convert_message_to_dict(m) for m in system_messages]
-        # create system message
-        system_history = "\n" + "\n".join([f"{m['role']}: {m['content']}" for m in system_message_dict]) + "\n"
-        # create meta prompt
+        chat_history = buffer.load_memory_variables(var_type='chat')
+        chat_history_string = self._get_chat_str(chat_history, task_prompt)
+        system_messages = self._get_chat_history(buffer, var_type='system')
+        system_message_string = "\n".join(f"system: {system['response']}" for system in system_messages).rstrip('\n')
+
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template])
         # full prompt fed into the model
-        prompt = meta_chat_prompt.format(n_user=self._get_n_user(sorted_message_ids),
+        prompt = meta_chat_prompt.format(n_user=self._get_n_user(chat_history),
                                          task=task_prompt.content,
-                                         chat_history=chat_history,  
-                                         system_history=system_history,
+                                         chat_history=chat_history_string,
+                                         system_history=system_message_string,
                                          max_tokens=meta_prompt.max_tokens)
         # if verbose we just print the prompt and return it
         if test_run:
@@ -145,13 +164,13 @@ class MetaPromptModel():
             print(f'META')
             print(prompt)
             print()
-            return {'Prompt': prompt, 'Critique': 'meta-critique', 'System Message': 'system-message'}
+            return {'response': 'system', 'critique': 'meta-critique', 'system_message': 'system-message'}
         # build chain
         chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
         # run chain
         response = chain.run(task=task_prompt.content,
-                            chat_history=chat_history,  
-                            system_history=system_history,
+                            chat_history=chat_history_string,
+                            system_history=system_message_string,
                             max_tokens=meta_prompt.max_tokens, 
                             stop=['System:'])
         # get variables from output

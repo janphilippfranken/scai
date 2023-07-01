@@ -33,8 +33,6 @@ def create_context(args, assistant_llm, user_llm, meta_llm):
     return Context.create(
         id=args.sim.context_id,
         name=args.sim.context_name,
-        n_assistant=args.sim.n_assistant,
-        n_user=args.sim.n_user,
         system_k=args.sim.system_k,
         chat_k=args.sim.chat_k,
         task_prompt=TASK_PROMPTS[args.sim.task_prompt],
@@ -71,7 +69,7 @@ def main(args: DictConfig) -> None:
     context = create_context(args, assistant_llm, user_llm, meta_llm)
 
     # save initial system message
-    context.buffer.save_system_context(system_message_id='system_message_0')
+    context.buffer.save_system_context(message_id='system', **{'response': args.sim.system_message})
 
     # run context
     for _ in tqdm(range(args.sim.n_runs)):

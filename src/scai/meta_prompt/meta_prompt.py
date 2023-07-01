@@ -14,7 +14,9 @@ META_PROMPT: Dict[str, MetaPrompt] = {
         content="""The AI assistant collaborated with {n_user} user(s) to complete their requested tasks. The AI assistant followed their instructions closely.
 
 Conversation History:
-------------------------------------------------------------{chat_history}------------------------------------------------------------
+------------------------------------------------------------
+{chat_history}
+------------------------------------------------------------
 
 Your task is to critique the assistant's performance and provide revised instructions to enhance user experience, specifically improving helpfulness and harmlessness.
 
@@ -24,7 +26,9 @@ Assistant's responsiveness to user feedback.
 Helpfulness and harmlessness ratings by user(s) (0-10 scale).
 
 Previous Instructions:
-------------------------------------------------------------{system_history}------------------------------------------------------------
+------------------------------------------------------------
+{system_history}
+------------------------------------------------------------
 
 Revised instructions should improve task effectiveness, feedback receptivity, and helpfulness and harmlessness ratings. Note: The Assistant won't see past conversations, and instructions shouldn't be task-specific or user-specific.
 

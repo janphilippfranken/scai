@@ -48,60 +48,27 @@ class AssistantModel():
         self.conversation_id = conversation_id
         self.k = k
 
-    def _convert_message_to_dict(self, message: BaseMessage) -> dict:
-        if isinstance(message, ChatMessage):
-            message_dict = {"role": message.role, "content": message.content}
-        elif isinstance(message, HumanMessage):
-            message_dict = {"role": "user", "content": message.content}
-        elif isinstance(message, AIMessage):
-            message_dict = {"role": "assistant", "content": message.content}
-        elif isinstance(message, SystemMessage):
-            message_dict = {"role": "system", "content": message.content}
-        else:
-            raise ValueError(f"Got unknown type {message}")
-        if "name" in message.additional_kwargs:
-            message_dict["name"] = message.additional_kwargs["name"]
-        return message_dict
-
-
     def _get_chat_history(
-        self, 
+        self,
         buffer: ConversationBuffer,
-    ) -> List[BaseMessage]:
-        """Retrieves the chat history from the conversation buffer.
+        var_type: str,
+    ) -> List[str]:
+        """Retrieves the response history from the conversation buffer.
 
         Args:
-            buffer: The buffer containing the conversation history (i.e., chat memory).
+            buffer: buffer containing entire conversation history
+            var_type: type of variable to retrieve from buffer (e.g., "system" or "assistant")
 
         Returns:
-            Returns the conversation history
+            Returns list of reponse strings of length self.k
         """
-        chat_history = [
-            message
-            for message, message_id in zip(
-                buffer.load_memory_variables(var_type="assistant")["history"],
-                buffer.chat_memory.message_ids
-            )
-            if self.conversation_id in message_id
-        ]
-        return chat_history
-
-    def _get_system_history_messages(
-        self, 
-        buffer: ConversationBuffer,
-    ) -> List[BaseMessage]:
-        """Retrieves the system message history from the conversation buffer.
-
-        Args:
-            buffer: The buffer containing the conversation history (i.e., chat memory).
-
-        Returns:
-            Returns the system message history
-        """
-        return [
-            m 
-            for m in buffer.load_memory_variables(var_type="system", use_assistant_system_k=True)['history']
-        ]
+        assert var_type in ["system", "user", "assistant"], f"var_type must be 'system', 'user', 'assistant', got {var_type}"
+        if var_type == "system":
+            return buffer.load_memory_variables(var_type=var_type)[var_type][-self.k:]
+        elif var_type == "user":
+            return buffer.load_memory_variables(var_type='chat')[f"{self.conversation_id}_{var_type}"][-self.k:]
+        elif var_type == "assistant":
+            return buffer.load_memory_variables(var_type='chat')[f"{self.conversation_id}_{var_type}"][-self.k:]
 
     def run(
         self,
@@ -125,24 +92,26 @@ class AssistantModel():
         # assistant system message 
         assistant_system_prompt = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
     
-        # the chat history between user and asssitant (for conversational == conversation_id)
-        print('buffer',buffer)
-        chat_history_prompts = self._get_chat_history(buffer)
+        # the chat history between assistant and user
+        # check if assistant in buffer 
+        if len(buffer.load_memory_variables(var_type='chat')) < 4:
+            chat_history_prompts = [HumanMessagePromptTemplate.from_template(task_prompt.content + " " + """Respond within {max_tokens} tokens.""")]
+        else:
+            assistant_chat_history = self._get_chat_history(buffer, var_type="assistant")
+            user_chat_history = self._get_chat_history(buffer, var_type="user")
 
-        # print(self.conversation_id, chat_history_prompts)
-
-        # if chat_history_prompts == []:
-        chat_history_prompts.append(HumanMessagePromptTemplate.from_template(task_prompt.content + " " + """Respond within {max_tokens} tokens."""))
+            chat_history_prompts = [
+                response
+                for assistant, user in zip(assistant_chat_history, user_chat_history)
+                for response in (AIMessagePromptTemplate.from_template(assistant['response']), 
+                                 HumanMessagePromptTemplate.from_template(user['response']))
+            ]
+            chat_history_prompts.insert(0, HumanMessagePromptTemplate.from_template(task_prompt.content))
+            chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].prompt.template + " " + """Revise your response within {max_tokens} tokens.""")
         assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts])
-        # else:   
-        #     human_task_prompt = HumanMessagePromptTemplate.from_template(task_prompt.content)
-        #     chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].content + " " + """Respond within {max_tokens} tokens.""")
-        #     assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, human_task_prompt, *chat_history_prompts])
+        system_message = self._get_chat_history(buffer, var_type="system")[-1]['response']
 
-        # getting the system history messages
-        system_history_messages = self._get_system_history_messages(buffer)
-        # build prompt
-        prompt = assistant_chat_prompt.format(system_message=system_history_messages[-1].content, # latest system message
+        prompt = assistant_chat_prompt.format(system_message=system_message,
                                               task=task_prompt.task,
                                               max_tokens=assistant_prompt.max_tokens)
         # if verbose, just print the prompt and return
@@ -151,10 +120,10 @@ class AssistantModel():
             print(f'ASSISTANT {str(self.conversation_id)}')
             print(prompt)
             print()
-            return {'Prompt': prompt,'Response': "assistant_response_" + str(self.conversation_id) + "."}
+            return {'prompt': prompt,'response': "assistant_response_" + str(self.conversation_id) + "."}
 
         chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
-        response = chain.run(system_message=system_history_messages[-1].content, 
+        response = chain.run(system_message=system_message,
                              task=task_prompt.task,
                              max_tokens=assistant_prompt.max_tokens, 
                              stop=['System:'])
@@ -166,5 +135,5 @@ class AssistantModel():
             print("ASSISTANT RESPONSE")
             print(response)
             print("-----------------------------------")
-        return {'Prompt': prompt,'Response': response}
+        return {'prompt': prompt,'response': response}
     

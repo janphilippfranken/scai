@@ -9,8 +9,6 @@ sim:
   n_runs: 3
   model_name: gpt-4
   task_prompt: task_prompt_4
-  n_user: 2
-  n_assistant: 2
   user_prompts:
   - user_prompt_1
   - user_prompt_2
