@@ -35,15 +35,18 @@ class AssistantModel():
         self, 
         llm, 
         conversation_id: str,
+        k: int = 5,
     ) -> None:
         """Initializes the assistant model with a given LLM and conversation id.
 
         Args:
             llm: The LLM Chat model (e.g., crfm or openai).
             conversation_id: The unique identifier for the conversation (i.e., chats) the assistant had with user(s).
+            k: The number of messages to retrieve from the assistant's memory.
         """
         self.llm = llm
         self.conversation_id = conversation_id
+        self.k = k
 
     def _convert_message_to_dict(self, message: BaseMessage) -> dict:
         if isinstance(message, ChatMessage):

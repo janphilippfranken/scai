@@ -1,65 +1,58 @@
 from typing import (
     Any, 
     Dict, 
-    List, 
-    Optional,
+    List,
 )
 
-from scai.memory.chat import ChatMemory 
-
-from langchain.schema import (
-    AIMessage,
-    BaseMessage,
-    HumanMessage,
-    SystemMessage,
-    ChatMessage,
-)
-
+from scai.memory.memory import ChatMemory 
 
 class ConversationBuffer(ChatMemory):
     """
-    Custom conversation buffer.
+    A class to manage conversation buffers.
     """
-    def __init__(self, system_k: int=5, chat_k: int=5) -> None:
-        self.system_k: int = 5 
-        self.chat_k: int = 5 
-        self.meta_memory: ChatMemory = ChatMemory()
-        self.chat_memory: ChatMemory = ChatMemory()
-        self.full_memory: ChatMemory = ChatMemory()
+    def __init__(self) -> None:
+        self._meta_memory: ChatMemory = ChatMemory()
+        self._chat_memory: ChatMemory = ChatMemory()
+        self._full_memory: ChatMemory = ChatMemory()
 
     @property
     def full_buffer(self) -> Dict[str, List[Any]]:
-        return self.full_memory.message_dict
+        return self._full_memory.messages
     
     @property
     def meta_buffer(self) -> Dict[str, List[Any]]:
-        return self.meta_memory.message_dict
+        return self._meta_memory.messages
     
     @property
     def chat_buffer(self) -> Dict[str, List[Any]]:
-        return self.chat_memory.message_dict
+        return self._chat_memory.messages
     
-    def save_system_context(self, message, system_message_id, **kwargs) -> None:
-        self.full_memory.add_message(message, message_id=system_message_id, **kwargs)
-        self.meta_memory.add_message(message, message_id=system_message_id, **kwargs)
+    def save_system_context(self, message_id, **kwargs) -> None:
+        """Stores system context."""
+        self._full_memory.add_message(message_id=message_id, **kwargs)
+        self._meta_memory.add_message(message_id=message_id, **kwargs)
         
-    def save_user_context(self, message, user_message_id, **kwargs) -> None:
-        self.chat_memory.add_message(message, message_id=user_message_id, **kwargs)
-        self.full_memory.add_message(message, message_id=user_message_id, **kwargs)
+    def save_user_context(self, message_id, **kwargs) -> None:
+        """Stores user context."""
+        self._chat_memory.add_message(message_id=message_id, **kwargs)
+        self._full_memory.add_message(message_id=message_id, **kwargs)
         
-    def save_assistant_context(self, message, assistant_message_id, **kwargs) -> None:
-        self.chat_memory.add_message(message, message_id=assistant_message_id, **kwargs)
-        self.full_memory.add_message(message, message_id=assistant_message_id, **kwargs) 
+    def save_assistant_context(self, message_id, **kwargs) -> None:
+        """Stores assistant context."""
+        self._chat_memory.add_message(message_id=message_id, **kwargs)
+        self._full_memory.add_message(message_id=message_id, **kwargs)
     
-    def load_memory_variables(self, 
-                              var_type: str="system",
-    ) -> Dict[str, str]:
-        """Return history buffer for system.
+    def load_memory_variables(self, var_type: str="system") -> Dict[str, str]:
+        """
+        Returns history buffer for given variable type.
         
         Args:
-            
+            var_type: A string indicating the type of memory to load. Should be one of 
+                      "system", "chat", "full". 
+
         Returns:
-            Dictionary of memory variables.
+            Dictionary of memory variables. If invalid `var_type` is provided, it returns 
+            an error message.
         """
         if var_type == "system":
             return self.meta_buffer
@@ -67,3 +60,5 @@ class ConversationBuffer(ChatMemory):
             return self.chat_buffer
         elif var_type == "full":
             return self.full_buffer
+        else:
+            raise ValueError(f'Invalid var_type "{var_type}". Expected one of: "system", "chat", "full".')
