@@ -1,15 +1,15 @@
 import pandas as pd
 import numpy as np
 
-def save_as_csv(episode, data_directory, episode_id, model):
+def save_as_csv(context, data_directory, context_id, model):
     pass
     # message_records = []
-    # for message_type, messages in episode.buffer.full_memory.message_dict.items():
+    # for message_type, messages in context.buffer.full_memory.message_dict.items():
     #     for msg in messages:
     #         message_records.append({
     #             'message_type': message_type, 
     #             'prompt': msg['prompt'],
-    #             'response': msg['message'].content, 
+    #             'response': msg['message'],
     #             'rating': msg['rating'],
     #         })
 
@@ -30,5 +30,5 @@ def save_as_csv(episode, data_directory, episode_id, model):
     # df.loc[df['message_type'] == 'system', 'conversation_id'] = -1
 
     # # Save dataframe as csv
-    # df.to_csv(f'{data_directory}/{episode_id}_{model}.csv', index=False)
+    # df.to_csv(f'{data_directory}/{context_id}_{model}.csv', index=False)
 

@@ -7,23 +7,26 @@ hydra:
 
 # sim arguments
 sim:
-  system_k: 3
-  chat_k: 0
+  system_k: 4
+  chat_k: 2
   context_id: "context_1"
   context_name: "context_1"
-  test_run: false # if false, we will use tokens!
-  verbose: true
+  test_run: true # if false, we will use tokens!
+  verbose: false
   system_message: "You are a helpful AI Assistant."
-  n_runs: 3
+  n_runs: 5
   model_name: "gpt-4" # "openai/gpt-4-0314"
   task_prompt: "task_prompt_4"
   user_prompts: 
     - "user_prompt_1"
     - "user_prompt_2"
+    - "user_prompt_3"
   assistant_prompts: 
     - "assistant_prompt_1"
     - "assistant_prompt_1"
+    - "assistant_prompt_1"
   meta_prompt: "meta_prompt_1"
+  metric_prompt: "metric_prompt_2"
 
 # crfm api
 api_crfm:

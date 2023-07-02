@@ -4,6 +4,7 @@ from omegaconf import DictConfig
 
 from tqdm import tqdm
 import pandas as pd
+import json
 
 # import context
 from scai.context.context import Context
@@ -13,6 +14,7 @@ from scai.task.prompts import TASK_PROMPTS
 from scai.assistant.prompts import ASSISTANT_PROMPTS 
 from scai.user.prompts import USER_PROMPTS 
 from scai.meta_prompt.prompts import META_PROMPTS 
+from scai.metrics.prompts import METRIC_PROMPTS
 
 # llm class
 from custom_chat_models.crfm import crfmChatLLM
@@ -39,6 +41,7 @@ def create_context(args, assistant_llm, user_llm, meta_llm):
         user_prompts=[USER_PROMPTS[user_prompt] for user_prompt in args.sim.user_prompts],
         assistant_prompts=[ASSISTANT_PROMPTS[assistant_prompt] for assistant_prompt in args.sim.assistant_prompts],
         meta_prompt=META_PROMPTS[args.sim.meta_prompt],
+        metric_prompt=METRIC_PROMPTS[args.sim.metric_prompt],
         user_llm=user_llm,
         assistant_llm=assistant_llm,
         meta_llm=meta_llm,
@@ -79,6 +82,12 @@ def main(args: DictConfig) -> None:
     # # plot user ratings
     df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.csv'))
     plot_user_ratings(df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model_name, pdf=True)
+
+
+    # save context buffer messages as json
+    with open(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.json', 'w') as f:
+        json.dump(context.buffer._memory.messages, f)
+
 
     # python main.py ++sim.verbose=false
 

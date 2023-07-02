@@ -80,6 +80,15 @@ class SimArguments:
             )
         },
     )
+    metric_prompt: str = field(
+        default="metric_prompt_1",
+        metadata={
+            "help": (
+                "the metric we are going to collect (eg satisfaction or helpfulness)",
+            )
+        },
+    )
+
 
 @dataclass
 class AssistantAPIArgumentsCRFM:
