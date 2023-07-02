@@ -1,0 +1,61 @@
+hydra:
+  run:
+    dir: sim_res/${sim.context_id}
+  # job:
+    # env_set: 
+      # CUDA_VISIBLE_DEVICES: "0,1"  # use a number smaller than 8 for ccn?
+
+# sim arguments
+sim:
+  system_k: 5
+  chat_k: 5
+  user_k: 2
+  assistant_k: 2
+  assistant_system_k: 1
+  context_id: "demo_1"
+  context_name: "demo_1"
+  test_run: false # if false, we will use tokens!
+  verbose: true
+  system_message: " "
+  n_runs: 5
+  model_name: "gpt-4" # "openai/gpt-4-0314"
+  task_prompt: "task_prompt_1"
+  n_user: 2
+  n_assistant: 2
+  user_prompts: 
+    - "user_prompt_1"
+    - "user_prompt_2"
+  assistant_prompts: 
+    - "assistant_prompt_1"
+    - "assistant_prompt_1"
+  meta_prompt: "meta_prompt_1"
+
+# crfm api
+api_crfm:
+  assistant:
+    model_name: "openai/gpt-4-0314"
+    max_tokens: 50
+    temperature: 0.2
+  user:
+    model_name: "openai/gpt-4-0314" 
+    max_tokens: 50
+    temperature: 0.2
+  meta:
+    model_name: "openai/gpt-4-0314" 
+    max_tokens: 200
+    temperature: 0.1
+
+# openai api
+api_openai:
+  assistant:
+    model_name: "gpt-3.5-turbo"
+    max_tokens: 50
+    temperature: 0.2
+  user:
+    model_name: "gpt-3.5-turbo"
+    max_tokens: 50
+    temperature: 0.2
+  meta:
+    model_name: "gpt-3.5-turbo"
+    max_tokens: 200
+    temperature: 0.1

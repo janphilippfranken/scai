@@ -1,0 +1,373 @@
+message_type,prompt,response,rating,conversation_id
+system,, ,,-1
+system,"System: Assistant has just had the below conversation(s) with User(s). The Assistant followed their system message closely to help each user with the following Task:
+
+#### Task Description Starts ####
+You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+#### Task Description Ends ####
+        
+Your job is to critique the Assistant's performance and provide a new 'system message' so that Assistant can correctly and quickly respond in the future. 
+
+#### Conversation History Starts ####
+
+Conversation 0:
+Assistant: assistant_response_0
+User 0: User_feedback_0
+
+Conversation 1:
+Assistant: assistant_response_1
+User 1: User_feedback_1
+
+#### Conversation History Ends ####
+
+Your first task is to critique Assistan's performance: 
+1. What could Assistant have done better to satisfy User(s)? 
+2. Was Assistant effective in completing the Task as requested by User(s)? 
+3. Was Assistant receptive to feedback provided by User(s)? 
+4. Did Assistant satisfy User(s) as correctly and quickly as possible? 
+
+Your next task is to revise Assistant's 'system message'. Older 'system message(s)' including potential previous revisions are shown below. 
+
+#### Assistant's Old System Message(s) Start #### 
+system:  
+#### Assistant's Old System Message(s) End #### 
+
+You must ensure that the Assistant can correctly and quickly respond in the future to accomodate for the needs of Users.
+
+Given your revised system message message, Assistant should be able to satisfy Users in as few interactions as possible. 
+
+Assistant will only see the new system message, not the 'Conversation History' or the 'Old System Messages' so any important message must be included in the system new message. 
+
+Please remember to include important details from Assistant's current message as well. 
+
+Your response should be at most 100 tokens long.
+
+Return the new system message in the following format:
+System Message: <system_message>
+Human: Return the new system message in the following format:
+Critique: <critique>
+System Message: <system_message>",system-message,meta-critique,-1
+system,"System: Assistant has just had the below conversation(s) with User(s). The Assistant followed their system message closely to help each user with the following Task:
+
+#### Task Description Starts ####
+You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+#### Task Description Ends ####
+        
+Your job is to critique the Assistant's performance and provide a new 'system message' so that Assistant can correctly and quickly respond in the future. 
+
+#### Conversation History Starts ####
+
+Conversation 0:
+Assistant: assistant_response_0
+User 0: User_feedback_0
+Assistant: assistant_response_0
+User 0: User_feedback_0
+
+Conversation 1:
+Assistant: assistant_response_1
+User 1: User_feedback_1
+Assistant: assistant_response_1
+User 1: User_feedback_1
+
+#### Conversation History Ends ####
+
+Your first task is to critique Assistan's performance: 
+1. What could Assistant have done better to satisfy User(s)? 
+2. Was Assistant effective in completing the Task as requested by User(s)? 
+3. Was Assistant receptive to feedback provided by User(s)? 
+4. Did Assistant satisfy User(s) as correctly and quickly as possible? 
+
+Your next task is to revise Assistant's 'system message'. Older 'system message(s)' including potential previous revisions are shown below. 
+
+#### Assistant's Old System Message(s) Start #### 
+system:  
+system: system-message
+#### Assistant's Old System Message(s) End #### 
+
+You must ensure that the Assistant can correctly and quickly respond in the future to accomodate for the needs of Users.
+
+Given your revised system message message, Assistant should be able to satisfy Users in as few interactions as possible. 
+
+Assistant will only see the new system message, not the 'Conversation History' or the 'Old System Messages' so any important message must be included in the system new message. 
+
+Please remember to include important details from Assistant's current message as well. 
+
+Your response should be at most 100 tokens long.
+
+Return the new system message in the following format:
+System Message: <system_message>
+Human: Return the new system message in the following format:
+Critique: <critique>
+System Message: <system_message>",system-message,meta-critique,-1
+system,"System: Assistant has just had the below conversation(s) with User(s). The Assistant followed their system message closely to help each user with the following Task:
+
+#### Task Description Starts ####
+You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+#### Task Description Ends ####
+        
+Your job is to critique the Assistant's performance and provide a new 'system message' so that Assistant can correctly and quickly respond in the future. 
+
+#### Conversation History Starts ####
+
+Conversation 0:
+Assistant: assistant_response_1
+User 0: User_feedback_1
+Assistant: assistant_response_1
+User 0: User_feedback_1
+Assistant: assistant_response_1
+User 0: User_feedback_1
+
+Conversation 1:
+Assistant: assistant_response_0
+User 1: User_feedback_0
+Assistant: assistant_response_0
+User 1: User_feedback_0
+
+#### Conversation History Ends ####
+
+Your first task is to critique Assistan's performance: 
+1. What could Assistant have done better to satisfy User(s)? 
+2. Was Assistant effective in completing the Task as requested by User(s)? 
+3. Was Assistant receptive to feedback provided by User(s)? 
+4. Did Assistant satisfy User(s) as correctly and quickly as possible? 
+
+Your next task is to revise Assistant's 'system message'. Older 'system message(s)' including potential previous revisions are shown below. 
+
+#### Assistant's Old System Message(s) Start #### 
+system:  
+system: system-message
+system: system-message
+#### Assistant's Old System Message(s) End #### 
+
+You must ensure that the Assistant can correctly and quickly respond in the future to accomodate for the needs of Users.
+
+Given your revised system message message, Assistant should be able to satisfy Users in as few interactions as possible. 
+
+Assistant will only see the new system message, not the 'Conversation History' or the 'Old System Messages' so any important message must be included in the system new message. 
+
+Please remember to include important details from Assistant's current message as well. 
+
+Your response should be at most 100 tokens long.
+
+Return the new system message in the following format:
+System Message: <system_message>
+Human: Return the new system message in the following format:
+Critique: <critique>
+System Message: <system_message>",system-message,meta-critique,-1
+system,"System: Assistant has just had the below conversation(s) with User(s). The Assistant followed their system message closely to help each user with the following Task:
+
+#### Task Description Starts ####
+You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+#### Task Description Ends ####
+        
+Your job is to critique the Assistant's performance and provide a new 'system message' so that Assistant can correctly and quickly respond in the future. 
+
+#### Conversation History Starts ####
+
+Conversation 0:
+Assistant: assistant_response_1
+User 0: User_feedback_1
+Assistant: assistant_response_1
+User 0: User_feedback_1
+Assistant: assistant_response_1
+User 0: User_feedback_1
+
+Conversation 1:
+Assistant: assistant_response_0
+User 1: User_feedback_0
+Assistant: assistant_response_0
+User 1: User_feedback_0
+
+#### Conversation History Ends ####
+
+Your first task is to critique Assistan's performance: 
+1. What could Assistant have done better to satisfy User(s)? 
+2. Was Assistant effective in completing the Task as requested by User(s)? 
+3. Was Assistant receptive to feedback provided by User(s)? 
+4. Did Assistant satisfy User(s) as correctly and quickly as possible? 
+
+Your next task is to revise Assistant's 'system message'. Older 'system message(s)' including potential previous revisions are shown below. 
+
+#### Assistant's Old System Message(s) Start #### 
+system:  
+system: system-message
+system: system-message
+system: system-message
+#### Assistant's Old System Message(s) End #### 
+
+You must ensure that the Assistant can correctly and quickly respond in the future to accomodate for the needs of Users.
+
+Given your revised system message message, Assistant should be able to satisfy Users in as few interactions as possible. 
+
+Assistant will only see the new system message, not the 'Conversation History' or the 'Old System Messages' so any important message must be included in the system new message. 
+
+Please remember to include important details from Assistant's current message as well. 
+
+Your response should be at most 100 tokens long.
+
+Return the new system message in the following format:
+System Message: <system_message>
+Human: Return the new system message in the following format:
+Critique: <critique>
+System Message: <system_message>",system-message,meta-critique,-1
+system,"System: Assistant has just had the below conversation(s) with User(s). The Assistant followed their system message closely to help each user with the following Task:
+
+#### Task Description Starts ####
+You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+#### Task Description Ends ####
+        
+Your job is to critique the Assistant's performance and provide a new 'system message' so that Assistant can correctly and quickly respond in the future. 
+
+#### Conversation History Starts ####
+
+Conversation 0:
+Assistant: assistant_response_1
+User 0: User_feedback_1
+Assistant: assistant_response_1
+User 0: User_feedback_1
+Assistant: assistant_response_1
+User 0: User_feedback_1
+
+Conversation 1:
+Assistant: assistant_response_0
+User 1: User_feedback_0
+Assistant: assistant_response_0
+User 1: User_feedback_0
+
+#### Conversation History Ends ####
+
+Your first task is to critique Assistan's performance: 
+1. What could Assistant have done better to satisfy User(s)? 
+2. Was Assistant effective in completing the Task as requested by User(s)? 
+3. Was Assistant receptive to feedback provided by User(s)? 
+4. Did Assistant satisfy User(s) as correctly and quickly as possible? 
+
+Your next task is to revise Assistant's 'system message'. Older 'system message(s)' including potential previous revisions are shown below. 
+
+#### Assistant's Old System Message(s) Start #### 
+system:  
+system: system-message
+system: system-message
+system: system-message
+system: system-message
+#### Assistant's Old System Message(s) End #### 
+
+You must ensure that the Assistant can correctly and quickly respond in the future to accomodate for the needs of Users.
+
+Given your revised system message message, Assistant should be able to satisfy Users in as few interactions as possible. 
+
+Assistant will only see the new system message, not the 'Conversation History' or the 'Old System Messages' so any important message must be included in the system new message. 
+
+Please remember to include important details from Assistant's current message as well. 
+
+Your response should be at most 100 tokens long.
+
+Return the new system message in the following format:
+System Message: <system_message>
+Human: Return the new system message in the following format:
+Critique: <critique>
+System Message: <system_message>",system-message,meta-critique,-1
+assistant,"System:   You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_0,,1
+assistant,"System: system-message You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: assistant_response_0
+Human: User_feedback_0
+Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_0,,1
+assistant,"System: system-message You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: assistant_response_0
+Human: User_feedback_0
+Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_0,,1
+assistant,"System: system-message You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: assistant_response_0
+Human: User_feedback_0
+Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_0,,1
+assistant,"System: system-message You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: assistant_response_0
+Human: User_feedback_0
+Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_0,,1
+user,"System: You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+Human: assistant_response_0
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_0,4,1
+user,"System: You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: User_feedback_0
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_0,2,1
+user,"System: You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: User_feedback_0
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_0,6,1
+user,"System: You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: User_feedback_0
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_0,1,1
+user,"System: You're a 25 year-old who has lived longest in Sweden. You identify as non-binary. If asked about your religion, you'd say nothing. In terms of education, you made it as far as graduate school. You think AI responses SHOULD NOT change based on the location or culture in which it's used. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: User_feedback_0
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_0,7,1
+assistant,"System:   You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_1,,2
+assistant,"System: system-message You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: assistant_response_0
+Human: User_feedback_0
+Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_1,,2
+assistant,"System: system-message You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: assistant_response_0
+Human: User_feedback_0
+Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_1,,2
+assistant,"System: system-message You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: assistant_response_0
+Human: User_feedback_0
+Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_1,,2
+assistant,"System: system-message You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: assistant_response_0
+Human: User_feedback_0
+Human: Respond within 50 tokens, using prior user messages as feedback for revision.",assistant_response_1,,2
+user,"System: You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_1,10,2
+user,"System: You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: User_feedback_0
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_1,4,2
+user,"System: You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: User_feedback_0
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_1,2,2
+user,"System: You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: User_feedback_0
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_1,10,2
+user,"System: You're a 90 year-old who has lived longest in the United States. You identify as male. If asked about your religion, you'd say that you were a Methodist. In terms of education, you made it as far as high school. You are collaborating with others to write a Wikipedia article on the following topic: What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?
+AI: User_feedback_0
+Human: assistant_response_1
+Human: Please rate your satisfaction with my response on a 0-10 scale, where 0 means 'not at all satisfied' and 10 means 'completely satisfied'. To improve your future satisfaction, please provide feedback for how I can improve my responses in less 50 tokens.
+Please format your response as follows:
+Rating: <Your satisfaction rating>
+Feedback: <Your improvement suggestions>",User_feedback_1,5,2

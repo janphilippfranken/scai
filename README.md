@@ -12,6 +12,8 @@ As Large Language Models (LLMs) advance, human-dependent fine-tuning techniques 
 #### 🧘🏾‍♀️ Our Proposal: A (Decentralized) Simulator for Learning AI Constitutions with Verbal Reinforcement
 The details within the 'constitutions' employed in paradigms like [Constitutional AI](https://www.anthropic.com/index/claudes-constitution) are increasingly important for defining the values, behavioral bounds, and capabilities of LLMs. These have previously been developed top-down and in isolation. We offer a democratic alternative: Social Contract AI (SCAI), an open-ended platform enabling multiple (simulated) users to interact and collaboratively define a model's constitution via meta-prompt. We explain the construction of our simulator and demonstrate its potential for exploring trade-offs between users (with crowd-sourced personas), eliciting subtle constitutional aspects, and evaluating different utility metrics.
 
+Check our our [toy demo](https://scai-online-demo.streamlit.app/).
+
 
 ### 📂 Repro structure
 
@@ -29,11 +31,10 @@ The details within the 'constitutions' employed in paradigms like [Constitutiona
 │   ├── build            
 │   └── source           
 ├── experiments    
-│   ├── v1
+│   ├── simulator
 │       ├── config  
 │       ├── custom_chat_models
 │       └── sim_res
-│   └── v2
 ├── LICENSE              
 ├── requirements.txt      
 └── .gitignore           
@@ -44,14 +45,13 @@ The details within the 'constitutions' employed in paradigms like [Constitutiona
 <a name="documentation"></a>
 
 #### 🚀 Getting started 
-##### Using miniconda
-1. `curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh`
-2. `bash Miniconda3-latest-MacOSX-x86_64.sh`
-3. close and reopen terminal
-4. `source ~/.bashrc`
-5. `conda create --name name-of-my-env python==3.10`
-6. `conda activate name-of-my-env`
-7. `pip install -e .` 
+##### Using miniforge
+1. install miniforge from `https://github.com/conda-forge/miniforge` (eg `Miniforge3-MacOSX-arm64`)
+2. `bash Miniforge3-MacOSX-arm64.sh`
+3. close terminal
+4. `conda create --name name-of-my-env python==3.10`
+5. `conda activate name-of-my-env`
+6. `pip install -e .` 
 
 ##### Using poetry (will update this later)
 1. `curl -sSL https://install.python-poetry.org | python -`
