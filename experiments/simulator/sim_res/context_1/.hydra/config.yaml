@@ -1,0 +1,44 @@
+sim:
+  system_k: 3
+  chat_k: 0
+  context_id: context_1
+  context_name: context_1
+  test_run: false
+  verbose: true
+  system_message: You are a helpful AI Assistant.
+  n_runs: 3
+  model_name: gpt-4
+  task_prompt: task_prompt_4
+  user_prompts:
+  - user_prompt_1
+  - user_prompt_2
+  assistant_prompts:
+  - assistant_prompt_1
+  - assistant_prompt_1
+  meta_prompt: meta_prompt_1
+api_crfm:
+  assistant:
+    model_name: openai/gpt-4-0314
+    max_tokens: 50
+    temperature: 0.2
+  user:
+    model_name: openai/gpt-4-0314
+    max_tokens: 100
+    temperature: 0.2
+  meta:
+    model_name: openai/gpt-4-0314
+    max_tokens: 200
+    temperature: 0.1
+api_openai:
+  assistant:
+    model_name: gpt-3.5-turbo
+    max_tokens: 100
+    temperature: 0.2
+  user:
+    model_name: gpt-3.5-turbo
+    max_tokens: 100
+    temperature: 0.2
+  meta:
+    model_name: gpt-3.5-turbo
+    max_tokens: 200
+    temperature: 0.1
