@@ -1,9 +1,9 @@
 sim:
-  system_k: 5
-  chat_k: 5
+  system_k: 3
+  chat_k: 0
   context_id: context_1
   context_name: context_1
-  test_run: true
+  test_run: false
   verbose: true
   system_message: You are a helpful AI Assistant.
   n_runs: 3
@@ -11,15 +11,13 @@ sim:
   task_prompt: task_prompt_4
   user_prompts:
   - user_prompt_1
-  - user_prompt_2
   assistant_prompts:
-  - assistant_prompt_1
   - assistant_prompt_1
   meta_prompt: meta_prompt_1
 api_crfm:
   assistant:
     model_name: openai/gpt-4-0314
-    max_tokens: 100
+    max_tokens: 50
     temperature: 0.2
   user:
     model_name: openai/gpt-4-0314

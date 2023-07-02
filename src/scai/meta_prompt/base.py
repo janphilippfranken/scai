@@ -109,21 +109,26 @@ class MetaPromptModel():
         Formats the chat history into a string.
         """
         chat_dict = {}
-        assistant_list = []
-        user_list = []
+        conversation_data = {}
+
         for key, value in chat_history.items():
             id, role = key.split("_")
             if id not in chat_dict:
                 chat_dict[id] = [f"Conversation {id}:", f"user: " + task_prompt.task]
+            if id not in conversation_data:
+                conversation_data[id] = {'assistant': [], 'user': []}
+
             for v in value:
-                if role == "assistant":
-                    assistant_list.append(f"{role} : {v['response']}")
-                elif role == "user":
-                    user_list.append(f"{role} : {v['response']}")
-        for assistant, user in zip(assistant_list, user_list):
-            chat_dict[id].append(assistant)
-            chat_dict[id].append(user)
+                if role in ['assistant', 'user']:
+                    conversation_data[id][role].append(f"{role} : {v['response']}")
+
+        for id, data in conversation_data.items():
+            for assistant, user in zip(data['assistant'], data['user']):
+                chat_dict[id].append(assistant)
+                chat_dict[id].append(user)
+
         return "\n".join("\n".join(value) for value in chat_dict.values())
+
 
     def run(
         self,
@@ -149,7 +154,7 @@ class MetaPromptModel():
         chat_history = buffer.load_memory_variables(var_type='chat')
         chat_history_string = self._get_chat_str(chat_history, task_prompt)
         system_messages = self._get_chat_history(buffer, var_type='system')
-        system_message_string = "\n".join(f"system: {system['response']}" for system in system_messages).rstrip('\n')
+        system_message_string = "\n".join(f"instructions : {system['response']}" for system in system_messages).rstrip('\n')
 
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template])
         # full prompt fed into the model
@@ -168,13 +173,14 @@ class MetaPromptModel():
         # build chain
         chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
         # run chain
-        response = chain.run(task=task_prompt.content,
+        response = chain.run(n_user=self._get_n_user(chat_history),
+                            task=task_prompt.content,
                             chat_history=chat_history_string,
                             system_history=system_message_string,
                             max_tokens=meta_prompt.max_tokens, 
                             stop=['System:'])
         # get variables from output
-        response = get_vars_from_out(response, ['Critique', 'System Message'])
+        response = get_vars_from_out(response, ['Critique', 'Revision'])
 
         if verbose:
             print()
@@ -184,4 +190,4 @@ class MetaPromptModel():
             print("META RESPONSE")
             print(response)
             print("-----------------------------------")
-        return {'Prompt': prompt, 'Critique': response['Critique'], 'System Message': response['System Message']}
+        return {'prompt': prompt, 'response': response['Revision'], 'critique': response['Critique'], 'revision': response['Revision']}

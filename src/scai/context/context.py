@@ -65,7 +65,7 @@ class Context():
         buffer = ConversationBuffer()
         # create models
         user_models = [UserModel(llm=user_llm, conversation_id=str(conversation_id), k=chat_k) for conversation_id, _ in enumerate(user_prompts)]
-        assistant_models = [AssistantModel(llm=assistant_llm, conversation_id=str(conversation_id), k=chat_k) for conversation_id, _ in enumerate(assistant_prompts)]
+        assistant_models = [AssistantModel(llm=assistant_llm, conversation_id=str(conversation_id), k=chat_k, system_k=system_k) for conversation_id, _ in enumerate(assistant_prompts)]
         meta_model = MetaPromptModel(llm=meta_llm, conversation_id="system", k=system_k)
 
         return Context(
