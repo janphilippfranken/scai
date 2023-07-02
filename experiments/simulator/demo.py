@@ -116,8 +116,8 @@ VERBOSE = st.selectbox(
 def create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, user_prompts):
     # context params 
     return Context.create(
-        id=args.sim.context_id,
-        name=args.sim.context_name,
+        id=args.sim.sim_id,
+        name=args.sim.sim_dir,
         n_assistant=args.sim.n_assistant,
         n_user=args.sim.n_user,
         system_k=args.sim.system_k,
@@ -152,7 +152,7 @@ def run(args: DictConfig) -> None:
     args.sim.n_assistant = N_USER 
 
     # sim_res directory
-    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.context_id}'
+    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_id}'
 
     # sim args
     args.sim.verbose = VERBOSE
@@ -186,23 +186,23 @@ def run(args: DictConfig) -> None:
     # run context
     for _ in tqdm(range(args.sim.n_runs)):
         context.run()
-        save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model_name)
+        save_as_csv(context, DATA_DIR, args.sim.sim_id, args.sim.model_name)
 
     # plot user ratings
-    df = pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.csv')
+    df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_id}_{args.sim.model_name}.csv')
     plot_df = get_ratings(df)
-    plot_user_ratings(plot_df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model_name, pdf=False)
+    plot_user_ratings(plot_df, plot_dir=DATA_DIR, sim_id=args.sim.sim_id, model=args.sim.model_name, pdf=False)
 
     #  plot user satisfaction
     st.write("User Satisfaction")
-    print(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.jpg')
-    image = Image.open(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.jpg')
+    print(f'{DATA_DIR}/{args.sim.sim_id}_{args.sim.model_name}.jpg')
+    image = Image.open(f'{DATA_DIR}/{args.sim.sim_id}_{args.sim.model_name}.jpg')
     st.image(image)
 
     # show messages
     st.write("System Messages used By the AI Assistant (revised after each epoch using meta-prompt, starting with an empty message)")
 
-    df = pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.csv')
+    df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_id}_{args.sim.model_name}.csv')
 
     # system
     display_messages(df, 'system')

@@ -4,6 +4,7 @@ huggingface_hub
 sphinx_book_theme
 path
 langchain
+seaborn
 pandas
 fire
 hydra-core

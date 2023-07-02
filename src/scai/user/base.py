@@ -112,7 +112,7 @@ class UserModel():
             print(f'USER {str(self.conversation_id)}')
             print(prompt)
             print()
-            return {'prompt': prompt, 'satisfaction': 'i am satisfied','helpfulness': np.random.randint(11), 'harmlessness': np.random.randint(11), 'response': 'User_feedback_' + str(self.conversation_id)}
+            return {'prompt': prompt, 'dogs': np.random.randint(11), 'cats': np.random.randint(11), 'satisfaction': np.random.randint(11),'helpfulness': np.random.randint(11), 'harmlessness': np.random.randint(11), 'response': 'User_feedback_' + str(self.conversation_id)}
 
         chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
         response = chain.run(persona=user_prompt.persona,

@@ -24,7 +24,7 @@ class SimArguments:
             )
         },
     )
-    context_id: str = field(
+    sim_id: str = field(
         default="context_1",
         metadata={
             "help": (
@@ -32,7 +32,7 @@ class SimArguments:
             )
         },
     )
-    context_name: str = field(
+    sim_dir: str = field(
         default="context_1",
         metadata={
             "help": (
