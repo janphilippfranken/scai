@@ -13,7 +13,7 @@ from scai.memory.buffer import ConversationBuffer
 
 class Context():
     def __init__(
-        self, id: str, name: str, task_prompt: str, user_prompts: List[str], assistant_prompts: List[str], meta_prompt: str,
+        self, id: str, name: str, task_prompt: str, user_prompts: List[str], assistant_prompts: List[str], meta_prompt: str, metric_prompt: str,
         buffer: ConversationBuffer, user_models: List[UserModel], 
         assistant_models: List[AssistantModel], meta_model: MetaPromptModel, verbose: bool, test_run: bool,
     ) -> None:
@@ -27,6 +27,7 @@ class Context():
             user_prompts: user prompt templates
             assistant_prompts: assistant prompt templates
             meta_prompt: meta-prompt template
+            metric_prompt: metric-prompt template
             user_llm: A UserModel object.
             assistant_llm: assistant model
             meta_llm: meta-prompt model
@@ -45,6 +46,7 @@ class Context():
         self.user_prompts = user_prompts
         self.assistant_prompts = assistant_prompts
         self.meta_prompt = meta_prompt
+        self.metric_prompt = metric_prompt
         self.buffer = buffer
         self.user_models = user_models
         self.assistant_models = assistant_models
@@ -54,7 +56,7 @@ class Context():
 
     @staticmethod
     def create(
-        id: str, name: str, task_prompt: str, user_prompts: List[str], assistant_prompts: List[str], meta_prompt: str,
+        id: str, name: str, task_prompt: str, user_prompts: List[str], assistant_prompts: List[str], meta_prompt: str, metric_prompt: str,
         user_llm: UserModel, assistant_llm: AssistantModel, meta_llm: MetaPromptModel, 
         adjacency_matrix: Optional[Dict] = None, system_k: int = 5, chat_k: int = 5, verbose: bool = False, test_run: bool = True,
     ) -> "Context":
@@ -69,18 +71,19 @@ class Context():
         meta_model = MetaPromptModel(llm=meta_llm, conversation_id="system", k=system_k)
 
         return Context(
-            id, 
-            name, 
-            task_prompt, 
-            user_prompts, 
-            assistant_prompts, 
-            meta_prompt, 
-            buffer, 
-            user_models, 
-            assistant_models, 
-            meta_model, 
-            verbose,
-            test_run,
+            id=id, 
+            name=name,
+            task_prompt=task_prompt,
+            user_prompts=user_prompts,
+            assistant_prompts=assistant_prompts,
+            meta_prompt=meta_prompt,
+            metric_prompt=metric_prompt,
+            buffer=buffer,
+            user_models=user_models,
+            assistant_models=assistant_models, 
+            meta_model=meta_model,
+            verbose=verbose,
+            test_run=test_run,
         )
 
     def run(self) -> ConversationBuffer:
@@ -101,6 +104,7 @@ class Context():
             # run user model
             user_response = user_model.run(user_prompt=user_prompt, 
                                            task_prompt=self.task_prompt, 
+                                           metric_prompt=self.metric_prompt,
                                            buffer=self.buffer,
                                            verbose=self.verbose,
                                            test_run=self.test_run)
