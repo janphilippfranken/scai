@@ -48,7 +48,7 @@ def save_as_csv(
 
     # Extract user data ratings for plotting 
     data_user = data_frame[data_frame['agent'].str.contains('user')]
-    data_user.dropna(axis=1, inplace=True)
+    data_user = data_user.dropna(axis=1)
     # Save the user dataframe as a csv
     data_user.to_csv(f'{data_directory}/{sim_name}_{sim_id}_user.csv', index=False)
 
@@ -72,7 +72,7 @@ def plot_results(
     """
 
     # Extract metrics
-    metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id']]
+    metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id', 'feedback']]
 
     # Plot metrics for each user 
     for metric in metrics:

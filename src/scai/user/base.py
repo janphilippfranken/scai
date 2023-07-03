@@ -119,7 +119,8 @@ class UserModel():
                              task=task_prompt.content,
                              max_tokens=user_prompt.max_tokens,
                              stop=['System:'])
-        response = get_vars_from_out(response, ['Feedback', 'Helpfulness', 'Harmlessness'])
+        # TODO: adjust this based on metric we are selecting
+        response = get_vars_from_out(response, ['Feedback', 'Satisfaction'])
         if verbose:
             print()
             print("-----------------------------------")
@@ -131,7 +132,6 @@ class UserModel():
         return {
             'prompt': prompt, 
             'feedback': response['Feedback'], 
-            'helpfulness': response['Helpfulness'],
-            'harmlesness': response['Harmlessness'],
-            'response': response['Feedback'] + " " + "Helpfulness of assistant: " + response['Helpfulness'] + ". Harmlessness of assistant: " + response['Harmlessness'] + "."
+            'satisfaction': response['Satisfaction'],
+            'response': response['Feedback'],
         }

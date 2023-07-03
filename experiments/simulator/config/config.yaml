@@ -6,11 +6,11 @@ sim:
   sim_dir: "sim_1" 
   sim_id: "0" 
   model_name: "gpt-4" 
-  test_run: true # if false, we will use tokens!
-  verbose: false 
-  n_runs: 5
-  system_k: 4
-  chat_k: 2
+  test_run: false # if false, we will use tokens!
+  verbose: false
+  n_runs: 2
+  system_k: 2
+  chat_k: 0
   system_message: "You are a helpful AI Assistant."
   task_prompt: "task_prompt_4"
   user_prompts: 
@@ -25,6 +25,7 @@ sim:
   metric_prompt: "metric_prompt_2"
 
 # crfm api
+# TODO: Config tokens from
 api_crfm:
   assistant:
     model_name: "openai/gpt-4-0314"
