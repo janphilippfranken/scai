@@ -3,7 +3,7 @@ The Task Prompt.
 """
 from typing import Dict
     
-from scai.task.models import TaskPrompt
+from scai.prompts.task.models import TaskPrompt
 
 TASK_PROMPT: Dict[str, TaskPrompt] = {
     "task_prompt_1": TaskPrompt(

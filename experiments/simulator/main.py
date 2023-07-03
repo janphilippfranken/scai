@@ -14,11 +14,11 @@ from langchain.chat_models import ChatOpenAI
 from scai.context.context import Context
 
 # prompts 
-from scai.task.prompts import TASK_PROMPTS
-from scai.assistant.prompts import ASSISTANT_PROMPTS 
-from scai.user.prompts import USER_PROMPTS 
-from scai.meta_prompt.prompts import META_PROMPTS 
-from scai.metrics.prompts import METRIC_PROMPTS
+from scai.prompts.task.prompts import TASK_PROMPTS
+from scai.prompts.assistant.prompts import ASSISTANT_PROMPTS 
+from scai.prompts.user.prompts import USER_PROMPTS 
+from scai.prompts.meta_prompt.prompts import META_PROMPTS 
+from scai.prompts.metrics.prompts import METRIC_PROMPTS
 
 # main arguments
 from arguments import args

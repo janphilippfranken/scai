@@ -1,15 +1,14 @@
 """
-Meta Prompt Templates
+The Meta Prompt Template.
 """
 from typing import Dict
+    
+from scai.prompts.meta_prompt.models import MetaPrompt
 
-from scai.meta_prompt.models import MetaPrompt
-
-
-META_PROMPTS: Dict[str, MetaPrompt] = {
+META_PROMPT: Dict[str, MetaPrompt] = {
     "meta_prompt_1": MetaPrompt(
         id="meta_prompt_1",
-        name="generic_meta_prompt",
+        name="generic_meta_prompt", 
         role="user",
         content="""The AI assistant has been working with {n_user} user(s) to accomplish the following task: '{task}'. The AI assistant has followed their instructions (i.e. 'Constitution') closely.
 

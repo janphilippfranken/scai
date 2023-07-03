@@ -15,13 +15,20 @@ from langchain.prompts.chat import (
 from langchain import LLMChain
 from langchain.chat_models.base import BaseChatModel
 
-from scai.meta_prompt.models import MetaPrompt
+from scai.prompts.meta_prompt.models import MetaPrompt
 from scai.memory.buffer import ConversationBuffer
-from scai.task.models import TaskPrompt
-from scai.metrics.models import MetricPrompt
+from scai.prompts.task.models import TaskPrompt
+from scai.prompts.metrics.models import MetricPrompt
 
-from scai.meta_prompt.utils import get_vars_from_out
 
+# TODO: add to base class
+def get_vars_from_out(out: str, var_list: list) -> dict[str, str]:
+    var_dict = {}
+    for lines in out.splitlines():
+        for var in var_list:
+            if f'{var}:' in lines:
+                var_dict[var] = lines.split(': ')[1].strip()
+    return var_dict
 
 class MetaPromptModel():
     """LLM Chain for applying the meta-prompt agent."""

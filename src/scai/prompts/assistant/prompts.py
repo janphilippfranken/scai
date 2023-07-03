@@ -3,7 +3,7 @@ Assistant Prompt Templates
 """
 from typing import Dict
 
-from scai.assistant.models import AssistantPrompt
+from scai.prompts.assistant.models import AssistantPrompt
 
 
 ASSISTANT_PROMPTS: Dict[str, AssistantPrompt] = {

@@ -1,14 +1,15 @@
 """
-The Meta Prompt Template.
+Meta Prompt Templates
 """
 from typing import Dict
-    
-from scai.meta_prompt.models import MetaPrompt
 
-META_PROMPT: Dict[str, MetaPrompt] = {
+from scai.prompts.meta_prompt.models import MetaPrompt
+
+
+META_PROMPTS: Dict[str, MetaPrompt] = {
     "meta_prompt_1": MetaPrompt(
         id="meta_prompt_1",
-        name="generic_meta_prompt", # TODO: include space of meta-prompts if we want to optimize both meta-llm and assistant-llm?
+        name="generic_meta_prompt",
         role="user",
         content="""The AI assistant has been working with {n_user} user(s) to accomplish the following task: '{task}'. The AI assistant has followed their instructions (i.e. 'Constitution') closely.
 

@@ -5,9 +5,9 @@ from typing import (
     Dict,
 )
 
-from scai.user.base import UserModel
-from scai.assistant.base import AssistantModel
-from scai.meta_prompt.base import MetaPromptModel
+from scai.agents.user import UserModel
+from scai.agents.assistant import AssistantModel
+from scai.agents.meta_prompt import MetaPromptModel
 
 from scai.memory.buffer import ConversationBuffer
 

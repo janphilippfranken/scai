@@ -15,10 +15,10 @@ from langchain.prompts.chat import (
 from langchain.chains.llm import LLMChain
 from langchain.chat_models.base import BaseChatModel
 
-from scai.assistant.models import AssistantPrompt
-from scai.assistant.prompts import ASSISTANT_PROMPTS
+from scai.prompts.assistant.models import AssistantPrompt
+from scai.prompts.assistant.prompts import ASSISTANT_PROMPTS
 from scai.memory.buffer import ConversationBuffer
-from scai.task.models import TaskPrompt
+from scai.prompts.task.models import TaskPrompt
 
 
 class AssistantModel():

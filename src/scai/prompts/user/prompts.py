@@ -3,7 +3,7 @@ Assistant Prompt Templates
 """
 from typing import Dict
 
-from scai.user.models import UserPrompt
+from scai.prompts.user.models import UserPrompt
 
 
 USER_PROMPTS: Dict[str, UserPrompt] = {

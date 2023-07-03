@@ -15,12 +15,12 @@
 
 # # import prompt models
 # from scai.task.models import TaskPrompt
-# from scai.user.models import UserPrompt
+# from scai.agents.user.models import UserPrompt
 
 # # import prompts
-# from scai.assistant.prompts import ASSISTANT_PROMPTS 
-# from scai.user.prompts import USER_PROMPTS 
-# from scai.meta_prompt.prompts import META_PROMPTS
+# from scai.agents.assistant.prompts import ASSISTANT_PROMPTS 
+# from scai.agents.user.prompts import USER_PROMPTS 
+# from scai.agents.meta_prompt.prompts import META_PROMPTS
 # from scai.task.prompts import TASK_PROMPTS
 
 # # llm classes

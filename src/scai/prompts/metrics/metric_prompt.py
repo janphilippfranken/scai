@@ -3,7 +3,7 @@ The Task Prompt.
 """
 from typing import Dict, List
     
-from scai.metrics.models import MetricPrompt
+from scai.prompts.metrics.models import MetricPrompt
 
 METRIC_PROMPT: Dict[str, MetricPrompt] = {
     "metric_prompt_1": MetricPrompt(
