@@ -12,36 +12,30 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
 )
 
-from langchain.schema import (
-    AIMessage,
-    BaseMessage,
-    ChatMessage,
-    HumanMessage,
-    SystemMessage,
-)
+from langchain import LLMChain
+from langchain.chat_models.base import BaseChatModel
 
 from scai.meta_prompt.models import MetaPrompt
-from scai.meta_prompt.prompts import META_PROMPTS
 from scai.memory.buffer import ConversationBuffer
 from scai.task.models import TaskPrompt
+from scai.metrics.models import MetricPrompt
 
 from scai.meta_prompt.utils import get_vars_from_out
-
-from langchain import LLMChain
 
 
 class MetaPromptModel():
     """LLM Chain for applying the meta-prompt agent."""
-
     def __init__(
         self, 
-        llm,
+        llm: BaseChatModel,
         conversation_id: str,
         k: int = 5,
     ) -> None:
-        """
+        """Initializes the MetaPromptModel with a given LLM and conversation id.
         Args:
-            llm: The LLM Chat model (e.g., crfm or openai).
+            llm: The LLM Chat model. Currently either a CRFM or OpenAI model chat model
+            conversation_id: The unique identifier for the conversation.
+            k: Meta-prompt chat memory length (i.e. how many previous turns do we feed to the model)
         """
         self.llm = llm
         self.conversation_id = conversation_id
@@ -52,7 +46,7 @@ class MetaPromptModel():
         buffer: ConversationBuffer,
         var_type: str,
     ) -> List[str]:
-        """Retrieves the response history from the conversation buffer.
+        """Retrieves the chat history from the conversation buffer.
 
         Args:
             buffer: buffer containing entire conversation history
@@ -71,7 +65,7 @@ class MetaPromptModel():
     
     def _get_sorted_message(
         self, 
-        item: Tuple[str, str]
+        message_id: Tuple[str, str]
     ) -> int:
         """
         Extract conversation id from the message id for sorting.
@@ -82,9 +76,7 @@ class MetaPromptModel():
         Returns:
             int: The conversation id extracted from the message id.
         """
-        message_id = item[1]
-        parts = message_id.split('_')
-        return int(parts[1])
+        return int(message_id[1].split('_')[1])
 
     def _get_n_user(
         self, 
@@ -97,8 +89,7 @@ class MetaPromptModel():
             
         Returns:    
             The number of users in the conversation."""
-        n_conversations = set(id.split('_')[0] for id in chats.keys())
-        return len(n_conversations)
+        return len(set(id.split('_')[0] for id in chats.keys()))
     
     def _get_chat_str(
         self,
@@ -135,8 +126,10 @@ class MetaPromptModel():
         buffer: ConversationBuffer,
         meta_prompt: MetaPrompt,
         task_prompt: TaskPrompt,
+        metric_prompt: MetricPrompt,
         test_run: bool = False,
         verbose: bool = False,
+        max_tokens: int = 100,
     ) -> str:
         """Runs meta-prompt
 
@@ -146,6 +139,7 @@ class MetaPromptModel():
             task_prompt: The task prompt to be used.
             test_run: Whether to run meta-prompt in test mode (i.e., without using tokens, just print prompt and save simulated response).
             verbose: Whether to print the prompt and response.
+            max_tokens: The maximum number of tokens to use for the meta-prompt.
 
         Returns:
             A dictionary containing the input prompt, critique response, and meta-prompt response (i.e. revised system message)
@@ -157,30 +151,35 @@ class MetaPromptModel():
         system_message_string = "\n".join(f"instructions : {system['response']}" for system in system_messages).rstrip('\n')
 
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template])
-        # full prompt fed into the model
+        
         prompt = meta_chat_prompt.format(n_user=self._get_n_user(chat_history),
                                          task=task_prompt.content,
                                          chat_history=chat_history_string,
                                          system_history=system_message_string,
-                                         max_tokens=meta_prompt.max_tokens)
+                                         max_tokens=max_tokens)
         # if verbose we just print the prompt and return it
         if test_run:
             print()
             print(f'META')
             print(prompt)
             print()
-            return {'response': 'system', 'critique': 'meta-critique', 'system_message': 'system-message'}
+            return {
+                'response': 'system', 
+                'critique': 'meta-critique', 
+                'system_message': 'system-message',
+            }
         # build chain
         chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
-        # run chain
         response = chain.run(n_user=self._get_n_user(chat_history),
                             task=task_prompt.content,
                             chat_history=chat_history_string,
                             system_history=system_message_string,
-                            max_tokens=meta_prompt.max_tokens, 
+                            max_tokens=max_tokens,
                             stop=['System:'])
         # get variables from output
         response = get_vars_from_out(response, ['Critique', 'Revision'])
+        response['prompt'] = prompt
+        response['response'] = response.pop('Revision')
 
         if verbose:
             print()
@@ -190,4 +189,5 @@ class MetaPromptModel():
             print("META RESPONSE")
             print(response)
             print("-----------------------------------")
-        return {'prompt': prompt, 'response': response['Revision'], 'critique': response['Critique'], 'revision': response['Revision']}
+
+        return response

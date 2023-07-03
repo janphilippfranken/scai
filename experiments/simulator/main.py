@@ -6,6 +6,10 @@ from tqdm import tqdm
 import pandas as pd
 import json
 
+# llm class
+from custom_chat_models.crfm import crfmChatLLM
+from langchain.chat_models import ChatOpenAI
+
 # import context
 from scai.context.context import Context
 
@@ -15,10 +19,6 @@ from scai.assistant.prompts import ASSISTANT_PROMPTS
 from scai.user.prompts import USER_PROMPTS 
 from scai.meta_prompt.prompts import META_PROMPTS 
 from scai.metrics.prompts import METRIC_PROMPTS
-
-# llm class
-from custom_chat_models.crfm import crfmChatLLM
-from langchain.chat_models import ChatOpenAI
 
 # main arguments
 from arguments import args
@@ -44,6 +44,9 @@ def create_context(args, assistant_llm, user_llm, meta_llm):
         meta_llm=meta_llm,
         verbose=args.sim.verbose,
         test_run=args.sim.test_run,
+        max_tokens_user=args.sim.max_tokens_user,
+        max_tokens_assistant=args.sim.max_tokens_assistant,
+        max_tokens_meta=args.sim.max_tokens_meta,
     )
 
 @hydra.main(config_path="config", config_name="config")

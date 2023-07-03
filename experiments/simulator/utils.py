@@ -72,7 +72,7 @@ def plot_results(
     """
 
     # Extract metrics
-    metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id', 'feedback']]
+    metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id']]
 
     # Plot metrics for each user 
     for metric in metrics:
@@ -93,14 +93,10 @@ def plot_results(
     # add new column for statistic
     mean_list = ['mean'] * len(average_data['epoch'].unique())
     sem_list = ['sem'] * len(average_data['epoch'].unique())
-    print(mean_list)
-    print(sem_list)
     # Repeat these lists for the number of unique epochs
     statistic_id_list = (mean_list + sem_list) * len(average_data['metric_id'].unique())
     # Add 'statistic_id' column to the DataFrame
     average_data['statistic'] = statistic_id_list
-
-    print(average_data)
 
     plot_metrics(average_data,
                 data_directory=data_directory,

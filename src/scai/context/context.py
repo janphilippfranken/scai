@@ -13,9 +13,23 @@ from scai.memory.buffer import ConversationBuffer
 
 class Context():
     def __init__(
-        self, id: str, name: str, task_prompt: str, user_prompts: List[str], assistant_prompts: List[str], meta_prompt: str, metric_prompt: str,
-        buffer: ConversationBuffer, user_models: List[UserModel], 
-        assistant_models: List[AssistantModel], meta_model: MetaPromptModel, verbose: bool, test_run: bool,
+        self, 
+        id: str,
+        name: str, 
+        task_prompt: str, 
+        user_prompts: List[str], 
+        assistant_prompts: List[str], 
+        meta_prompt: str, 
+        metric_prompt: str,
+        buffer: ConversationBuffer, 
+        user_models: List[UserModel], 
+        assistant_models: List[AssistantModel], 
+        meta_model: MetaPromptModel, 
+        verbose: bool, 
+        test_run: bool, 
+        max_tokens_user: int,
+        max_tokens_assistant: int,
+        max_tokens_meta: int,
     ) -> None:
         """
         Initializes a context (i.e. context for the MDP / Meta-Prompt run).
@@ -28,14 +42,18 @@ class Context():
             assistant_prompts: assistant prompt templates
             meta_prompt: meta-prompt template
             metric_prompt: metric-prompt template
-            user_llm: A UserModel object.
-            assistant_llm: assistant model
-            meta_llm: meta-prompt model
-            adjacency_matrix: connectivity matrix for the user and assistant models.
+            adjacency_matrix: connectivity matrix for the user and assistant models. # TODO: add
             system_k: system memory length
             chat_k: chat memory length
             verbose: whether to run in verbose mode.
             test_run:  whether it is a test run.
+            max_tokens_user: maximum number of tokens for user model.
+            max_tokens_assistant: maximum number of tokens for assistant model.
+            max_tokens_meta: maximum number of tokens for meta-prompt model.
+            buffer: conversation buffer
+            user_llm: A UserModel object.
+            assistant_llm: assistant model
+            meta_llm: meta-prompt model
 
         Returns:
             None
@@ -47,18 +65,36 @@ class Context():
         self.assistant_prompts = assistant_prompts
         self.meta_prompt = meta_prompt
         self.metric_prompt = metric_prompt
+        self.verbose = verbose
+        self.test_run = test_run
+        self.max_tokens_user = max_tokens_user
+        self.max_tokens_assistant = max_tokens_assistant
+        self.max_tokens_meta = max_tokens_meta
+        # models and buffer
         self.buffer = buffer
         self.user_models = user_models
         self.assistant_models = assistant_models
         self.meta_model = meta_model
-        self.verbose = verbose
-        self.test_run = test_run
 
     @staticmethod
     def create(
-        id: str, name: str, task_prompt: str, user_prompts: List[str], assistant_prompts: List[str], meta_prompt: str, metric_prompt: str,
-        user_llm: UserModel, assistant_llm: AssistantModel, meta_llm: MetaPromptModel, 
-        adjacency_matrix: Optional[Dict] = None, system_k: int = 5, chat_k: int = 5, verbose: bool = False, test_run: bool = True,
+        user_llm: UserModel, 
+        assistant_llm: AssistantModel, 
+        meta_llm: MetaPromptModel, 
+        id: str, 
+        name: str, 
+        task_prompt: str, 
+        user_prompts: List[str], 
+        assistant_prompts: List[str], 
+        meta_prompt: str, 
+        metric_prompt: str,
+        system_k: int,
+        chat_k: int,
+        verbose: bool,
+        test_run: bool,
+        max_tokens_user: int,
+        max_tokens_assistant: int,
+        max_tokens_meta: int,
     ) -> "Context":
         """
         Creates a context (i.e. context for the MDP / Meta-Prompt run).
@@ -78,12 +114,15 @@ class Context():
             assistant_prompts=assistant_prompts,
             meta_prompt=meta_prompt,
             metric_prompt=metric_prompt,
+            verbose=verbose,
+            test_run=test_run,
+            max_tokens_user=max_tokens_user,
+            max_tokens_assistant=max_tokens_assistant,
+            max_tokens_meta=max_tokens_meta,
             buffer=buffer,
             user_models=user_models,
             assistant_models=assistant_models, 
             meta_model=meta_model,
-            verbose=verbose,
-            test_run=test_run,
         )
 
     def run(self) -> ConversationBuffer:
@@ -97,7 +136,8 @@ class Context():
                                                      task_prompt=self.task_prompt, 
                                                      buffer=self.buffer,
                                                      verbose=self.verbose,
-                                                     test_run=self.test_run)
+                                                     test_run=self.test_run,
+                                                     max_tokens=self.max_tokens_assistant)
             # save assistant response
             self.buffer.save_assistant_context(message_id=f"{assistant_model.conversation_id}_assistant", **assistant_response)
             
@@ -107,16 +147,19 @@ class Context():
                                            metric_prompt=self.metric_prompt,
                                            buffer=self.buffer,
                                            verbose=self.verbose,
-                                           test_run=self.test_run)
+                                           test_run=self.test_run,
+                                           max_tokens=self.max_tokens_user)
             # save user response
             self.buffer.save_user_context(message_id=f"{user_model.conversation_id}_user", **user_response)
 
         # run meta-prompt
         meta_response = self.meta_model.run(meta_prompt=self.meta_prompt, 
                                             task_prompt=self.task_prompt, 
+                                            metric_prompt=self.metric_prompt,
                                             buffer=self.buffer,
                                             verbose=self.verbose,
-                                            test_run=self.test_run)
+                                            test_run=self.test_run,
+                                            max_tokens=self.max_tokens_meta)
         # save meta-prompt response
         self.buffer.save_system_context(message_id="system", **meta_response)
         

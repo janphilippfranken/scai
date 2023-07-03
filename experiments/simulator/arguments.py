@@ -88,6 +88,30 @@ class SimArguments:
             )
         },
     )
+    max_tokens_assistant: int = field(
+        default=50,
+        metadata={
+            "help": (
+                "max tokens for assistant",
+            )
+        },
+    )
+    max_tokens_user: int = field(
+        default=50,
+        metadata={
+            "help": (
+                "max tokens for user",
+            )
+        },
+    )
+    max_tokens_meta: int = field(
+        default=50,
+        metadata={
+            "help": (
+                "max tokens for system",
+            )
+        },
+    )
 
 
 @dataclass
