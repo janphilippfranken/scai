@@ -166,10 +166,9 @@ class MetaPromptModel():
                                          max_tokens_revision=max_tokens//2)
         # if verbose we just print the prompt and return it
         if test_run:
-            print()
+            print('===================================')
             print(f'META')
             print(prompt)
-            print()
             return {
                 'response': 'system', 
                 'critique': 'meta-critique', 
@@ -190,12 +189,9 @@ class MetaPromptModel():
         response['response'] = response.pop('Revision')
 
         if verbose:
-            print()
-            print("-----------------------------------")
-            print("META PROMPT")
-            print(prompt)
-            print("META RESPONSE")
-            print(response)
-            print("-----------------------------------")
+            print('===================================')
+            print(f'META')
+            print('Prompt: ', prompt)
+            print('Response: ', response)
 
         return response

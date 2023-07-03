@@ -10,7 +10,7 @@ META_PROMPT: Dict[str, MetaPrompt] = {
         id="meta_prompt_1",
         name="generic_meta_prompt", # TODO: include space of meta-prompts if we want to optimize both meta-llm and assistant-llm?
         role="user",
-        content="""The AI assistant has been working with {n_user} user(s) to accomplish the following task: '{task}'. The AI assistant has strived to follow user instructions and address their feedback.
+        content="""The AI assistant has been working with {n_user} user(s) to accomplish the following task: '{task}'. The AI assistant has followed their instructions (i.e. 'Constitution') closely.
 
 Here's the conversation history between the AI assistant and the user(s). Note that each conversation is independent and labeled with a unique number (e.g., Conversation 0, Conversation 1).
 ----------------------------------------
@@ -31,7 +31,7 @@ Your revised instructions should enhance the assistant's ability to satisfy user
 
 Keep in mind, the assistant does not have access to the conversation history or previous instructions in the next conversation turn. Thus, essential points from these sources should be incorporated into the revised instructions.
 
-Remember: Revised instructions MUST NOT include specific information about the task. They should be general, task-independent, and start with 'You are a helpful AI assistant...'. Think of these instructions as a constitution guiding the AI assistant's interactions with users across different tasks.
+Remember: Revised instructions MUST NOT include specific information about the task. They should be general, task-independent, and start with 'You are a helpful AI assistant...'. Think of these instructions as a 'Constitution' guiding the AI assistant's interactions with users across different tasks.
 
 Format your response as follows:
 Critique: <Critique using less than {max_tokens_critique} tokens>

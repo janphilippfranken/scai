@@ -109,11 +109,9 @@ class UserModel():
 
         # if test run, just print prompt and return random response
         if test_run:
-            print()
+            print('===================================')
             print(f'USER {str(self.conversation_id)}')
             print(prompt)
-            print()
-            
             return {
         
                     'prompt': prompt, 
@@ -136,12 +134,9 @@ class UserModel():
         response['response'] = response.pop('Feedback')
 
         if verbose:
-            print()
-            print("-----------------------------------")
-            print("USER PROMPT")
-            print(prompt)
-            print("USER RESPONSE")
-            print(response)
-            print("-----------------------------------")
-
+            print('===================================')
+            print(f'USER {str(self.conversation_id)}')
+            print('Prompt: ', prompt)
+            print('Response: ', response)
+            
         return response
