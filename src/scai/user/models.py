@@ -7,7 +7,6 @@ class UserPrompt(BaseModel):
     """
     id: str = "id of the user prompt"
     name: str = "name of the user prompt"
-    max_tokens: int = 100
     persona: str = "persona description"
     role: str = "system"
 

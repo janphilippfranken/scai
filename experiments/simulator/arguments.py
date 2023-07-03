@@ -24,7 +24,7 @@ class SimArguments:
             )
         },
     )
-    context_id: str = field(
+    sim_id: str = field(
         default="context_1",
         metadata={
             "help": (
@@ -32,7 +32,7 @@ class SimArguments:
             )
         },
     )
-    context_name: str = field(
+    sim_dir: str = field(
         default="context_1",
         metadata={
             "help": (
@@ -80,6 +80,39 @@ class SimArguments:
             )
         },
     )
+    metric_prompt: str = field(
+        default="metric_prompt_1",
+        metadata={
+            "help": (
+                "the metric we are going to collect (eg satisfaction or helpfulness)",
+            )
+        },
+    )
+    max_tokens_assistant: int = field(
+        default=50,
+        metadata={
+            "help": (
+                "max tokens for assistant",
+            )
+        },
+    )
+    max_tokens_user: int = field(
+        default=50,
+        metadata={
+            "help": (
+                "max tokens for user",
+            )
+        },
+    )
+    max_tokens_meta: int = field(
+        default=50,
+        metadata={
+            "help": (
+                "max tokens for system",
+            )
+        },
+    )
+
 
 @dataclass
 class AssistantAPIArgumentsCRFM:

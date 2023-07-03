@@ -7,7 +7,6 @@ class MetaPrompt(BaseModel):
     """
     id: str = "id of the meta prompt"
     name: str = "name of the meta prompt"
-    max_tokens: int = 200
     role: str = "user"
 
     content: str

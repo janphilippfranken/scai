@@ -4,6 +4,11 @@ from omegaconf import DictConfig
 
 from tqdm import tqdm
 import pandas as pd
+import json
+
+# llm class
+from custom_chat_models.crfm import crfmChatLLM
+from langchain.chat_models import ChatOpenAI
 
 # import context
 from scai.context.context import Context
@@ -13,44 +18,42 @@ from scai.task.prompts import TASK_PROMPTS
 from scai.assistant.prompts import ASSISTANT_PROMPTS 
 from scai.user.prompts import USER_PROMPTS 
 from scai.meta_prompt.prompts import META_PROMPTS 
-
-# llm class
-from custom_chat_models.crfm import crfmChatLLM
-from langchain.chat_models import ChatOpenAI
+from scai.metrics.prompts import METRIC_PROMPTS
 
 # main arguments
 from arguments import args
 
-# visuals 
-from visuals import plot_user_ratings, get_ratings
-
-
-from utils import save_as_csv
+# save as csv
+from utils import save_as_csv, plot_results
 
 # create context
 def create_context(args, assistant_llm, user_llm, meta_llm):
     # context params
     return Context.create(
-        id=args.sim.context_id,
-        name=args.sim.context_name,
+        id=args.sim.sim_id,
+        name=args.sim.sim_dir,
         system_k=args.sim.system_k,
         chat_k=args.sim.chat_k,
         task_prompt=TASK_PROMPTS[args.sim.task_prompt],
         user_prompts=[USER_PROMPTS[user_prompt] for user_prompt in args.sim.user_prompts],
         assistant_prompts=[ASSISTANT_PROMPTS[assistant_prompt] for assistant_prompt in args.sim.assistant_prompts],
         meta_prompt=META_PROMPTS[args.sim.meta_prompt],
+        metric_prompt=METRIC_PROMPTS[args.sim.metric_prompt],
         user_llm=user_llm,
         assistant_llm=assistant_llm,
         meta_llm=meta_llm,
         verbose=args.sim.verbose,
         test_run=args.sim.test_run,
+        max_tokens_user=args.sim.max_tokens_user,
+        max_tokens_assistant=args.sim.max_tokens_assistant,
+        max_tokens_meta=args.sim.max_tokens_meta,
     )
 
 @hydra.main(config_path="config", config_name="config")
 def main(args: DictConfig) -> None:
     
     # sim_res directory
-    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.context_id}'
+    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_dir}/{args.sim.sim_id}'
 
     # models
     is_crfm = 'openai' in args.sim.model_name # custom stanford models
@@ -74,12 +77,20 @@ def main(args: DictConfig) -> None:
     # run context
     for _ in tqdm(range(args.sim.n_runs)):
         context.run()
-        save_as_csv(context, DATA_DIR, args.sim.context_id, args.sim.model_name)
+        # save context buffer messages as csv
+        save_as_csv(data=context.buffer._memory.messages, 
+                    data_directory=DATA_DIR, 
+                    sim_name=args.sim.sim_dir,
+                    sim_id=args.sim.sim_id)
 
-    # # plot user ratings
-    df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.context_id}_{args.sim.model_name}.csv'))
-    plot_user_ratings(df, plot_dir=DATA_DIR, context_id=args.sim.context_id, model=args.sim.model_name, pdf=True)
+    # save full context buffer messages as json
+    with open(f'{DATA_DIR}/{args.sim.sim_dir}_{args.sim.sim_id}.json', 'w') as f:
+        json.dump(context.buffer._memory.messages, f)
 
+    # plot user ratings 
+    df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_dir}_{args.sim.sim_id}_user.csv')
+    plot_results(df, DATA_DIR, args.sim.sim_dir, args.sim.sim_id)
+    
     # python main.py ++sim.verbose=false
 
 if __name__ == '__main__':
