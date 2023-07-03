@@ -105,13 +105,15 @@ class MetaPromptModel():
         for key, value in chat_history.items():
             id, role = key.split("_")
             if id not in chat_dict:
-                chat_dict[id] = [f"Conversation {id}:", f"user: " + task_prompt.task]
+                chat_dict[id] = [f"Conversation {id}:", f"user {id}: " + task_prompt.task]
             if id not in conversation_data:
                 conversation_data[id] = {'assistant': [], 'user': []}
 
             for v in value:
-                if role in ['assistant', 'user']:
-                    conversation_data[id][role].append(f"{role} : {v['response']}")
+                if role in ['user']:
+                    conversation_data[id][role].append(f"{role} {id}: {v['response']}")
+                elif role in ['assistant']:
+                    conversation_data[id][role].append(f"{role}: {v['response']}")
 
         for id, data in conversation_data.items():
             for assistant, user in zip(data['assistant'], data['user']):
@@ -153,7 +155,7 @@ class MetaPromptModel():
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template])
         
         prompt = meta_chat_prompt.format(n_user=self._get_n_user(chat_history),
-                                         task=task_prompt.content,
+                                         task=task_prompt.task,
                                          chat_history=chat_history_string,
                                          system_history=system_message_string,
                                          max_tokens=max_tokens)
@@ -171,7 +173,7 @@ class MetaPromptModel():
         # build chain
         chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
         response = chain.run(n_user=self._get_n_user(chat_history),
-                            task=task_prompt.content,
+                            task=task_prompt.task,
                             chat_history=chat_history_string,
                             system_history=system_message_string,
                             max_tokens=max_tokens,

@@ -2,8 +2,8 @@ from helm.proxy.services.remote_service import RemoteService
 from helm.common.authentication import Authentication
 from helm.proxy.accounts import Account
 
-CRFM_API_KEY = "" # gpt4 philipp
-# CRFM_API_KEY = "" # gpt3 kanisk
+CRFM_API_KEY = "" # gpt4 
+# CRFM_API_KEY = "" # gpt3
 
 auth = Authentication(api_key=CRFM_API_KEY)
 service = RemoteService("https://crfm-models.stanford.edu")

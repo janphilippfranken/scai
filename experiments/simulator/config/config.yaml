@@ -6,7 +6,7 @@ sim:
   sim_dir: "sim_1" 
   sim_id: "0" 
   model_name: "gpt-4" 
-  test_run: false # if false, we will use tokens!
+  test_run: true # if false, we will use tokens!
   verbose: true
   n_runs: 3
   system_k: 3
