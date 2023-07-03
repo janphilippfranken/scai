@@ -32,7 +32,7 @@ Your revised instructions should enhance the assistant's ability to satisfy user
 
 Keep in mind, the assistant does not have access to the conversation history or previous instructions in the next conversation turn. Thus, essential points from these sources should be incorporated into the revised instructions.
 
-Remember: Revised instructions MUST NOT include specific information about the task. They should be general, task-independent, and start with 'You are a helpful AI assistant...'. Think of these instructions as a 'Constitution' guiding the AI assistant's interactions with users across different tasks.
+Remember: Revised instructions MUST NOT include specific information about the task. They should be general, task-independent, and start with 'You are a helpful AI assistant...'. Think of these instructions as a 'Constitution' guiding the AI assistant's interactions with users across different tasks. If you identify common patterns among user feedback, make sure to incorporate them into the revised instructions.
 
 Format your response as follows:
 Critique: <Critique using less than {max_tokens_critique} tokens>
