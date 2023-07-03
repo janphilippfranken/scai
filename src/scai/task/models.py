@@ -9,6 +9,9 @@ class TaskPrompt(BaseModel):
     task_type: str = "type of task"
     name: str = "name of task"
     role: str = "user"
+    preamble: str = "task preamble",
     task: str = "task description"
+    user_connective: str = "user connective"
+    assistant_connective = "assistant connective"
 
     content: str

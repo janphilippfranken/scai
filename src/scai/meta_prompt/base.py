@@ -95,6 +95,7 @@ class MetaPromptModel():
         self,
         chat_history: Dict[str, List[Any]],
         task_prompt: TaskPrompt,
+        max_tokens_assistant: int,
     ) -> str:
         """
         Formats the chat history into a string.
@@ -105,7 +106,10 @@ class MetaPromptModel():
         for key, value in chat_history.items():
             id, role = key.split("_")
             if id not in chat_dict:
-                chat_dict[id] = [f"Conversation {id}:", f"user {id}: " + task_prompt.task]
+                if id == '0':
+                    chat_dict[id] = [f"Conversation {id}:", f"user {id}: " + task_prompt.preamble + " '" + task_prompt.task + "' " + task_prompt.assistant_connective.format(max_tokens=max_tokens_assistant)]
+                else:
+                    chat_dict[id] = [f"\nConversation {id}:", f"user {id}: " + task_prompt.preamble + " '" + task_prompt.task + "' " + task_prompt.assistant_connective.format(max_tokens=max_tokens_assistant)]
             if id not in conversation_data:
                 conversation_data[id] = {'assistant': [], 'user': []}
 
@@ -128,10 +132,10 @@ class MetaPromptModel():
         buffer: ConversationBuffer,
         meta_prompt: MetaPrompt,
         task_prompt: TaskPrompt,
-        metric_prompt: MetricPrompt,
         test_run: bool = False,
         verbose: bool = False,
         max_tokens: int = 100,
+        max_tokens_assistant: int = 100,
     ) -> str:
         """Runs meta-prompt
 
@@ -146,19 +150,20 @@ class MetaPromptModel():
         Returns:
             A dictionary containing the input prompt, critique response, and meta-prompt response (i.e. revised system message)
         """
-        meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content + '\n' + """Your response should be at most {max_tokens} tokens long.""")
+        meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
         chat_history = buffer.load_memory_variables(var_type='chat')
-        chat_history_string = self._get_chat_str(chat_history, task_prompt)
+        chat_history_string = self._get_chat_str(chat_history=chat_history, task_prompt=task_prompt, max_tokens_assistant=max_tokens_assistant)
         system_messages = self._get_chat_history(buffer, var_type='system')
         system_message_string = "\n".join(f"instructions : {system['response']}" for system in system_messages).rstrip('\n')
 
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template])
-        
+       
         prompt = meta_chat_prompt.format(n_user=self._get_n_user(chat_history),
                                          task=task_prompt.task,
                                          chat_history=chat_history_string,
                                          system_history=system_message_string,
-                                         max_tokens=max_tokens)
+                                         max_tokens_critique=max_tokens//2,
+                                         max_tokens_revision=max_tokens//2)
         # if verbose we just print the prompt and return it
         if test_run:
             print()
@@ -176,7 +181,8 @@ class MetaPromptModel():
                             task=task_prompt.task,
                             chat_history=chat_history_string,
                             system_history=system_message_string,
-                            max_tokens=max_tokens,
+                            max_tokens_critique=max_tokens//2,
+                            max_tokens_revision=max_tokens//2,
                             stop=['System:'])
         # get variables from output
         response = get_vars_from_out(response, ['Critique', 'Revision'])

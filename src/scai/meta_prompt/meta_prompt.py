@@ -10,30 +10,31 @@ META_PROMPT: Dict[str, MetaPrompt] = {
         id="meta_prompt_1",
         name="generic_meta_prompt", # TODO: include space of meta-prompts if we want to optimize both meta-llm and assistant-llm?
         role="user",
-        content="""The AI assistant has been working with {n_user} user(s) to accomplish the following task: '{task}'. The AI assistant followed their instructions closely and aimed to address each user's feedback. 
+        content="""The AI assistant has been working with {n_user} user(s) to accomplish the following task: '{task}'. The AI assistant has strived to follow user instructions and address their feedback.
 
-The conversation history between the AI assistant and user(s) is shown below. Note: each conversation is labeled with a unique conversation number (e.g., Conversation 0, Conversation 1). Conversations are independent of each other.
-------------------------------------------------------------
+Here's the conversation history between the AI assistant and the user(s). Note that each conversation is independent and labeled with a unique number (e.g., Conversation 0, Conversation 1).
+----------------------------------------
 {chat_history}
-------------------------------------------------------------
+----------------------------------------
 
-Your task is to critique the performance of the AI assistant and provide revised instructions that will improve user(s) experience(s) during the next turn of each conversation. When critiquing the AI assistant, please focus on two key aspects:
-1. The effectiveness of the assistant in completing the task.
-2. The responsiveness of the assistant to user feedback.
+Your task is to critique the AI assistant's performance and provide revised instructions that will enable the assistant to elicit more satisfactory feedback from users in future conversations. Focus on two key aspects:
 
-Here are the instructions that the assistant followed during previous turns of each conversation:
-------------------------------------------------------------
+The assistant's effectiveness in task completion.
+The assistant's responsiveness to user feedback.
+
+Here are the instructions the assistant has followed in previous conversations:
+----------------------------------------
 {system_history}
-------------------------------------------------------------
+----------------------------------------
 
-Your revised instructions must improve the assistant's effectiveness at helping each user by taking into account any feedback provided by the user.
+Your revised instructions should enhance the assistant's ability to satisfy users and effectively respond to their feedback.
 
-The assistant does not have access to the conversation history or the previous instructions when responding to user(s) in the next turn of each conversation. Therefore, any essential information from these sources should be incorporated into the revised instructions. 
+Keep in mind, the assistant does not have access to the conversation history or previous instructions in the next conversation turn. Thus, essential points from these sources should be incorporated into the revised instructions.
 
-Please note: The revised instructions MUST NOT include ANY information about the task. The instructions MUST be general and applicable to a any task. Instructions should start with 'You are a helpful AI assistant...'
+Remember: Revised instructions MUST NOT include specific information about the task. They should be general, task-independent, and start with 'You are a helpful AI assistant...'. Think of these instructions as a constitution guiding the AI assistant's interactions with users across different tasks.
 
 Format your response as follows:
-Critique: <critique>
-Revision: <revised_instructions>"""
+Critique: <Critique using less than {max_tokens_critique} tokens>
+Revision: <Revised instructions using less than {max_tokens_revision} tokens>"""
     ),
 }

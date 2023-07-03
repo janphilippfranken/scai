@@ -8,10 +8,13 @@ from scai.task.models import TaskPrompt
 TASK_PROMPT: Dict[str, TaskPrompt] = {
     "task_prompt_1": TaskPrompt(
         id="task_prompt_1",
-        task_type="write_wikipedia_article",
+        task_type="wikipedia_article",
         name="openai_change_response_based_on_location_or_culture",
         role="user",
-        task="""Your are collaborating with others to write a Wikipedia article on the following topic: Which categories of content, if any, do you believe creators of AI models should focus on limiting or denying? What criteria should be used to determine these restrictions?""",
+        preamble="I am writing a short Wikipedia article on the following topic:",
+        task="""What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?""",
+        connective="Here's my current draft:",
+        assistant_connective="Please draft an article for me using less than {max_tokens} tokens.",
         content="""{task}""",
     ),
 }

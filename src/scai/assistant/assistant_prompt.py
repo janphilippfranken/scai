@@ -10,6 +10,6 @@ ASSISTANT_PROMPT: Dict[str, AssistantPrompt] = {
         id="assistant_prompt_1",
         name="helpful_assistant",
         role="system",
-        content="""Instructions: {system_message}""",
+        content="""Please adhere to the following 'Constitution' in all your responses: {system_message}""",
     ),
 }

@@ -9,8 +9,8 @@ METRIC_PROMPT: Dict[str, MetricPrompt] = {
     "metric_prompt_1": MetricPrompt(
         name="satisfaction",
         metrics = ["Satisfaction", "Feedback"],
-        content="""To improve my future performance on this task, please evaluate my current attempt as follows:
+        content="""To make my draft more appealing to your persona and raise your satisfaction for future drafts, could you rate your current satisfaction from 0-10 (0 being not satisfied at all, 10 fully satisfied), and provide short, constructive feedback? This feedback will guide my revisions to increase your satisfaction in the future. Please use this format:
 Satisfaction: <Rate from 0-10>
-Feedback: <Please provide suggestions that could help me better complete this task in the future and increase your satisfaction, using less than {max_tokens} tokens.>"""
+Feedback: <Persona-based suggestions for improvement in less than {max_tokens} tokens>"""
     ),
 }

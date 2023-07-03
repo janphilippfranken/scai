@@ -83,12 +83,12 @@ class UserModel():
         Returns:
             A dictionary containing the input prompt and the user's responses.
         """
-        user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content)
+        user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content + "\n")
         assistant_chat_history = self._get_chat_history(buffer, var_type="assistant")
         
         if len(assistant_chat_history) == 0: # if we have no chat memory (either first run or k == 0)
             assistant_response = buffer.load_memory_variables(var_type='chat').get(f"{self.conversation_id}_assistant", [])[-1] 
-            chat_history_prompts = [HumanMessagePromptTemplate.from_template("I am working on the following task: '" + task_prompt.content + "' \nThis is my current attempt to complete the task: '" + assistant_response['response'] + "' \n" + metric_prompt.content)]
+            chat_history_prompts = [HumanMessagePromptTemplate.from_template(task_prompt.preamble + " '" + task_prompt.content + "' " + task_prompt.user_connective + " '" + assistant_response['response'] + "' \n" + metric_prompt.content)]
         else:
             user_chat_history = self._get_chat_history(buffer, var_type="user")
             chat_history_prompts = [
@@ -98,7 +98,7 @@ class UserModel():
                                     HumanMessagePromptTemplate.from_template(assistant['response']))
             ]
             # add initial prompt including task
-            chat_history_prompts.insert(0, HumanMessagePromptTemplate.from_template("I am working on the following task: '" + task_prompt.content + "' \nThis is my current attempt to complete the task: '" + assistant_chat_history[-1]['response']))
+            chat_history_prompts.insert(0, HumanMessagePromptTemplate.from_template(task_prompt.preamble + " '" + task_prompt.content + "' " + task_prompt.user_connective + " '" + assistant_chat_history[-1]['response'] + "'"))
             chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].prompt.template + " \n" + metric_prompt.content)
         
         user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])

@@ -155,11 +155,11 @@ class Context():
         # run meta-prompt
         meta_response = self.meta_model.run(meta_prompt=self.meta_prompt, 
                                             task_prompt=self.task_prompt, 
-                                            metric_prompt=self.metric_prompt,
                                             buffer=self.buffer,
                                             verbose=self.verbose,
                                             test_run=self.test_run,
-                                            max_tokens=self.max_tokens_meta)
+                                            max_tokens=self.max_tokens_meta,
+                                            max_tokens_assistant=self.max_tokens_assistant)
         # save meta-prompt response
         self.buffer.save_system_context(message_id="system", **meta_response)
         
