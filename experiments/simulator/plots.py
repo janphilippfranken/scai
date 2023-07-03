@@ -8,6 +8,7 @@ from typing import (
 
 
 import pandas as pd 
+import numpy as np
 
 import colorsys
 import seaborn as sns
@@ -94,10 +95,12 @@ def get_fancy_bbox(
         mutation_aspect=mutation_aspect, # change depending on ylim
         zorder=2)
    
-def plot_user_data(
+def plot_metrics(
     data: pd.DataFrame,
     metric: str = 'satisfaction',
-    data_directory: str = 'sim_res', 
+    error_metric: str = 'rating_id',
+    z_column: str = 'agent_id',  
+    data_directory: str = 'sim_res/sim_1/0', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
     palette_name: str = 'colorblind',
@@ -109,14 +112,16 @@ def plot_user_data(
     linewidth: int = 2,
     zorder: int = 1,
     scatter_color: str = 'black',
-    y_label_coords: Tuple[float, float] = (-0.12, 0.525),
+    y_label: str = 'Satisfaction',
+    y_label_coords: Tuple[float, float] = (-0.07, 0.5),
     y_ticks: List[int] = [0, 2, 4, 6, 8, 10],
     y_ticklabels: List[int] = [0, 2, 4, 6, 8, 10],
-    y_lim: Tuple[float, float] = (0, 10),
+    y_lim: Tuple[float, float] = (-1, 11),
     legend: bool = True,
     legend_title: str = 'User',
     legend_loc: str = 'center left',
-    bbox_to_anchor: Tuple[float, float] = (1.05, 0.5),
+    bbox_to_anchor: Tuple[float, float] = (1.0, 0.6),
+    plot_error: bool = False,
 ) -> None:
     """
     Plot user data
@@ -130,7 +135,7 @@ def plot_user_data(
         saturation (float, optional): saturation of the colors. Defaults to 0.6.
     """
     # Get color palette
-    palette = get_palette(n=len(data['agent_id'].unique()), palette_name=palette_name, saturation=saturation)
+    palette = get_palette(n=len(set(data[z_column])), palette_name=palette_name, saturation=saturation)
     
     # Set font family and size
     plt.rcParams['font.family'] = font_family
@@ -143,20 +148,29 @@ def plot_user_data(
     lines = []  
 
     # Plot data
-    for i, user in enumerate(data['agent_id'].unique()):
-        x = data[data['agent_id'] == user]['epoch']
-        y = data[data['agent_id'] == user][metric]
+    for i, user in enumerate(set(data[z_column])):
         color = palette[i]
-        line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
-        lines.append(line) 
-        ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x))  
-
+        if not plot_error:
+            x = data[data[z_column] == user]['epoch']
+            y = data[data[z_column] == user][metric]
+            line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
+            lines.append(line[0])  # Append the Line2D object, not the list
+            ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
+        else:
+            x = data[data[z_column] == user]['epoch']
+            x = x[:len(x)//2]
+            y = np.array(data[(data[z_column] == user) & (data[error_metric] == 'mean')][metric])
+            error = np.array(data[(data[z_column] == user) & (data[error_metric] == 'sem')][metric])
+            line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
+            lines.append(line[0])  # Append the Line2D object, not the list
+            ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
+            ax.fill_between(x, y - 1.95 * error, y + 1.95 * error, color=color, alpha=0.3)
     # x-axis
     plt.xlabel('Epoch')
     sns.despine(left=True, bottom=False)
     
     # y-axis
-    ax.set_ylabel(metric.capitalize())
+    ax.set_ylabel(y_label.capitalize())
     ax.yaxis.set_label_coords(*y_label_coords)
     ax.set_yticks(y_ticks)
     ax.set_yticklabels(y_ticklabels)
@@ -166,13 +180,13 @@ def plot_user_data(
     # legend 
     if legend:
         ax.legend(lines, 
-                  data['agent_id'].unique(), 
+                  data[z_column].unique(), 
                   title=legend_title, 
-                  frameon=False, 
+                  frameon=False,
                   ncol=1, 
                   bbox_to_anchor=bbox_to_anchor,
                   loc=legend_loc)
-    
+   
     # save plots 
-    plt.savefig(f'{data_directory}/{sim_name}_{sim_id}.pdf', bbox_inches='tight')
-    plt.savefig(f'{data_directory}/{sim_name}_{sim_id}.jpg', bbox_inches='tight') # for demo in browser
+    plt.savefig(f'{data_directory}/{sim_name}_{sim_id}_{metric}.pdf', bbox_inches='tight')
+    plt.savefig(f'{data_directory}/{sim_name}_{sim_id}_{metric}.jpg', bbox_inches='tight') # for demo in browser

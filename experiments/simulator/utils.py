@@ -1,6 +1,13 @@
-from typing import Dict, List, Any
+from typing import (
+    Dict, 
+    List, 
+    Any,
+)
 
 import pandas as pd
+import scipy.stats as stats
+
+from plots import plot_metrics
 
 
 def save_as_csv(
@@ -8,7 +15,7 @@ def save_as_csv(
     data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
-    ) -> None:
+) -> None:
     """
     Save simulation data as a csv file
 
@@ -44,4 +51,65 @@ def save_as_csv(
     data_user.dropna(axis=1, inplace=True)
     # Save the user dataframe as a csv
     data_user.to_csv(f'{data_directory}/{sim_name}_{sim_id}_user.csv', index=False)
-    
+
+def standard_error(x):
+    return stats.sem(x, nan_policy='omit')
+
+def plot_results(
+    data: pd.DataFrame, 
+    data_directory: str = 'sim_res', 
+    sim_name: str = 'sim_1', 
+    sim_id: str = '0',
+) -> None:
+    """
+    Creates plots for simulation data
+
+    Args:
+        data (pd.DataFrame): simulation data
+        data_directory (str, optional): directory to save the data. Defaults to 'sim_res'.
+        sim_name (str, optional): simulation name. Defaults to 'sim_1'.
+        sim_id (str, optional): simulation id. Defaults to '0'.
+    """
+
+    # Extract metrics
+    metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id']]
+
+    # Plot metrics for each user 
+    for metric in metrics:
+        user_data = data[['epoch', 'agent_id', metric]].copy()  # Filter necessary columns
+        plot_metrics(user_data, 
+                     data_directory=data_directory,
+                     sim_name=sim_name,
+                     sim_id=sim_id,
+                     metric=metric, 
+                     z_column='agent_id',
+                     y_label=metric)
+
+    # Transform into average long format for all users
+    user_data = data[['epoch', 'agent_id'] + metrics].copy()
+    average_data = user_data.groupby('epoch').agg(['mean', standard_error]).reset_index()
+    average_data = average_data.drop(columns='agent_id')
+    average_data = average_data.melt(id_vars='epoch', var_name='metric_id', value_name='average_ratings')
+    # add new column for statistic
+    mean_list = ['mean'] * len(average_data['epoch'].unique())
+    sem_list = ['sem'] * len(average_data['epoch'].unique())
+    print(mean_list)
+    print(sem_list)
+    # Repeat these lists for the number of unique epochs
+    statistic_id_list = (mean_list + sem_list) * len(average_data['metric_id'].unique())
+    # Add 'statistic_id' column to the DataFrame
+    average_data['statistic'] = statistic_id_list
+
+    print(average_data)
+
+    plot_metrics(average_data,
+                data_directory=data_directory,
+                sim_name=sim_name,
+                sim_id=sim_id,
+                metric='average_ratings',
+                error_metric='statistic',
+                y_label='Average Rating',
+                z_column='metric_id', 
+                legend_title='Metric', 
+                plot_error=True)
+

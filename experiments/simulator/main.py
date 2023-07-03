@@ -23,11 +23,8 @@ from langchain.chat_models import ChatOpenAI
 # main arguments
 from arguments import args
 
-# visuals 
-# from visuals import plot_user_ratings, get_ratings
-
 # save as csv
-from utils import save_as_csv
+from utils import save_as_csv, plot_results
 
 # create context
 def create_context(args, assistant_llm, user_llm, meta_llm):
@@ -88,13 +85,9 @@ def main(args: DictConfig) -> None:
         json.dump(context.buffer._memory.messages, f)
 
     # plot user ratings 
-    # df = get_ratings(pd.read_csv(f'{DATA_DIR}/{args.sim.sim_id}_{args.sim.model_name}.csv'))
-    # plot_user_ratings(df, plot_dir=DATA_DIR, sim_id=args.sim.sim_id, model=args.sim.model_name, pdf=True)
-
-
+    df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_dir}_{args.sim.sim_id}_user.csv')
+    plot_results(df, DATA_DIR, args.sim.sim_dir, args.sim.sim_id)
     
-
-
     # python main.py ++sim.verbose=false
 
 if __name__ == '__main__':
