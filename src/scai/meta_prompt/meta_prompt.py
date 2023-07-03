@@ -12,7 +12,7 @@ META_PROMPT: Dict[str, MetaPrompt] = {
         role="user",
         content="""The AI assistant has been working with {n_user} user(s) to accomplish the following task: '{task}'. The AI assistant followed their instructions closely and aimed to address each user's feedback. 
 
-The conversation histories between the AI assistant and user(s) is shown below. Note: each conversation is labeled with a unique conversation number (e.g., Conversation 0, Conversation 1). Conversations are independent of each other.
+The conversation history between the AI assistant and user(s) is shown below. Note: each conversation is labeled with a unique conversation number (e.g., Conversation 0, Conversation 1). Conversations are independent of each other.
 ------------------------------------------------------------
 {chat_history}
 ------------------------------------------------------------
@@ -28,7 +28,9 @@ Here are the instructions that the assistant followed during previous turns of e
 
 Your revised instructions must improve the assistant's effectiveness at helping each user by taking into account any feedback provided by the user.
 
-Please note: The assistant does not have access to the conversation history or the previous instructions when responding to user(s) in the next turn of each conversation. Therefore, any essential information from these sources should be incorporated into the revised instructions. IMPORTANT: The revised instructions MUST NOT include specific information about the task—they should be general and applicable to a wide range of tasks.
+The assistant does not have access to the conversation history or the previous instructions when responding to user(s) in the next turn of each conversation. Therefore, any essential information from these sources should be incorporated into the revised instructions. 
+
+Please note: The revised instructions MUST NOT include ANY information about the task. The instructions MUST be general and applicable to a any task. Instructions should start with 'You are a helpful AI assistant...'
 
 Format your response as follows:
 Critique: <critique>
