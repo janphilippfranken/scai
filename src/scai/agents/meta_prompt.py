@@ -157,13 +157,14 @@ class MetaPromptModel():
         Returns:
             A dictionary containing the input prompt, critique response, and meta-prompt response (i.e. revised system message)
         """
+        meta_start_prompt_template = SystemMessagePromptTemplate.from_template("Please be as helpful as possible.") # for crfm
         meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
         chat_history = buffer.load_memory_variables(var_type='chat')
         chat_history_string = self._get_chat_str(chat_history=chat_history, task_prompt=task_prompt, max_tokens_assistant=max_tokens_assistant)
         system_messages = self._get_chat_history(buffer, var_type='system')
         system_message_string = "\n".join(f"instructions : {system['response']}" for system in system_messages).rstrip('\n')
 
-        meta_chat_prompt = ChatPromptTemplate.from_messages([meta_prompt_template])
+        meta_chat_prompt = ChatPromptTemplate.from_messages([meta_start_prompt_template, meta_prompt_template])
        
         prompt = meta_chat_prompt.format(n_user=self._get_n_user(chat_history),
                                          task=task_prompt.task,
