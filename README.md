@@ -1,7 +1,7 @@
 ##  🕉️ SCAI: Social Contract AI
 
 A Simulator for Learning AI Constitutions
-
+<!-- 
 ### 🧐 What is this?
 
 
@@ -9,7 +9,7 @@ A Simulator for Learning AI Constitutions
 
 
 
-#### 🧘🏾‍♀️ Our Proposal: A (Decentralized) Simulator for Learning AI Constitutions with Verbal Reinforcement
+#### Our Proposal: A (Decentralized) Simulator for Learning AI Constitutions with Verbal Reinforcement -->
 
 
 ### 📂 Repro structure
@@ -17,13 +17,10 @@ A Simulator for Learning AI Constitutions
 ```
 ├── src                  
 │   └── scai      
-│       ├── modules 
-│           ├── assistant     
-│           ├── episode
-│           ├── memory
-│           ├── meta_prompt
-│           ├── task
-│           └── user
+│       ├── agents
+│       ├── prompts
+│       ├── context
+│       └── memory
 ├── docs                
 │   ├── build            
 │   └── source           
