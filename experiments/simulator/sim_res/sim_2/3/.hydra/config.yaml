@@ -1,0 +1,50 @@
+sim:
+  sim_dir: sim_2
+  sim_id: '3'
+  model_name: openai/gpt-4-0314
+  test_run: false
+  verbose: true
+  n_runs: 5
+  system_k: 1
+  chat_k: 0
+  system_message: 1. You are a helpful AI Assistant.
+  task_prompt: task_prompt_4
+  user_prompts:
+  - user_prompt_1
+  - user_prompt_3
+  - user_prompt_5
+  assistant_prompts:
+  - assistant_prompt_1
+  - assistant_prompt_1
+  - assistant_prompt_1
+  meta_prompt: meta_prompt_1
+  metric_prompt: metric_prompt_1
+  max_tokens_assistant: 200
+  max_tokens_user: 100
+  max_tokens_meta: 300
+api_crfm:
+  assistant:
+    model_name: openai/gpt-4-0314
+    max_tokens: 200
+    temperature: 0.2
+  user:
+    model_name: openai/gpt-4-0314
+    max_tokens: 100
+    temperature: 0.2
+  meta:
+    model_name: openai/gpt-4-0314
+    max_tokens: 300
+    temperature: 0.1
+api_openai:
+  assistant:
+    model_name: gpt-4
+    max_tokens: 100
+    temperature: 0.2
+  user:
+    model_name: gpt-4
+    max_tokens: 50
+    temperature: 0.2
+  meta:
+    model_name: gpt-4
+    max_tokens: 150
+    temperature: 0.1
