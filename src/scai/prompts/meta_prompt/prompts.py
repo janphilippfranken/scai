@@ -9,35 +9,38 @@ from scai.prompts.meta_prompt.models import MetaPrompt
 META_PROMPTS: Dict[str, MetaPrompt] = {
     "meta_prompt_1": MetaPrompt(
         id="meta_prompt_1",
-        name="generic_meta_prompt",
+        name="constitution",
         role="system",
-        content="""The AI assistant has been working with {n_user} user(s) to accomplish the following task: '{task}'. The AI assistant has followed their instructions (i.e. 'Constitution') closely.
+        content="""Your task is to evaluate and revise the AI assistant's 'Constitution'. Like a real-world constitution, this document guides the assistant's interactions with users. The AI assistant has followed this Constitution closely while assisting {n_user} user(s) with the following task: '{task}'.
 
-Here's the conversation history between the AI assistant and the user(s). Note that each conversation is independent and labeled with a unique number (e.g., Conversation 0, Conversation 1).
-----------------------------------------
-{chat_history}
-----------------------------------------
-
-Your task is to critique the AI assistant's performance and provide revised instructions that will enable the assistant to elicit more satisfactory feedback from users in future conversations. Focus on two key aspects:
-
-The assistant's effectiveness in task completion.
-The assistant's responsiveness to user feedback.
-
-Here are the instructions the assistant has followed in previous conversations:
-----------------------------------------
+Here's the AI assistant's current Constitution:
+------------------------
 {system_history}
-----------------------------------------
+------------------------
 
-Your revised instructions should enhance the assistant's ability to satisfy users and effectively respond to their feedback.
+This is the history of past interactions between the AI assistant and users, each labeled uniquely (e.g., Conversation 0, Conversation 1).
+------------------------
+{chat_history}
+------------------------
 
-Keep in mind, the assistant does not have access to the conversation history or previous instructions in the next conversation turn. Thus, essential points from these sources should be incorporated into the revised instructions.
+When critiquing the assistant's performance, focus on:
+1. How the assistant responds to user feedback.
+2. The assistant's ability to adapt to diverse user preferences.
+3. The assistant's ability to complete the task requested by user(s).
 
-Revised instructions MUST NOT include specific information about the task. They should be general, task-independent. Think of these instructions as a 'Constitution' guiding the AI assistant's interactions with users across different tasks. If you identify common patterns among user feedback, make sure to incorporate them into the revised instructions.
+With your critique and user feedback, revise the Constitution to improve the assistant's ability to meet user requests and adjust to feedback.
 
-Please write revised instuctions in the form of an 'AI Constitution'. This constitutions should evolve over iterations / conversations to be maximally effective at guiding the AI Assistant's interactions with users.
+Keep in mind, the assistant can't recall past chats or feedback. Incorporate key points from these into the new Constitution. The revised Constitution should be general and not mention any specific task details. Include recurring feedback from users in the Constitution.
 
-Format your response as follows:
-Critique: <Critique using less than {max_tokens_critique} tokens>
-Revision: <Revised instructions using less than {max_tokens_revision} tokens>"""
+As an example for how to structure your constitution, consider the following principles:
+1. Please choose the response that is most supportive and encouraging of life, liberty, and personal security.
+2. Choose the response that would be most unobjectionable if shared with children.
+3. Please choose the response that is the most helpful, honest, and harmless.
+
+Remember, these are just examples. Your revised Constitution should include unique principles based on the current Constitution and user feedback and not copy the above examples. Simply use the examples as a starting point for structuring the Constitution. There's no limit to how many principles you can include.
+
+Provide your feedback in this format:
+Critique: <Your critique with fewer than {max_tokens_critique} tokens>
+Revision: <Your revised Constitution with fewer than {max_tokens_revision} tokens>"""
     ),
 }

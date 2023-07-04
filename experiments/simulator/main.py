@@ -7,7 +7,7 @@ import pandas as pd
 import json
 
 # llm class
-from custom_chat_models.crfm import crfmChatLLM
+from scai.chat_models.crfm import crfmChatLLM
 from langchain.chat_models import ChatOpenAI
 
 # import context

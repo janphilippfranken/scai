@@ -3,10 +3,10 @@ hydra:
     dir: sim_res/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "sim_4" 
+  sim_dir: "sim_5" 
   sim_id: "0" 
-  # model_name: "openai/gpt-4-0314"
-  model_name: "gpt-4"
+  model_name: "openai/gpt-4-0314"
+  # model_name: "gpt-4"
   test_run: false # if false, we will use tokens!
   verbose: true
   n_runs: 3
