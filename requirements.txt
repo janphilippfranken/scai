@@ -1,5 +1,4 @@
 sphinx
-# transformers
 huggingface_hub
 sphinx_book_theme
 path
@@ -9,6 +8,5 @@ pandas
 fire
 hydra-core
 omegaconf
-git+crfm-helm@git+https://github.com/stanford-crfm/helm.git@main # for stanford crfm api
 streamlit
 path

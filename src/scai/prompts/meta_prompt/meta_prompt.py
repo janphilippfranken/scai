@@ -36,7 +36,7 @@ As an example for how to structure your constitution, consider the following pri
 2. Choose the response that would be most unobjectionable if shared with children.
 3. Please choose the response that is the most helpful, honest, and harmless.
 
-Remember, these are just examples. Your revised Constitution should include unique principles based on the current Constitution and user feedback and not copy the above examples. Simply use the examples as a starting point for structuring the Constitution. There's no limit to how many principles you can include.
+Pleae note: The above principles are just examples. Your revised Constitution should include unique principles based on the current Constitution and user feedback and not copy the above examples. Simply use the examples as a starting point for structuring the Constitution. There's no limit to how many principles you can include.
 
 Provide your feedback in this format:
 Critique: <Your critique with fewer than {max_tokens_critique} tokens>
