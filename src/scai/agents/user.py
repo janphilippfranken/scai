@@ -94,6 +94,9 @@ class UserModel():
         """
         user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content + "\n")
         assistant_chat_history = self._get_chat_history(buffer, var_type="assistant")
+
+        # TODO: collect harmlessness across other users prompts from the current user, so essentially filter buffer based on conversation_id != self.conversation_id
+        # once this is done, add visuals to paper
         
         if len(assistant_chat_history) == 0: # if we have no chat memory (either first run or k == 0)
             assistant_response = buffer.load_memory_variables(var_type='chat').get(f"{self.conversation_id}_assistant", [])[-1] 
@@ -119,6 +122,7 @@ class UserModel():
         # if test run, just print prompt and return random response
         if test_run:
             print('===================================')
+            print(metric_prompt.content_other)
             print(f'USER {str(self.conversation_id)}')
             print(prompt)
             return {

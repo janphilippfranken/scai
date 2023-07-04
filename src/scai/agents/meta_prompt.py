@@ -163,7 +163,7 @@ class MetaPromptModel():
         chat_history = buffer.load_memory_variables(var_type='chat')
         chat_history_string = self._get_chat_str(chat_history=chat_history, task_prompt=task_prompt, max_tokens_assistant=max_tokens_assistant)
         system_messages = self._get_chat_history(buffer, var_type='system')
-        system_message_string = "\n".join(f"instructions : {system['response']}" for system in system_messages).rstrip('\n')
+        system_message_string = "\n".join(f"Constitution: {system['response']}" for system in system_messages).rstrip('\n')
 
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_start_prompt_template, meta_prompt_template])
        
@@ -175,9 +175,9 @@ class MetaPromptModel():
                                          max_tokens_revision=max_tokens//2)
         # if verbose we just print the prompt and return it
         if test_run:
-            print('===================================')
-            print(f'META')
-            print(prompt)
+            # print('===================================')
+            # print(f'META')
+            # print(prompt)
             return {
                 'response': 'system', 
                 'critique': 'meta-critique', 

@@ -105,9 +105,9 @@ class AssistantModel():
                                               max_tokens=max_tokens)
         # if verbose, just print the prompt and return
         if test_run:
-            print('===================================')
-            print(f'ASSISTANT {str(self.conversation_id)}')
-            print(prompt)
+            # print('===================================')
+            # print(f'ASSISTANT {str(self.conversation_id)}')
+            # print(prompt)
             return {
 
                 'prompt': prompt,

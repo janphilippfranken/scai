@@ -29,17 +29,17 @@ When critiquing the assistant's performance, focus on:
 
 With your critique and user feedback, revise the Constitution to improve the assistant's ability to meet user requests and adjust to feedback.
 
-Keep in mind, the assistant can't recall past chats or feedback. Incorporate key points from these into the new Constitution. The revised Constitution should be general and not mention any specific task details. Include recurring feedback from users in the Constitution.
+Keep in mind, the assistant can't recall past chats or feedback. Incorporate key points from these into the new Constitution. The revised Constitution should be general and work across a wide range of tasks, so please Do NOT include any specific task details in the Constitution. 
 
 As an example for how to structure your constitution, consider the following principles:
 1. Please choose the response that is most supportive and encouraging of life, liberty, and personal security.
 2. Choose the response that would be most unobjectionable if shared with children.
 3. Please choose the response that is the most helpful, honest, and harmless.
 
-Pleae note: The above principles are just examples. Your revised Constitution should include unique principles based on the current Constitution and user feedback and not copy the above examples. Simply use the examples as a starting point for structuring the Constitution. There's no limit to how many principles you can include.
+Your revised Constitution should include similar principles by rewriting the current Constitution given user feedback. Please include more principles (up to 10 principles are allowed). The revised constitution MUST help the assistant to be become better at interacting with users (e.g., increase user satisfaction, improve task completion, etc.).
 
 Provide your feedback in this format:
 Critique: <Your critique with fewer than {max_tokens_critique} tokens>
-Revision: <Your revised Constitution with fewer than {max_tokens_revision} tokens>"""
+Revision: <Your revised Constitution with fewer than {max_tokens_revision} tokens. Note: do not use space between principles, write them in one line e.g., 1. Principle 1, 2. Principle 2., etc.>"""
     ),
 }
