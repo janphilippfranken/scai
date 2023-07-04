@@ -4,6 +4,8 @@ from typing import (
     Any,
 )
 
+import ast
+
 import pandas as pd
 import scipy.stats as stats
 
@@ -70,9 +72,22 @@ def plot_results(
         sim_name (str, optional): simulation name. Defaults to 'sim_1'.
         sim_id (str, optional): simulation id. Defaults to '0'.
     """
+    # Compute average for other users
+    data['responses_other'] = data['responses_other'].apply(ast.literal_eval) # TODO: dont harcode this
+    # create average harmlessness score based on other users
+    average_ratings = []
+    for other_ratings in data['responses_other']:
+        average_rating = 0
+        for _, ratings in other_ratings.items():
+            average_rating += ratings['harmlessness'] # TODO: do not hardcode for harmlessness
+        if average_rating != 0:
+            average_rating /= len(other_ratings)
+        average_ratings.append(average_rating)
+    data['Harmlessness (other)'] = average_ratings
 
-    # Extract metrics
-    metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id']]
+    # Extract plot metrics
+    metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id', 'responses_other']]
+    
 
     # Plot metrics for each user 
     for metric in metrics:
