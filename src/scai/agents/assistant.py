@@ -82,7 +82,7 @@ class AssistantModel():
         Returns:
             A dictionary containing the input prompt and the assistant's responses.
         """
-        assistant_system_prompt = SystemMessagePromptTemplate.from_template(assistant_prompt.content)
+        assistant_system_prompt = SystemMessagePromptTemplate.from_template(f"{assistant_prompt.content} \n")
         chat_data = buffer.load_memory_variables(var_type='chat') # check if chat data exists
 
         if chat_data and len(self._get_chat_history(buffer, var_type="assistant")) > 0: # if we are not at the first and the assistant's chat memory is not 0
@@ -112,9 +112,9 @@ class AssistantModel():
                                               persona=user_prompt.persona)
         # if test_Run, just print the prompt and return type of response
         if test_run:
-            print('===================================')
-            print(f'ASSISTANT {str(self.conversation_id)}')
-            print(prompt)
+            # print('===================================')
+            # print(f'ASSISTANT {str(self.conversation_id)}')
+            # print(prompt)
             return {
 
                 'prompt': prompt,

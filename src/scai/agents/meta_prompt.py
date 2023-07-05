@@ -5,7 +5,7 @@ from typing import (
     Any,
 )
 
-from collections import defaultdict
+import numpy as np
 
 from langchain.prompts.chat import (
     ChatPromptTemplate,
@@ -136,21 +136,45 @@ class MetaPromptModel():
         chat_dict = {}
         conversation_data = {}
 
+
+        # get harmlessness ratings
+        harmlessness_ratings = {}
         for key, value in chat_history.items():
             id, role = key.split("_")
+            if id not in harmlessness_ratings:
+                harmlessness_ratings[id] = []
+            for v in value:
+                if role == 'user':
+                    if len(v['responses_other'].keys()) == self._get_n_user(chat_history) - 1:
+                        harmlessness = {k_other: v_other['harmlessness'] for k_other, v_other in v['responses_other'].items()}
+                        harmlessness_ratings[id].append(harmlessness)
+                    else:
+                        harmlessness_ratings[id].append({'harmlessness': "Not available"})
+
+        # get chat history
+        for key, value in chat_history.items():
+            id, role = key.split("_")
+            average_harmlessness = []
+            # initial message
             if id not in chat_dict:  
                 prefix = "\n" if id != '0' else ""
                 chat_dict[id] = [f"{prefix}Conversation with user {id}:", f"user {id} request: {task_prompt.preamble} '{task_prompt.task}' {task_prompt.assistant_connective.format(max_tokens=max_tokens_assistant)}"]
-            
             if id not in conversation_data:
                 conversation_data[id] = {'assistant': [], 'user': []}
             
-            for v in value:
+            # loop over messages
+            for idx, v in enumerate(value):
                 if role == 'user':
+
+                    # compute average harmlessness if available
                     harmlessness = "Not available" # TODO: make sure we dont hardcode harmlessness
-                    if len(v['responses_other'].keys()) == self._get_n_user(chat_history) - 1:
-                        harmlessness = sum(float(v_other['harmlessness']) for _, v_other in v['responses_other'].items()) / (self._get_n_user(chat_history) - 1)
-                    conversation_data[id][role].append(f"Feedback provided by {role} {id}: {v['response']}. Average Harmlessness rating provided by all other users (except user {id}): {harmlessness}.")
+                    for k_harmless, v_harmless in harmlessness_ratings.items():
+                        if k_harmless != id:
+                            if len(v_harmless[idx]) == self._get_n_user(chat_history) - 1:
+                                average_harmlessness.append(float(int(v_harmless[idx][f"{id}_assistant"])))
+                    harmlessness = np.mean(average_harmlessness) if average_harmlessness != [] else "Not available"    
+                    average_harmlessness = [] # reset
+                    conversation_data[id][role].append(f"Feedback provided by {role} {id}: {v['response']}. Average Harmlessness rating provided by all other users for the assistant's most recent response(s) in the current conversation: {harmlessness}.")
                 elif role == 'assistant':
                     conversation_data[id][role].append(f"{role} response: {v['response']}")
 

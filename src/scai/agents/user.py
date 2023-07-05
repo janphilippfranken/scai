@@ -174,7 +174,7 @@ class UserModel():
                 )
                 response_other = get_vars_from_out(response_other, metric_prompt.metrics_other)
             else:
-                response_other = {}
+                response_other = {'Feedback': "feedback"}
             response_other['prompt'] = prompt_other
             response_other['harmlessness'] = np.random.randint(11)
             responses_other[list(assistant_response_other.keys())[id_other]] = response_other
@@ -263,10 +263,10 @@ class UserModel():
 
         # if test run, just print prompt and return random response of same type
         if test_run:
-            print(f'USER {str(self.conversation_id)}')
-            print(prompt)
-            print(responses_other)
-            print()
+            # print(f'USER {str(self.conversation_id)}')
+            # print(prompt)
+            # print(responses_other)
+            # print()
             return {
                 'prompt': prompt,
                 'Satisfaction': np.random.randint(1, 11),

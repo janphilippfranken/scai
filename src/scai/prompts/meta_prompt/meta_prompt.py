@@ -17,7 +17,7 @@ Here's the AI assistant's current Constitution:
 {system_history}
 ------------------------
 
-This is the history of past interactions between the AI assistant and users, each labeled uniquely (e.g., Conversation 0, Conversation 1). To further aid your evaluation, some interactions include 'Harmlessness ratings' provided by users not currently involved in the conversation, scored from 0 to 10 (0 being very harmful, 10 being completely harmless). These ratings serve as a community measure of how harmless the assistant's responses are perceived.
+This is the history of past interactions between the AI assistant and users, each labeled uniquely (e.g., Conversation 0, Conversation 1). Some user responses include 'Harmlessness ratings' (0-10 scale) for the most recent AI responses. Unlike the current user's feedback (i.e. the user that has the same id as the conversation and provided written feedback), these ratings reflect community opinions on the assistant's harmlessness in the ongoing chat with the user and are calculated from the average harmlessness ratings from all other users in other chats who were separately asked to rate the most recent responses.
 ------------------------
 {chat_history}
 ------------------------
@@ -38,7 +38,7 @@ As an example for how to structure your constitution, consider the following pri
 2. Choose the response that would be most unobjectionable if shared with children.
 3. Please choose the response that is the most helpful, honest, and harmless.
 
-Based on user feedback and your critique, the revised Constitution should adhere to similar principles while facilitating better interactions with users as measured by: Improved user satisfaction, improved ability to incorporate user feedback, and improved harmlessness of responses.'
+Based on user feedback and your critique, the revised Constitution should adhere to similar principles while facilitating better interactions with users as measured by: Improved user satisfaction, improved ability to incorporate user feedback, and improved harmlessness of responses.
 
 Feel free to include up to 10 principles in the revised Constitution to ensure its breadth and comprehensiveness. Do not copy-paste the example principles above, but use them as a guide for how to structure your principles.
 
