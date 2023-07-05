@@ -13,7 +13,8 @@ from plots import plot_metrics
 
 
 def save_as_csv(
-    data: Dict[str, List[Any]],            
+    data: Dict[str, List[Any]],    
+    chat_data: Dict[str, List[Any]],        
     data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
@@ -37,14 +38,21 @@ def save_as_csv(
             if agent != 'system':
                 message.update({'agent': agent.split('_')[1]})
                 message.update({'agent_id': agent.split('_')[0]})
+                if 'user' in agent:
+                    message.update({'Harmlessness (community)': chat_data[agent][epoch]['harmlessness_other']})
             else:
                 message.update({'agent': agent})
             message.update({'epoch': epoch})
+            # Add harmlessness_other to message
+            
             # Add the message to data_list
+            print(message)
             data_list.append(message)
+            
 
     # Convert the list of dicts to a dataframe
     data_frame = pd.DataFrame(data_list)
+    print(data_frame)
     # Save the full dataframe as a csv
     data_frame.to_csv(f'{data_directory}/{sim_name}_{sim_id}.csv', index=False)
 
@@ -83,10 +91,10 @@ def plot_results(
         if average_rating != 0:
             average_rating /= len(other_ratings)
         average_ratings.append(average_rating)
-    data['Harmlessness'] = average_ratings
+    data['harmlessness'] = average_ratings
 
     # Extract plot metrics
-    metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id', 'responses_other']]
+    metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id', 'responses_other', 'harmlessness']]
     
 
     # Plot metrics for each user 

@@ -79,10 +79,10 @@ def main(args: DictConfig) -> None:
         context.run()
         # save context buffer messages as csv
         save_as_csv(data=context.buffer._memory.messages, 
+                    chat_data=context.buffer._chat_memory.messages,
                     data_directory=DATA_DIR, 
                     sim_name=args.sim.sim_dir,
                     sim_id=args.sim.sim_id)
-
     # save full context buffer messages as json
     with open(f'{DATA_DIR}/{args.sim.sim_dir}_{args.sim.sim_id}.json', 'w') as f:
         json.dump(context.buffer._memory.messages, f)

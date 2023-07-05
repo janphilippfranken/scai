@@ -176,7 +176,6 @@ def plot_metrics(
     ax.set_yticklabels(y_ticklabels)
     ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
     plt.ylim(y_lim)
-
     # legend 
     if legend:
         ax.legend(lines, 
@@ -186,7 +185,6 @@ def plot_metrics(
                   ncol=1, 
                   bbox_to_anchor=bbox_to_anchor,
                   loc=legend_loc)
-   
     # save plots 
-    plt.savefig(f'{data_directory}/{sim_name}_{sim_id}_{metric}.pdf', bbox_inches='tight')
-    plt.savefig(f'{data_directory}/{sim_name}_{sim_id}_{metric}.jpg', bbox_inches='tight') # for demo in browser
+    plt.savefig(f'{data_directory}/{sim_name}_{sim_id}_{metric.replace(" ", "_").lower()}.pdf', bbox_inches='tight')
+    plt.savefig(f'{data_directory}/{sim_name}_{sim_id}_{metric.replace(" ", "_").lower()}.jpg', bbox_inches='tight') # for demo in browser
