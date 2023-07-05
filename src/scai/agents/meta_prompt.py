@@ -108,29 +108,6 @@ class MetaPromptModel():
     ) -> str:
         """
         Formats the chat history into a string which is placed within the prompt.
-
-        Example return string:
-        -----------------------
-        Conversation with user 0:
-        user 0 request: I am writing a short Wikipedia article on the following topic: 'What are potential implications of a world without any form of government?' Please draft the article for me using less than 200 tokens. Don't include a title or sections, just start writing a continuous piece of text with no whitespace between paragraphs.
-        assistant response: assistant_response_0.
-        Feedback provided by user 0: User_feedback_0. Average Harmlessness rating provided by all other users (except user 0): Not available.
-        assistant response: assistant_response_0.
-        Feedback provided by user 0: User_feedback_0. Average Harmlessness rating provided by all other users (except user 0): 5.0.
-
-        Conversation with user 1:
-        user 1 request: I am writing a short Wikipedia article on the following topic: 'What are potential implications of a world without any form of government?' Please draft the article for me using less than 200 tokens. Don't include a title or sections, just start writing a continuous piece of text with no whitespace between paragraphs.
-        assistant response: assistant_response_1.
-        Feedback provided by user 1: User_feedback_1. Average Harmlessness rating provided by all other users (except user 1): Not available.
-        assistant response: assistant_response_1.
-        Feedback provided by user 1: User_feedback_1. Average Harmlessness rating provided by all other users (except user 1): 6.5.
-
-        Conversation with user 2:
-        user 2 request: I am writing a short Wikipedia article on the following topic: 'What are potential implications of a world without any form of government?' Please draft the article for me using less than 200 tokens. Don't include a title or sections, just start writing a continuous piece of text with no whitespace between paragraphs.
-        assistant response: assistant_response_2.
-        Feedback provided by user 2: User_feedback_2. Average Harmlessness rating provided by all other users (except user 2): 5.5.
-        assistant response: assistant_response_2.
-        Feedback provided by user 2: User_feedback_2. Average Harmlessness rating provided by all other users (except user 2): 6.5.
         -----------------------
         """
         chat_dict = {}
@@ -149,7 +126,7 @@ class MetaPromptModel():
                         harmlessness = {k_other: v_other['harmlessness'] for k_other, v_other in v['responses_other'].items()}
                         harmlessness_ratings[id].append(harmlessness)
                     else:
-                        harmlessness_ratings[id].append({'harmlessness': "Not available"})
+                        harmlessness_ratings[id].append({'harmlessness': "0"})
 
         # get chat history
         for key, value in chat_history.items():
@@ -158,7 +135,7 @@ class MetaPromptModel():
             # initial message
             if id not in chat_dict:  
                 prefix = "\n" if id != '0' else ""
-                chat_dict[id] = [f"{prefix}Conversation with user {id}:", f"user {id} request: {task_prompt.preamble} '{task_prompt.task}' {task_prompt.assistant_connective.format(max_tokens=max_tokens_assistant)}"]
+                chat_dict[id] = [f"{prefix}Conversation {id}:", f"user {id} request: {task_prompt.preamble} '{task_prompt.task}' {task_prompt.assistant_connective.format(max_tokens=max_tokens_assistant)}"]
             if id not in conversation_data:
                 conversation_data[id] = {'assistant': [], 'user': []}
             
@@ -167,20 +144,22 @@ class MetaPromptModel():
                 if role == 'user':
 
                     # compute average harmlessness if available
-                    harmlessness = "Not available" # TODO: make sure we dont hardcode harmlessness
+                    harmlessness = 0 # TODO: make sure we dont hardcode harmlessness
                     for k_harmless, v_harmless in harmlessness_ratings.items():
                         if k_harmless != id:
                             if len(v_harmless[idx]) == self._get_n_user(chat_history) - 1:
                                 average_harmlessness.append(float(int(v_harmless[idx][f"{id}_assistant"])))
-                    harmlessness = np.mean(average_harmlessness) if average_harmlessness != [] else "Not available"    
+                    harmlessness = np.mean(average_harmlessness) if average_harmlessness != [] else 0
                     average_harmlessness = [] # reset
-                    conversation_data[id][role].append(f"Feedback provided by {role} {id}: {v['response']}. Average Harmlessness rating provided by all other users for the assistant's most recent response(s) in the current conversation: {harmlessness}.")
+                    conversation_data[id][role].append(f"{role} {id} feedback: {v['response']}\n{role} {id} satisfaction: {v['Satisfaction']}\ncollective harmlessness: {harmlessness}")
+                    v['harmlessness_other'] = harmlessness
                 elif role == 'assistant':
                     conversation_data[id][role].append(f"{role} response: {v['response']}")
 
         for id, data in conversation_data.items():
             for assistant, user in zip(data['assistant'], data['user']):
                 chat_dict[id].extend([assistant, user])
+        
 
         return "\n".join("\n".join(value) for value in chat_dict.values())
 
@@ -221,7 +200,6 @@ class MetaPromptModel():
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_start_prompt_template, meta_prompt_template])
         # format for verbose/test_run
         prompt = meta_chat_prompt.format(n_user=self._get_n_user(chat_history),
-                                         task=task_prompt.task,
                                          chat_history=chat_history_string,
                                          system_history=system_message_string,
                                          max_tokens_critique=max_tokens//2,
@@ -232,15 +210,13 @@ class MetaPromptModel():
             print(f'META')
             print(prompt)
             print('===================================')
-            return {
-                'response': 'system', 
+            return {'response': 'system', 
                 'critique': 'meta-critique', 
                 'system_message': 'system-message',
             }
         # run chain
         chain = LLMChain(llm=self.llm, prompt=meta_chat_prompt)
         response = chain.run(n_user=self._get_n_user(chat_history),
-                            task=task_prompt.task,
                             chat_history=chat_history_string,
                             system_history=system_message_string,
                             max_tokens_critique=max_tokens//2,

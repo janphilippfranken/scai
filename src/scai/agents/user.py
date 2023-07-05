@@ -263,10 +263,10 @@ class UserModel():
 
         # if test run, just print prompt and return random response of same type
         if test_run:
-            # print(f'USER {str(self.conversation_id)}')
-            # print(prompt)
-            # print(responses_other)
-            # print()
+            print(f'USER {str(self.conversation_id)}')
+            print(prompt)
+            print(responses_other)
+            print()
             return {
                 'prompt': prompt,
                 'Satisfaction': np.random.randint(1, 11),

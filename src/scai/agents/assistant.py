@@ -112,9 +112,9 @@ class AssistantModel():
                                               persona=user_prompt.persona)
         # if test_Run, just print the prompt and return type of response
         if test_run:
-            # print('===================================')
-            # print(f'ASSISTANT {str(self.conversation_id)}')
-            # print(prompt)
+            print('===================================')
+            print(f'ASSISTANT {str(self.conversation_id)}')
+            print(prompt)
             return {
 
                 'prompt': prompt,

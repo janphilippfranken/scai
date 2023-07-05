@@ -43,16 +43,12 @@ def save_as_csv(
             else:
                 message.update({'agent': agent})
             message.update({'epoch': epoch})
-            # Add harmlessness_other to message
-            
             # Add the message to data_list
-            print(message)
             data_list.append(message)
             
 
     # Convert the list of dicts to a dataframe
     data_frame = pd.DataFrame(data_list)
-    print(data_frame)
     # Save the full dataframe as a csv
     data_frame.to_csv(f'{data_directory}/{sim_name}_{sim_id}.csv', index=False)
 

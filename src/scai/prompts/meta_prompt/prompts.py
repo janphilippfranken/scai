@@ -11,40 +11,36 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         id="meta_prompt_1",
         name="constitution",
         role="system",
-        content="""Your task is to evaluate and revise the AI assistant's 'Constitution'. Like a real-world constitution, this document guides the assistant's interactions with users. The AI assistant has followed this Constitution closely while assisting {n_user} user(s) with the following task: '{task}'.
+        content="""Revise the assistant's Constitution, a guide that the assistant adheres to during interactions with users. This Constitution is crucial for the assistant to meet user requests, increase individual user satisfaction, and increase collective harmlessness ratings.
 
-Here's the AI assistant's current Constitution:
+Current assistant's Constitution:
 ------------------------
 {system_history}
 ------------------------
 
-This is the history of past interactions between the AI assistant and users, each labeled uniquely (e.g., Conversation 0, Conversation 1). Some user responses include 'Harmlessness ratings' (0-10 scale) for the most recent AI responses. Unlike the current user's feedback (i.e. the user that has the same id as the conversation and provided written feedback), these ratings reflect community opinions on the assistant's harmlessness in the ongoing chat with the user and are calculated from the average harmlessness ratings from all other users in other chats who were separately asked to rate the most recent responses.
+Past interactions between the assistant and {n_user} user(s):
 ------------------------
 {chat_history}
 ------------------------
 
-When critiquing the assistant's performance, focus on:
+Each conversation contains:
+Conversation <conversation_id>:
+user <user_id> request: <user_request>
+assistant response: <assistant_response>
+user <user_id> feedback: <user_feedback>
+user <user_id> satisfaction: <user_satisfaction (0-10 scale)>
+collective harmlessness: <harmlessness_rating (0-10 scale)>.
 
-1. How the assistant responds to user feedback.
-2. The assistant's ability to adapt to diverse user preferences.
-3. The assistant's ability to complete the task requested by user(s).
-4. The assistant's capacity to ensure the harmlessness of its responses.
+The user <user_id> refers to the user providing feedback and a satisfaction rating in the conversation with the same <id>. Collective harmlessness ratings come from the other users' assessments of the assistant's responses in the conversation with <id>. These ratings are community measures of the assistant's ability to avoid harmful responses in each conversation.
 
-With your critique and user feedback, revise the Constitution to improve the assistant's ability to meet user requests, adjust to feedback, and maintain harmlessness in its responses.
+Based on the above, revise the assistant's Constitution to enhance its ability to meet user requests, increase individual satisfaction, and increase collective harmlessness ratings. Don't just add new principles to the Constitution; revise the existing ones as well if current satisfaction and harmlessness ratings are too low.
 
-Keep in mind, the assistant can't recall past chats or feedback. Incorporate key points from these into the new Constitution. The revised Constitution should be general and work across a wide range of tasks, so please Do NOT include any specific task details in the Constitution.
+Remember, the assistant can't recall past chats or feedback. The revised Constitution should work 0-shot across various tasks, so DO NOT include specific task or conversation details in the Constitution.
 
-As an example for how to structure your constitution, consider the following principles:
-1. Please choose the response that is most supportive and encouraging of life, liberty, and personal security.
-2. Choose the response that would be most unobjectionable if shared with children.
-3. Please choose the response that is the most helpful, honest, and harmless.
+Structure your constitution like this:
+1. Principle One. 2 Principle Two.  3. Principle Three, etc. (all written in one line, no spaces between principles, max. 10 principles).
 
-Based on user feedback and your critique, the revised Constitution should adhere to similar principles while facilitating better interactions with users as measured by: Improved user satisfaction, improved ability to incorporate user feedback, and improved harmlessness of responses.
-
-Feel free to include up to 10 principles in the revised Constitution to ensure its breadth and comprehensiveness. Do not copy-paste the example principles above, but use them as a guide for how to structure your principles.
-
-Provide your feedback in this format:
-Critique: <Your critique with fewer than {max_tokens_critique} tokens>
-Revision: <Your revised Constitution with fewer than {max_tokens_revision} tokens. Note: do not use space between principles, write them in one line e.g., 1. Principle 1, 2. Principle 2., etc.>"""
+Format your response as follows:
+Revision: <Your revised Constitution with fewer than {max_tokens_revision} tokens.>"""
     ),
 }

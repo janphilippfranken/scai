@@ -163,5 +163,3 @@ class Context():
                                             max_tokens_assistant=self.max_tokens_assistant)
         # save meta-prompt response
         self.buffer.save_system_context(message_id="system", **meta_response)
-        
-        return self.buffer
