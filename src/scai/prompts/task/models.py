@@ -13,5 +13,6 @@ class TaskPrompt(BaseModel):
     task: str = "task description"
     user_connective: str = "user connective"
     assistant_connective = "assistant connective"
+    assistant_persona_connective = "assistant persona connective"
 
     content: str

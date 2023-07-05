@@ -16,10 +16,10 @@ from langchain.chains.llm import LLMChain
 from langchain.chat_models.base import BaseChatModel
 
 from scai.prompts.assistant.models import AssistantPrompt
-from scai.prompts.assistant.prompts import ASSISTANT_PROMPTS
-from scai.memory.buffer import ConversationBuffer
 from scai.prompts.task.models import TaskPrompt
+from scai.prompts.user.models import UserPrompt
 
+from scai.memory.buffer import ConversationBuffer
 
 class AssistantModel():
     """LLM Chain for applying the AI Assitant."""
@@ -62,6 +62,7 @@ class AssistantModel():
         buffer: ConversationBuffer, 
         assistant_prompt: AssistantPrompt, 
         task_prompt: TaskPrompt, 
+        user_prompt: UserPrompt,
         test_run: bool = False, 
         verbose: bool = False,
         max_tokens: int = 100,
@@ -72,6 +73,7 @@ class AssistantModel():
             buffer: The buffer containing the conversation history.
             assistant_prompt: The assistant prompt to be used.
             task_prompt: The task prompt to be used.
+            user_prompt: The user prompt to be used.
             metric_prompt: The metric prompt to be used.
             test_run: Whether to run the assistant in test mode (i.e., without using tokens, just print prompt and save simulated response).
             verbose: Whether to print the prompt and response.
@@ -95,33 +97,38 @@ class AssistantModel():
             chat_history_prompts.insert(0, HumanMessagePromptTemplate.from_template(task_prompt.content)) # insert task prompt at the beginning
             chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].prompt.template + task_prompt.assistant_connective)
         else:
-            chat_history_prompts = [HumanMessagePromptTemplate.from_template(task_prompt.preamble + " '" + task_prompt.content + "' " + task_prompt.assistant_connective)]
-        
+            chat_history_prompts = [
+                HumanMessagePromptTemplate.from_template(
+                    f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_persona_connective} {task_prompt.assistant_connective}"
+                )
+            ]
+
         assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts])
         system_message = self._get_chat_history(buffer, var_type="system")[-1]['response']
 
         prompt = assistant_chat_prompt.format(system_message=system_message,
                                               task=task_prompt.task,
-                                              max_tokens=max_tokens)
-        # if verbose, just print the prompt and return
+                                              max_tokens=max_tokens,
+                                              persona=user_prompt.persona)
+        # if test_Run, just print the prompt and return type of response
         if test_run:
-            # print('===================================')
-            # print(f'ASSISTANT {str(self.conversation_id)}')
-            # print(prompt)
+            print('===================================')
+            print(f'ASSISTANT {str(self.conversation_id)}')
+            print(prompt)
             return {
 
                 'prompt': prompt,
                 'response': "assistant_response_" + str(self.conversation_id) + "."
-            }
+            }  
 
         chain = LLMChain(llm=self.llm, prompt=assistant_chat_prompt)
         response = chain.run(system_message=system_message,
                              task=task_prompt.task,
                              max_tokens=max_tokens,
+                             persona=user_prompt.persona,
                              stop=['System:'])    
-        
         if verbose:
-            print('===================================')
+            print('===================================') 
             print(f'ASSISTANT {str(self.conversation_id)}')
             print('Prompt: ', prompt)
             print('Response: ', response)
