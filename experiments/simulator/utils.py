@@ -83,7 +83,7 @@ def plot_results(
         if average_rating != 0:
             average_rating /= len(other_ratings)
         average_ratings.append(average_rating)
-    data['Harmlessness (other)'] = average_ratings
+    data['Harmlessness'] = average_ratings
 
     # Extract plot metrics
     metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id', 'responses_other']]

@@ -1,5 +1,4 @@
 import hydra
-from hydra import utils
 from omegaconf import DictConfig
 
 from tqdm import tqdm
@@ -25,6 +24,7 @@ from arguments import args
 
 # save as csv
 from utils import save_as_csv, plot_results
+
 
 # create context
 def create_context(args, assistant_llm, user_llm, meta_llm):
