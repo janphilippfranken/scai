@@ -6,9 +6,9 @@ sim:
   sim_dir: "sim_1" 
   sim_id: "0" 
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
-  test_run: false
+  test_run: true
   verbose: true
-  n_runs: 5
+  n_runs: 2
   system_k: 1
   chat_k: 0 
   system_message: "1. You are a helpful AI Assistant."
@@ -23,22 +23,22 @@ sim:
     - "assistant_prompt_1"
   meta_prompt: "meta_prompt_1"
   metric_prompt: "metric_prompt_1"
-  max_tokens_assistant: 200 # these are the token limits displayed in prompts
-  max_tokens_user: 100 # these are the token limits displayed in prompts
-  max_tokens_meta: 300 # these are the token limits displayed in prompts
+  max_tokens_assistant: 150 # these are the token limits displayed in prompts
+  max_tokens_user: 75 # these are the token limits displayed in prompts
+  max_tokens_meta: 200 # these are the token limits displayed in prompts
 
 api_crfm:
   assistant:
     model_name: "openai/gpt-4-0314"
-    max_tokens: 200 # these are the actual token limits
+    max_tokens: 300 # these are the actual token limits
     temperature: 0.2
   user:
     model_name: "openai/gpt-4-0314" 
-    max_tokens: 100 # these are the actual token limits
+    max_tokens: 150 # these are the actual token limits
     temperature: 0.2
   meta:
     model_name: "openai/gpt-4-0314" 
-    max_tokens: 300 # these are the actual token limits
+    max_tokens: 400 # these are the actual token limits
     temperature: 0.1
 
 api_openai:
