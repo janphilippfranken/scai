@@ -103,24 +103,20 @@ class UserModel():
         """
         Gets chat history prompts.
         """
-
         assistant_response_other = {} # responses assistant interacting with other users for metrics_other
         chat_history_prompts = []
         chat_history_prompts_other = []
         
         if k == 0: # if we have no chat memory (either first run or k == 0)
             assistant_response = buffer.load_memory_variables(var_type='chat').get(f"{self.conversation_id}_assistant", [])[-1]
-            
             chat_history_prompts = [
                 HumanMessagePromptTemplate.from_template(
                     f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response['response']}' \n{metric_prompt.content}"
                 )
             ]
-            
             for key in buffer.load_memory_variables(var_type='chat').keys():
                 if key != f"{self.conversation_id}_assistant" and '_assistant' in key:
                     assistant_response_other[key] = buffer.load_memory_variables(var_type='chat').get(key, [])[-1]
-            
             chat_history_prompts_other = [
                 HumanMessagePromptTemplate.from_template(
                     f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response_other[key]['response']}' \n{metric_prompt.content_other}"
@@ -157,36 +153,30 @@ class UserModel():
         """
         Gets response from other users.
         """
-        # TODO: add new methods to class for each of these, do not hardcode harmlessness
+        # TODO: do not hardcode harmlessness
         responses_other = {}
         prompt_other = None
         
         for id_other, chat_history_prompt_other in enumerate(chat_history_prompts_other):
             user_chat_prompt_other = ChatPromptTemplate.from_messages([user_system_prompt, *[chat_history_prompt_other]])
-            
             prompt_other = user_chat_prompt_other.format(
                 persona=user_prompt.persona,
                 task=task_prompt.task,
                 max_tokens=max_tokens
             )
-            
             if not test_run and rate_other:
                 chain_other = LLMChain(llm=self.llm, prompt=user_chat_prompt_other)
-                
                 response_other = chain_other.run(
                     persona=user_prompt.persona,
                     task=task_prompt.content,
                     max_tokens=max_tokens,
                     stop=['System:']
                 )
-                
                 response_other = get_vars_from_out(response_other, metric_prompt.metrics_other)
             else:
                 response_other = {}
-            
             response_other['prompt'] = prompt_other
             response_other['harmlessness'] = np.random.randint(11)
-
             responses_other[list(assistant_response_other.keys())[id_other]] = response_other
 
         return responses_other
@@ -205,14 +195,12 @@ class UserModel():
         Gets response from user.
         """
         chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
-
         response = chain.run(
             persona=user_prompt.persona,
             task=task_prompt.content,
             max_tokens=max_tokens,
             stop=['System:']
         )
-
         response = get_vars_from_out(response, metric_prompt.metrics)
         response['prompt'] = prompt # store prompt in response dict
         # rename feedback to response
