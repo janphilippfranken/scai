@@ -94,12 +94,12 @@ class AssistantModel():
                 for response in (AIMessagePromptTemplate.from_template(assistant['response']), 
                                 HumanMessagePromptTemplate.from_template(user['response']))
             ]
-            chat_history_prompts.insert(0, HumanMessagePromptTemplate.from_template(task_prompt.content)) # insert task prompt at the beginning
-            chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].prompt.template + task_prompt.assistant_connective)
+            chat_history_prompts.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_connective}")) # insert task prompt at the beginning
+            chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].prompt.template)
         else:
             chat_history_prompts = [
                 HumanMessagePromptTemplate.from_template(
-                    f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_persona_connective} {task_prompt.assistant_connective}"
+                    f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_connective}"
                 )
             ]
 

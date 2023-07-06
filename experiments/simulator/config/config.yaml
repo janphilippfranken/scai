@@ -6,11 +6,12 @@ sim:
   sim_dir: "sim_1" 
   sim_id: "0" 
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
-  test_run: false # if false this uses tokens, otherwise just print the prompt
+  test_run: true # if false this uses tokens, otherwise just print the prompt
   verbose: true
-  n_runs: 5 
+  n_runs: 2
+  n_turns: 2
   system_k: 1 # memory for meta-prompt (i.e. how many past constitutions do we see)
-  chat_k: 0  # chat memory of the assistant / user (i.e. how many past turns do we see, currently only working for 0)
+  chat_k: 2 # chat memory of the assistant / user (i.e. how many past turns do we see, currently only working for 0)
   system_message: "1. You are a helpful AI Assistant." # start constitution
   task_prompt: "task_prompt_4"
   user_prompts: 

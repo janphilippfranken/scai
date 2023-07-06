@@ -125,7 +125,7 @@ class Context():
             meta_model=meta_model,
         )
 
-    def run(self) -> ConversationBuffer:
+    def run_chat(self) -> ConversationBuffer:
         assert len(self.assistant_models) == len(self.assistant_prompts), "Mismatch between assistant models and prompts"
         assert len(self.user_models) == len(self.user_prompts), "Mismatch between user models and prompts"
 
@@ -153,7 +153,14 @@ class Context():
             # save user response
             self.buffer.save_user_context(message_id=f"{user_model.conversation_id}_user", **user_response)
 
+    def run(
+        self, 
+        n_turns: int,
+    ) -> None:
         # run meta-prompt
+        for _ in range(n_turns):
+            self.run_chat()
+            
         meta_response = self.meta_model.run(meta_prompt=self.meta_prompt, 
                                             task_prompt=self.task_prompt, 
                                             buffer=self.buffer,

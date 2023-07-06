@@ -123,18 +123,27 @@ class UserModel():
                 ) for key in assistant_response_other.keys()
             ]
         else:
-            pass
-            # TODO: add other users chat history for more than 1 k
-            # user_chat_history = self._get_chat_history(buffer, var_type="user")
-            # chat_history_prompts = [
-            #         template
-            #         for assistant, user in zip(assistant_chat_history, user_chat_history)
-            #         for template in (AIMessagePromptTemplate.from_template(user['response']), 
-            #                         HumanMessagePromptTemplate.from_template(assistant['response']))
-            # ]
-            # # add initial prompt including task
-            # chat_history_prompts.insert(0, HumanMessagePromptTemplate.from_template(task_prompt.preamble + " '" + task_prompt.content + "' " + task_prompt.user_connective + " '" + assistant_chat_history[-1]['response'] + "'"))
-            # chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompts[-1].prompt.template + " \n" + metric_prompt.content)
+    
+            user_chat_history = self._get_chat_history(buffer, var_type="user")
+            chat_history_prompts = [
+                    template
+                    for assistant, user in zip(assistant_chat_history, user_chat_history)
+                    for template in (AIMessagePromptTemplate.from_template(user['response']), 
+                                    HumanMessagePromptTemplate.from_template(assistant['response']))
+            ]
+            # add initial prompt including task
+            chat_history_prompts.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} '{assistant_chat_history[-1]['response']}'"))
+            chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(f"{chat_history_prompts[-1].prompt.template}\n{metric_prompt.content}")
+
+            # get other user responses
+            for key in buffer.load_memory_variables(var_type='chat').keys():
+                if key != f"{self.conversation_id}_assistant" and '_assistant' in key:
+                    assistant_response_other[key] = buffer.load_memory_variables(var_type='chat').get(key, [])[-1]
+            chat_history_prompts_other = [
+                HumanMessagePromptTemplate.from_template(
+                    f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response_other[key]['response']}' \n{metric_prompt.content_other}"
+                ) for key in assistant_response_other.keys()
+            ]
 
         return assistant_response_other, chat_history_prompts, chat_history_prompts_other
 

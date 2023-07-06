@@ -2,11 +2,12 @@ sim:
   sim_dir: sim_1
   sim_id: '0'
   model_name: openai/gpt-4-0314
-  test_run: false
+  test_run: true
   verbose: true
-  n_runs: 5
+  n_runs: 2
+  n_turns: 2
   system_k: 1
-  chat_k: 0
+  chat_k: 2
   system_message: 1. You are a helpful AI Assistant.
   task_prompt: task_prompt_4
   user_prompts:

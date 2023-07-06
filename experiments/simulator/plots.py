@@ -1,3 +1,4 @@
+#%%
 from typing import (
     Optional, 
     Dict, 
@@ -103,6 +104,7 @@ def plot_metrics(
     data_directory: str = 'sim_res/sim_1/0', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
+    run : int = 0,
     palette_name: str = 'colorblind',
     saturation: float = 0.6,
     font_family: str = 'Avenir',
@@ -165,10 +167,9 @@ def plot_metrics(
             lines.append(line[0])  # Append the Line2D object, not the list
             ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
             ax.fill_between(x, y - 1.95 * error, y + 1.95 * error, color=color, alpha=0.3)
-    # x-axis
-    plt.xlabel('Epoch')
     sns.despine(left=True, bottom=False)
-    
+    # x-axis
+    plt.xlabel('Turns')
     # y-axis
     ax.set_ylabel(y_label.capitalize())
     ax.yaxis.set_label_coords(*y_label_coords)
@@ -186,5 +187,91 @@ def plot_metrics(
                   bbox_to_anchor=bbox_to_anchor,
                   loc=legend_loc)
     # save plots 
-    plt.savefig(f'{data_directory}/{sim_name}_{sim_id}_{metric.replace(" ", "_").lower()}.pdf', bbox_inches='tight')
-    plt.savefig(f'{data_directory}/{sim_name}_{sim_id}_{metric.replace(" ", "_").lower()}.jpg', bbox_inches='tight') # for demo in browser
+    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_{metric.replace(" ", "_").lower()}.pdf', bbox_inches='tight')
+    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_{metric.replace(" ", "_").lower()}.jpg', bbox_inches='tight') # for demo in browser
+
+
+def plot_average_metrics(
+    data: pd.DataFrame,
+    data_directory: str = 'sim_res/sim_1/0', 
+    sim_name: str = 'sim_1',
+    sim_id: str = '0',
+    palette_name: str = 'colorblind',
+    saturation: float = 0.6,
+    font_family: str = 'Avenir',
+    font_size: int = 24,
+    width: int = 10,
+    height: int = 5,
+    linewidth: int = 2,
+    zorder: int = 1,
+    scatter_color: str = 'black',
+    y_label: str = 'Average Rating',
+    y_label_coords: Tuple[float, float] = (-0.07, 0.5),
+    y_ticks: List[int] = [0, 2, 4, 6, 8, 10],
+    y_ticklabels: List[int] = [0, 2, 4, 6, 8, 10],
+    y_lim: Tuple[float, float] = (-1, 11),
+    legend: bool = True,
+    legend_title: str = 'Metric',
+    legend_loc: str = 'center left',
+    bbox_to_anchor: Tuple[float, float] = (1.0, 0.6),
+) -> None:
+    """
+    Plot user data
+
+    Args:   
+        data (pd.DataFrame): user data
+        data_directory (str, optional): directory to save the data. Defaults to 'sim_res'.
+        sim_name (str, optional): simulation name. Defaults to 'sim_1'.
+        sim_id (str, optional): simulation id. Defaults to '0'.
+        palette (str, optional): color palette. Defaults to 'colorblind'.
+        saturation (float, optional): saturation of the colors. Defaults to 0.6.
+    """
+    # Get color palette
+    palette = get_palette(n=len(set(data['run'])), palette_name=palette_name, saturation=saturation)
+    
+    # Set font family and size
+    plt.rcParams['font.family'] = font_family
+    plt.rcParams['font.size'] = font_size
+
+    # Create figure 
+    fig, ax = plt.subplots(figsize=(width, height))
+
+    # Store lines for legend
+    lines = []  
+
+    # Plot data
+    for i, metric in enumerate(set(data['metric'])):
+        color = palette[i]
+        x = data['run'].unique()
+        values = data[data['metric'] == metric]
+        y = np.array(values[values['statistic'] == 'mean']['value'])
+        error = np.array(values[values['statistic'] == 'standard_error']['value'])
+        line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
+        lines.append(line[0])  # Append the Line2D object, not the list
+        ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
+        ax.fill_between(x, y - 1.95 * error, y + 1.95 * error, color=color, alpha=0.3)
+
+        
+    plt.xlabel('Runs')
+    sns.despine(left=True, bottom=False)
+    
+    # y-axis
+    ax.set_ylabel(y_label.capitalize())
+    ax.yaxis.set_label_coords(*y_label_coords)
+    ax.set_yticks(y_ticks)
+    ax.set_yticklabels(y_ticklabels)
+    ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
+    plt.ylim(y_lim)
+    # legend 
+    if legend:
+        ax.legend(lines, 
+                  data['metric'].unique(), 
+                  title=legend_title, 
+                  frameon=False,
+                  ncol=1, 
+                  bbox_to_anchor=bbox_to_anchor,
+                  loc=legend_loc)
+    # save plots 
+    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.pdf', bbox_inches='tight')
+    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.jpg', bbox_inches='tight') # for demo in browser
+# %%

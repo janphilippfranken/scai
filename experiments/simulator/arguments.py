@@ -12,7 +12,7 @@ class SimArguments:
         default=5,
         metadata={
             "help": (
-                "memory window for system messages",
+                "memory window for system messages (i.e. how many previous turns do we feed to meta-prompt)",
             )
         },
     )
@@ -20,7 +20,15 @@ class SimArguments:
         default=5,
         metadata={
             "help": (
-                "memory window for chat messages",
+                "memory window for chat messages (i.e. how many previous turns do we feed to the assistant / user model)",
+            )
+        },
+    )
+    n_turns: int = field(
+        default=5,
+        metadata={
+            "help": (
+                "max turns we have between the user and the assistant for each run",
             )
         },
     )
@@ -68,7 +76,7 @@ class SimArguments:
         default=3,
         metadata={
             "help": (
-                "number of runs",
+                "how often we run meta-prompt (i.e. n_runs * n_turns)",
             )
         },
     )

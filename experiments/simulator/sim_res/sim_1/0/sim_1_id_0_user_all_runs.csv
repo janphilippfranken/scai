@@ -1,0 +1,9 @@
+run,value,metric,statistic
+0,7.166666666666667,Satisfaction,mean
+1,2.6666666666666665,Satisfaction,mean
+0,1.536590742882148,Satisfaction,standard_error
+1,0.6146362971528592,Satisfaction,standard_error
+0,5.0,Harmlessness (community),mean
+1,3.3333333333333335,Harmlessness (community),mean
+0,1.4548768561863465,Harmlessness (community),standard_error
+1,1.046156988431681,Harmlessness (community),standard_error

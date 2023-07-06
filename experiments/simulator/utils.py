@@ -9,7 +9,7 @@ import ast
 import pandas as pd
 import scipy.stats as stats
 
-from plots import plot_metrics
+from plots import plot_metrics, plot_average_metrics
 
 
 def save_as_csv(
@@ -18,6 +18,7 @@ def save_as_csv(
     data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
+    run: int = 0,
 ) -> None:
     """
     Save simulation data as a csv file
@@ -50,13 +51,13 @@ def save_as_csv(
     # Convert the list of dicts to a dataframe
     data_frame = pd.DataFrame(data_list)
     # Save the full dataframe as a csv
-    data_frame.to_csv(f'{data_directory}/{sim_name}_{sim_id}.csv', index=False)
+    data_frame.to_csv(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}.csv', index=False)
 
     # Extract user data ratings for plotting 
     data_user = data_frame[data_frame['agent'].str.contains('user')]
     data_user = data_user.dropna(axis=1)
     # Save the user dataframe as a csv
-    data_user.to_csv(f'{data_directory}/{sim_name}_{sim_id}_user.csv', index=False)
+    data_user.to_csv(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_user.csv', index=False)
 
 def standard_error(x):
     return stats.sem(x, nan_policy='omit')
@@ -66,6 +67,7 @@ def plot_results(
     data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1', 
     sim_id: str = '0',
+    run: int = 0,
 ) -> None:
     """
     Creates plots for simulation data
@@ -77,19 +79,6 @@ def plot_results(
         sim_id (str, optional): simulation id. Defaults to '0'.
     """
     # Compute average for other users
-    data['responses_other'] = data['responses_other'].apply(ast.literal_eval) # TODO: dont harcode this
-    # create average harmlessness score based on other users
-    average_ratings = []
-    for other_ratings in data['responses_other']:
-        average_rating = 0
-        for _, ratings in other_ratings.items():
-            average_rating += ratings['harmlessness'] # TODO: do not hardcode for harmlessness
-        if average_rating != 0:
-            average_rating /= len(other_ratings)
-        average_ratings.append(average_rating)
-    data['harmlessness'] = average_ratings
-
-    # Extract plot metrics
     metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id', 'responses_other', 'harmlessness']]
     
 
@@ -100,6 +89,7 @@ def plot_results(
                      data_directory=data_directory,
                      sim_name=sim_name,
                      sim_id=sim_id,
+                     run=run,
                      metric=metric, 
                      z_column='agent_id',
                      y_label=metric)
@@ -121,10 +111,55 @@ def plot_results(
                 data_directory=data_directory,
                 sim_name=sim_name,
                 sim_id=sim_id,
+                run=run,
                 metric='average_ratings',
                 error_metric='statistic',
                 y_label='Average Rating',
                 z_column='metric_id', 
                 legend_title='Metric', 
                 plot_error=True)
+
+
+def plot_average_results(      
+    data_directory: str = 'sim_res', 
+    sim_name: str = 'sim_1',
+    sim_id: str = '0',
+    n_runs: int = 5,
+    ) -> None:
+    """
+    Plot average across runs and save average csv
+    """
+    dfs = []  
+    for run in range(n_runs):
+        df = pd.read_csv(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_user.csv')  
+        df['run'] = run  
+        dfs.append(df)  
+
+    # Concatenate all the data frames in the list
+    user_data = pd.concat(dfs, ignore_index=True)
+
+    # Select only the columns you're interested in
+    numeric_cols = ['Satisfaction', 'Harmlessness (community)']
+
+    # Compute mean and standard_error for the selected columns only
+    average_data = user_data.groupby('run')[numeric_cols].agg(['mean', standard_error])
+
+    # collapse multi-index columns
+    average_data.columns = ['_'.join(col).strip() for col in average_data.columns.values]
+
+    # Melt into long format and separate 'metric' into 'metric' and 'statistic'
+    long_data = average_data.reset_index().melt(id_vars='run', var_name='metric_stat', value_name='value')
+
+    # Separate 'metric' and 'statistic' and remove 'statistic' column
+    long_data[['metric', 'statistic']] = long_data['metric_stat'].str.split('_', n=1, expand=True)
+    long_data.drop(columns=['metric_stat'], inplace=True)
+
+    # Save the full dataframe as a csv
+    long_data.to_csv(f'{data_directory}/{sim_name}_id_{sim_id}_user_all_runs.csv', index=False)
+
+    # Plot average metrics
+    plot_average_metrics(long_data,
+                         data_directory=data_directory,
+                         sim_name=sim_name,
+                         sim_id=sim_id)
 
