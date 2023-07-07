@@ -61,7 +61,24 @@ class BaseAgent(ABC):
         Returns:    
             The number of users in the conversation."""
         return len(set(id.split('_')[0] for id in chat_memory.keys()))
-
+    
+    def _get_model_ids(
+        self, 
+        chat_memory: ChatMemory,
+        model_type: str,
+    ) -> List[str]:
+        """
+        Returns the model ids of type model_type from the chat memory.
+        
+        Args:
+            chat_memory: The chat memory.
+            model_type: The type of model to return.
+            
+        Returns:    
+            List of model ids of type model_type.
+        """
+        return [key for key in list(chat_memory.keys()) if model_type in key]
+    
     @abstractmethod
     def _get_chat_history(
         self,
@@ -103,7 +120,7 @@ class BaseAgent(ABC):
         return collective_chat_history
     
     @abstractmethod
-    def _get_chat_history_templates(self):
+    def _get_chat_history_prompt_templates(self):
         raise NotImplementedError
 
     @abstractmethod
@@ -134,7 +151,7 @@ class BaseAgent(ABC):
         """
         var_dict = {}
         for lines in response.splitlines():
-            for var in var_list:
+            for var in variables:
                 if f'{var}:' in lines:
                     var_dict[var] = lines.split(': ')[1].strip()
         return var_dict

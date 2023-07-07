@@ -6,7 +6,7 @@ from typing import (
 )
 
 from scai.agents.user import UserModel
-from scai.agents.assistant import AssistantModel
+from scai.agents.assistant import AssistantAgent
 from scai.agents.meta_prompt import MetaPromptModel
 
 from scai.memory.buffer import ConversationBuffer
@@ -23,7 +23,7 @@ class Context():
         metric_prompt: str,
         buffer: ConversationBuffer, 
         user_models: List[UserModel], 
-        assistant_models: List[AssistantModel], 
+        assistant_models: List[AssistantAgent], 
         meta_model: MetaPromptModel, 
         verbose: bool, 
         test_run: bool, 
@@ -79,7 +79,7 @@ class Context():
     @staticmethod
     def create(
         user_llm: UserModel, 
-        assistant_llm: AssistantModel, 
+        assistant_llm: AssistantAgent, 
         meta_llm: MetaPromptModel, 
         id: str, 
         name: str, 
@@ -103,7 +103,7 @@ class Context():
         buffer = ConversationBuffer()
         # create models
         user_models = [UserModel(llm=user_llm, conversation_id=str(conversation_id), k=chat_k) for conversation_id, _ in enumerate(user_prompts)]
-        assistant_models = [AssistantModel(llm=assistant_llm, conversation_id=str(conversation_id), k=chat_k, system_k=system_k) for conversation_id, _ in enumerate(assistant_prompts)]
+        assistant_models = [AssistantAgent(llm=assistant_llm, conversation_id=str(conversation_id), k=chat_k, system_k=system_k) for conversation_id, _ in enumerate(assistant_prompts)]
         meta_model = MetaPromptModel(llm=meta_llm, conversation_id="system", k=system_k)
 
         return Context(
