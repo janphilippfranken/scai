@@ -2,32 +2,15 @@ from typing import (
     Any,
     Dict,
     List, 
-    Optional,
-    Tuple,
 )
 
 from abc import ABC, abstractmethod
 
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
-
-from langchain.chains.llm import LLMChain
+from langchain.prompts.chat import ChatPromptTemplate
 from langchain.chat_models.base import BaseChatModel
-
-import numpy as np # for simulated responses
-
-from scai.prompts.user.models import UserPrompt
-from scai.prompts.task.models import TaskPrompt
-from scai.prompts.metrics.models import MetricPrompt
 
 from scai.memory.buffer import ConversationBuffer
 from scai.memory.memory import ChatMemory
-
-
 
 class BaseAgent(ABC):
     """
