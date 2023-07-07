@@ -47,7 +47,6 @@ class BaseAgent(ABC):
         self.llm = llm
         self.model_id = model_id
 
-    @abstractmethod
     def _get_n_user(
         self, 
         chat_memory: ChatMemory,
@@ -79,7 +78,6 @@ class BaseAgent(ABC):
         """
         return [key for key in list(chat_memory.keys()) if model_type in key]
     
-    @abstractmethod
     def _get_chat_history(
         self,
         buffer: ConversationBuffer,
@@ -96,9 +94,9 @@ class BaseAgent(ABC):
             List of chat history strings
         """
         if memory_type == "system":
-            return buffer.load_memory_variables(memory_type='system')[self.model_id]
+            return buffer.load_memory_variables(memory_type='system')
         elif memory_type == "chat":
-            return buffer.load_memory_variables(memory_type='chat')[self.model_id]
+            return buffer.load_memory_variables(memory_type='chat')
         
     def _get_collective_chat_history(
         self,
@@ -119,28 +117,6 @@ class BaseAgent(ABC):
                 collective_chat_history[key] = buffer.load_memory_variables(memory_type='chat')[key][-1] # get most recent response only
         return collective_chat_history
     
-    @abstractmethod
-    def _get_chat_history_prompt_templates(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def _get_prompt(
-        self, 
-    ) -> Tuple[ChatPromptTemplate, str]:
-        """
-        Get the prompt fed into the model. 
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def _get_response(
-        self):
-        """
-        Get the response from the model. 
-        """
-        raise NotImplementedError
-
-    @abstractmethod
     def _format_response(
         self,
         response: str, 
@@ -155,9 +131,30 @@ class BaseAgent(ABC):
                 if f'{var}:' in lines:
                     var_dict[var] = lines.split(': ')[1].strip()
         return var_dict
+    
+    @abstractmethod
+    def _get_chat_history_prompt_templates(self) -> List[ChatPromptTemplate]:
+        """
+        Get the prompt templates.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def _get_prompt(self) -> ChatPromptTemplate:
+        """
+        Get the prompt fed into the model. 
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def _get_response(self) -> str:
+        """
+        Get the response from the model. 
+        """
+        raise NotImplementedError
 
     @abstractmethod 
-    def run(self):
+    def run(self) -> Dict[str, Any]:
         """
         Run the agent.
         """

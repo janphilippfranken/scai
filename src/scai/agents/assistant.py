@@ -16,14 +16,12 @@ from langchain.prompts.chat import (
 from langchain.chains.llm import LLMChain
 from langchain.chat_models.base import BaseChatModel
 
-from scai.agents.base import BaseAgent
-
-
 from scai.prompts.assistant.models import AssistantPrompt
 from scai.prompts.task.models import TaskPrompt
-from scai.prompts.user.models import UserPrompt
 
 from scai.memory.buffer import ConversationBuffer
+
+from scai.agents.base import BaseAgent
 
 class AssistantAgent(BaseAgent):
     """Assistant agent."""
@@ -38,13 +36,12 @@ class AssistantAgent(BaseAgent):
         self,
         buffer: ConversationBuffer,
         task_prompt: TaskPrompt,
-        ):
+    ) -> List[ChatPromptTemplate]:
         """
         Returns the chat history prompt templates for the assistant.
         """
-        chat_memory = buffer.load_memory_variables(memory_type='chat') # check if chat memory exists
-        if chat_memory and len(self._get_chat_history(buffer, memory_type="assistant")) == 0: # if we are at the beginning of a conversation
-
+        chat_memory = self._get_chat_history(buffer, memory_type="chat") # check if chat memory exists
+        if chat_memory.get(f"{self.model_id}_assistant") is None or len(chat_memory[f"{self.model_id}_assistant"] == 0): # if we are at the beginning of a conversation
             chat_history_prompt_templates = [
                 HumanMessagePromptTemplate.from_template(
                     f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_connective}"
@@ -69,7 +66,7 @@ class AssistantAgent(BaseAgent):
         buffer: ConversationBuffer,
         assistant_prompt: AssistantPrompt,
         task_prompt: TaskPrompt,
-        ) -> ChatPromptTemplate:
+    ) -> ChatPromptTemplate:
         """
         Returns the prompt template for the assistant.
         """
@@ -83,7 +80,7 @@ class AssistantAgent(BaseAgent):
         system_message: str,
         task_prompt: TaskPrompt,
         max_tokens: int,
-                      ):
+    ) -> str:
         """
         Returns the response from the assistant.
         """
@@ -99,7 +96,6 @@ class AssistantAgent(BaseAgent):
         buffer: ConversationBuffer, 
         assistant_prompt: AssistantPrompt, 
         task_prompt: TaskPrompt, 
-        user_prompt: UserPrompt,
         turn: int,
         test_run: bool = False, 
         verbose: bool = False,
@@ -111,7 +107,6 @@ class AssistantAgent(BaseAgent):
             buffer: The buffer containing the conversation history.
             assistant_prompt: The assistant prompt to be used.
             task_prompt: The task prompt to be used.
-            user_prompt: The user prompt to be used.
             turn: The turn number.
             metric_prompt: The metric prompt to be used.
             test_run: Whether to run the assistant in test mode (i.e., without using tokens, just print prompt and save simulated response).
@@ -119,9 +114,9 @@ class AssistantAgent(BaseAgent):
             max_tokens: The maximum number of tokens to generate.
 
         Returns:
-            A dictionary containing the assistant's response, input prompt, and all metrics we want to track.
+            A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
         """
-        system_message = self._get_chat_history(buffer, memory_type="system")[-1]['response'] # the last system message in the chat history (i.e. constitution)
+        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response'] # the last system message in the chat history (i.e. constitution)
         chat_prompt_template= self._get_prompt(buffer, assistant_prompt, task_prompt)
         prompt_string = chat_prompt_template.format(system_message=system_message,
                                                     task=task_prompt.task,
@@ -133,9 +128,10 @@ class AssistantAgent(BaseAgent):
 
             return {
                 'prompt': prompt_string, 
-                'response': f"assistant_response_{self.model_id} in turn {turn}.",
+                'response': f"assistant_response_{self.model_id}, turn {turn}.",
                 'turn': turn
             }
+        breakpoint()
         
         response = self._get_response(chat_prompt_template, system_message, task_prompt, max_tokens)
 

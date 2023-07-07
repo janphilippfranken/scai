@@ -37,17 +37,17 @@ class MetaPromptModel():
     def __init__(
         self, 
         llm: BaseChatModel,
-        conversation_id: str,
+        model_id: str,
         k: int = 5,
     ) -> None:
         """Initializes the MetaPromptModel with a given LLM and conversation id.
         Args:
             llm: The LLM Chat model. Currently either a CRFM or OpenAI model chat model
-            conversation_id: The unique identifier for the conversation.
+            model_id: The unique identifier for the conversation.
             k: Meta-prompt chat memory length (i.e. how many previous turns do we feed to the model)
         """
         self.llm = llm
-        self.conversation_id = conversation_id
+        self.model_id = model_id
         self.k = k
     
     def _get_chat_str(

@@ -102,9 +102,9 @@ class Context():
         # create buffer
         buffer = ConversationBuffer()
         # create models
-        user_models = [UserModel(llm=user_llm, conversation_id=str(conversation_id), k=chat_k) for conversation_id, _ in enumerate(user_prompts)]
-        assistant_models = [AssistantAgent(llm=assistant_llm, conversation_id=str(conversation_id), k=chat_k, system_k=system_k) for conversation_id, _ in enumerate(assistant_prompts)]
-        meta_model = MetaPromptModel(llm=meta_llm, conversation_id="system", k=system_k)
+        user_models = [UserModel(llm=user_llm, model_id=model_id) for model_id, _ in enumerate(user_prompts)]
+        assistant_models = [AssistantAgent(llm=assistant_llm, model_id=model_id) for model_id, _ in enumerate(assistant_prompts)]
+        meta_model = MetaPromptModel(llm=meta_llm, model_id="system")
 
         return Context(
             id=id, 
@@ -125,41 +125,53 @@ class Context():
             meta_model=meta_model,
         )
 
-    def run_chat(self) -> ConversationBuffer:
+    def run_chat(
+        self,
+        turn: int,
+    ) -> ConversationBuffer:
+        """
+        Runs one turn of each conversation.
+
+        Args:
+            turn: turn number
+        """
         assert len(self.assistant_models) == len(self.assistant_prompts), "Mismatch between assistant models and prompts"
         assert len(self.user_models) == len(self.user_prompts), "Mismatch between user models and prompts"
 
         for assistant_model, assistant_prompt, user_model, user_prompt in zip(self.assistant_models, self.assistant_prompts, self.user_models, self.user_prompts):
             
             # run assistant model
-            assistant_response = assistant_model.run(assistant_prompt=assistant_prompt, 
+            assistant_response = assistant_model.run(buffer=self.buffer,
+                                                     assistant_prompt=assistant_prompt,
                                                      task_prompt=self.task_prompt, 
-                                                     user_prompt=user_prompt,
-                                                     buffer=self.buffer,
-                                                     verbose=self.verbose,
+                                                     turn=turn,
                                                      test_run=self.test_run,
+                                                     verbose=self.verbose,
                                                      max_tokens=self.max_tokens_assistant)
+                
+                
             # save assistant response
-            self.buffer.save_assistant_context(model_id=f"{assistant_model.conversation_id}_assistant", **assistant_response)
+            self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant", **assistant_response)
             
             # run user model
-            user_response = user_model.run(user_prompt=user_prompt, 
-                                           task_prompt=self.task_prompt, 
+            user_response = user_model.run(buffer=self.buffer,
+                                           user_prompt=user_prompt,
+                                           task_prompt=self.task_prompt,
                                            metric_prompt=self.metric_prompt,
-                                           buffer=self.buffer,
-                                           verbose=self.verbose,
+                                           turn=turn,
                                            test_run=self.test_run,
+                                           verbose=self.verbose,
                                            max_tokens=self.max_tokens_user)
             # save user response
-            self.buffer.save_user_context(model_id=f"{user_model.conversation_id}_user", **user_response)
+            self.buffer.save_user_context(model_id=f"{user_model.model_id}_user", **user_response)
 
     def run(
         self, 
         n_turns: int,
     ) -> None:
         # run meta-prompt
-        for _ in range(n_turns):
-            self.run_chat()
+        for turn in range(n_turns):
+            self.run_chat(turn)
             
         meta_response = self.meta_model.run(meta_prompt=self.meta_prompt, 
                                             task_prompt=self.task_prompt, 

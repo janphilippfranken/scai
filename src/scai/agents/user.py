@@ -24,118 +24,166 @@ from scai.prompts.metrics.models import MetricPrompt
 
 from scai.memory.buffer import ConversationBuffer
 
+from scai.agents.base import BaseAgent
 
 
 
-
-class UserModel():
+class UserModel(BaseAgent):
     """LLM Chain for running the User."""
     def __init__(
-        self,
-        llm: BaseChatModel,
-        conversation_id: str,
-        k: int = 5,
-    ) -> None:
-        """Initializes the UserModel with a given LLM and conversation id.
-
-        Args:
-            llm: The LLM Chat model. Currently either a CRFM or OpenAI model chat model
-            conversation_id: The unique identifier for the conversation.
-            k: The users chat memory length (i.e. how many previous turns do we feed to the user model)
-        """
-        self.llm = llm
-        self.conversation_id = conversation_id
-        self.k = k
-
-        
-    def _get_prompt(
         self, 
-        user_system_prompt: SystemMessagePromptTemplate,
-        chat_history_prompts: List[ChatPromptTemplate],
-        user_prompt: UserPrompt,
-        task_prompt: TaskPrompt,
-        max_tokens: int,
-    ) -> Tuple[ChatPromptTemplate, str]:
-        """
-        Get prompt for user.
-        """
-        user_chat_prompt = ChatPromptTemplate.from_messages([user_system_prompt, *chat_history_prompts])
-        prompt = user_chat_prompt.format(persona=user_prompt.persona,
-                                         task=task_prompt.task,
-                                         max_tokens=max_tokens)
-        return user_chat_prompt, prompt
-    
-    def _get_chat_history_prompts(
+        llm: BaseChatModel, 
+        model_id: str, 
+    ) -> None:
+        super().__init__(llm, model_id)
+
+    def _get_chat_history_prompt_templates_other(
         self,
-        assistant_chat_history: List[Dict[str, str]],
         buffer: ConversationBuffer,
         task_prompt: TaskPrompt,
         metric_prompt: MetricPrompt,
-        k: int,
-    ) -> Tuple[Dict[str, str], List[ChatPromptTemplate], List[ChatPromptTemplate]]:
+    ) -> List[ChatPromptTemplate]:
         """
-        Gets chat history prompts.
+        Returns the chat history prompt templates for the user rating other conversations
         """
-        assistant_response_other = {} # responses assistant interacting with other users for metrics_other
-        chat_history_prompts = []
-        chat_history_prompts_other = []
-        
-        if k == 0: # if we have no chat memory (either first run or k == 0)
-            assistant_response = buffer.load_memory_variables(memory_type='chat').get(f"{self.conversation_id}_assistant", [])[-1]
-            chat_history_prompts = [
+        chat_memory = self._get_chat_history(buffer, memory_type="chat") # check if chat memory exists
+        # data structures for storing the assistant responses and user responses from other conversations
+        chat_history_prompt_templates_other = {}
+        assistant_responses = {}
+        user_responses = {}
+        # if we are at the beginning of a conversation
+        if chat_memory.get(f"{self.model_id}_user") is None or len(chat_memory[f"{self.model_id}_user"] == 0): 
+            for model_id in buffer.load_memory_variables(memory_type='chat').keys():
+                if model_id != f"{self.model_id}_assistant" and 'assistant' in model_id:
+                    assistant_responses[model_id] = chat_memory[model_id][-1]['response']
+                    chat_history_prompt_templates = [
+                        HumanMessagePromptTemplate.from_template(
+                            f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_responses[model_id]}' \n{metric_prompt.content_other}"
+                        )
+                    ]
+                    chat_history_prompt_templates_other[model_id] = chat_history_prompt_templates
+            
+            return chat_history_prompt_templates_other
+        # if we are not at the beginning of a conversation, need to get the conversation history
+        for model_id in buffer.load_memory_variables(memory_type='chat').keys():
+            if self.model_id.split('_')[0] not in model_id:
+                if 'user' in model_id:
+                    user_responses[model_id] = chat_memory[model_id][-1]['response']
+                if 'assistant' in model_id:
+                    assistant_responses[model_id] = chat_memory[model_id][-1]['response']
+            
+                chat_history_prompt_templates = [
+                        template
+                        for assistant, user in zip(chat_memory[f"assistant_{model_id}"], chat_memory[f"user_{model_id}"])
+                        for template in (AIMessagePromptTemplate.from_template(assistant['response']), 
+                                         HumanMessagePromptTemplate.from_template(user['response']))
+                    ]
+                # insert the initial request at the beginning of the chat history
+                chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_connective}")) # insert task prompt at the beginning
+                # create a request for the next response
+                chat_history_prompt_templates[-1] = HumanMessagePromptTemplate.from_template(f"{chat_history_prompt_templates[-1].prompt.template}\n{metric_prompt.content_other}")
+                # add to dictionary
+                chat_history_prompt_templates_other[model_id] = chat_history_prompt_templates
+
+        return chat_history_prompt_templates_other
+    
+    def _get_chat_history_prompt_templates(
+        self,
+        buffer: ConversationBuffer,
+        task_prompt: TaskPrompt,
+        metric_prompt: MetricPrompt,
+    ) -> List[ChatPromptTemplate]:
+        """
+        Returns the chat history prompt templates for the user
+        """
+        chat_memory = self._get_chat_history(buffer, memory_type="chat") # check if chat memory exists
+        assistant_response_0 = chat_memory[f"{self.model_id}_assistant"][-1]['response'] # get the initial assistant response
+        # if we are at the beginning of a conversation
+        if chat_memory.get(f"{self.model_id}_user") is None or len(chat_memory[f"{self.model_id}_user"] == 0): 
+            chat_history_prompt_templates = [
                 HumanMessagePromptTemplate.from_template(
-                    f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response['response']}' \n{metric_prompt.content}"
+                    f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response_0}' \n{metric_prompt.content}"
                 )
             ]
-            for key in buffer.load_memory_variables(memory_type='chat').keys():
-                if key != f"{self.conversation_id}_assistant" and '_assistant' in key:
-                    assistant_response_other[key] = buffer.load_memory_variables(memory_type='chat').get(key, [])[-1]
-            chat_history_prompts_other = [
-                HumanMessagePromptTemplate.from_template(
-                    f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response_other[key]['response']}' \n{metric_prompt.content_other}"
-                ) for key in assistant_response_other.keys()
-            ]
-        else:
-    
-            user_chat_history = self._get_chat_history(buffer, memory_type="user")
-            chat_history_prompts = [
-                    template
-                    for assistant, user in zip(assistant_chat_history, user_chat_history)
-                    for template in (AIMessagePromptTemplate.from_template(user['response']), 
-                                    HumanMessagePromptTemplate.from_template(assistant['response']))
-            ]
-            # add initial prompt including task
-            chat_history_prompts.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} '{assistant_chat_history[-1]['response']}'"))
-            chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(f"{chat_history_prompts[-1].prompt.template}\n{metric_prompt.content}")
 
-            # get other user responses
-            for key in buffer.load_memory_variables(memory_type='chat').keys():
-                if key != f"{self.conversation_id}_assistant" and '_assistant' in key:
-                    assistant_response_other[key] = buffer.load_memory_variables(memory_type='chat').get(key, [])[-1]
-            chat_history_prompts_other = [
-                HumanMessagePromptTemplate.from_template(
-                    f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response_other[key]['response']}' \n{metric_prompt.content_other}"
-                ) for key in assistant_response_other.keys()
-            ]
+            return chat_history_prompt_templates
+        # if we are not at the beginning of a conversation, need to get the conversation history
+        chat_history_prompt_templates = [
+            template
+            for assistant, user in zip(chat_memory[f"{self.model_id}_assistant"], chat_memory[f"{self.model_id}_user"])
+            for template in (AIMessagePromptTemplate.from_template(user['response']), 
+                             HumanMessagePromptTemplate.from_template(assistant['response']))
+        ]
+        # add initial prompt including task
+        chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} '{assistant_response_0}'"))
+        # update final turn with metric request
+        chat_history_prompt_templates[-1] = HumanMessagePromptTemplate.from_template(f"{chat_history_prompt_templates[-1].prompt.template}\n{metric_prompt.content}")
 
-        return assistant_response_other, chat_history_prompts, chat_history_prompts_other
+        return chat_history_prompt_templates
 
-    def _get_response_other(
-        self,
+    def _get_prompt(
+        self, 
+        buffer: ConversationBuffer,
         user_prompt: UserPrompt,
         task_prompt: TaskPrompt,
         metric_prompt: MetricPrompt,
+    ) -> ChatPromptTemplate:
+        """
+        Get prompt for user.
+        """
+        system_prompt_template = SystemMessagePromptTemplate.from_template(user_prompt.content)
+        chat_history_prompt_templates = self._get_chat_history_prompt_templates(buffer, task_prompt, metric_prompt)
+        return ChatPromptTemplate.from_messages([system_prompt_template, *chat_history_prompt_templates])
+    
+    def _get_prompt_other(
+        self, 
+        buffer: ConversationBuffer,
+        user_prompt: UserPrompt,
+        task_prompt: TaskPrompt,
+        metric_prompt: MetricPrompt,
+    ) -> List[ChatPromptTemplate]:
+        """
+        Get prompt for user.
+        """
+        system_prompt_template = SystemMessagePromptTemplate.from_template(user_prompt.content)
+        chat_history_prompt_templates_other = self._get_chat_history_prompt_templates_other(buffer, task_prompt, metric_prompt)
+        chat_prompt_templates_other = [
+                ChatPromptTemplate.from_messages([system_prompt_template, *chat_history_prompt_template_other])
+                for chat_history_prompt_template_other in chat_history_prompt_templates_other
+            ]
+        return chat_prompt_templates_other
+    
+    def _get_response(
+        self,
+        chat_prompt_template: ChatPromptTemplate,
+        system_message: str,
+        task_prompt: TaskPrompt,
+        metric_prompt: MetricPrompt,
         max_tokens: int,
-        chat_history_prompts_other: List[ChatPromptTemplate],
-        user_system_prompt: SystemMessagePromptTemplate,
-        assistant_response_other: Dict[str, str],
-        rate_other: bool,
-        test_run: bool,
+    ) -> str:
+        """
+        Returns the response from the assistant.
+        """
+        chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
+        response = chain.run(system_message=system_message,
+                             task=task_prompt.content,
+                             max_tokens=max_tokens,
+                             stop=['System:'])  
+        response = self._format_response(response, metric_prompt.metrics)
+        response['response'] = response.pop('Feedback') # feedback is actual `response` fed into next turn
+        return response
+    
+    def _get_response_other(
+        self,
+        chat_prompt_template: List[ChatPromptTemplate],
+        system_message: str,
+        task_prompt: TaskPrompt,
+        metric_prompt: MetricPrompt,
+        max_tokens: int,
     ) -> Dict:
         """
         Gets response from other users.
         """
-        # TODO: do not hardcode harmlessness
         responses_other = {}
         prompt_other = None
         
@@ -163,33 +211,7 @@ class UserModel():
 
         return responses_other
     
-    def _get_response(
-        self,
-        user_chat_prompt: ChatPromptTemplate,
-        user_prompt: UserPrompt,
-        task_prompt: TaskPrompt,
-        metric_prompt: MetricPrompt,
-        max_tokens: int,
-        responses_other: Dict[str, str],
-        prompt: str,
-    ) -> Dict:
-        """
-        Gets response from user.
-        """
-        chain = LLMChain(llm=self.llm, prompt=user_chat_prompt)
-        response = chain.run(
-            persona=user_prompt.persona,
-            task=task_prompt.content,
-            max_tokens=max_tokens,
-            stop=['System:']
-        )
-        response = get_vars_from_out(response, metric_prompt.metrics)
-        response['prompt'] = prompt # store prompt in response dict
-        # rename feedback to response
-        response['response'] = response.pop('Feedback')
-        response['responses_other'] = responses_other
 
-        return response
 
     def run(
         self,
@@ -197,8 +219,8 @@ class UserModel():
         user_prompt: UserPrompt,
         task_prompt: TaskPrompt,
         metric_prompt: MetricPrompt,
+        turn: int,
         test_run: bool = True,
-        rate_other: bool = True,
         verbose: bool = False,
         max_tokens: int = 100,
     ) -> Dict[str, Any]:
@@ -209,61 +231,57 @@ class UserModel():
             user_prompt: The user prompt to be used.
             task_prompt: The task prompt to be used.
             metric_prompt: The metric prompt to be used.
+            turn: The turn number.
             test_run: Whether to run the user in test mode (i.e., without using tokens, just print prompt and save simulated response).
             verbose: Whether to print the prompt and response.
             max_tokens: The maximum number of tokens to generate.
 
         Returns:
-            A dictionary containing the input prompt and all metrics collected from the user(s).
+            A dictionary containing the user's response, input prompt, and all other metrics we want to track.
         """
-        user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content + "\n")
-        assistant_chat_history = self._get_chat_history(buffer, memory_type="assistant")
-
-        k = len(assistant_chat_history)
-        # TODO: add other users chat history for more than 1 k
-        assistant_response_other, chat_history_prompts, chat_history_prompts_other = self._get_chat_history_prompts(
-            assistant_chat_history, buffer, task_prompt, metric_prompt, k
-        )
-
-        # Full prompt for user
-        user_chat_prompt, prompt = self._get_prompt(
-            user_system_prompt, chat_history_prompts, user_prompt, task_prompt, max_tokens
-        )
-
-        # Prompt for collecting ratings based on interactions between assistant and other users
-        responses_other = self._get_response_other(
-            user_prompt=user_prompt,
-            task_prompt=task_prompt,
-            metric_prompt=metric_prompt,
-            max_tokens=max_tokens,
-            chat_history_prompts_other=chat_history_prompts_other,
-            user_system_prompt=user_system_prompt,
-            assistant_response_other=assistant_response_other,
-            rate_other=rate_other,
-            test_run=test_run,
-        )
-
-        # if test run, just print prompt and return random response of same type
+        print(f"User {self.model_id}")
+        print(f"Turn {turn}")
+        system_message = user_prompt.persona
+        chat_prompt_template = self._get_prompt(buffer, user_prompt, task_prompt, metric_prompt)
+        chat_prompt_templates_other = self._get_prompt_other(buffer, user_prompt, task_prompt, metric_prompt)
+        prompt_string = chat_prompt_template.format(system_message=system_message, 
+                                                    task=task_prompt.task,
+                                                    metric_prompt=metric_prompt.content,
+                                                    max_tokens=max_tokens)
+        prompt_strings_other = [chat_prompt_template_other.format(system_message=system_message,
+                                                                  task=task_prompt.task,
+                                                                  metric_prompt=metric_prompt.content,
+                                                                  max_tokens=max_tokens)
+                                for chat_prompt_template_other in chat_prompt_templates_other
+                                ]
+        print(prompt_string)
+        print(prompt_strings_other)
         if test_run:
-            print(f'USER {str(self.conversation_id)}')
-            print(prompt)
-            print(responses_other)
-            print()
-            return {
-                'prompt': prompt,
-                'Satisfaction': np.random.randint(1, 11),
-                'response': 'User_feedback_' + str(self.conversation_id),
-                'responses_other': responses_other,
-            }
+            print('===================================')
+            print(f'USER {str(self.model_id)}')
+            print(prompt_string)
+            print(prompt_strings_other)
 
-        response = self._get_response(
-            user_chat_prompt, user_prompt, task_prompt, metric_prompt, max_tokens, responses_other, prompt
-        )
+            return {
+                'prompt': prompt_string, 
+                'prompts_other': prompt_strings_other,
+                'response': f"user_response_{self.model_id}, turn {turn}.",
+                'responses_other': [f"user_response_{self.model_id}, turn {turn}." for _ in range(len(prompt_strings_other))],
+                'turn': turn
+            }
+        
+        response = self._get_response(chat_prompt_template, system_message, task_prompt, metric_prompt, max_tokens)
 
         if verbose:
-            print(f'USER {str(self.conversation_id)}')
-            print('Prompt: ', prompt)
-            print('Response: ', response)
-            print()
+            print('===================================') 
+            print(f"ASSISTANT {str(self.model)}")
+            print(f"prompt:{prompt_string}")
+            print(f"response: {response}")
 
-        return response
+         
+        # response['responses_other'] = responses_other
+        return {
+            'prompt': prompt_string, 
+            'response': response, 
+            'turn': turn
+        }

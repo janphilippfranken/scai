@@ -24,7 +24,7 @@ Past interactions between the assistant and {n_user} user(s):
 ------------------------
 
 Each conversation contains:
-Conversation <conversation_id>:
+Conversation <model_id>:
 user <user_id> request: <user_request>
 assistant response: <assistant_response>
 user <user_id> feedback: <user_feedback>
