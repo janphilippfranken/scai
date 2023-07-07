@@ -49,7 +49,7 @@ Additional Resources
 .. toctree::
    :maxdepth: 1
    :caption: Additional Resources
-   :name: resources_meta_prompt
+   :name: resources_meta
    :hidden:
 
 - `langchain <https://python.langchain.com/en/latest/>`_

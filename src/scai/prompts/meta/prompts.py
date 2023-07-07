@@ -1,13 +1,14 @@
 """
-The Meta Prompt Template.
+Meta Prompt Templates
 """
 from typing import Dict
-    
-from scai.prompts.meta_prompt.models import MetaPrompt
 
-META_PROMPT: Dict[str, MetaPrompt] = {
-    "meta_prompt_1": MetaPrompt(
-        id="meta_prompt_1",
+from scai.prompts.meta.models import MetaPrompt
+
+
+metaS: Dict[str, MetaPrompt] = {
+    "meta_1": MetaPrompt(
+        id="meta_1",
         name="constitution",
         role="system",
         content="""Revise the assistant's Constitution, a guide that the assistant adheres to during interactions with users. This Constitution is crucial for the assistant to meet user requests, increase individual user satisfaction, and increase collective harmlessness ratings.

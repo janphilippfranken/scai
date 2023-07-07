@@ -17,7 +17,7 @@ from scai.memory.memory import ChatMemory
 from scai.prompts.task.prompts import TASK_PROMPTS
 from scai.prompts.assistant.prompts import ASSISTANT_PROMPTS 
 from scai.prompts.user.prompts import USER_PROMPTS 
-from scai.prompts.meta_prompt.prompts import META_PROMPTS 
+from scai.prompts.meta.prompts import metaS 
 from scai.prompts.metrics.prompts import METRIC_PROMPTS
 
 # save and plot results
@@ -41,7 +41,7 @@ def create_context(
         task_prompt=TASK_PROMPTS[args.sim.task_prompt],
         user_prompts=[USER_PROMPTS[user_prompt] for user_prompt in args.sim.user_prompts],
         assistant_prompts=[ASSISTANT_PROMPTS[assistant_prompt] for assistant_prompt in args.sim.assistant_prompts],
-        meta_prompt=META_PROMPTS[args.sim.meta_prompt],
+        meta=metaS[args.sim.meta],
         metric_prompt=METRIC_PROMPTS[args.sim.metric_prompt],
         user_llm=user_llm,
         assistant_llm=assistant_llm,

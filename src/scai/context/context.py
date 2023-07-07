@@ -7,7 +7,7 @@ from typing import (
 
 from scai.agents.user import UserModel
 from scai.agents.assistant import AssistantAgent
-from scai.agents.meta_prompt import MetaPromptModel
+from scai.agents.meta import MetaPromptModel
 
 from scai.memory.buffer import ConversationBuffer
 
@@ -40,7 +40,7 @@ class Context():
             task_prompt: task prompt template
             user_prompts: user prompt templates
             assistant_prompts: assistant prompt templates
-            meta_prompt: meta-prompt template
+            meta: meta-prompt template
             metric_prompt: metric-prompt template
             adjacency_matrix: connectivity matrix for the user and assistant models. # TODO: add
             system_k: system memory length
@@ -86,7 +86,7 @@ class Context():
         task_prompt: str, 
         user_prompts: List[str], 
         assistant_prompts: List[str], 
-        meta_prompt: str, 
+        meta: str, 
         metric_prompt: str,
         system_k: int,
         chat_k: int,
@@ -102,8 +102,8 @@ class Context():
         # create buffer
         buffer = ConversationBuffer()
         # create models
-        user_models = [UserModel(llm=user_llm, model_id=model_id) for model_id, _ in enumerate(user_prompts)]
-        assistant_models = [AssistantAgent(llm=assistant_llm, model_id=model_id) for model_id, _ in enumerate(assistant_prompts)]
+        user_models = [UserModel(llm=user_llm, model_id=str(model_id)) for model_id, _ in enumerate(user_prompts)]
+        assistant_models = [AssistantAgent(llm=assistant_llm, model_id=str(model_id)) for model_id, _ in enumerate(assistant_prompts)]
         meta_model = MetaPromptModel(llm=meta_llm, model_id="system")
 
         return Context(
@@ -112,7 +112,7 @@ class Context():
             task_prompt=task_prompt,
             user_prompts=user_prompts,
             assistant_prompts=assistant_prompts,
-            meta_prompt=meta_prompt,
+            meta=meta,
             metric_prompt=metric_prompt,
             verbose=verbose,
             test_run=test_run,
@@ -173,12 +173,13 @@ class Context():
         for turn in range(n_turns):
             self.run_chat(turn)
             
-        meta_response = self.meta_model.run(meta_prompt=self.meta_prompt, 
+        meta_response = self.meta_model.run(buffer=self.buffer,
+                                            meta_prompt=self.meta_prompt 
                                             task_prompt=self.task_prompt, 
-                                            buffer=self.buffer,
-                                            verbose=self.verbose,
+                                            turn=turn,
                                             test_run=self.test_run,
-                                            max_tokens=self.max_tokens_meta,
+                                            verbose=self.verbose,
+                                            max_tokens_meta=self.max_tokens_meta,
                                             max_tokens_assistant=self.max_tokens_assistant)
         # save meta-prompt response
         self.buffer.save_system_context(model_id="system", **meta_response)

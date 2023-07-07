@@ -20,7 +20,7 @@
 # # import prompts
 # from scai.agents.assistant.prompts import ASSISTANT_PROMPTS 
 # from scai.agents.user.prompts import USER_PROMPTS 
-# from scai.agents.meta_prompt.prompts import META_PROMPTS
+# from scai.agents.meta.prompts import metaS
 # from scai.task.prompts import TASK_PROMPTS
 
 # # llm classes
@@ -128,7 +128,7 @@
 #         task_prompt=task_prompt,
 #         user_prompts=user_prompts,
 #         assistant_prompts=[ASSISTANT_PROMPTS['assistant_prompt_1']] * N_USER, # TODO: add assistant multiselect
-#         meta_prompt=META_PROMPTS['meta_prompt_1'], # TODO: add meta multiselect
+#         meta=metaS['meta_1'], # TODO: add meta multiselect
 #         user_llm=user_llm,
 #         assistant_llm=assistant_llm,
 #         meta_llm=meta_llm,

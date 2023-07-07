@@ -4,10 +4,10 @@ sim:
   model_name: openai/gpt-4-0314
   test_run: true
   verbose: true
-  n_runs: 5
-  n_turns: 3
+  n_runs: 1
+  n_turns: 2
   system_k: 1
-  chat_k: 3
+  chat_k: 2
   system_message: 1. You are a helpful AI Assistant.
   task_prompt: task_prompt_4
   user_prompts:
@@ -18,7 +18,7 @@ sim:
   - assistant_prompt_1
   - assistant_prompt_1
   - assistant_prompt_1
-  meta_prompt: meta_prompt_1
+  meta: meta_1
   metric_prompt: metric_prompt_1
   max_tokens_assistant: 100
   max_tokens_user: 50

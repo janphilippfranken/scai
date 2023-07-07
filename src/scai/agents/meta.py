@@ -17,35 +17,23 @@ from langchain.prompts.chat import (
 from langchain import LLMChain
 from langchain.chat_models.base import BaseChatModel
 
-from scai.prompts.meta_prompt.models import MetaPrompt
+from scai.prompts.meta.models import MetaPrompt
 from scai.memory.buffer import ConversationBuffer
 from scai.prompts.task.models import TaskPrompt
 from scai.prompts.metrics.models import MetricPrompt
 
+from scai.agents.base import BaseAgent
 
-# TODO: add to base class
-def get_vars_from_out(out: str, var_list: list) -> dict[str, str]:
-    var_dict = {}
-    for lines in out.splitlines():
-        for var in var_list:
-            if f'{var}:' in lines:
-                var_dict[var] = lines.split(': ')[1].strip()
-    return var_dict
 
-class MetaPromptModel():
+class MetaPromptModel(BaseAgent):
     """LLM Chain for applying the meta-prompt agent."""
     def __init__(
         self, 
-        llm: BaseChatModel,
-        model_id: str,
-        k: int = 5,
+        llm: BaseChatModel, 
+        model_id: str, 
     ) -> None:
-        """Initializes the MetaPromptModel with a given LLM and conversation id.
-        Args:
-            llm: The LLM Chat model. Currently either a CRFM or OpenAI model chat model
-            model_id: The unique identifier for the conversation.
-            k: Meta-prompt chat memory length (i.e. how many previous turns do we feed to the model)
-        """
+        super().__init__(llm, model_id)
+       
         self.llm = llm
         self.model_id = model_id
         self.k = k
@@ -118,28 +106,30 @@ class MetaPromptModel():
         buffer: ConversationBuffer,
         meta_prompt: MetaPrompt,
         task_prompt: TaskPrompt,
+        turn: int,
         test_run: bool = False,
         verbose: bool = False,
-        max_tokens: int = 100,
+        max_tokens_meta: int = 100,
         max_tokens_assistant: int = 100,
     ) -> str:
         """Runs meta-prompt
 
         Args:
-            buffer: The buffer containing the conversation history.
-            meta_prompt: The meta prompt to be used.
-            task_prompt: The task prompt to be used.
-            test_run: Whether to run meta-prompt in test mode (i.e., without using tokens, just print prompt and save simulated response).
-            verbose: Whether to print the prompt and response.
-            max_tokens: The maximum number of tokens to use for the meta-prompt.
-            max_tokens_assistant: The maximum number of tokens to use for the assistant.
+            buffer (ConversationBuffer): Conversation buffer containing the chat history
+            meta_prompt (MetaPrompt): Meta-prompt object containing the meta-prompt
+            task_prompt (TaskPrompt): Task-prompt object containing the task-prompt
+            turn (int): Turn number
+            test_run (bool, optional): Whether to run in test mode. Defaults to False.
+            verbose (bool, optional): Whether to print the prompt. Defaults to False.
+            max_tokens_meta (int, optional): Maximum number of tokens for the meta-prompt. Defaults to 100.
+            max_tokens_assistant (int, optional): Maximum number of tokens for the assistant. Defaults to 100.
 
         Returns:
             A dictionary containing the input prompt, critique response, and meta-prompt response (i.e. revised system message)
         """
         if self.llm._llm_type == "CRFM": # TODO: crfm crashes without a system messages, need to check if we can fix this
             meta_start_prompt_template = SystemMessagePromptTemplate.from_template("Please be as helpful as possible.") 
-        meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
+        meta_template = HumanMessagePromptTemplate.from_template(meta.content)
         # past constiutions
         system_messages = self._get_chat_history(buffer, memory_type='system')
         system_message_string = "\n".join(f"Constitution: {system['response']}" for system in system_messages).rstrip('\n')
@@ -147,7 +137,7 @@ class MetaPromptModel():
         chat_history = buffer.load_memory_variables(memory_type='chat')
         chat_history_string = self._get_chat_str(chat_history=chat_history, task_prompt=task_prompt, max_tokens_assistant=max_tokens_assistant)
         # build prompt
-        meta_chat_prompt = ChatPromptTemplate.from_messages([meta_start_prompt_template, meta_prompt_template])
+        meta_chat_prompt = ChatPromptTemplate.from_messages([meta_start_prompt_template, meta_template])
         # format for verbose/test_run
         prompt = meta_chat_prompt.format(n_user=self._get_n_user(chat_history),
                                          chat_history=chat_history_string,
