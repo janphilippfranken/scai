@@ -42,7 +42,7 @@
 # # display csv
 # def display_messages(df, message_type, user_number=None):
 #     if user_number:
-#         df_selected = df[(df['message_type'] == message_type) & (df['conversation_id'] == user_number)]['response'].reset_index()
+#         df_selected = df[(df['message_type'] == message_type) & (df['model_id'] == user_number)]['response'].reset_index()
 #         st.write(f"USER {user_number} ({'Internet Troll' if user_number==1 else 'Wikipedia editor'}) {'FEEDBACK' if message_type=='user' else 'RESPONSE'}:", list(df_selected['response']))
 #     else:
 #         df_selected = df[df['message_type'] == message_type]['response'].reset_index()
