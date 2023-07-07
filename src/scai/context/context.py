@@ -140,7 +140,7 @@ class Context():
                                                      test_run=self.test_run,
                                                      max_tokens=self.max_tokens_assistant)
             # save assistant response
-            self.buffer.save_assistant_context(message_id=f"{assistant_model.conversation_id}_assistant", **assistant_response)
+            self.buffer.save_assistant_context(model_id=f"{assistant_model.conversation_id}_assistant", **assistant_response)
             
             # run user model
             user_response = user_model.run(user_prompt=user_prompt, 
@@ -151,7 +151,7 @@ class Context():
                                            test_run=self.test_run,
                                            max_tokens=self.max_tokens_user)
             # save user response
-            self.buffer.save_user_context(message_id=f"{user_model.conversation_id}_user", **user_response)
+            self.buffer.save_user_context(model_id=f"{user_model.conversation_id}_user", **user_response)
 
     def run(
         self, 
@@ -169,4 +169,4 @@ class Context():
                                             max_tokens=self.max_tokens_meta,
                                             max_tokens_assistant=self.max_tokens_assistant)
         # save meta-prompt response
-        self.buffer.save_system_context(message_id="system", **meta_response)
+        self.buffer.save_system_context(model_id="system", **meta_response)

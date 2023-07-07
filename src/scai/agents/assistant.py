@@ -43,20 +43,6 @@ class AssistantModel():
         self.k = k
         self.system_k = system_k
 
-    def _get_chat_history(
-        self, 
-        buffer: ConversationBuffer, 
-        var_type: str,
-    ) -> List[str]:
-        """
-        Gets chat history from buffer.
-        """
-        assert var_type in ["system", "user", "assistant"], f"var_type must be 'system', 'user', 'assistant', got {var_type}"
-        if var_type == "system":
-            return buffer.load_memory_variables(var_type=var_type)[var_type][-self.system_k:] if self.system_k > 0 else []
-        elif var_type in ["user", "assistant"]:
-            return buffer.load_memory_variables(var_type='chat').get(f"{self.conversation_id}_{var_type}", [])[-self.k:] if self.k > 0 else []
-
     def run(
         self, 
         buffer: ConversationBuffer, 
@@ -83,11 +69,11 @@ class AssistantModel():
             A dictionary containing the input prompt and the assistant's responses.
         """
         assistant_system_prompt = SystemMessagePromptTemplate.from_template(f"{assistant_prompt.content} \n")
-        chat_data = buffer.load_memory_variables(var_type='chat') # check if chat data exists
+        chat_data = buffer.load_memory_variables(memory_type='chat') # check if chat data exists
 
-        if chat_data and len(self._get_chat_history(buffer, var_type="assistant")) > 0: # if we are not at the first and the assistant's chat memory is not 0
-            assistant_chat_history = self._get_chat_history(buffer, var_type="assistant")
-            user_chat_history = self._get_chat_history(buffer, var_type="user")
+        if chat_data and len(self._get_chat_history(buffer, memory_type="assistant")) > 0: # if we are not at the first and the assistant's chat memory is not 0
+            assistant_chat_history = self._get_chat_history(buffer, memory_type="assistant")
+            user_chat_history = self._get_chat_history(buffer, memory_type="user")
             chat_history_prompts = [
                 response
                 for assistant, user in zip(assistant_chat_history, user_chat_history)
@@ -104,7 +90,7 @@ class AssistantModel():
             ]
 
         assistant_chat_prompt = ChatPromptTemplate.from_messages([assistant_system_prompt, *chat_history_prompts])
-        system_message = self._get_chat_history(buffer, var_type="system")[-1]['response']
+        system_message = self._get_chat_history(buffer, memory_type="system")[-1]['response']
 
         prompt = assistant_chat_prompt.format(system_message=system_message,
                                               task=task_prompt.task,

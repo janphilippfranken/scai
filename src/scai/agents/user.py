@@ -7,7 +7,7 @@ from typing import (
 )
 
 from langchain.prompts.chat import (
-    ChatPromptTemplate,
+    ChatPromptTemplate, 
     SystemMessagePromptTemplate,
     AIMessagePromptTemplate,
     HumanMessagePromptTemplate,
@@ -25,14 +25,6 @@ from scai.prompts.metrics.models import MetricPrompt
 from scai.memory.buffer import ConversationBuffer
 
 
-# TODO: add to base class
-def get_vars_from_out(out: str, var_list: list) -> dict[str, str]:
-    var_dict = {}
-    for lines in out.splitlines():
-        for var in var_list:
-            if f'{var}:' in lines:
-                var_dict[var] = lines.split(': ')[1].strip()
-    return var_dict
 
 
 
@@ -55,25 +47,6 @@ class UserModel():
         self.conversation_id = conversation_id
         self.k = k
 
-    def _get_chat_history(
-        self, 
-        buffer: ConversationBuffer, 
-        var_type: str,
-    ) -> List[str]:
-        """
-        Gets chat history from buffer.
-        """
-        assert var_type in ["system", "user", "assistant", "other"], f"var_type must be 'system', 'user', 'assistant', got {var_type}"
-        if var_type == "system":
-            return buffer.load_memory_variables(var_type=var_type)[var_type][-self.system_k:] if self.system_k > 0 else []
-        elif var_type in ["user", "assistant"]:
-            return buffer.load_memory_variables(var_type='chat').get(f"{self.conversation_id}_{var_type}", [])[-self.k:] if self.k > 0 else []
-        elif var_type in ["other"]:
-            user_response_other = {} # TODO: make this flexible for k > 0
-            for key in buffer.load_memory_variables(var_type='chat').keys():
-                if key != f"{self.conversation_id}_user" and '_user' in key:
-                   user_response_other[key] = buffer.load_memory_variables(var_type='chat').get(key, [])[-1] 
-            return user_response_other
         
     def _get_prompt(
         self, 
@@ -108,15 +81,15 @@ class UserModel():
         chat_history_prompts_other = []
         
         if k == 0: # if we have no chat memory (either first run or k == 0)
-            assistant_response = buffer.load_memory_variables(var_type='chat').get(f"{self.conversation_id}_assistant", [])[-1]
+            assistant_response = buffer.load_memory_variables(memory_type='chat').get(f"{self.conversation_id}_assistant", [])[-1]
             chat_history_prompts = [
                 HumanMessagePromptTemplate.from_template(
                     f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response['response']}' \n{metric_prompt.content}"
                 )
             ]
-            for key in buffer.load_memory_variables(var_type='chat').keys():
+            for key in buffer.load_memory_variables(memory_type='chat').keys():
                 if key != f"{self.conversation_id}_assistant" and '_assistant' in key:
-                    assistant_response_other[key] = buffer.load_memory_variables(var_type='chat').get(key, [])[-1]
+                    assistant_response_other[key] = buffer.load_memory_variables(memory_type='chat').get(key, [])[-1]
             chat_history_prompts_other = [
                 HumanMessagePromptTemplate.from_template(
                     f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response_other[key]['response']}' \n{metric_prompt.content_other}"
@@ -124,7 +97,7 @@ class UserModel():
             ]
         else:
     
-            user_chat_history = self._get_chat_history(buffer, var_type="user")
+            user_chat_history = self._get_chat_history(buffer, memory_type="user")
             chat_history_prompts = [
                     template
                     for assistant, user in zip(assistant_chat_history, user_chat_history)
@@ -136,9 +109,9 @@ class UserModel():
             chat_history_prompts[-1] = HumanMessagePromptTemplate.from_template(f"{chat_history_prompts[-1].prompt.template}\n{metric_prompt.content}")
 
             # get other user responses
-            for key in buffer.load_memory_variables(var_type='chat').keys():
+            for key in buffer.load_memory_variables(memory_type='chat').keys():
                 if key != f"{self.conversation_id}_assistant" and '_assistant' in key:
-                    assistant_response_other[key] = buffer.load_memory_variables(var_type='chat').get(key, [])[-1]
+                    assistant_response_other[key] = buffer.load_memory_variables(memory_type='chat').get(key, [])[-1]
             chat_history_prompts_other = [
                 HumanMessagePromptTemplate.from_template(
                     f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response_other[key]['response']}' \n{metric_prompt.content_other}"
@@ -244,7 +217,7 @@ class UserModel():
             A dictionary containing the input prompt and all metrics collected from the user(s).
         """
         user_system_prompt = SystemMessagePromptTemplate.from_template(user_prompt.content + "\n")
-        assistant_chat_history = self._get_chat_history(buffer, var_type="assistant")
+        assistant_chat_history = self._get_chat_history(buffer, memory_type="assistant")
 
         k = len(assistant_chat_history)
         # TODO: add other users chat history for more than 1 k

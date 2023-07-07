@@ -77,11 +77,11 @@ def main(args: DictConfig) -> None:
         # create context
         context = create_context(args, assistant_llm, user_llm, meta_llm)
         # save system message
-        context.buffer.save_system_context(message_id='system', **{'response': system_messsage})
+        context.buffer.save_system_context(model_id='system', **{'response': system_messsage})
         # run for n_turns
         context.run(args.sim.n_turns)
         # save results csv
-        save_as_csv(data=context.buffer._memory.messages, 
+        save_as_csv(data=context.buffer._full_memory.messages, 
                     chat_data=context.buffer._chat_memory.messages,
                     data_directory=DATA_DIR, 
                     sim_name=args.sim.sim_dir,
@@ -89,9 +89,9 @@ def main(args: DictConfig) -> None:
                     run=run)
         # save results json
         with open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
-            json.dump(context.buffer._memory.messages, f)
+            json.dump(context.buffer._full_memory.messages, f)
         # update system message after each run
-        system_messsage = context.buffer.load_memory_variables(var_type='system')['system'][-1]['response'] # replace current system message with the new one (i.e. new constitution)
+        system_messsage = context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response'] # replace current system message with the new one (i.e. new constitution)
         # plot user ratings for the current run
         df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}_user.csv')
         plot_results(df, DATA_DIR, args.sim.sim_dir, args.sim.sim_id, run)

@@ -50,56 +50,6 @@ class MetaPromptModel():
         self.conversation_id = conversation_id
         self.k = k
     
-    def _get_chat_history(
-        self,
-        buffer: ConversationBuffer,
-        var_type: str,
-    ) -> List[str]:
-        """Retrieves the chat history from the conversation buffer.
-
-        Args:
-            buffer: buffer containing entire conversation history
-            var_type: type of variable to retrieve from buffer (e.g., "system" or "assistant")
-
-        Returns:
-            Returns list of reponse strings of length self.k
-        """
-        assert var_type in ["system", "user", "assistant"], f"var_type must be 'system', 'user', 'assistant', got {var_type}"
-        if var_type == "system":
-            return buffer.load_memory_variables(var_type=var_type)[self.conversation_id][-self.k:]
-        elif var_type == "user":
-            return buffer.load_memory_variables(var_type='chat')[f"{self.conversation_id}_{var_type}"][-self.k:]
-        elif var_type == "assistant":
-            return buffer.load_memory_variables(var_type='chat')[f"{self.conversation_id}_{var_type}"][-self.k:]
-    
-    def _get_sorted_message(
-        self, 
-        message_id: Tuple[str, str]
-    ) -> int:
-        """
-        Extract conversation id from the message id for sorting.
-
-        Args:
-            item (Tuple[str, str]): A tuple containing the message and its id.
-
-        Returns:
-            int: The conversation id extracted from the message id.
-        """
-        return int(message_id[1].split('_')[1])
-
-    def _get_n_user(
-        self, 
-        chats: Dict[str, List[Any]],
-    ) -> int:
-        """Returns the number of users in the conversation.
-        
-        Args:
-            sorted_message_ids: The sorted list of message ids.
-            
-        Returns:    
-            The number of users in the conversation."""
-        return len(set(id.split('_')[0] for id in chats.keys()))
-    
     def _get_chat_str(
         self,
         chat_history: Dict[str, List[Any]],
@@ -191,10 +141,10 @@ class MetaPromptModel():
             meta_start_prompt_template = SystemMessagePromptTemplate.from_template("Please be as helpful as possible.") 
         meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
         # past constiutions
-        system_messages = self._get_chat_history(buffer, var_type='system')
+        system_messages = self._get_chat_history(buffer, memory_type='system')
         system_message_string = "\n".join(f"Constitution: {system['response']}" for system in system_messages).rstrip('\n')
         # chat history
-        chat_history = buffer.load_memory_variables(var_type='chat')
+        chat_history = buffer.load_memory_variables(memory_type='chat')
         chat_history_string = self._get_chat_str(chat_history=chat_history, task_prompt=task_prompt, max_tokens_assistant=max_tokens_assistant)
         # build prompt
         meta_chat_prompt = ChatPromptTemplate.from_messages([meta_start_prompt_template, meta_prompt_template])
