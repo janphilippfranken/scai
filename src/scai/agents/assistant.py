@@ -116,7 +116,7 @@ class AssistantAgent(BaseAgent):
             A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
         """
         system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response'] # the last system message in the chat history (i.e. constitution)
-        chat_prompt_template= self._get_prompt(buffer, assistant_prompt, task_prompt)
+        chat_prompt_template =  self._get_prompt(buffer, assistant_prompt, task_prompt)
         prompt_string = chat_prompt_template.format(system_message=system_message,
                                                     task=task_prompt.task,
                                                     max_tokens=max_tokens)

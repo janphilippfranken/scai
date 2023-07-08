@@ -115,7 +115,6 @@ class BaseAgent(ABC):
                     var_dict[var] = lines.split(': ')[1].strip()
         return var_dict
     
-    @abstractmethod
     def _get_chat_history_prompt_templates(self) -> List[ChatPromptTemplate]:
         """
         Get the prompt templates.

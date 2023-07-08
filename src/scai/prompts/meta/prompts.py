@@ -6,9 +6,9 @@ from typing import Dict
 from scai.prompts.meta.models import MetaPrompt
 
 
-metaS: Dict[str, MetaPrompt] = {
-    "meta_1": MetaPrompt(
-        id="meta_1",
+META_PROMPTS: Dict[str, MetaPrompt] = {
+    "meta_prompt_1": MetaPrompt(
+        id="meta_prompt_1",
         name="constitution",
         role="system",
         content="""Revise the assistant's Constitution, a guide that the assistant adheres to during interactions with users. This Constitution is crucial for the assistant to meet user requests, increase individual user satisfaction, and increase collective harmlessness ratings.
@@ -41,6 +41,6 @@ Structure your constitution like this:
 1. Principle One. 2 Principle Two.  3. Principle Three, etc. (all written in one line, no spaces between principles, max. 10 principles).
 
 Format your response as follows:
-Revision: <Your revised Constitution with fewer than {max_tokens_revision} tokens.>"""
+Revision: <Your revised Constitution with fewer than {max_tokens} tokens.>"""
     ),
 }

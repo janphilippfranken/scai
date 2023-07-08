@@ -18,7 +18,7 @@ sim:
   - assistant_prompt_1
   - assistant_prompt_1
   - assistant_prompt_1
-  meta: meta_1
+  meta_prompt: meta_prompt_1
   metric_prompt: metric_prompt_1
   max_tokens_assistant: 100
   max_tokens_user: 50

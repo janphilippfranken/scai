@@ -86,7 +86,7 @@ class Context():
         task_prompt: str, 
         user_prompts: List[str], 
         assistant_prompts: List[str], 
-        meta: str, 
+        meta_prompt: str, 
         metric_prompt: str,
         system_k: int,
         chat_k: int,
@@ -112,7 +112,7 @@ class Context():
             task_prompt=task_prompt,
             user_prompts=user_prompts,
             assistant_prompts=assistant_prompts,
-            meta=meta,
+            meta_prompt=meta_prompt,
             metric_prompt=metric_prompt,
             verbose=verbose,
             test_run=test_run,
@@ -168,18 +168,20 @@ class Context():
     def run(
         self, 
         n_turns: int,
+        run: int
     ) -> None:
         # run meta-prompt
         for turn in range(n_turns):
             self.run_chat(turn)
             
         meta_response = self.meta_model.run(buffer=self.buffer,
-                                            meta_prompt=self.meta_prompt 
+                                            meta_prompt=self.meta_prompt,
                                             task_prompt=self.task_prompt, 
-                                            turn=turn,
+                                            metric_prompt=self.metric_prompt,
+                                            run=run,
                                             test_run=self.test_run,
                                             verbose=self.verbose,
                                             max_tokens_meta=self.max_tokens_meta,
-                                            max_tokens_assistant=self.max_tokens_assistant)
+                                            max_tokens_assistant=self.max_tokens_assistant)                 
         # save meta-prompt response
         self.buffer.save_system_context(model_id="system", **meta_response)
