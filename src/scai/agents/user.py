@@ -245,7 +245,7 @@ class UserModel(BaseAgent):
                 'collective_prompts': prompt_strings_collective,
                 'response': f"user_response_{self.model_id}, turn {turn}.",
                 'responses_collective': {model_id: int(self.model_id) + 5 for model_id in chat_prompt_templates_collective.keys()},
-                'subjective_metric': f"subjective_metric_{self.model_id}, turn {turn}.",
+                'subjective_metric': int(self.model_id) + 5,
                 'turn': turn
             }
 

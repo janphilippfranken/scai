@@ -96,10 +96,8 @@ class MetaPromptModel(BaseAgent):
                                 average_collective_ratings.append(float(int(v[response_idx][f"{_id}_assistant"])))
                     collective_metric  = np.mean(average_collective_ratings) if average_collective_ratings != [] else 0
                     average_collective_ratings = [] # reset
-                    print(conversation_data, _id, role)
-                    print(v)
-                    conversation_data[_id][role].append(f"{role} {_id} feedback: {v['response']}\n{role} {_id} {metric_prompt.subjective_metric}: {v[metric_prompt.subjective_metric]}\nCollective {metric_prompt.collective_metric}: {collective_metric}")
-                    v[f"{metric_prompt.collective_metric}_average"] = collective_metric
+                    conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}\n{role} {_id} {metric_prompt.subjective_metric}: {response['subjective_metric']}\nCollective {metric_prompt.collective_metric}: {collective_metric}")
+                    response[f"{metric_prompt.collective_metric}_average"] = collective_metric # store average metric
                 elif role == 'assistant':
                     conversation_data[_id][role].append(f"{role} response: {response['response']}")
         # extend chatdict
@@ -116,8 +114,9 @@ class MetaPromptModel(BaseAgent):
         """
         Returns the prompt template for meta-prompt.
         """
+
         meta_promt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
-        if self.llm._llmrole == "CRFM": # crfm crashes without a system message at the beginning.
+        if self.llm._llm_type == "CRFM": # crfm crashes without a system message at the beginning.
             system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability.\n")
             return ChatPromptTemplate.from_messages([system_prompt_template, meta_promt_template])
         return ChatPromptTemplate.from_messages([meta_promt_template])

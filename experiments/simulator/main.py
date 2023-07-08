@@ -41,7 +41,7 @@ def create_context(
         task_prompt=TASK_PROMPTS[args.sim.task_prompt],
         user_prompts=[USER_PROMPTS[user_prompt] for user_prompt in args.sim.user_prompts],
         assistant_prompts=[ASSISTANT_PROMPTS[assistant_prompt] for assistant_prompt in args.sim.assistant_prompts],
-        meta_prompt=[args.sim.meta_prompt],
+        meta_prompt=META_PROMPTS[args.sim.meta_prompt],
         metric_prompt=METRIC_PROMPTS[args.sim.metric_prompt],
         user_llm=user_llm,
         assistant_llm=assistant_llm,
