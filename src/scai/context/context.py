@@ -1,9 +1,5 @@
-from typing import (
-    List, 
-    Optional, 
-    Any,
-    Dict,
-)
+from typing import List
+
 
 from scai.agents.user import UserModel
 from scai.agents.assistant import AssistantAgent
@@ -35,35 +31,37 @@ class Context():
         Initializes a context (i.e. context for the MDP / Meta-Prompt run).
 
         Args:
-            _id: unique identifier for the context.
-            name: name of the context.
-            task_prompt: task prompt template
-            user_prompts: user prompt templates
-            assistant_prompts: assistant prompt templates
-            meta: meta-prompt template
-            metric_prompt: metric-prompt template
-            adjacency_matrix: connectivity matrix for the user and assistant models. # TODO: add
-            verbose: whether to run in verbose mode.
-            test_run:  whether it is a test run.
-            max_tokens_user: maximum number of tokens for user model.
-            max_tokens_assistant: maximum number of tokens for assistant model.
-            max_tokens_meta: maximum number of tokens for meta-prompt model.
-            buffer: conversation buffer
-            user_llm: A UserModel object.
-            assistant_llm: assistant model
-            meta_llm: meta-prompt model
+            _id (str): ID of the context.
+            name (str): Name of the context.
+            task_prompt (str): Task prompt.
+            user_prompts (List[str]): User prompts.
+            assistant_prompts (List[str]): Assistant prompts.
+            meta_prompt (str): Meta prompt.
+            metric_prompt (str): Metric prompt.
+            buffer (ConversationBuffer): Conversation buffer.
+            user_models (List[UserModel]): User models.
+            assistant_models (List[AssistantAgent]): Assistant models.
+            meta_model (MetaPromptModel): Meta-prompt model.
+            verbose (bool): Whether to print the prompt.
+            test_run (bool): Whether to run in test mode.
+            max_tokens_user (int): Maximum number of tokens for the user.
+            max_tokens_assistant (int): Maximum number of tokens for the assistant.
+            max_tokens_meta (int): Maximum number of tokens for the meta-prompt.
 
         Returns:
             None
         """
+        # context info
         self._id = _id
         self.name = name
+        # prompts
         self.task_prompt = task_prompt
         self.user_prompts = user_prompts
         self.assistant_prompts = assistant_prompts
         self.meta_prompt = meta_prompt
         self.metric_prompt = metric_prompt
         self.verbose = verbose
+        # run settings
         self.test_run = test_run
         self.max_tokens_user = max_tokens_user
         self.max_tokens_assistant = max_tokens_assistant
@@ -95,11 +93,17 @@ class Context():
         """
         Creates a context (i.e. context for the MDP / Meta-Prompt run).
         """
-        # create buffer
+        # buffer for storing conversation history
         buffer = ConversationBuffer()
-        # create models
-        user_models = [UserModel(llm=user_llm, model_id=str(model_id)) for model_id, _ in enumerate(user_prompts)]
-        assistant_models = [AssistantAgent(llm=assistant_llm, model_id=str(model_id)) for model_id, _ in enumerate(assistant_prompts)]
+        # user models
+        user_models = [
+            UserModel(llm=user_llm, model_id=str(model_id)) for model_id, _ in enumerate(user_prompts)
+            ]
+        # assistant models 
+        assistant_models = [
+            AssistantAgent(llm=assistant_llm, model_id=str(model_id)) for model_id, _ in enumerate(assistant_prompts)
+            ]
+        # meta prompt model
         meta_model = MetaPromptModel(llm=meta_llm, model_id="system")
 
         return Context(
@@ -121,10 +125,10 @@ class Context():
             meta_model=meta_model,
         )
 
-    def run_chat(
+    def run_turn(
         self,
         turn: int,
-    ) -> ConversationBuffer:
+    ) -> None:
         """
         Runs one turn of each conversation.
 
@@ -134,9 +138,10 @@ class Context():
         assert len(self.assistant_models) == len(self.assistant_prompts), "Mismatch between assistant models and prompts"
         assert len(self.user_models) == len(self.user_prompts), "Mismatch between user models and prompts"
 
-        for assistant_model, assistant_prompt, user_model, user_prompt in zip(self.assistant_models, self.assistant_prompts, self.user_models, self.user_prompts):
+        for assistant_model, assistant_prompt, user_model, user_prompt \
+            in zip(self.assistant_models, self.assistant_prompts, self.user_models, self.user_prompts):
             
-            # run assistant model
+            # get assistant response
             assistant_response = assistant_model.run(buffer=self.buffer,
                                                      assistant_prompt=assistant_prompt,
                                                      task_prompt=self.task_prompt, 
@@ -144,12 +149,10 @@ class Context():
                                                      test_run=self.test_run,
                                                      verbose=self.verbose,
                                                      max_tokens=self.max_tokens_assistant)
-                
-                
             # save assistant response
             self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant", **assistant_response)
             
-            # run user model
+            # get user response
             user_response = user_model.run(buffer=self.buffer,
                                            user_prompt=user_prompt,
                                            task_prompt=self.task_prompt,
@@ -166,10 +169,11 @@ class Context():
         n_turns: int,
         run: int
     ) -> None:
-        # run meta-prompt
+        # run the context for n_turns
         for turn in range(n_turns):
-            self.run_chat(turn)
-            
+            self.run_turn(turn)
+        breakpoint()
+        # run meta-prompt at end of conversation
         meta_response = self.meta_model.run(buffer=self.buffer,
                                             meta_prompt=self.meta_prompt,
                                             task_prompt=self.task_prompt, 
@@ -179,6 +183,5 @@ class Context():
                                             verbose=self.verbose,
                                             max_tokens_meta=self.max_tokens_meta,
                                             max_tokens_assistant=self.max_tokens_assistant)                 
-        # save meta-prompt response
+        # save meta-prompt response for start of next conversation
         self.buffer.save_system_context(model_id="system", **meta_response)
-      

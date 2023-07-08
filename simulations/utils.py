@@ -4,8 +4,6 @@ from typing import (
     Any,
 )
 
-import ast
-
 import pandas as pd
 import scipy.stats as stats
 
@@ -19,7 +17,6 @@ def save_as_csv(
     sim_name: str = 'sim_1',
     sim_id: str = '0',
     run: int = 0,
-    subjective_metric: str = 'satisfaction',
     collective_metric: str = 'harmlessness',
 ) -> None:
     """
@@ -30,6 +27,7 @@ def save_as_csv(
         data_directory (str, optional): directory to save the data. Defaults to 'sim_res'.
         sim_name (str, optional): simulation name. Defaults to 'sim_1'.
         sim_id (str, optional): simulation id. Defaults to '0'.
+        collective_metric (str, optional): collective metric to plot. Defaults to 'harmlessness'.
     """
     # Concatenate data dicts
     data = {**system_data, **chat_data}
@@ -50,7 +48,6 @@ def save_as_csv(
             message.update({'epoch': epoch})
             # Add the message to data_list
             data_list.append(message)
-            
 
     # Convert the list of dicts to a dataframe
     data_frame = pd.DataFrame(data_list)
@@ -83,14 +80,16 @@ def plot_results(
         data_directory (str, optional): directory to save the data. Defaults to 'sim_res'.
         sim_name (str, optional): simulation name. Defaults to 'sim_1'.
         sim_id (str, optional): simulation id. Defaults to '0'.
+        run (int, optional): simulation run. Defaults to 0.
+        subjective_metric (str, optional): subjective metric to plot. Defaults to 'satisfaction'.
+        collective_metric (str, optional): collective metric to plot. Defaults to 'harmlessness'.
     """
     # Compute average for other users
     metrics = [subjective_metric, collective_metric]
-    
-
     # Plot metrics for each user 
     for metric in metrics:
         user_data = data[['epoch', 'agent_id', metric]].copy()  # Filter necessary columns
+        # Plot ratings for each user within metric
         plot_metrics(user_data, 
                      data_directory=data_directory,
                      sim_name=sim_name,
@@ -99,7 +98,6 @@ def plot_results(
                      metric=metric, 
                      z_column='agent_id',
                      y_label=metric)
-
     # Transform into average long format for all users
     user_data = data[['epoch', 'agent_id'] + metrics].copy()
     average_data = user_data.groupby('epoch').agg(['mean', standard_error]).reset_index()
@@ -112,7 +110,7 @@ def plot_results(
     statistic_id_list = (mean_list + sem_list) * len(average_data['metric_id'].unique())
     # Add 'statistic_id' column to the DataFrame
     average_data['statistic'] = statistic_id_list
-
+    # Plot average metrics for all users
     plot_metrics(average_data,
                 data_directory=data_directory,
                 sim_name=sim_name,
@@ -124,7 +122,6 @@ def plot_results(
                 z_column='metric_id', 
                 legend_title='Metric', 
                 plot_error=True)
-
 
 def plot_average_results(      
     data_directory: str = 'sim_res', 
@@ -142,31 +139,23 @@ def plot_average_results(
         df = pd.read_csv(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_user.csv')  
         df['run'] = run  
         dfs.append(df)  
-
     # Concatenate all the data frames in the list
     user_data = pd.concat(dfs, ignore_index=True)
-
     # Select only the columns you're interested in (subjective and collective measures)
     numeric_cols = [subjective_metric, collective_metric]
-
     # Compute mean and standard_error for the selected columns only
     average_data = user_data.groupby('run')[numeric_cols].agg(['mean', standard_error])
-
     # collapse multi-index columns
     average_data.columns = ['_'.join(col).strip() for col in average_data.columns.values]
-
     # Melt into long format and separate 'metric' into 'metric' and 'statistic'
     long_data = average_data.reset_index().melt(id_vars='run', var_name='metric_stat', value_name='value')
     # Separate 'metric' and 'statistic' and remove 'statistic' column
     long_data[['metric', 'statistic']] = long_data['metric_stat'].str.split('_', n=1, expand=True)
     long_data.drop(columns=['metric_stat'], inplace=True)
-
     # Save the full dataframe as a csv
     long_data.to_csv(f'{data_directory}/{sim_name}_id_{sim_id}_user_all_runs.csv', index=False)
-
-    # Plot average metrics
+    # Plot average metrics across runs
     plot_average_metrics(long_data,
                          data_directory=data_directory,
                          sim_name=sim_name,
                          sim_id=sim_id)
-

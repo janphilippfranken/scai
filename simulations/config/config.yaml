@@ -6,10 +6,10 @@ sim:
   sim_dir: "sim_1" 
   sim_id: "0_demo" 
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
-  test_run: true # if false this uses tokens, otherwise just print the prompt
+  test_run: false # if false this uses tokens, otherwise just print the prompt
   verbose: true
-  n_runs: 3
-  n_turns: 3
+  n_runs: 1
+  n_turns: 2
 
 
   system_message: "1. You are a helpful AI Assistant." # start constitution
@@ -17,11 +17,11 @@ sim:
   user_prompts: 
     - "user_prompt_1" # 
     - "user_prompt_2" # 
-    - "user_prompt_5" # unabomber
+    # - "user_prompt_5" # unabomber
   assistant_prompts: 
     - "assistant_prompt_1"
     - "assistant_prompt_1"
-    - "assistant_prompt_1"
+    # - "assistant_prompt_1"
   meta_prompt: "meta_prompt_1"
   metric_prompt: "metric_prompt_1"
   max_tokens_assistant: 100 # these are the token limits displayed in prompts

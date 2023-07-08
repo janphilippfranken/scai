@@ -85,7 +85,6 @@ def main(args: DictConfig) -> None:
                     sim_name=args.sim.sim_dir,
                     sim_id=args.sim.sim_id,
                     run=run,
-                    subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric,
                     collective_metric=METRIC_PROMPTS[args.sim.metric_prompt].collective_metric)
         # save results json
         with open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}.json', 'w') as f:

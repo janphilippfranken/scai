@@ -1,9 +1,4 @@
-from typing import (
-    Tuple,
-    List, 
-    Dict,
-    Any,
-)
+from typing import Dict
 
 import numpy as np
 
@@ -27,7 +22,9 @@ from scai.agents.base import BaseAgent
 
 
 class MetaPromptModel(BaseAgent):
-    """LLM Chain for applying the meta-prompt agent."""
+    """
+    LLM Chain for applying the meta-prompt agent.
+    """
     def __init__(
         self, 
         llm: BaseChatModel, 
@@ -38,10 +35,9 @@ class MetaPromptModel(BaseAgent):
     def _get_collective_rating(
         self,
         chat_history: ChatMemory,
-        metric_prompt: MetricPrompt,
     ) -> Dict[str, float]:
         """
-        Returns the collective ratings. (eg for harmlessness)
+        Returns the collective ratings provided by each user for the other user conversations (eg for harmlessness).
         """
         collective_ratings = {}
         for model_id, responses in chat_history.items():
@@ -52,7 +48,6 @@ class MetaPromptModel(BaseAgent):
                 if role == 'user':
                     collective_rating = {k: v for k, v in response['responses_collective'].items() if 'assistant' in k}
                     collective_ratings[_id].append(collective_rating)
-
         return collective_ratings
        
     def _get_chat_str(
@@ -63,14 +58,13 @@ class MetaPromptModel(BaseAgent):
         max_tokens_assistant: int,
     ) -> str:
         """
-        Formats the chat history into a string which is placed within the prompt.
+        Formats the chat history into a string which is placed within the meta-prompt prompt.
         """
         # get collective ratings
-        collective_ratings = self._get_collective_rating(chat_history, metric_prompt)
+        collective_ratings = self._get_collective_rating(chat_history)
         # data structures for storing chat
         chat_dict = {}
         conversation_data = {}
-        
         # get chat history string
         for model_id, responses in chat_history.items():
             _id, role = model_id.split("_")
@@ -84,7 +78,7 @@ class MetaPromptModel(BaseAgent):
             # loop over messages
             for response_idx, response in enumerate(responses):
                 if role == 'user':
-                    # compute average community metric for user
+                    # compute average collective metric for users
                     collective_metric = 0 
                     for k, v in collective_ratings.items():
                         if k != _id:
@@ -92,7 +86,7 @@ class MetaPromptModel(BaseAgent):
                                 average_collective_ratings.append(float(int(v[response_idx][f"{_id}_assistant"])))
                     collective_metric  = np.mean(average_collective_ratings) if average_collective_ratings != [] else 0
                     average_collective_ratings = [] # reset
-                    conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}\n{role} {_id} {metric_prompt.subjective_metric}: {response[metric_prompt.subjective_metric]}\ncollective {metric_prompt.collective_metric} rating: {collective_metric}")
+                    conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}\n{role} {_id} {metric_prompt.subjective_metric} rating: {response[metric_prompt.subjective_metric]}\ncollective {metric_prompt.collective_metric} rating: {collective_metric}")
                     response[f"{metric_prompt.collective_metric}_average"] = collective_metric # store average metric
                 elif role == 'assistant':
                     conversation_data[_id][role].append(f"{role} response: {response['response']}")
@@ -100,7 +94,6 @@ class MetaPromptModel(BaseAgent):
         for _id, responses in conversation_data.items():
             for assistant, user in zip(responses['assistant'], responses['user']):
                 chat_dict[_id].extend([assistant, user])
-
         return "\n".join("\n".join(value) for value in chat_dict.values())
     
     def _get_prompt(
@@ -110,12 +103,11 @@ class MetaPromptModel(BaseAgent):
         """
         Returns the prompt template for meta-prompt.
         """
-
-        meta_promt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
+        meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
         if self.llm._llm_type == "CRFM": # crfm crashes without a system message at the beginning.
             system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability.\n")
-            return ChatPromptTemplate.from_messages([system_prompt_template, meta_promt_template])
-        return ChatPromptTemplate.from_messages([meta_promt_template])
+            return ChatPromptTemplate.from_messages([system_prompt_template, meta_prompt_template])
+        return ChatPromptTemplate.from_messages([meta_prompt_template])
     
     def _get_response(
         self,
@@ -153,42 +145,45 @@ class MetaPromptModel(BaseAgent):
         """Runs meta-prompt
 
         Args:
-            buffer (ConversationBuffer): Conversation buffer containing the chat history
-            meta_prompt (MetaPrompt): Meta-prompt object containing the meta-prompt
-            task_prompt (TaskPrompt): Task-prompt object containing the task-prompt
-            turn (int): Turn number
-            test_run (bool, optional): Whether to run in test mode. Defaults to False.
-            verbose (bool, optional): Whether to print the prompt. Defaults to False.
-            max_tokens_meta (int, optional): Maximum number of tokens for the meta-prompt. Defaults to 100.
+            buffer (ConversationBuffer): The conversation buffer
+            meta_prompt (MetaPrompt): The meta-prompt
+            task_prompt (TaskPrompt): The task prompt
+            metric_prompt (MetricPrompt): The metric prompt
+            run (int): The run number
+            test_run (bool, optional): Whether this is a test run. Defaults to False.
+            verbose (bool, optional): Whether to print the meta-prompt. Defaults to False.
+            max_tokens_meta (int, optional): The maximum number of tokens for the meta-prompt. Defaults to 100.
+            max_tokens_assistant (int, optional): The maximum number of tokens for the assistant. Defaults to 100.
 
         Returns:
             A dictionary containing the input prompt and meta-prompt responses (revised system message, etc)
         """
-       
-        
-        # get previous constitution
+        # get previous system message (i.e. 'constitution')
         system_message = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response']
         system_message_string = f"Constitution: {system_message}"
-        
         # get chat history
         chat_history = self._get_chat_history(buffer, memory_type="chat")
         chat_history_string = self._get_chat_str(chat_history, metric_prompt, task_prompt, max_tokens_assistant)
-        
+        # get meta-prompt template and string
         chat_prompt_template = self._get_prompt(meta_prompt)
-
         prompt_string = chat_prompt_template.format(system_history=system_message_string,
                                                     n_user=self._get_n_user(chat_history),
                                                     chat_history=chat_history_string,
                                                     max_tokens_assistant=max_tokens_assistant,
-                                                    max_tokens=max_tokens_meta)
+                                                    max_tokens_revision=max_tokens_meta,
+                                                    subjective_metric=metric_prompt.subjective_metric,
+                                                    collective_metric=metric_prompt.collective_metric)
         if test_run:
             print('===================================')
             print(f'META {str(self.model_id)}')
+            print('prompt')
             print(prompt_string)
+            print('response')
+            print(f'constitution {run}')
             return {
+                'prompt': prompt_string,
                 'response': f'constitution {run}', 
-                'critique': 'meta-critique', 
-                'system_message': 'system-message',
+                'run': run,
             }
 
         

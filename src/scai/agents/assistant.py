@@ -2,8 +2,6 @@ from typing import (
     Any,
     Dict,
     List, 
-    Optional,
-    Tuple
 )
 
 from langchain.prompts.chat import (
@@ -104,13 +102,13 @@ class AssistantAgent(BaseAgent):
         """Runs the assistant
 
         Args:
-            buffer (ConversationBuffer): Conversation buffer containing the chat history
-            assistant_prompt (AssistantPrompt): Assistant prompt
-            task_prompt (TaskPrompt): Task prompt
-            turn (int): Turn number
+            buffer (ConversationBuffer): The conversation buffer.
+            assistant_prompt (AssistantPrompt): The assistant prompt.
+            task_prompt (TaskPrompt): The task prompt.
+            turn (int): The turn number.
             test_run (bool, optional): Whether to run a test run. Defaults to False.
-            verbose (bool, optional): Whether to print the response. Defaults to False.
-            max_tokens (int, optional): Maximum number of tokens to generate. Defaults to 100.
+            verbose (bool, optional): Whether to print the assistant's response. Defaults to False.
+            max_tokens (int, optional): The maximum number of tokens to generate. Defaults to 100.
 
         Returns:
             A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
@@ -123,21 +121,27 @@ class AssistantAgent(BaseAgent):
         if test_run:
             print('===================================')
             print(f'ASSISTANT {str(self.model_id)} turn {turn}')
+            print('prompt')
+            print(prompt_string)
+            print('response')
             print(f"assistant_response_{self.model_id}, turn {turn}.")
-
+            
             return {
-                # 'prompt': prompt_string, 
+                'prompt': prompt_string, 
                 'response': f"assistant_response_{self.model_id}, turn {turn}.",
                 'turn': turn
             }
         
         response = self._get_response(chat_prompt_template, system_message, task_prompt, max_tokens)
-
+        
         if verbose:
-            print('===================================') 
-            print(f"ASSISTANT {str(self.model)}")
-            print(f"response: {response}")
-
+            print('===================================')
+            print(f'ASSISTANT {str(self.model_id)} turn {turn}')
+            print('prompt')
+            print(prompt_string)
+            print('response')
+            print(response)
+ 
         return {
             'prompt': prompt_string, 
             'response': response, 

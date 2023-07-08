@@ -1,12 +1,8 @@
 #%%
 from typing import (
-    Optional, 
-    Dict, 
-    Any,
     List,
     Tuple,
 )
-
 
 import pandas as pd 
 import numpy as np
@@ -127,14 +123,6 @@ def plot_metrics(
 ) -> None:
     """
     Plot user data
-
-    Args:   
-        data (pd.DataFrame): user data
-        data_directory (str, optional): directory to save the data. Defaults to 'sim_res'.
-        sim_name (str, optional): simulation name. Defaults to 'sim_1'.
-        sim_id (str, optional): simulation id. Defaults to '0'.
-        palette (str, optional): color palette. Defaults to 'colorblind'.
-        saturation (float, optional): saturation of the colors. Defaults to 0.6.
     """
     # Get color palette
     palette = get_palette(n=len(set(data[z_column])), palette_name=palette_name, saturation=saturation)
@@ -190,7 +178,6 @@ def plot_metrics(
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_{metric.replace(" ", "_").lower()}.pdf', bbox_inches='tight')
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_{metric.replace(" ", "_").lower()}.jpg', bbox_inches='tight') # for demo in browser
 
-
 def plot_average_metrics(
     data: pd.DataFrame,
     data_directory: str = 'sim_res/sim_1/0', 
@@ -216,15 +203,7 @@ def plot_average_metrics(
     bbox_to_anchor: Tuple[float, float] = (1.0, 0.6),
 ) -> None:
     """
-    Plot user data
-
-    Args:   
-        data (pd.DataFrame): user data
-        data_directory (str, optional): directory to save the data. Defaults to 'sim_res'.
-        sim_name (str, optional): simulation name. Defaults to 'sim_1'.
-        sim_id (str, optional): simulation id. Defaults to '0'.
-        palette (str, optional): color palette. Defaults to 'colorblind'.
-        saturation (float, optional): saturation of the colors. Defaults to 0.6.
+    Plot user data across runs.
     """
     # Get color palette
     palette = get_palette(n=len(set(data['run'])), palette_name=palette_name, saturation=saturation)
@@ -274,4 +253,3 @@ def plot_average_metrics(
     # save plots 
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.pdf', bbox_inches='tight')
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.jpg', bbox_inches='tight') # for demo in browser
-# %%

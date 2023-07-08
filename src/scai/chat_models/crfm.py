@@ -112,7 +112,7 @@ class crfmChatLLM(SimpleChatModel):
     """Maximum number of retries to make when generating."""
     echo_prompt: bool = False
     """Whether to echo the prompt in the response."""
-    verbose: bool = True 
+    verbose: bool = False
     """Whether to print out the prompt and response"""
     messages: Optional[List[BaseMessage]]
     """Used for chat models. (OpenAI only for now).

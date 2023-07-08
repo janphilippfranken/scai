@@ -2,8 +2,6 @@ from typing import (
     Any,
     Dict,
     List, 
-    Optional,
-    Tuple,
 )
 
 from langchain.prompts.chat import (
@@ -15,8 +13,6 @@ from langchain.prompts.chat import (
 
 from langchain.chains.llm import LLMChain
 from langchain.chat_models.base import BaseChatModel
-
-import numpy as np # for simulated responses
 
 from scai.prompts.user.models import UserPrompt
 from scai.prompts.task.models import TaskPrompt
@@ -46,7 +42,7 @@ class UserModel(BaseAgent):
         Returns the chat history prompt templates for the user
         """
         chat_memory = self._get_chat_history(buffer, memory_type="chat") # check if chat memory exists
-        assistant_response_0 = chat_memory[f"{self.model_id}_assistant"][-1]['response'] # get the initial assistant response
+        assistant_response_0 = chat_memory[f"{self.model_id}_assistant"][0]['response'] # get the initial assistant response
         # if we are at the beginning of a conversation
         if chat_memory.get(f"{self.model_id}_user") is None or len(chat_memory[f"{self.model_id}_user"]) == 0: 
             chat_history_prompt_templates = [
@@ -59,14 +55,15 @@ class UserModel(BaseAgent):
         chat_history_prompt_templates = [
             template
             for assistant, user in zip(chat_memory[f"{self.model_id}_assistant"], chat_memory[f"{self.model_id}_user"])
-            for template in (AIMessagePromptTemplate.from_template(user['response']), 
-                             HumanMessagePromptTemplate.from_template(assistant['response']))
+            for template in (HumanMessagePromptTemplate.from_template(assistant['response']), 
+                             AIMessagePromptTemplate.from_template(user['response']))
         ]
         # add initial prompt including task
         chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} '{assistant_response_0}'"))
-        # update final turn with metric request
-        chat_history_prompt_templates[-1] = HumanMessagePromptTemplate.from_template(f"{chat_history_prompt_templates[-1].prompt.template}\n{metric_prompt.subjective_content}")
-        
+        # pop redundant second a
+        chat_history_prompt_templates.pop(1)
+        # add the missing assistant and final request 
+        chat_history_prompt_templates.append(HumanMessagePromptTemplate.from_template(chat_memory[f"{self.model_id}_assistant"][-1]['response'] + "\n" + f"{metric_prompt.subjective_content}"))
         return chat_history_prompt_templates
     
     def _get_chat_history_prompt_templates_collective(
@@ -94,28 +91,27 @@ class UserModel(BaseAgent):
                         )
                     ]
                     chat_history_prompt_templates_collective[model_id] = chat_history_prompt_templates
-            
             return chat_history_prompt_templates_collective
-        
-        # if we are not at the beginning of a conversation, need to get the conversation history
-        for model_id in buffer.load_memory_variables(memory_type='chat').keys():
-            if self.model_id not in model_id:
-                if 'user' in model_id:
-                    user_responses[model_id] = chat_memory[model_id][-1]['response']
-                if 'assistant' in model_id:
-                    assistant_responses[model_id] = chat_memory[model_id][-1]['response']
-                chat_history_prompt_templates = [
-                        template
-                        for assistant, user in zip(chat_memory[model_id], chat_memory[model_id])
-                        for template in (AIMessagePromptTemplate.from_template(assistant['response']), 
-                                         HumanMessagePromptTemplate.from_template(user['response']))
-                    ]
-                # insert the initial request at the beginning of the chat history
-                chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_connective}")) # insert task prompt at the beginning
-                # create a request for the next response
-                chat_history_prompt_templates[-1] = HumanMessagePromptTemplate.from_template(f"{chat_history_prompt_templates[-1].prompt.template}\n{metric_prompt.collective_content}")
-                # add to dictionary
-                chat_history_prompt_templates_collective[model_id] = chat_history_prompt_templates
+        # if we are not at the beginning of a conversation, need to get the conversation history, get unique model ids
+        model_ids = set([model_id.split('_')[0] for model_id in chat_memory.keys()])
+        # remove own model id
+        model_ids.remove(self.model_id)
+        for model_id in model_ids:
+            assistant_response_0 = chat_memory[f"{model_id}_assistant"][0]['response'] # get the initial assistant response
+            chat_history_prompt_templates = [
+                template
+                for assistant, user in zip(chat_memory[f"{model_id}_assistant"], chat_memory[f"{model_id}_user"])
+                for template in (HumanMessagePromptTemplate.from_template(assistant['response']), 
+                                 AIMessagePromptTemplate.from_template(user['response']))
+            ]
+            # insert the initial request at the beginning of the chat history
+            chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} '{assistant_response_0}'"))
+            # pop redundant second item
+            chat_history_prompt_templates.pop(1)
+            # add the missing assistant and final request 
+            chat_history_prompt_templates.append(HumanMessagePromptTemplate.from_template(f"{metric_prompt.collective_content}"))
+            # add to dictionary
+            chat_history_prompt_templates_collective[f"{model_id}_assistant"] = chat_history_prompt_templates
         
         return chat_history_prompt_templates_collective
 
@@ -141,7 +137,7 @@ class UserModel(BaseAgent):
         metric_prompt: MetricPrompt,
     ) -> Dict[str, ChatPromptTemplate]:
         """
-        Get prompt for user.
+        Get prompt for other users.
         """
         system_prompt_template = SystemMessagePromptTemplate.from_template(user_prompt.content)
         chat_history_prompt_templates_collective = self._get_chat_history_prompt_templates_collective(buffer, task_prompt, metric_prompt)
@@ -182,15 +178,15 @@ class UserModel(BaseAgent):
         Gets response for other users.
         """
         responses_collective = {}
-        for model_id, chat_prompt_template in enumerate(chat_prompt_templates):
-            chain = LLMChain(llm=self.llm, prompt=chat_prompt_template) 
-            response = chain.run(system_message=system_message,
-                                 task=task_prompt.content,
-                                 max_tokens=max_tokens,
-                                 stop=['System:'])
-            response = self._format_response(response, [metric_prompt.collective_metric.capitalize()])
-            responses_collective[model_id] = response
-
+        for model_id, chat_prompt_template in chat_prompt_templates.items():
+            if 'assistant' in model_id:
+                chain = LLMChain(llm=self.llm, prompt=chat_prompt_template) 
+                response = chain.run(system_message=system_message,
+                                    task=task_prompt.content,
+                                    max_tokens=max_tokens,
+                                    stop=['System:'])
+                response = self._format_response(response, [metric_prompt.collective_metric.capitalize()])
+                responses_collective[model_id] = response
         return responses_collective
     
     def run(
@@ -232,22 +228,24 @@ class UserModel(BaseAgent):
                                                                   metric_prompt=metric_prompt.collective_content,
                                                                   max_tokens=max_tokens)
                                 for model_id, chat_prompt_template_collective in chat_prompt_templates_collective.items()
-            }
-        
+                            }
         if test_run:
             print('===================================')
             print(f'USER {str(self.model_id)} turn {turn}')
-            f"user_response_{self.model_id}, turn {turn}."
-            print('subjective_metric:', int(self.model_id) + turn + 3)
-            # print(prompt_string)
-            # print(prompt_strings_collective)
-
+            print('prompt')
+            print(prompt_string)
+            print('response')
+            print(f"user_response_{self.model_id}, turn {turn}.")
+            print(metric_prompt.subjective_metric, int(self.model_id) + turn + 1)
+            print(prompt_strings_collective)
+            print({model_id: int(self.model_id) + turn + 6 for model_id in chat_prompt_templates_collective.keys()})
+            
             return {
-                # 'subjective_prompt': prompt_string, 
-                # 'collective_prompts': prompt_strings_collective,
+                'prompt': prompt_string,
                 'response': f"user_response_{self.model_id}, turn {turn}.",
-                'responses_collective': {model_id: int(self.model_id) + turn for model_id in chat_prompt_templates_collective.keys()},
-                metric_prompt.subjective_metric: int(self.model_id) + turn + 3,
+                metric_prompt.subjective_metric: int(self.model_id) + turn + 1,
+                'prompts_collective': prompt_strings_collective,     
+                'responses_collective': {model_id: int(self.model_id) + turn + 6 for model_id in chat_prompt_templates_collective.keys()},
                 'turn': turn
             }
 
@@ -257,14 +255,19 @@ class UserModel(BaseAgent):
         if verbose:
             print('===================================')
             print(f'USER {str(self.model_id)} turn {turn}')
-            print(response)
+            print('prompt')
+            print(prompt_string)
+            print('response')
+            print(response['Response'])
+            print(metric_prompt.subjective_metric, response[metric_prompt.subjective_metric.capitalize()])
+            print(prompt_strings_collective)
             print(responses_collective)
 
         return {
             'prompt': prompt_string, 
+            'response': response['Response'],
+            metric_prompt.subjective_metric: response[metric_prompt.subjective_metric.capitalize()],
             'prompts_collective': prompt_strings_collective,
-            'full_response': response, 
-            'response': response['response'],
             'responses_collective': responses_collective,
             'turn': turn
         }
