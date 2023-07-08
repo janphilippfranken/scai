@@ -79,41 +79,42 @@ class UserModel(BaseAgent):
         # data structures for storing the assistant responses and user responses from other conversations
         chat_history_prompt_templates_collective = {}
         assistant_responses = {}
-        user_responses = {}
         # if we are at the beginning of a conversation
-        if chat_memory.get(f"{self.model_id}_user") is None or len(chat_memory[f"{self.model_id}_user"]) == 0: 
-            for model_id in buffer.load_memory_variables(memory_type='chat').keys():
-                if model_id != f"{self.model_id}_assistant" and 'assistant' in model_id:
-                    assistant_responses[model_id] = chat_memory[model_id][-1]['response']
-                    chat_history_prompt_templates = [
-                        HumanMessagePromptTemplate.from_template(
-                            f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_responses[model_id]}' \n{metric_prompt.collective_content}"
-                        )
-                    ]
-                    chat_history_prompt_templates_collective[model_id] = chat_history_prompt_templates
-            return chat_history_prompt_templates_collective
-        # if we are not at the beginning of a conversation, need to get the conversation history, get unique model ids
-        model_ids = set([model_id.split('_')[0] for model_id in chat_memory.keys()])
-        # remove own model id
-        model_ids.remove(self.model_id)
-        for model_id in model_ids:
-            assistant_response_0 = chat_memory[f"{model_id}_assistant"][0]['response'] # get the initial assistant response
-            chat_history_prompt_templates = [
-                template
-                for assistant, user in zip(chat_memory[f"{model_id}_assistant"], chat_memory[f"{model_id}_user"])
-                for template in (HumanMessagePromptTemplate.from_template(assistant['response']), 
-                                 AIMessagePromptTemplate.from_template(user['response']))
-            ]
-            # insert the initial request at the beginning of the chat history
-            chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} '{assistant_response_0}'"))
-            # pop redundant second item
-            chat_history_prompt_templates.pop(1)
-            # add the missing assistant and final request 
-            chat_history_prompt_templates.append(HumanMessagePromptTemplate.from_template(f"{metric_prompt.collective_content}"))
-            # add to dictionary
-            chat_history_prompt_templates_collective[f"{model_id}_assistant"] = chat_history_prompt_templates
-        
+        # if chat_memory.get(f"{self.model_id}_user") is None or len(chat_memory[f"{self.model_id}_user"]) == 0: 
+        # TODO: what does it mean if this conversation has also multiple turns? currently only showing the most recent turn, but can also show others
+        for model_id in buffer.load_memory_variables(memory_type='chat').keys():
+            if model_id != f"{self.model_id}_assistant" and 'assistant' in model_id:
+                assistant_responses[model_id] = chat_memory[model_id][-1]['response']
+                chat_history_prompt_templates = [
+                    HumanMessagePromptTemplate.from_template(
+                        f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_responses[model_id]}'\n{metric_prompt.collective_content}"
+                    )
+                ]
+                chat_history_prompt_templates_collective[model_id] = chat_history_prompt_templates
         return chat_history_prompt_templates_collective
+        # if we are not at the beginning of a conversation, need to get the conversation history, get unique model ids
+        # model_ids = set([model_id.split('_')[0] for model_id in chat_memory.keys()])
+        # # remove own model id
+        # model_ids.remove(self.model_id)
+        # for model_id in model_ids:
+        #     assistant_response_0 = chat_memory[f"{model_id}_assistant"][0]['response'] # get the initial assistant response
+        #     chat_history_prompt_templates = [
+        #         template
+        #         for assistant, user in zip(chat_memory[f"{model_id}_assistant"], chat_memory[f"{model_id}_user"])
+        #         for template in (HumanMessagePromptTemplate.from_template(assistant['response']), 
+        #                          AIMessagePromptTemplate.from_template(user['response']))
+        #     ]
+        #     # insert the initial request at the beginning of the chat history
+        #     chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} '{assistant_response_0}'"))
+        #     # pop redundant second item
+        #     chat_history_prompt_templates.pop(1)
+        #     # pop the final feedback which is redundant
+        #     chat_history_prompt_templates.pop(-1)
+        #     # add the missing assistant and final request 
+        #     chat_history_prompt_templates[-1] = HumanMessagePromptTemplate.from_template(f"{chat_history_prompt_templates[-1].prompt.template}\n{metric_prompt.collective_content}")
+        #     # add to dictionary
+        #     chat_history_prompt_templates_collective[f"{model_id}_assistant"] = chat_history_prompt_templates
+        # return chat_history_prompt_templates_collective
 
     def _get_prompt(
         self, 
