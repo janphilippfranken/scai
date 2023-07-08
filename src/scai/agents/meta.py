@@ -10,7 +10,6 @@ import numpy as np
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
 
@@ -51,11 +50,8 @@ class MetaPromptModel(BaseAgent):
                 collective_ratings[_id] = []
             for response in responses:
                 if role == 'user':
-                    if len(response['responses_collective'].keys()) == self._get_n_user(chat_history) - 1:
-                        collective_rating = {k: v for k, v in response['responses_collective'].items()}
-                        collective_ratings[_id].append(collective_rating)
-                    else:
-                        collective_ratings[_id].append({metric_prompt.collective_metric: "0"})
+                    collective_rating = {k: v for k, v in response['responses_collective'].items() if 'assistant' in k}
+                    collective_ratings[_id].append(collective_rating)
 
         return collective_ratings
        
@@ -96,7 +92,7 @@ class MetaPromptModel(BaseAgent):
                                 average_collective_ratings.append(float(int(v[response_idx][f"{_id}_assistant"])))
                     collective_metric  = np.mean(average_collective_ratings) if average_collective_ratings != [] else 0
                     average_collective_ratings = [] # reset
-                    conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}\n{role} {_id} {metric_prompt.subjective_metric}: {response['subjective_metric']}\nCollective {metric_prompt.collective_metric}: {collective_metric}")
+                    conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}\n{role} {_id} {metric_prompt.subjective_metric}: {response[metric_prompt.subjective_metric]}\ncollective {metric_prompt.collective_metric} rating: {collective_metric}")
                     response[f"{metric_prompt.collective_metric}_average"] = collective_metric # store average metric
                 elif role == 'assistant':
                     conversation_data[_id][role].append(f"{role} response: {response['response']}")

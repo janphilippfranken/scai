@@ -8,22 +8,6 @@ class SimArguments:
     """
     Simulator arguments.
     """
-    system_k: int = field(
-        default=5,
-        metadata={
-            "help": (
-                "memory window for system messages (i.e. how many previous turns do we feed to meta-prompt)",
-            )
-        },
-    )
-    chat_k: int = field(
-        default=5,
-        metadata={
-            "help": (
-                "memory window for chat messages (i.e. how many previous turns do we feed to the assistant / user model)",
-            )
-        },
-    )
     n_turns: int = field(
         default=5,
         metadata={

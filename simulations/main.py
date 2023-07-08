@@ -34,10 +34,8 @@ def create_context(
     Create context
     """
     return Context.create(
-        id=args.sim.sim_id,
+        _id=args.sim.sim_id,
         name=args.sim.sim_dir,
-        system_k=args.sim.system_k,
-        chat_k=args.sim.chat_k,
         task_prompt=TASK_PROMPTS[args.sim.task_prompt],
         user_prompts=[USER_PROMPTS[user_prompt] for user_prompt in args.sim.user_prompts],
         assistant_prompts=[ASSISTANT_PROMPTS[assistant_prompt] for assistant_prompt in args.sim.assistant_prompts],
@@ -81,22 +79,30 @@ def main(args: DictConfig) -> None:
         # run for n_turns
         context.run(args.sim.n_turns, run)
         # save results csv
-        save_as_csv(data=context.buffer._full_memory.messages, 
+        save_as_csv(system_data=context.buffer._system_memory.messages,
                     chat_data=context.buffer._chat_memory.messages,
                     data_directory=DATA_DIR, 
                     sim_name=args.sim.sim_dir,
                     sim_id=args.sim.sim_id,
-                    run=run)
+                    run=run,
+                    subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric,
+                    collective_metric=METRIC_PROMPTS[args.sim.metric_prompt].collective_metric)
         # save results json
         with open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
             json.dump(context.buffer._full_memory.messages, f)
         # update system message after each run
         system_messsage = context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response'] # replace current system message with the new one (i.e. new constitution)
         # plot user ratings for the current run
+        print('running run', run)
         df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}_user.csv')
-        plot_results(df, DATA_DIR, args.sim.sim_dir, args.sim.sim_id, run)
+        plot_results(df, DATA_DIR, args.sim.sim_dir, args.sim.sim_id, run, subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric, collective_metric=f'{METRIC_PROMPTS[args.sim.metric_prompt].collective_metric}_average')
     # plot average user ratings across runs
-    plot_average_results(DATA_DIR, args.sim.sim_dir, args.sim.sim_id, args.sim.n_runs)      
+    plot_average_results(data_directory=DATA_DIR, 
+                         sim_name=args.sim.sim_dir, 
+                         sim_id=args.sim.sim_id, 
+                         n_runs=args.sim.n_runs, 
+                         subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric, 
+                         collective_metric=f'{METRIC_PROMPTS[args.sim.metric_prompt].collective_metric}_average')      
 
 if __name__ == '__main__':
     main()

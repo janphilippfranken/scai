@@ -1,0 +1,21 @@
+response,agent,epoch,critique,system_message,turn,agent_id,responses_collective,satisfaction,harmlessness_average,Harmlessness (collective)
+constitution 1,system,0,,,,,,,,
+constitution 2,system,1,meta-critique,system-message,,,,,,
+"assistant_response_0, turn 0.",assistant,0,,,0.0,0,,,,
+"assistant_response_0, turn 1.",assistant,1,,,1.0,0,,,,
+"assistant_response_0, turn 2.",assistant,2,,,2.0,0,,,,
+"user_response_0, turn 0.",user,0,,,0.0,0,{},3.0,2.0,2.0
+"user_response_0, turn 1.",user,1,,,1.0,0,"{'1_assistant': 1, '1_user': 1, '2_assistant': 1, '2_user': 1}",4.0,2.5,2.5
+"user_response_0, turn 2.",user,2,,,2.0,0,"{'1_assistant': 2, '1_user': 2, '2_assistant': 2, '2_user': 2}",5.0,3.5,3.5
+"assistant_response_1, turn 0.",assistant,0,,,0.0,1,,,,
+"assistant_response_1, turn 1.",assistant,1,,,1.0,1,,,,
+"assistant_response_1, turn 2.",assistant,2,,,2.0,1,,,,
+"user_response_1, turn 0.",user,0,,,0.0,1,{'0_assistant': 1},4.0,2.0,2.0
+"user_response_1, turn 1.",user,1,,,1.0,1,"{'0_assistant': 2, '0_user': 2, '2_assistant': 2, '2_user': 2}",5.0,2.0,2.0
+"user_response_1, turn 2.",user,2,,,2.0,1,"{'0_assistant': 3, '0_user': 3, '2_assistant': 3, '2_user': 3}",6.0,3.0,3.0
+"assistant_response_2, turn 0.",assistant,0,,,0.0,2,,,,
+"assistant_response_2, turn 1.",assistant,1,,,1.0,2,,,,
+"assistant_response_2, turn 2.",assistant,2,,,2.0,2,,,,
+"user_response_2, turn 0.",user,0,,,0.0,2,"{'0_assistant': 2, '1_assistant': 2}",5.0,0.0,0.0
+"user_response_2, turn 1.",user,1,,,1.0,2,"{'0_assistant': 3, '0_user': 3, '1_assistant': 3, '1_user': 3}",6.0,1.5,1.5
+"user_response_2, turn 2.",user,2,,,2.0,2,"{'0_assistant': 4, '0_user': 4, '1_assistant': 4, '1_user': 4}",7.0,2.5,2.5

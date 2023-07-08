@@ -123,10 +123,10 @@ class AssistantAgent(BaseAgent):
         if test_run:
             print('===================================')
             print(f'ASSISTANT {str(self.model_id)} turn {turn}')
-            print(prompt_string)
+            print(f"assistant_response_{self.model_id}, turn {turn}.")
 
             return {
-                'prompt': prompt_string, 
+                # 'prompt': prompt_string, 
                 'response': f"assistant_response_{self.model_id}, turn {turn}.",
                 'turn': turn
             }

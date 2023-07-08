@@ -14,7 +14,7 @@ from scai.memory.buffer import ConversationBuffer
 class Context():
     def __init__(
         self, 
-        id: str,
+        _id: str,
         name: str, 
         task_prompt: str, 
         user_prompts: List[str], 
@@ -35,7 +35,7 @@ class Context():
         Initializes a context (i.e. context for the MDP / Meta-Prompt run).
 
         Args:
-            id: unique identifier for the context.
+            _id: unique identifier for the context.
             name: name of the context.
             task_prompt: task prompt template
             user_prompts: user prompt templates
@@ -43,8 +43,6 @@ class Context():
             meta: meta-prompt template
             metric_prompt: metric-prompt template
             adjacency_matrix: connectivity matrix for the user and assistant models. # TODO: add
-            system_k: system memory length
-            chat_k: chat memory length
             verbose: whether to run in verbose mode.
             test_run:  whether it is a test run.
             max_tokens_user: maximum number of tokens for user model.
@@ -58,7 +56,7 @@ class Context():
         Returns:
             None
         """
-        self.id = id
+        self._id = _id
         self.name = name
         self.task_prompt = task_prompt
         self.user_prompts = user_prompts
@@ -81,15 +79,13 @@ class Context():
         user_llm: UserModel, 
         assistant_llm: AssistantAgent, 
         meta_llm: MetaPromptModel, 
-        id: str, 
+        _id: str, 
         name: str, 
         task_prompt: str, 
         user_prompts: List[str], 
         assistant_prompts: List[str], 
         meta_prompt: str, 
         metric_prompt: str,
-        system_k: int,
-        chat_k: int,
         verbose: bool,
         test_run: bool,
         max_tokens_user: int,
@@ -107,7 +103,7 @@ class Context():
         meta_model = MetaPromptModel(llm=meta_llm, model_id="system")
 
         return Context(
-            id=id, 
+            _id=_id, 
             name=name,
             task_prompt=task_prompt,
             user_prompts=user_prompts,
@@ -185,3 +181,4 @@ class Context():
                                             max_tokens_assistant=self.max_tokens_assistant)                 
         # save meta-prompt response
         self.buffer.save_system_context(model_id="system", **meta_response)
+      

@@ -237,15 +237,17 @@ class UserModel(BaseAgent):
         if test_run:
             print('===================================')
             print(f'USER {str(self.model_id)} turn {turn}')
-            print(prompt_string)
-            print(prompt_strings_collective)
+            f"user_response_{self.model_id}, turn {turn}."
+            print('subjective_metric:', int(self.model_id) + turn + 3)
+            # print(prompt_string)
+            # print(prompt_strings_collective)
 
             return {
-                'subjective_prompt': prompt_string, 
-                'collective_prompts': prompt_strings_collective,
+                # 'subjective_prompt': prompt_string, 
+                # 'collective_prompts': prompt_strings_collective,
                 'response': f"user_response_{self.model_id}, turn {turn}.",
-                'responses_collective': {model_id: int(self.model_id) + 5 for model_id in chat_prompt_templates_collective.keys()},
-                'subjective_metric': int(self.model_id) + 5,
+                'responses_collective': {model_id: int(self.model_id) + turn for model_id in chat_prompt_templates_collective.keys()},
+                metric_prompt.subjective_metric: int(self.model_id) + turn + 3,
                 'turn': turn
             }
 

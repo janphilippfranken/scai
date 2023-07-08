@@ -244,14 +244,14 @@ def plot_average_metrics(
         color = palette[i]
         x = data['run'].unique()
         values = data[data['metric'] == metric]
-        y = np.array(values[values['statistic'] == 'mean']['value'])
-        error = np.array(values[values['statistic'] == 'standard_error']['value'])
+        y = np.array(values[values['statistic'].str.contains('mean')]['value'])
+        error = np.array(values[values['statistic'].str.contains('standard_error')]['value'])
         line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
         lines.append(line[0])  # Append the Line2D object, not the list
         ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
         ax.fill_between(x, y - 1.95 * error, y + 1.95 * error, color=color, alpha=0.3)
 
-        
+
     plt.xlabel('Runs')
     sns.despine(left=True, bottom=False)
     

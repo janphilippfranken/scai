@@ -13,12 +13,14 @@ from plots import plot_metrics, plot_average_metrics
 
 
 def save_as_csv(
-    data: Dict[str, List[Any]],    
+    system_data: Dict[str, List[Any]],    
     chat_data: Dict[str, List[Any]],        
     data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
     run: int = 0,
+    subjective_metric: str = 'satisfaction',
+    collective_metric: str = 'harmlessness',
 ) -> None:
     """
     Save simulation data as a csv file
@@ -29,7 +31,9 @@ def save_as_csv(
         sim_name (str, optional): simulation name. Defaults to 'sim_1'.
         sim_id (str, optional): simulation id. Defaults to '0'.
     """
-    # Create an empty list to store all data
+    # Concatenate data dicts
+    data = {**system_data, **chat_data}
+    # Create a list of dicts to store the data
     data_list = []
     # Iterate through models and messages
     for agent, messages in data.items():
@@ -40,7 +44,7 @@ def save_as_csv(
                 message.update({'agent': agent.split('_')[1]})
                 message.update({'agent_id': agent.split('_')[0]})
                 if 'user' in agent:
-                    message.update({'Harmlessness (community)': chat_data[agent][epoch]['harmlessness_other']})
+                    message.update({f'{collective_metric.capitalize()} (collective)': chat_data[agent][epoch][f'{collective_metric}_average']})
             else:
                 message.update({'agent': agent})
             message.update({'epoch': epoch})
@@ -68,6 +72,8 @@ def plot_results(
     sim_name: str = 'sim_1', 
     sim_id: str = '0',
     run: int = 0,
+    subjective_metric: str = 'satisfaction',
+    collective_metric: str = 'harmlessness',
 ) -> None:
     """
     Creates plots for simulation data
@@ -79,7 +85,7 @@ def plot_results(
         sim_id (str, optional): simulation id. Defaults to '0'.
     """
     # Compute average for other users
-    metrics = [column for column in data.columns if column not in ['response', 'agent', 'epoch', 'prompt', 'agent_id', 'responses_other', 'harmlessness']]
+    metrics = [subjective_metric, collective_metric]
     
 
     # Plot metrics for each user 
@@ -125,6 +131,8 @@ def plot_average_results(
     sim_name: str = 'sim_1',
     sim_id: str = '0',
     n_runs: int = 5,
+    subjective_metric: str = 'satisfaction',
+    collective_metric: str = 'harmlessness_average',
     ) -> None:
     """
     Plot average across runs and save average csv
@@ -138,8 +146,8 @@ def plot_average_results(
     # Concatenate all the data frames in the list
     user_data = pd.concat(dfs, ignore_index=True)
 
-    # Select only the columns you're interested in
-    numeric_cols = ['Satisfaction', 'Harmlessness (community)']
+    # Select only the columns you're interested in (subjective and collective measures)
+    numeric_cols = [subjective_metric, collective_metric]
 
     # Compute mean and standard_error for the selected columns only
     average_data = user_data.groupby('run')[numeric_cols].agg(['mean', standard_error])
@@ -149,7 +157,6 @@ def plot_average_results(
 
     # Melt into long format and separate 'metric' into 'metric' and 'statistic'
     long_data = average_data.reset_index().melt(id_vars='run', var_name='metric_stat', value_name='value')
-
     # Separate 'metric' and 'statistic' and remove 'statistic' column
     long_data[['metric', 'statistic']] = long_data['metric_stat'].str.split('_', n=1, expand=True)
     long_data.drop(columns=['metric_stat'], inplace=True)
