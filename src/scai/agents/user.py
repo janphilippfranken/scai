@@ -47,7 +47,7 @@ class UserModel(BaseAgent):
         if chat_memory.get(f"{self.model_id}_user") is None or len(chat_memory[f"{self.model_id}_user"]) == 0: 
             chat_history_prompt_templates = [
                 HumanMessagePromptTemplate.from_template(
-                    f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_response_0}' \n{metric_prompt.subjective_content}"
+                    f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} {assistant_response_0} \n\n{metric_prompt.subjective_content}"
                 )
             ]
             return chat_history_prompt_templates
@@ -55,15 +55,15 @@ class UserModel(BaseAgent):
         chat_history_prompt_templates = [
             template
             for assistant, user in zip(chat_memory[f"{self.model_id}_assistant"], chat_memory[f"{self.model_id}_user"])
-            for template in (HumanMessagePromptTemplate.from_template(assistant['response']), 
+            for template in (HumanMessagePromptTemplate.from_template(assistant['response']), # flipping human and assistant templates
                              AIMessagePromptTemplate.from_template(user['response']))
         ]
         # add initial prompt including task
-        chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} '{assistant_response_0}'"))
-        # pop redundant second a
+        chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} {assistant_response_0}"))
+        # pop redundant assistant response at the beginning (now part of the message above)
         chat_history_prompt_templates.pop(1)
-        # add the missing assistant and final request 
-        chat_history_prompt_templates.append(HumanMessagePromptTemplate.from_template(chat_memory[f"{self.model_id}_assistant"][-1]['response'] + "\n" + f"{metric_prompt.subjective_content}"))
+        # add the most recent assistant response and request for new answer (n_user answers is always = n_assistant_answers - 1 at this stage, so we have to add one more)
+        chat_history_prompt_templates.append(HumanMessagePromptTemplate.from_template(chat_memory[f"{self.model_id}_assistant"][-1]['response'] + "\n\n" + f"{metric_prompt.subjective_content}"))
         return chat_history_prompt_templates
     
     def _get_chat_history_prompt_templates_collective(
@@ -81,13 +81,13 @@ class UserModel(BaseAgent):
         assistant_responses = {}
         # if we are at the beginning of a conversation
         # if chat_memory.get(f"{self.model_id}_user") is None or len(chat_memory[f"{self.model_id}_user"]) == 0: 
-        # TODO: what does it mean if this conversation has also multiple turns? currently only showing the most recent turn, but can also show others
+        # TODO: what does it mean if this conversation has also multiple turns? currently only showing the most recent turn, but can also show others.
         for model_id in buffer.load_memory_variables(memory_type='chat').keys():
             if model_id != f"{self.model_id}_assistant" and 'assistant' in model_id:
-                assistant_responses[model_id] = chat_memory[model_id][-1]['response']
+                assistant_responses[model_id] = chat_memory[model_id][-1]['response'] # get most recent assistant response
                 chat_history_prompt_templates = [
                     HumanMessagePromptTemplate.from_template(
-                        f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.user_connective} '{assistant_responses[model_id]}'\n{metric_prompt.collective_content}"
+                        f"\n{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} {assistant_responses[model_id]}\n{metric_prompt.collective_content}"
                     )
                 ]
                 chat_history_prompt_templates_collective[model_id] = chat_history_prompt_templates
@@ -223,7 +223,6 @@ class UserModel(BaseAgent):
                                                     task=task_prompt.task,
                                                     metric_prompt=metric_prompt.subjective_content,
                                                     max_tokens=max_tokens)
-        
         prompt_strings_collective = {model_id: chat_prompt_template_collective.format(system_message=system_message,
                                                                   task=task_prompt.task,
                                                                   metric_prompt=metric_prompt.collective_content,

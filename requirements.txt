@@ -10,3 +10,4 @@ hydra-core
 omegaconf
 streamlit
 path
+sentence_transformers

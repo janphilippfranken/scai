@@ -1,4 +1,3 @@
-#%%
 from typing import (
     List,
     Tuple,
@@ -6,12 +5,14 @@ from typing import (
 
 import pandas as pd 
 import numpy as np
+import json
 
 import colorsys
 import seaborn as sns
 import matplotlib.colors as mc
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
+from sentence_transformers import SentenceTransformer, util
 
 
 def change_saturation(
@@ -235,7 +236,7 @@ def plot_average_metrics(
     sns.despine(left=True, bottom=False)
     
     # y-axis
-    ax.set_ylabel(y_label.capitalize())
+    ax.set_ylabel(y_label)
     ax.yaxis.set_label_coords(*y_label_coords)
     ax.set_yticks(y_ticks)
     ax.set_yticklabels(y_ticklabels)
@@ -253,3 +254,49 @@ def plot_average_metrics(
     # save plots 
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.pdf', bbox_inches='tight')
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.jpg', bbox_inches='tight') # for demo in browser
+
+def plot_cosine_similarity(
+    data_directory: str = 'sim_res/sim_1/0', 
+    sim_name: str = 'sim_1',
+    sim_id: str = '0',
+    n_runs: int = 5,
+    palette_name: str = 'colorblind',
+    saturation: float = 0.6,
+    font_family: str = 'Avenir',
+    font_size: int = 24,
+    model_name: str = 'all-MiniLM-L6-v2', 
+    max_seq_length:  int = 512,
+) -> None:
+    """
+    Plot cosine similarity between system responses over runs.
+    """
+    # plot params
+    plt.rcParams['font.family'] = font_family
+    plt.rcParams['font.size'] = font_size
+    # get model
+    model = SentenceTransformer(model_name)
+    model.max_seq_length = max_seq_length
+    # load data
+    system_messages = []
+    for run in range(n_runs):
+        with open(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}.json', 'r') as f:
+            data = json.load(f)
+        system_messages.append(data['system'][-1]['response'])
+    # write system messages to json
+    with open(f'{data_directory}/{sim_name}_id_{sim_id}_system_messages.json', 'w') as f:
+        json.dump(system_messages, f)
+    # compute cosine similarity
+    embeddings = model.encode(system_messages, convert_to_tensor=True)
+    cosine_scores = util.cos_sim(embeddings, embeddings)
+    # plot cosine similarity
+    scores = np.triu(cosine_scores, k=0)
+    ax = sns.heatmap(scores, linewidths=0.5, cmap="mako", annot=True)
+    ax.set_title('Cosine Similarity')
+    # remove legend 
+    ax.get_legend().remove()
+    # x and y labels
+    ax.set_xlabel('System Message')
+    ax.set_ylabel('System Message')
+    # save plots
+    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.pdf', bbox_inches='tight')
+    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.jpg', bbox_inches='tight') 

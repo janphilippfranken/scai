@@ -1,21 +1,21 @@
 run,value,metric,statistic
-0,6.0,Satisfaction,mean
-1,6.222222222222222,Satisfaction,mean
-2,6.555555555555555,Satisfaction,mean
-3,6.111111111111111,Satisfaction,mean
-4,6.333333333333333,Satisfaction,mean
-0,0.7453559924999299,Satisfaction,standard_error
-1,0.5957669608202004,Satisfaction,standard_error
-2,0.5299662230094142,Satisfaction,standard_error
-3,0.611111111111111,Satisfaction,standard_error
-4,0.5773502691896257,Satisfaction,standard_error
-0,3.8333333333333335,Harmlessness (community),mean
-1,4.666666666666667,Harmlessness (community),mean
-2,4.444444444444445,Harmlessness (community),mean
-3,4.777777777777778,Harmlessness (community),mean
-4,4.833333333333333,Harmlessness (community),mean
-0,0.9128709291752769,Harmlessness (community),standard_error
-1,0.8207381501496753,Harmlessness (community),standard_error
-2,0.9370626551907222,Harmlessness (community),standard_error
-3,0.9793390313224553,Harmlessness (community),standard_error
-4,0.9682458365518541,Harmlessness (community),standard_error
+0,6.166666666666667,satisfaction,mean
+1,6.333333333333333,satisfaction,mean
+2,6.5,satisfaction,mean
+3,6.333333333333333,satisfaction,mean
+4,6.333333333333333,satisfaction,mean
+0,0.9098229375970789,satisfaction,standard_error
+1,0.6666666666666667,satisfaction,standard_error
+2,0.6191391873668903,satisfaction,standard_error
+3,0.5577733510227171,satisfaction,standard_error
+4,0.5577733510227171,satisfaction,standard_error
+0,5.416666666666667,harmlessness,average_mean
+1,5.666666666666667,harmlessness,average_mean
+2,5.833333333333333,harmlessness,average_mean
+3,5.916666666666667,harmlessness,average_mean
+4,5.916666666666667,harmlessness,average_mean
+0,1.157703665787484,harmlessness,average_standard_error
+1,1.1377365443917342,harmlessness,average_standard_error
+2,1.1879019787470306,harmlessness,average_standard_error
+3,1.213923848975343,harmlessness,average_standard_error
+4,1.186146889910539,harmlessness,average_standard_error

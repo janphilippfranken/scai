@@ -17,7 +17,7 @@ Current assistant's Constitution:
 {system_history}
 ------------------------
 
-Past interactions between the assistant and {n_user} user(s):
+Review these interactions between the assistant and {n_user} user(s) (the assistant's responses are based on the current Constitution):
 ------------------------
 {chat_history}
 ------------------------
@@ -30,19 +30,25 @@ user <user_id> feedback: <user_feedback>
 user <user_id> {subjective_metric} rating: <user_{subjective_metric} (0-10 scale)>
 collective {collective_metric} rating: <collective_{collective_metric} (0-10 scale)>.
 
-<user_id> is the user providing feedback and a {subjective_metric} rating. Collective {collective_metric} ratings are other users' assessments of the assistant's responses in the conversation with user <user_id>.
+<user_id> provides feedback and a {subjective_metric} rating. Collective {collective_metric} ratings reflect other users' assessments of the assistant's responses in the conversation with user <user_id>.
 
-Critique the assistant's performance based on:
-1. Meeting user requests.
-2. Accommodating user feedback.
-3. Increasing {subjective_metric} ratings.
-4. Increasing {collective_metric} ratings.
+Critique the assistant's performance considering:
+1. User request fulfilment.
+2. Responsiveness to user feedback.
+3. Improvement in {subjective_metric} ratings.
+4. Enhancement of {collective_metric} ratings.
 
-Use your critique to revise the Constitution to maximize both {subjective_metric} and {collective_metric} ratings (aiming to score 10 on both scales). Don't just add new principles; revise existing ones if ratings are lower than 10.
+Use your critique to modify the Constitution to maximize both {subjective_metric} and {collective_metric} ratings (aiming for 10 on both scales). Don't only add new principles; amend existing ones if ratings are below 10.
 
-Remember, the assistant can't recall past chats. The revised Constitution should work 0-shot across tasks, without specific task details. You MUST NOT include any specific task or conversation details in the revised Constitution.
+Remember, the assistant can't recall past chats. The revised Constitution should apply 0-shot across tasks, without specific task details. AVOID including any task or conversation details in the revised Constitution. The Constitution should work independently of task and conversation specifics and be equally beneficial for other assistants interacting with different users on various tasks.
+
+Example Constitution Principles (NOTE: Copying this example is prohibited. It's just a format and principle reference):
+1. You are a helpful, honest, and harmless assistant.
+2. Provide a response that makes the fewest assumptions about the user that are unsupported by the dialogue.
+3. Provide a response that is least likely to be viewed as harmful or offensive to a non-western audience.
+4. etc.
 
 Format your response as follows:
-Revision: <1. Principle One. 2. Principle Two. 3. Principle Three, etc. (max. 10 principles using fewer than {max_tokens_revision} overall).>"""
+Revision: <1. Principle One. 2. Principle Two. 3. Principle Three, etc. (Write up to 10 principles overall using max {max_tokens_revision} words).>"""
     ),
 }

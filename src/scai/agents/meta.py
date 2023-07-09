@@ -62,6 +62,7 @@ class MetaPromptModel(BaseAgent):
         """
         # get collective ratings
         collective_ratings = self._get_collective_rating(chat_history)
+        print(collective_ratings)
         # data structures for storing chat
         chat_dict = {}
         conversation_data = {}
@@ -72,7 +73,7 @@ class MetaPromptModel(BaseAgent):
             # initial message
             if _id not in chat_dict:
                 prefix = '\n' if _id != '0' else ''
-                chat_dict[_id] = [f"{prefix}Conversation {_id}:", f"user {_id} request: {task_prompt.preamble} '{task_prompt.task}' {task_prompt.assistant_connective.format(max_tokens=max_tokens_assistant)}"]
+                chat_dict[_id] = [f"{prefix}Conversation {_id}:", f"user {_id} request: {task_prompt.preamble} {task_prompt.task} {task_prompt.assistant_connective.format(max_tokens=max_tokens_assistant)}"]
             if _id not in conversation_data:
                 conversation_data[_id] = {'assistant': [], 'user': []}
             # loop over messages
@@ -83,7 +84,7 @@ class MetaPromptModel(BaseAgent):
                     for k, v in collective_ratings.items():
                         if k != _id:
                             if len(v[response_idx]) == self._get_n_user(chat_history) - 1:
-                                average_collective_ratings.append(float(int(v[response_idx][f"{_id}_assistant"])))
+                                average_collective_ratings.append(float(v[response_idx][f"{_id}_assistant"][metric_prompt.collective_metric.capitalize()]))
                     collective_metric  = np.mean(average_collective_ratings) if average_collective_ratings != [] else 0
                     average_collective_ratings = [] # reset
                     conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}\n{role} {_id} {metric_prompt.subjective_metric} rating: {response[metric_prompt.subjective_metric]}\ncollective {metric_prompt.collective_metric} rating: {collective_metric}")
@@ -115,7 +116,9 @@ class MetaPromptModel(BaseAgent):
         system_message_string: str,
         chat_history: ChatMemory,
         chat_history_string: str,
-        max_tokens: int,
+        max_tokens_assistant: int,
+        max_tokens_meta: int,
+        metric_prompt: MetricPrompt,
     ) -> str:
         """
         Returns the response from meta-prompt.
@@ -124,7 +127,10 @@ class MetaPromptModel(BaseAgent):
         response = chain.run(system_history=system_message_string,
                              n_user=self._get_n_user(chat_history),
                              chat_history=chat_history_string,
-                             max_tokens=max_tokens,
+                             max_tokens_assistant=max_tokens_assistant,
+                             max_tokens_revision=max_tokens_meta,
+                             subjective_metric=metric_prompt.subjective_metric,
+                             collective_metric=metric_prompt.collective_metric,
                              stop=['System:'])   
         response = self._format_response(response, ['Revision'])
         response['response'] = response.pop('Revision') # for consistency ('response' is the main output key)
@@ -186,14 +192,25 @@ class MetaPromptModel(BaseAgent):
                 'run': run,
             }
 
-        
-        # response = self._get_response(chat_prompt_template, system_message, task_prompt, max_tokens_meta)
-
+        response = self._get_response(chat_prompt_template, 
+                                      system_message_string,
+                                      chat_history,
+                                      chat_history_string,
+                                      max_tokens_assistant,
+                                      max_tokens_meta,
+                                      metric_prompt)
        
-        # if verbose:
-        #     print('===================================')
-        #     print(f'META')
-        #     print('Prompt: ', prompt)
-        #     print('Response: ', response)
-
-        # return response
+        if verbose:
+            print('===================================')
+            print(f'META {str(self.model_id)}')
+            print('prompt')
+            print(prompt_string)
+            print('response')
+            print(response['response'])
+            print('run', run)
+        
+        return {
+                'prompt': prompt_string,
+                'response': response['response'],
+                'run': run,
+            }
