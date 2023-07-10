@@ -102,11 +102,11 @@ class MetaPromptModel(BaseAgent):
                         if k != _id:
                             if len(v[response_idx]) == self._get_n_user(chat_history) - 1:
                                 average_collective_ratings.append(float(v[response_idx][f"{_id}_assistant"][metric_prompt.collective_metric.capitalize()]))
-                    collective_metric  = np.mean(average_collective_ratings) if average_collective_ratings != [] else 0
+                    collective_metric  = np.mean(average_collective_ratings)/10 if average_collective_ratings != [] else 0
                     if collective_metric == 0:
-                        collective_metric = 5 # if no ratings, assume 5 for now
+                        collective_metric = 50 # if no ratings, assume 5 for now
                     average_collective_ratings = [] # reset
-                    conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}\n{role} {_id} {metric_prompt.subjective_metric} rating: {response[metric_prompt.subjective_metric]}\ncollective {metric_prompt.collective_metric} rating: {collective_metric}")
+                    conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}") # add these to include metrics \n{role} {_id} {metric_prompt.subjective_metric} rating: {response[metric_prompt.subjective_metric]}\ncollective {metric_prompt.collective_metric} rating: {collective_metric}")
                     response[f"{metric_prompt.collective_metric}_average"] = collective_metric # store average metric
                 elif role == 'assistant':
                     conversation_data[_id][role].append(f"{role} response: {response['response']}")
@@ -170,7 +170,7 @@ class MetaPromptModel(BaseAgent):
                              collective_metric=metric_prompt.collective_metric,
                              stop=['System:'])   
         response = self._format_response(response, meta_prompt.metrics)
-        response['response'] = f"{response[meta_prompt.metrics[0]]} Give precedence to ALL of the following USER PREFERENCES, unless those that directly contradict the CONSTITUTION: {response[meta_prompt.metrics[1]]}"
+        response['response'] = f"{response[meta_prompt.metrics[0]]} Learned USER PREFERENCES: {response[meta_prompt.metrics[1]]}"
         return response
 
     def run(

@@ -1,0 +1,9 @@
+run,value,metric,statistic
+0,60.0,satisfaction,mean
+1,85.0,satisfaction,mean
+0,,satisfaction,standard_error
+1,,satisfaction,standard_error
+0,50.0,correctness,average_mean
+1,50.0,correctness,average_mean
+0,,correctness,average_standard_error
+1,,correctness,average_standard_error
