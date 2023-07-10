@@ -97,17 +97,17 @@ class MetaPromptModel(BaseAgent):
                     # compute average collective metric for users
                     collective_metric = 0 
                     for k, v in collective_ratings.items():
-                        # if v[0] == {}:
-                        #     v[0] = copy.deepcopy(v[1]) # for now just duplicate the second rating for user 0
                         if k != _id:
                             if len(v[response_idx]) == self._get_n_user(chat_history) - 1:
                                 average_collective_ratings.append(float(v[response_idx][f"{_id}_assistant"][metric_prompt.collective_metric.capitalize()]))
-                    collective_metric  = np.mean(average_collective_ratings)/10 if average_collective_ratings != [] else 0
+                    collective_metric  = np.mean(average_collective_ratings) if average_collective_ratings != [] else 0
+                    collective_metric_display = str(collective_metric)
                     if collective_metric == 0:
-                        collective_metric = 50 # if no ratings, assume 5 for now
+                        collective_metric = 5 # if no ratings, assume 50 for now (will be for user 0 first response in each run because no other ratings are available)
+                        collective_metric_display = "N/A"
                     average_collective_ratings = [] # reset
-                    conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}") # add these to include metrics \n{role} {_id} {metric_prompt.subjective_metric} rating: {response[metric_prompt.subjective_metric]}\ncollective {metric_prompt.collective_metric} rating: {collective_metric}")
-                    response[f"{metric_prompt.collective_metric}_average"] = collective_metric # store average metric
+                    conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}\n{role} {_id} {metric_prompt.subjective_metric} rating: {response[metric_prompt.subjective_metric]}\ncollective {metric_prompt.collective_metric} rating: {collective_metric_display}")
+                    response[f"{metric_prompt.collective_metric}_average"] = collective_metric # store collective
                 elif role == 'assistant':
                     conversation_data[_id][role].append(f"{role} response: {response['response']}")
         # extend chatdict
@@ -170,7 +170,7 @@ class MetaPromptModel(BaseAgent):
                              collective_metric=metric_prompt.collective_metric,
                              stop=['System:'])   
         response = self._format_response(response, meta_prompt.metrics)
-        response['response'] = f"{response[meta_prompt.metrics[0]]} Learned USER PREFERENCES: {response[meta_prompt.metrics[1]]}"
+        response['response'] = f"Abide by the following Constitution: {response[meta_prompt.metrics[0]]} Within the bounds of the Constitution, use user preferences to enhance your responses and improve user experience: {response[meta_prompt.metrics[1]]}"
         return response
 
     def run(
@@ -180,7 +180,6 @@ class MetaPromptModel(BaseAgent):
         task_prompt: TaskPrompt,
         metric_prompt: MetricPrompt,
         run: int,
-        test_run: bool = False,
         verbose: bool = False,
         max_tokens_meta: int = 100,
         max_tokens_assistant: int = 100,

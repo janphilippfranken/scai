@@ -145,9 +145,7 @@ class Context():
             assistant_response = assistant_model.run(buffer=self.buffer,
                                                      assistant_prompt=assistant_prompt,
                                                      task_prompt=self.task_prompt, 
-                                                     user_prompt=user_prompt,
                                                      turn=turn,
-                                                     test_run=self.test_run,
                                                      verbose=self.verbose,
                                                      max_tokens=self.max_tokens_assistant)
             # save assistant response
@@ -159,7 +157,7 @@ class Context():
                                            task_prompt=self.task_prompt,
                                            metric_prompt=self.metric_prompt,
                                            turn=turn,
-                                           test_run=self.test_run,
+
                                            verbose=self.verbose,
                                            max_tokens=self.max_tokens_user)
             # save user response
@@ -179,7 +177,6 @@ class Context():
                                             task_prompt=self.task_prompt, 
                                             metric_prompt=self.metric_prompt,
                                             run=run,
-                                            test_run=self.test_run,
                                             verbose=self.verbose,
                                             max_tokens_meta=self.max_tokens_meta,
                                             max_tokens_assistant=self.max_tokens_assistant)                 

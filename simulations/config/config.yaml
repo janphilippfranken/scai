@@ -4,25 +4,25 @@ hydra:
 
 sim:
   sim_dir: "sim_1" 
-  sim_id: "5" 
+  sim_id: "6" 
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just print the prompt
   verbose: true
-  n_runs: 10
-  n_turns: 3
+  n_runs: 3
+  n_turns: 2
 
   system_message: " " # start developer constitution / social contract is empty
   task_prompt: "task_prompt_3"
   user_prompts: 
-    - "user_prompt_1" # eco-anarchist
+    # - "user_prompt_1" # eco-anarchist
     - "user_prompt_2" # conservative
     - "user_prompt_3" # socialist
-    - "user_prompt_4" # unabomber
+    # - "user_prompt_4" # unabomber
   assistant_prompts: 
     - "assistant_prompt_1"
     - "assistant_prompt_1"
-    - "assistant_prompt_1"
-    - "assistant_prompt_1"
+    # - "assistant_prompt_1"
+    # - "assistant_prompt_1"
 
   meta_prompt: "meta_prompt_1"
   metric_prompt: "metric_prompt_2"

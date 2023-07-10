@@ -143,14 +143,14 @@ def plot_metrics(
         color = palette[i]
         if not plot_error:
             x = data[data[z_column] == user]['epoch']
-            y = np.array(data[data[z_column] == user][metric])/10
+            y = np.array(data[data[z_column] == user][metric])
             line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
             lines.append(line[0])  # Append the Line2D object, not the list
             ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
         else:
             x = data[data[z_column] == user]['epoch']
             x = x[:len(x)//2]
-            y = np.array(data[(data[z_column] == user) & (data[error_metric] == 'mean')][metric])/10
+            y = np.array(data[(data[z_column] == user) & (data[error_metric] == 'mean')][metric])
             error = np.array(data[(data[z_column] == user) & (data[error_metric] == 'sem')][metric])
             line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
             lines.append(line[0])  # Append the Line2D object, not the list
@@ -224,7 +224,7 @@ def plot_average_metrics(
         color = palette[i]
         x = data['run'].unique()
         values = data[data['metric'] == metric]
-        y = np.array(values[values['statistic'].str.contains('mean')]['value'])/10
+        y = np.array(values[values['statistic'].str.contains('mean')]['value'])
         error = np.array(values[values['statistic'].str.contains('standard_error')]['value'])
         line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
         lines.append(line[0])  # Append the Line2D object, not the list
