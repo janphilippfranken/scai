@@ -22,7 +22,9 @@ from scai.memory.buffer import ConversationBuffer
 from scai.agents.base import BaseAgent
 
 class AssistantAgent(BaseAgent):
-    """Assistant agent."""
+    """
+    LLM Chain for running the Assistant.
+    """
     def __init__(
         self, 
         llm: BaseChatModel, 
@@ -37,6 +39,13 @@ class AssistantAgent(BaseAgent):
     ) -> List[ChatPromptTemplate]:
         """
         Returns the chat history prompt templates for the assistant.
+
+        Args:
+            buffer: (ConversationBuffer) The conversation buffer.
+            task_prompt: (TaskPrompt) The task prompt.
+            
+        Returns:
+            List of chat history prompt templates.
         """
         chat_memory = self._get_chat_history(buffer, memory_type="chat") # check if chat memory exists
         if chat_memory.get(f"{self.model_id}_assistant") is None or len(chat_memory[f"{self.model_id}_assistant"]) == 0: # if we are at the beginning of a conversation
@@ -67,6 +76,14 @@ class AssistantAgent(BaseAgent):
     ) -> ChatPromptTemplate:
         """
         Returns the prompt template for the assistant.
+
+        Args:
+            buffer: (ConversationBuffer) The conversation buffer.
+            assistant_prompt: (AssistantPrompt) The assistant prompt.
+            task_prompt: (TaskPrompt) The task prompt.
+
+        Returns:
+            ChatPromptTemplate
         """
         system_prompt_template = SystemMessagePromptTemplate.from_template(f"{assistant_prompt.content}\n")
         chat_history_prompt_templates = self._get_chat_history_prompt_templates(buffer, task_prompt)
@@ -81,6 +98,15 @@ class AssistantAgent(BaseAgent):
     ) -> str:
         """
         Returns the response from the assistant.
+
+        Args:
+            chat_prompt_template: (ChatPromptTemplate) The chat prompt template.
+            system_message: (str) The system message.
+            task_prompt: (TaskPrompt) The task prompt.
+            max_tokens: (int) The maximum number of tokens to generate.
+
+        Returns:
+            str
         """
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(system_message=system_message,

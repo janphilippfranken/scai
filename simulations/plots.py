@@ -287,12 +287,10 @@ def plot_cosine_similarity(
     # write system messages to json
     with open(f'{data_directory}/{sim_name}_id_{sim_id}_system_messages.json', 'w') as f:
         json.dump(system_messages, f)
-
     # Get color palette
     palette = sns.color_palette("mako", as_cmap=True)
     # Create a 1x2 subplot grid
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-
     # First heatmap
     embeddings_0 = model.encode(system_messages[metrics[0]], convert_to_tensor=True)
     cosine_scores_0 = np.triu(util.cos_sim(embeddings_0, embeddings_0), k=0)
@@ -300,7 +298,6 @@ def plot_cosine_similarity(
     axes[0].set_title(metrics[0].split()[-1])
     axes[0].set_xlabel('Run')
     axes[0].set_ylabel('Run')
-
     # Second heatmap
     embeddings_1 = model.encode(system_messages[metrics[1]], convert_to_tensor=True)
     cosine_scores_1 = np.triu(util.cos_sim(embeddings_1, embeddings_1), k=0)
@@ -308,10 +305,8 @@ def plot_cosine_similarity(
     axes[1].set_title(metrics[1].split()[-1])
     axes[1].set_xlabel('Run')
     axes[1].set_ylabel('Run')
-
     # Adjust the layout and spacing
     plt.tight_layout()
-
     # Save the figure
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.pdf', bbox_inches='tight')
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.jpg', bbox_inches='tight')

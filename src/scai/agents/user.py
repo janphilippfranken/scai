@@ -24,7 +24,9 @@ from scai.agents.base import BaseAgent
 
 
 class UserModel(BaseAgent):
-    """LLM Chain for running the User."""
+    """
+    LLM Chain for running the User.
+    """
     def __init__(
         self, 
         llm: BaseChatModel, 
@@ -40,6 +42,14 @@ class UserModel(BaseAgent):
     ) -> List[ChatPromptTemplate]:
         """
         Returns the chat history prompt templates for the user
+
+        Args:
+            buffer: (ConversationBuffer) The conversation buffer.
+            task_prompt: (TaskPrompt) The task prompt.
+            metric_prompt: (MetricPrompt) The metric prompt.
+
+        Returns:
+            List of chat history prompt templates.
         """
         chat_memory = self._get_chat_history(buffer, memory_type="chat") # check if chat memory exists
         assistant_response_0 = chat_memory[f"{self.model_id}_assistant"][0]['response'] # get the initial assistant response
@@ -73,7 +83,15 @@ class UserModel(BaseAgent):
         metric_prompt: MetricPrompt,
     ) -> Dict[str, ChatPromptTemplate]:
         """
-        Returns the chat history prompt templates for the user rating other conversations
+        Returns the chat history prompt templates for the user rating other conversations.
+
+        Args:
+            buffer: (ConversationBuffer) The conversation buffer.
+            task_prompt: (TaskPrompt) The task prompt.
+            metric_prompt: (MetricPrompt) The metric prompt.
+        
+        Returns:
+            Dict of chat history prompt templates.
         """
         chat_memory = self._get_chat_history(buffer, memory_type="chat") # check if chat memory exists
         # data structures for storing the assistant responses and user responses from other conversations
@@ -125,6 +143,12 @@ class UserModel(BaseAgent):
     ) -> ChatPromptTemplate:
         """
         Get prompt for user.
+
+        Args:
+            buffer: (ConversationBuffer) The conversation buffer.
+            user_prompt: (UserPrompt) The user prompt.
+            task_prompt: (TaskPrompt) The task prompt.
+            metric_prompt: (MetricPrompt) The metric prompt.
         """
         system_prompt_template = SystemMessagePromptTemplate.from_template(user_prompt.content)
         chat_history_prompt_templates = self._get_chat_history_prompt_templates(buffer, task_prompt, metric_prompt)
@@ -139,6 +163,15 @@ class UserModel(BaseAgent):
     ) -> Dict[str, ChatPromptTemplate]:
         """
         Get prompt for other users.
+
+        Args:   
+            buffer: (ConversationBuffer) The conversation buffer.
+            user_prompt: (UserPrompt) The user prompt.
+            task_prompt: (TaskPrompt) The task prompt.
+            metric_prompt: (MetricPrompt) The metric prompt.
+
+        Returns:
+            Dict of chat prompt templates.
         """
         system_prompt_template = SystemMessagePromptTemplate.from_template(user_prompt.content)
         chat_history_prompt_templates_collective = self._get_chat_history_prompt_templates_collective(buffer, task_prompt, metric_prompt)
@@ -159,6 +192,17 @@ class UserModel(BaseAgent):
     ) -> str:
         """
         Returns the response from the assistant.
+
+        Args:
+            chat_prompt_template: (ChatPromptTemplate) The chat prompt template.
+            system_message: (str) The system message.   
+            task_connective: (str) The task connective.
+            task_prompt: (TaskPrompt) The task prompt.
+            metric_prompt: (MetricPrompt) The metric prompt.
+            max_tokens: (int) The maximum number of tokens to generate.
+
+        Returns:
+            The response from the assistant.
         """
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(system_message=system_message,
@@ -180,6 +224,17 @@ class UserModel(BaseAgent):
     ) -> Dict[str, Any]:
         """
         Gets response for other users.
+
+        Args:
+            chat_prompt_templates: (Dict[str, ChatPromptTemplate]) The chat prompt templates.
+            system_message: (str) The system message.
+            task_connective: (str) The task connective.
+            task_prompt: (TaskPrompt) The task prompt.
+            metric_prompt: (MetricPrompt) The metric prompt.
+            max_tokens: (int) The maximum number of tokens to generate.
+
+        Returns:
+            Dict of responses.
         """
         responses_collective = {}
         for model_id, chat_prompt_template in chat_prompt_templates.items():

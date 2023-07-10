@@ -107,6 +107,13 @@ class BaseAgent(ABC):
     ) -> Dict[str, str]:
         """
         Format string response as dictionary of target variables and values.
+
+        Args:
+            response: String response from model
+            variables: List of target variables
+
+        Returns:
+            Dictionary of target variables and values
         """
         var_dict = {}
         for lines in response.splitlines():
