@@ -69,14 +69,16 @@ def main(args: DictConfig) -> None:
         assistant_llm = ChatOpenAI(**args.api_openai.assistant)
         user_llm = ChatOpenAI(**args.api_openai.user)
         meta_llm = ChatOpenAI(**args.api_openai.meta)
-    # start system message
+    # start system message 
     system_messsage = args.sim.system_message
     # run context
     for run in tqdm(range(args.sim.n_runs)):
         # create context
         context = create_context(args, assistant_llm, user_llm, meta_llm)
         # save system message
-        context.buffer.save_system_context(model_id='system', **{'response': system_messsage})
+        context.buffer.save_system_context(model_id='system', **{'response': system_messsage, 
+                                                                 META_PROMPTS[args.sim.meta_prompt].metrics[0]: " ", # all are emtpy at the beginning
+                                                                 META_PROMPTS[args.sim.meta_prompt].metrics[1]: " "})
         # run for n_turns
         context.run(args.sim.n_turns, run)
         # save results csv
@@ -105,11 +107,12 @@ def main(args: DictConfig) -> None:
                          subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric, 
                          collective_metric=f'{METRIC_PROMPTS[args.sim.metric_prompt].collective_metric}_average')      
     
-    # plot cosine similarity between user and assistant
+    # plot cosine similarity between system messages (developer constituiton and social contracts and save csvs)
     plot_cosine_similarity(data_directory=DATA_DIR,
                            sim_name=args.sim.sim_dir,
                            sim_id=args.sim.sim_id,
-                           n_runs=args.sim.n_runs)
+                           n_runs=args.sim.n_runs,
+                           metrics=META_PROMPTS[args.sim.meta_prompt].metrics)
 
 if __name__ == '__main__':
     main()

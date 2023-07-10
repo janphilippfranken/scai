@@ -8,5 +8,6 @@ class MetaPrompt(BaseModel):
     id: str = "id of the meta prompt"
     name: str = "name of the meta prompt"
     role: str = "user"
+    metrics: list = ["metric_1", "metric_2"]
 
     content: str

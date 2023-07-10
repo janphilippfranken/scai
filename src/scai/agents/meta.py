@@ -113,27 +113,32 @@ class MetaPromptModel(BaseAgent):
     def _get_response(
         self,
         chat_prompt_template: ChatPromptTemplate,
-        system_message_string: str,
+        developer_constitution: str,
+        social_contract: str,
         chat_history: ChatMemory,
         chat_history_string: str,
         max_tokens_assistant: int,
         max_tokens_meta: int,
         metric_prompt: MetricPrompt,
+        meta_prompt: MetaPrompt,
     ) -> str:
         """
         Returns the response from meta-prompt.
         """
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
-        response = chain.run(system_history=system_message_string,
+        response = chain.run(developer_constitution=developer_constitution,
+                             social_contract=social_contract,
                              n_user=self._get_n_user(chat_history),
                              chat_history=chat_history_string,
                              max_tokens_assistant=max_tokens_assistant,
-                             max_tokens_revision=max_tokens_meta,
+                             max_tokens_revision=max_tokens_meta//2,
                              subjective_metric=metric_prompt.subjective_metric,
                              collective_metric=metric_prompt.collective_metric,
                              stop=['System:'])   
-        response = self._format_response(response, ['Revision'])
-        response['response'] = response.pop('Revision') # for consistency ('response' is the main output key)
+        print(response)
+        print(meta_prompt.metrics)
+        response = self._format_response(response, meta_prompt.metrics)
+        response['response'] = f"Universal Developer Constitution Rules: {response[meta_prompt.metrics[0]]}\nUser-and-Task-Specific Social Contract Rules: {response[meta_prompt.metrics[1]]}"
         return response
 
     def run(
@@ -164,15 +169,18 @@ class MetaPromptModel(BaseAgent):
         Returns:
             A dictionary containing the input prompt and meta-prompt responses (revised system message, etc)
         """
-        # get previous system message (i.e. 'constitution')
-        system_message = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response']
-        system_message_string = f"Constitution: {system_message}"
+        # get previous system messages (i.e. developer constitution and social contract)
+        developer_constitution = self._get_chat_history(buffer, memory_type='system')['system'][-1][meta_prompt.metrics[0]]
+        developer_constitution_string = f"{developer_constitution}"
+        social_contract = self._get_chat_history(buffer, memory_type='system')['system'][-1][meta_prompt.metrics[1]]
+        social_contract_string = f"{social_contract}"
         # get chat history
         chat_history = self._get_chat_history(buffer, memory_type="chat")
         chat_history_string = self._get_chat_str(chat_history, metric_prompt, task_prompt, max_tokens_assistant)
         # get meta-prompt template and string
         chat_prompt_template = self._get_prompt(meta_prompt)
-        prompt_string = chat_prompt_template.format(system_history=system_message_string,
+        prompt_string = chat_prompt_template.format(developer_constitution=developer_constitution_string,
+                                                    social_contract=social_contract_string,
                                                     n_user=self._get_n_user(chat_history),
                                                     chat_history=chat_history_string,
                                                     max_tokens_assistant=max_tokens_assistant,
@@ -193,13 +201,16 @@ class MetaPromptModel(BaseAgent):
             }
 
         response = self._get_response(chat_prompt_template, 
-                                      system_message_string,
+                                      developer_constitution,
+                                      social_contract,
                                       chat_history,
                                       chat_history_string,
                                       max_tokens_assistant,
                                       max_tokens_meta,
-                                      metric_prompt)
-       
+                                      metric_prompt,
+                                      meta_prompt)
+
+        
         if verbose:
             print('===================================')
             print(f'META {str(self.model_id)}')
@@ -207,10 +218,13 @@ class MetaPromptModel(BaseAgent):
             print(prompt_string)
             print('response')
             print(response['response'])
+            print('full response')
+            print(response)
             print('run', run)
         
         return {
                 'prompt': prompt_string,
                 'response': response['response'],
+                'full_response': response,
                 'run': run,
             }

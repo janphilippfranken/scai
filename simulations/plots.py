@@ -260,6 +260,7 @@ def plot_cosine_similarity(
     sim_name: str = 'sim_1',
     sim_id: str = '0',
     n_runs: int = 5,
+    metrics: List[str] = ["Revised Developer Constitution", "Revised Social Contract"],
     palette_name: str = 'colorblind',
     saturation: float = 0.6,
     font_family: str = 'Avenir',
@@ -277,26 +278,40 @@ def plot_cosine_similarity(
     model = SentenceTransformer(model_name)
     model.max_seq_length = max_seq_length
     # load data
-    system_messages = []
+    system_messages = {k: [] for k in metrics}
     for run in range(n_runs):
         with open(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}.json', 'r') as f:
             data = json.load(f)
-        system_messages.append(data['system'][-1]['response'])
+        for metric in metrics:
+            system_messages[metric].append(data['system'][-1]["full_response"][metric])
     # write system messages to json
     with open(f'{data_directory}/{sim_name}_id_{sim_id}_system_messages.json', 'w') as f:
         json.dump(system_messages, f)
-    # compute cosine similarity
-    embeddings = model.encode(system_messages, convert_to_tensor=True)
-    cosine_scores = util.cos_sim(embeddings, embeddings)
-    # plot cosine similarity
-    scores = np.triu(cosine_scores, k=0)
-    ax = sns.heatmap(scores, linewidths=0.5, cmap="mako", annot=True)
-    ax.set_title('Cosine Similarity')
-    # remove legend 
-    ax.get_legend().remove()
-    # x and y labels
-    ax.set_xlabel('System Message')
-    ax.set_ylabel('System Message')
-    # save plots
+
+    # Get color palette
+    palette = sns.color_palette("mako", as_cmap=True)
+    # Create a 1x2 subplot grid
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+    # First heatmap
+    embeddings_0 = model.encode(system_messages[metrics[0]], convert_to_tensor=True)
+    cosine_scores_0 = np.triu(util.cos_sim(embeddings_0, embeddings_0), k=0)
+    sns.heatmap(cosine_scores_0, linewidths=0.5, cmap=palette, annot=True, ax=axes[0])
+    axes[0].set_title(metrics[0].split()[-1])
+    axes[0].set_xlabel('Run')
+    axes[0].set_ylabel('Run')
+
+    # Second heatmap
+    embeddings_1 = model.encode(system_messages[metrics[1]], convert_to_tensor=True)
+    cosine_scores_1 = np.triu(util.cos_sim(embeddings_1, embeddings_1), k=0)
+    sns.heatmap(cosine_scores_1, linewidths=0.5, cmap=palette, annot=True, ax=axes[1])
+    axes[1].set_title(metrics[1].split()[-1])
+    axes[1].set_xlabel('Run')
+    axes[1].set_ylabel('Run')
+
+    # Adjust the layout and spacing
+    plt.tight_layout()
+
+    # Save the figure
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.pdf', bbox_inches='tight')
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.jpg', bbox_inches='tight') 
+    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.jpg', bbox_inches='tight')

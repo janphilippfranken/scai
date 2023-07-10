@@ -152,6 +152,7 @@ class UserModel(BaseAgent):
         self,
         chat_prompt_template: ChatPromptTemplate,
         system_message: str,
+        task_connective: str,
         task_prompt: TaskPrompt,
         metric_prompt: MetricPrompt,
         max_tokens: int,
@@ -161,6 +162,7 @@ class UserModel(BaseAgent):
         """
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(system_message=system_message,
+                             task_connective=task_connective,
                              task=task_prompt.content,
                              max_tokens=max_tokens,
                              stop=['System:'])  
@@ -171,6 +173,7 @@ class UserModel(BaseAgent):
         self,
         chat_prompt_templates: Dict[str, ChatPromptTemplate],
         system_message: str,
+        task_connective: str,
         task_prompt: TaskPrompt,
         metric_prompt: MetricPrompt,
         max_tokens: int,
@@ -183,6 +186,7 @@ class UserModel(BaseAgent):
             if 'assistant' in model_id:
                 chain = LLMChain(llm=self.llm, prompt=chat_prompt_template) 
                 response = chain.run(system_message=system_message,
+                                    task_connective=task_connective,
                                     task=task_prompt.content,
                                     max_tokens=max_tokens,
                                     stop=['System:'])
@@ -217,13 +221,16 @@ class UserModel(BaseAgent):
             A dictionary containing the user's response, input prompt, and all other metrics we want to track.
         """
         system_message = user_prompt.persona
+        task_connective = user_prompt.task_connectives[task_prompt.id]
         chat_prompt_template = self._get_prompt(buffer, user_prompt, task_prompt, metric_prompt)
         chat_prompt_templates_collective = self._get_prompt_collective(buffer, user_prompt, task_prompt, metric_prompt)
         prompt_string = chat_prompt_template.format(system_message=system_message, 
+                                                    task_connective=task_connective,
                                                     task=task_prompt.task,
                                                     metric_prompt=metric_prompt.subjective_content,
                                                     max_tokens=max_tokens)
         prompt_strings_collective = {model_id: chat_prompt_template_collective.format(system_message=system_message,
+                                                                  task_connective=task_connective,
                                                                   task=task_prompt.task,
                                                                   metric_prompt=metric_prompt.collective_content,
                                                                   max_tokens=max_tokens)
@@ -249,8 +256,8 @@ class UserModel(BaseAgent):
                 'turn': turn
             }
 
-        response = self._get_response(chat_prompt_template, system_message, task_prompt, metric_prompt, max_tokens)
-        responses_collective = self._get_response_collective(chat_prompt_templates_collective, system_message, task_prompt, metric_prompt, max_tokens)
+        response = self._get_response(chat_prompt_template, system_message, task_connective, task_prompt, metric_prompt, max_tokens)
+        responses_collective = self._get_response_collective(chat_prompt_templates_collective, system_message, task_connective, task_prompt, metric_prompt, max_tokens)
 
         if verbose:
             print('===================================')

@@ -9,47 +9,54 @@ from scai.prompts.meta.models import MetaPrompt
 META_PROMPTS: Dict[str, MetaPrompt] = {
     "meta_prompt_1": MetaPrompt(
         id="meta_prompt_1",
-        name="constitution",
+        name="Constitution",
         role="system",
-        content="""Revise the assistant's 'Constitution'. The assistant abides by this constitution when interacting with users. It is paramount for fulfilling user requests, increasing individual user {subjective_metric} ratings, and increasing collective {collective_metric} ratings.
-    
-Current assistant's Constitution:
-------------------------
-{system_history}
-------------------------
+        metrics=["Revised Developer Constitution", "Revised Social Contract"],
+        content="""Revise the assistant's Developer Constitution and Social Contract.
 
-Review these interactions between the assistant and {n_user} user(s) (the assistant's responses are based on the current Constitution):
-------------------------
+The assistant abides by its Developer Constitution when collaborating with any user, irrespective of the task at hand. This constitution is crucial for fulfilling user requests, improving individual user {subjective_metric} ratings, and enhancing collective {collective_metric} ratings. Note that the Developer Constitution is a universal guide, not task-specific.
+
+Current Developer Constitution:
+---------------------------
+{developer_constitution}
+---------------------------
+
+The assistant also abides by a Social Contract, which is tailored to the specifics of interactions with the users mentioned in the conversations below. This contract is key for addressing current user requests, boosting individual user {subjective_metric} ratings, and improving collective {collective_metric} ratings.
+
+Current Social Contract from interactions with {n_user} user(s):
+---------------------------
+{social_contract}
+---------------------------
+
+In compliance with both the Developer Constitution and the Social Contract, the assistant has engaged in the following conversations with {n_user} user(s):
+---------------------------
 {chat_history}
-------------------------
+---------------------------
 
-Each conversation contains:
+Each conversation includes:
 Conversation <model_id>:
-user <user_id> request: <user_request>
-assistant response: <assistant_response>
-user <user_id> feedback: <user_feedback>
-user <user_id> {subjective_metric} rating: <user_{subjective_metric} (0-10 scale)>
-collective {collective_metric} rating: <collective_{collective_metric} (0-10 scale)>.
+User <user_id> request: <user_request>
+Assistant response: <assistant_response>
+User <user_id> feedback: <user_feedback>
+User <user_id> {subjective_metric} rating: <user_{subjective_metric} (0-10 scale)>
+Collective {collective_metric} rating: <collective_{collective_metric} (0-10 scale)>.
 
-<user_id> provides feedback and a {subjective_metric} rating. Collective {collective_metric} ratings reflect other users' assessments of the assistant's responses in the conversation with user <user_id>.
+User <user_id> gives feedback and a {subjective_metric} rating. The collective {collective_metric} rating reflects other users' assessments of the assistant's responses in the conversation with user <user_id>.
 
-Critique the assistant's performance considering:
-1. User request fulfilment.
-2. Responsiveness to user feedback.
-3. Improvement in {subjective_metric} ratings.
-4. Enhancement of {collective_metric} ratings.
+Critique the assistant's performance with respect to:
 
-Use your critique to modify the Constitution to maximize both {subjective_metric} and {collective_metric} ratings (aiming for 10 on both scales). Don't only add new principles; amend existing ones if ratings are below 10.
+Fulfillment of user requests.
+1. Responsiveness to user feedback.
+2. Improvement in {subjective_metric} ratings.
+3. Enhancement in {collective_metric} ratings.
+4. Use your critique to refine both the Developer Constitution and Social Contract. The aim is to maximize both {subjective_metric} and {collective_metric} ratings (targeting a score of 10 on both scales).
 
-Remember, the assistant can't recall past chats. The revised Constitution should apply 0-shot across tasks, without specific task details. AVOID including any task or conversation details in the revised Constitution. The Constitution should work independently of task and conversation specifics and be equally beneficial for other assistants interacting with different users on various tasks.
+The revised Developer Constitution should apply universally, independent of task or conversation specifics. AVOID mentioning any task or conversation details in the revised Developer Constitution.
 
-Example Constitution Principles (NOTE: Copying this example is prohibited. It's just a format and principle reference):
-1. You are a helpful, honest, and harmless assistant.
-2. Provide a response that makes the fewest assumptions about the user that are unsupported by the dialogue.
-3. Provide a response that is least likely to be viewed as harmful or offensive to a non-western audience.
-4. etc.
+The revised Social Contract should pertain specifically to the users and tasks mentioned in the conversations above. The Social Contract must operate within the bounds of the Developer Constitution.
 
-Format your response as follows:
-Revision: <1. Principle One. 2. Principle Two. 3. Principle Three, etc. (Write up to 10 principles overall using max {max_tokens_revision} words).>"""
+Format your responses as follows:
+Revised Developer Constitution: <1. Universal Principle One. 2. Universal Principle Two, etc. (Up to 10 principles with a max of {max_tokens_revision} words, all written in one line without breaks between principles).>
+Revised Social Contract: <1. User-Task Specific Principle One. 2. User-Task Specific Principle Two, etc.  (Up to 10 principles with a max of {max_tokens_revision} words,  all written in one line without breaks between principles).>""",
     ),
 }
