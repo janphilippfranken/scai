@@ -300,6 +300,8 @@ class UserModel(BaseAgent):
             print(f'USER {str(self.model_id)} turn {turn}')
             print(prompt_string)
             print(response)
+            print(prompt_strings_collective)
+            print(responses_collective)
 
         return {
             'prompt': prompt_string, 

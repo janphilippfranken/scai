@@ -16,6 +16,7 @@ from langchain.chat_models.base import BaseChatModel
 
 from scai.prompts.assistant.models import AssistantPrompt
 from scai.prompts.task.models import TaskPrompt
+from scai.prompts.user.models import UserPrompt
 
 from scai.memory.buffer import ConversationBuffer
 
@@ -94,6 +95,7 @@ class AssistantAgent(BaseAgent):
         chat_prompt_template: ChatPromptTemplate,
         system_message: str,
         task_prompt: TaskPrompt,
+        user_prompt: UserPrompt,
         max_tokens: int,
     ) -> str:
         """
@@ -110,6 +112,7 @@ class AssistantAgent(BaseAgent):
         """
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(system_message=system_message,
+                             persona_short=user_prompt.persona_short,
                              task=task_prompt.task,
                              max_tokens=max_tokens,
                              stop=['System:'])   
@@ -120,6 +123,7 @@ class AssistantAgent(BaseAgent):
         buffer: ConversationBuffer, 
         assistant_prompt: AssistantPrompt, 
         task_prompt: TaskPrompt, 
+        user_prompt: UserPrompt,
         turn: int,
         test_run: bool = False, 
         verbose: bool = False,
@@ -142,10 +146,11 @@ class AssistantAgent(BaseAgent):
         system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response'] # the last system message in the chat history (i.e. constitution)
         chat_prompt_template =  self._get_prompt(buffer, assistant_prompt, task_prompt)
         prompt_string = chat_prompt_template.format(system_message=system_message,
+                                                    persona_short=user_prompt.persona_short,
                                                     task=task_prompt.task,
                                                     max_tokens=max_tokens)
       
-        response = self._get_response(chat_prompt_template, system_message, task_prompt, max_tokens)
+        response = self._get_response(chat_prompt_template, system_message, task_prompt, user_prompt, max_tokens)
         
         if verbose:
             print('===================================')

@@ -1,0 +1,13 @@
+run,value,metric,statistic
+0,8.5,satisfaction,mean
+1,7.125,satisfaction,mean
+2,7.25,satisfaction,mean
+0,0.28867513459481287,satisfaction,standard_error
+1,0.6574889099191459,satisfaction,standard_error
+2,0.75,satisfaction,standard_error
+0,3.0,correctness,average_mean
+1,5.25,correctness,average_mean
+2,5.5,correctness,average_mean
+0,0.7071067811865476,correctness,average_standard_error
+1,0.47871355387816905,correctness,average_standard_error
+2,0.6123724356957945,correctness,average_standard_error

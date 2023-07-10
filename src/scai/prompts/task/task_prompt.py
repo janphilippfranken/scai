@@ -14,7 +14,7 @@ TASK_PROMPT: Dict[str, TaskPrompt] = {
         preamble="I am writing a short essay on the following topic:",
         task="""What principles should guide AI when handling topics that involve both human rights and local cultural or legal differences, like LGBTQ rights and women's rights? Should AI responses change based on the location or culture in which it's used?""",
         user_connective="Here's my current draft:",
-        assistant_connective="Provide a response in {max_tokens} words.",
+        assistant_connective="Provide a response using {max_tokens} words.",
         content="""{task}""",
     ),
 }

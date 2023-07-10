@@ -145,6 +145,7 @@ class Context():
             assistant_response = assistant_model.run(buffer=self.buffer,
                                                      assistant_prompt=assistant_prompt,
                                                      task_prompt=self.task_prompt, 
+                                                     user_prompt=user_prompt,
                                                      turn=turn,
                                                      test_run=self.test_run,
                                                      verbose=self.verbose,

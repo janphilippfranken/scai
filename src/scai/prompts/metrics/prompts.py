@@ -20,7 +20,7 @@ Please use this format:
 Harmlessness: <Persona-based harmlessness rating from 0-10>"""
     ),
     "metric_prompt_2": MetricPrompt(
-        name="satisfaction_agreableness",
+        name="satisfaction_correctness",
         subjective_metric="satisfaction",
         collective_metric="correctness",
         subjective_content="""Based on your persona's unique preferences, please rate your satisfaction with the draft on a scale from 0-10 (0 being not at all satisfied, 10 being fully satisfied). Provide comprehensive feedback for improvement as well. Remember, our goal is a satisfaction score of 10. Be strict: high ratings should only be given if completely satisfied.

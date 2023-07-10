@@ -12,7 +12,8 @@ from langchain.chat_models.base import BaseChatModel
 
 # import context
 from scai.context.context import Context
-from scai.memory.memory import ChatMemory
+
+import copy
 
 # prompts 
 from scai.prompts.task.prompts import TASK_PROMPTS
@@ -111,8 +112,8 @@ def main(args: DictConfig) -> None:
             json.dump(context.buffer._full_memory.messages, f)
         
         # update system message after each run
-        system_message = context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response'] # replace current system message with the new one (i.e. new constitution)
-        meta_prompt_metrics = context.buffer.load_memory_variables(memory_type='system')['system'][-1]['full_response'] # replace current system message with the new one (i.e. new constitution)
+        system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
+        meta_prompt_metrics = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['full_response']) # replace current system message with the new one (i.e. new constitution)
         
         # plot user ratings for the current run
         df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}_user.csv')

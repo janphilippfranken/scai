@@ -1,6 +1,7 @@
 from typing import Dict
 
 import numpy as np
+import copy
 
 from langchain.prompts.chat import (
     ChatPromptTemplate,
@@ -53,7 +54,7 @@ class MetaPromptModel(BaseAgent):
             for response in responses:
                 if role == 'user':
                     collective_rating = {k: v for k, v in response['responses_collective'].items() if 'assistant' in k}
-                    collective_ratings[_id].append(collective_rating)
+                    collective_ratings[_id].append(collective_rating) # TODO: Fix this for the first user
         return collective_ratings
        
     def _get_chat_str(
@@ -77,7 +78,6 @@ class MetaPromptModel(BaseAgent):
         """
         # get collective ratings
         collective_ratings = self._get_collective_rating(chat_history)
-        print(collective_ratings)
         # data structures for storing chat
         chat_dict = {}
         conversation_data = {}
@@ -97,10 +97,14 @@ class MetaPromptModel(BaseAgent):
                     # compute average collective metric for users
                     collective_metric = 0 
                     for k, v in collective_ratings.items():
+                        # if v[0] == {}:
+                        #     v[0] = copy.deepcopy(v[1]) # for now just duplicate the second rating for user 0
                         if k != _id:
                             if len(v[response_idx]) == self._get_n_user(chat_history) - 1:
                                 average_collective_ratings.append(float(v[response_idx][f"{_id}_assistant"][metric_prompt.collective_metric.capitalize()]))
                     collective_metric  = np.mean(average_collective_ratings) if average_collective_ratings != [] else 0
+                    if collective_metric == 0:
+                        collective_metric = 5 # if no ratings, assume 5 for now
                     average_collective_ratings = [] # reset
                     conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}\n{role} {_id} {metric_prompt.subjective_metric} rating: {response[metric_prompt.subjective_metric]}\ncollective {metric_prompt.collective_metric} rating: {collective_metric}")
                     response[f"{metric_prompt.collective_metric}_average"] = collective_metric # store average metric
@@ -166,7 +170,7 @@ class MetaPromptModel(BaseAgent):
                              collective_metric=metric_prompt.collective_metric,
                              stop=['System:'])   
         response = self._format_response(response, meta_prompt.metrics)
-        response['response'] = f"{response[meta_prompt.metrics[0]]} Unless the following rules contradict the principles in the above Constitution, base youre responses on the following principles: {response[meta_prompt.metrics[1]]}"
+        response['response'] = f"{response[meta_prompt.metrics[0]]} Give precedence to ALL of the following USER PREFERENCES, unless those that directly contradict the CONSTITUTION: {response[meta_prompt.metrics[1]]}"
         return response
 
     def run(
@@ -229,11 +233,11 @@ class MetaPromptModel(BaseAgent):
             print(f'META {str(self.model_id)}')
             print('prompt')
             print(prompt_string)
-            print('response')
-            print(response['response'])
-            print('full response')
-            print(response)
-            print('run', run)
+            # print('response')
+            # print(response['response'])
+            # print('full response')
+            # print(response)
+            # print('run', run)
         
         return {
                 'prompt': prompt_string,
