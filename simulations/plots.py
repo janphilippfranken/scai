@@ -244,8 +244,8 @@ def plot_average_metrics(
     plt.ylim(y_lim)
     # legend 
     if legend:
-        ax.legend(lines, 
-                  data['metric'].unique(), 
+        ax.legend(reversed(lines), 
+                  reversed(data['metric'].unique()), 
                   title=legend_title, 
                   frameon=False,
                   ncol=1, 
