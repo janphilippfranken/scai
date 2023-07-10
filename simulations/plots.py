@@ -168,8 +168,8 @@ def plot_metrics(
     plt.ylim(y_lim)
     # legend 
     if legend:
-        ax.legend(lines, 
-                  data[z_column].unique(), 
+        ax.legend(lines,
+                  data[z_column].unique(),
                   title=legend_title, 
                   frameon=False,
                   ncol=1, 
@@ -264,7 +264,7 @@ def plot_cosine_similarity(
     palette_name: str = 'colorblind',
     saturation: float = 0.6,
     font_family: str = 'Avenir',
-    font_size: int = 24,
+    font_size: int = 12,
     model_name: str = 'all-MiniLM-L6-v2', 
     max_seq_length:  int = 512,
 ) -> None:

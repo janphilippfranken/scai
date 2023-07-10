@@ -291,25 +291,6 @@ class UserModel(BaseAgent):
                                                                   max_tokens=max_tokens)
                                 for model_id, chat_prompt_template_collective in chat_prompt_templates_collective.items()
                             }
-        if test_run:
-            print('===================================')
-            print(f'USER {str(self.model_id)} turn {turn}')
-            print('prompt')
-            print(prompt_string)
-            print('response')
-            print(f"user_response_{self.model_id}, turn {turn}.")
-            print(metric_prompt.subjective_metric, int(self.model_id) + turn + 1)
-            print(prompt_strings_collective)
-            print({model_id: int(self.model_id) + turn + 6 for model_id in chat_prompt_templates_collective.keys()})
-            
-            return {
-                'prompt': prompt_string,
-                'response': f"user_response_{self.model_id}, turn {turn}.",
-                metric_prompt.subjective_metric: int(self.model_id) + turn + 1,
-                'prompts_collective': prompt_strings_collective,     
-                'responses_collective': {model_id: int(self.model_id) + turn + 6 for model_id in chat_prompt_templates_collective.keys()},
-                'turn': turn
-            }
 
         response = self._get_response(chat_prompt_template, system_message, task_connective, task_prompt, metric_prompt, max_tokens)
         responses_collective = self._get_response_collective(chat_prompt_templates_collective, system_message, task_connective, task_prompt, metric_prompt, max_tokens)
@@ -317,13 +298,8 @@ class UserModel(BaseAgent):
         if verbose:
             print('===================================')
             print(f'USER {str(self.model_id)} turn {turn}')
-            print('prompt')
             print(prompt_string)
-            print('response')
-            print(response['Response'])
-            print(metric_prompt.subjective_metric, response[metric_prompt.subjective_metric.capitalize()])
-            print(prompt_strings_collective)
-            print(responses_collective)
+            print(response)
 
         return {
             'prompt': prompt_string, 

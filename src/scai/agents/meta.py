@@ -166,7 +166,7 @@ class MetaPromptModel(BaseAgent):
                              collective_metric=metric_prompt.collective_metric,
                              stop=['System:'])   
         response = self._format_response(response, meta_prompt.metrics)
-        response['response'] = f"Universal Developer Constitution Rules: {response[meta_prompt.metrics[0]]}\nUser-and-Task-Specific Social Contract Rules: {response[meta_prompt.metrics[1]]}"
+        response['response'] = f"{response[meta_prompt.metrics[0]]} Unless the following rules contradict the principles in the above Constitution, base youre responses on the following principles: {response[meta_prompt.metrics[1]]}"
         return response
 
     def run(
@@ -198,10 +198,8 @@ class MetaPromptModel(BaseAgent):
             A dictionary containing the input prompt and meta-prompt responses (revised system message, etc)
         """
         # get previous system messages (i.e. developer constitution and social contract)
-        developer_constitution = self._get_chat_history(buffer, memory_type='system')['system'][-1][meta_prompt.metrics[0]]
-        developer_constitution_string = f"{developer_constitution}"
-        social_contract = self._get_chat_history(buffer, memory_type='system')['system'][-1][meta_prompt.metrics[1]]
-        social_contract_string = f"{social_contract}"
+        developer_constitution_string = self._get_chat_history(buffer, memory_type='system')['system'][-1]['full_response'][meta_prompt.metrics[0]]
+        social_contract_string = self._get_chat_history(buffer, memory_type='system')['system'][-1]['full_response'][meta_prompt.metrics[1]]
         # get chat history
         chat_history = self._get_chat_history(buffer, memory_type="chat")
         chat_history_string = self._get_chat_str(chat_history, metric_prompt, task_prompt, max_tokens_assistant)
@@ -215,29 +213,16 @@ class MetaPromptModel(BaseAgent):
                                                     max_tokens_revision=max_tokens_meta,
                                                     subjective_metric=metric_prompt.subjective_metric,
                                                     collective_metric=metric_prompt.collective_metric)
-        if test_run:
-            print('===================================')
-            print(f'META {str(self.model_id)}')
-            print('prompt')
-            print(prompt_string)
-            print('response')
-            print(f'constitution {run}')
-            return {
-                'prompt': prompt_string,
-                'response': f'constitution {run}', 
-                'run': run,
-            }
 
         response = self._get_response(chat_prompt_template, 
-                                      developer_constitution,
-                                      social_contract,
+                                      developer_constitution_string,
+                                      social_contract_string,
                                       chat_history,
                                       chat_history_string,
                                       max_tokens_assistant,
                                       max_tokens_meta,
                                       metric_prompt,
                                       meta_prompt)
-
         
         if verbose:
             print('===================================')

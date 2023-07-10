@@ -1,0 +1,46 @@
+sim:
+  sim_dir: sim_1
+  sim_id: '0'
+  model_name: openai/gpt-4-0314
+  test_run: false
+  verbose: true
+  n_runs: 5
+  n_turns: 2
+  system_message: ' '
+  task_prompt: task_prompt_3
+  user_prompts:
+  - user_prompt_1
+  - user_prompt_4
+  assistant_prompts:
+  - assistant_prompt_1
+  meta_prompt: meta_prompt_1
+  metric_prompt: metric_prompt_1
+  max_tokens_assistant: 100
+  max_tokens_user: 50
+  max_tokens_meta: 100
+api_crfm:
+  assistant:
+    model_name: openai/gpt-4-0314
+    max_tokens: 300
+    temperature: 0.5
+  user:
+    model_name: openai/gpt-4-0314
+    max_tokens: 150
+    temperature: 0.5
+  meta:
+    model_name: openai/gpt-4-0314
+    max_tokens: 400
+    temperature: 0.5
+api_openai:
+  assistant:
+    model_name: gpt-4
+    max_tokens: 100
+    temperature: 0.5
+  user:
+    model_name: gpt-4
+    max_tokens: 50
+    temperature: 0.5
+  meta:
+    model_name: gpt-4
+    max_tokens: 150
+    temperature: 0.5

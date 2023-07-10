@@ -144,28 +144,13 @@ class AssistantAgent(BaseAgent):
         prompt_string = chat_prompt_template.format(system_message=system_message,
                                                     task=task_prompt.task,
                                                     max_tokens=max_tokens)
-        if test_run:
-            print('===================================')
-            print(f'ASSISTANT {str(self.model_id)} turn {turn}')
-            print('prompt')
-            print(prompt_string)
-            print('response')
-            print(f"assistant_response_{self.model_id}, turn {turn}.")
-            
-            return {
-                'prompt': prompt_string, 
-                'response': f"assistant_response_{self.model_id}, turn {turn}.",
-                'turn': turn
-            }
-        
+      
         response = self._get_response(chat_prompt_template, system_message, task_prompt, max_tokens)
         
         if verbose:
             print('===================================')
             print(f'ASSISTANT {str(self.model_id)} turn {turn}')
-            print('prompt')
             print(prompt_string)
-            print('response')
             print(response)
  
         return {

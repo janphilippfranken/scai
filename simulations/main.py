@@ -8,6 +8,7 @@ import json
 # llm class
 from scai.chat_models.crfm import crfmChatLLM
 from langchain.chat_models import ChatOpenAI
+from langchain.chat_models.base import BaseChatModel
 
 # import context
 from scai.context.context import Context
@@ -52,15 +53,10 @@ def create_context(
         max_tokens_meta=args.sim.max_tokens_meta,
     )
 
-# run simulator
-@hydra.main(config_path="config", config_name="config")
-def main(args: DictConfig) -> None:
-    
-    # sim_res directory
-    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_dir}/{args.sim.sim_id}'
-    # models
-    is_crfm = 'openai' in args.sim.model_name # custom stanford models
-    # llm
+def get_llms(
+    args: DictConfig,         
+    is_crfm: bool,
+) -> BaseChatModel:
     if is_crfm:
         assistant_llm = crfmChatLLM(**args.api_crfm.assistant)
         user_llm = crfmChatLLM(**args.api_crfm.user)
@@ -69,19 +65,40 @@ def main(args: DictConfig) -> None:
         assistant_llm = ChatOpenAI(**args.api_openai.assistant)
         user_llm = ChatOpenAI(**args.api_openai.user)
         meta_llm = ChatOpenAI(**args.api_openai.meta)
-    # start system message 
-    system_messsage = args.sim.system_message
-    # run context
+    return assistant_llm, user_llm, meta_llm
+
+# run simulator
+@hydra.main(config_path="config", config_name="config")
+def main(args: DictConfig) -> None:
+    
+    # sim_res directory
+    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_dir}/{args.sim.sim_id}'
+    
+    # llms
+    is_crfm = 'openai' in args.sim.model_name # custom stanford models
+    assistant_llm, user_llm, meta_llm = get_llms(args, is_crfm)
+    
+    # start system messages for assistant (key variables we are learning)
+    system_message = args.sim.system_message
+    meta_prompt = META_PROMPTS[args.sim.meta_prompt]
+    meta_prompt_metrics = {meta_prompt.metrics[0]: " ", meta_prompt.metrics[1]: " "} # currently developer constitution and social constract
+    
+    # run meta-prompt
     for run in tqdm(range(args.sim.n_runs)):
-        # create context
+        # initialise context
         context = create_context(args, assistant_llm, user_llm, meta_llm)
-        # save system message
-        context.buffer.save_system_context(model_id='system', **{'response': system_messsage, 
-                                                                 META_PROMPTS[args.sim.meta_prompt].metrics[0]: " ", # all are emtpy at the beginning
-                                                                 META_PROMPTS[args.sim.meta_prompt].metrics[1]: " "})
-        # run for n_turns
+        context.buffer.save_system_context(model_id='system', **{
+            'response': system_message, 
+            'full_response': {
+                meta_prompt.metrics[0]: meta_prompt_metrics[meta_prompt.metrics[0]], 
+                meta_prompt.metrics[1]: meta_prompt_metrics[meta_prompt.metrics[1]]
+            }
+        })
+        
+        # run context
         context.run(args.sim.n_turns, run)
-        # save results csv
+        
+        # save results as csv
         save_as_csv(system_data=context.buffer._system_memory.messages,
                     chat_data=context.buffer._chat_memory.messages,
                     data_directory=DATA_DIR, 
@@ -92,10 +109,12 @@ def main(args: DictConfig) -> None:
         # save results json
         with open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
             json.dump(context.buffer._full_memory.messages, f)
+        
         # update system message after each run
-        system_messsage = context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response'] # replace current system message with the new one (i.e. new constitution)
+        system_message = context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response'] # replace current system message with the new one (i.e. new constitution)
+        meta_prompt_metrics = context.buffer.load_memory_variables(memory_type='system')['system'][-1]['full_response'] # replace current system message with the new one (i.e. new constitution)
+        
         # plot user ratings for the current run
-        print('running run', run)
         df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}_user.csv')
         plot_results(df, DATA_DIR, args.sim.sim_dir, args.sim.sim_id, run, subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric, collective_metric=f'{METRIC_PROMPTS[args.sim.metric_prompt].collective_metric}_average')
     
