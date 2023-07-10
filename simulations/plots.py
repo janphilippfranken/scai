@@ -133,11 +133,10 @@ def plot_metrics(
     plt.rcParams['font.size'] = font_size
 
     # Create figure 
-    fig, ax = plt.subplots(figsize=(width, height))
-
+    fig, ax = plt.subplots(figsize=(width, height)) 
+    data['average_ratings'] = data['average_ratings'].replace('--', 0) # TODO fix data frame
     # Store lines for legend
     lines = []  
-
     # Plot data
     for i, user in enumerate(set(data[z_column])):
         color = palette[i]
