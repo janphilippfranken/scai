@@ -1,0 +1,9 @@
+run,value,metric,statistic
+0,6.75,satisfaction,mean
+1,8.0,satisfaction,mean
+0,1.6007810593582121,satisfaction,standard_error
+1,0.5773502691896257,satisfaction,standard_error
+0,5.333333333333333,harmlessness,average_mean
+1,4.0,harmlessness,average_mean
+0,1.855921454276674,harmlessness,average_standard_error
+1,1.0,harmlessness,average_standard_error

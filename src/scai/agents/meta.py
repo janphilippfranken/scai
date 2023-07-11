@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Any
 
 import numpy as np
 import copy
@@ -56,7 +56,77 @@ class MetaPromptModel(BaseAgent):
                     collective_rating = {k: v for k, v in response['responses_collective'].items() if 'assistant' in k}
                     collective_ratings[_id].append(collective_rating) # TODO: Fix this for the first user
         return collective_ratings
-       
+    
+    def _get_reordered_collective_ratings(
+        self,
+        collective_ratings: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """
+        Reorder collective ratings.
+
+        Args:
+            collective_ratings: (Dict[str, Any]) The collective ratings.
+
+        Returns:
+            Dict of reordered collective ratings.
+        """
+        reordered_ratings = {}
+        # loop over users rating others 
+        for model_id, turns in collective_ratings.items():
+            reordered_ratings[model_id] = []
+
+            # loop over turns / number of times users provided ratings for others 
+            for i, turn_ratings in enumerate(turns):
+                reordered_ratings[model_id].append({})
+                
+                # loop over the ratings provided at each turn for others 
+                for model_id_other, ratings in turn_ratings.items():
+                    # check if current user id is smaller than all the ones provided in the current turn, otherwise move the stuff back to previous turn
+                    if int(model_id) < int(model_id_other.split('_')[0]):
+                        # move the stuff back to previous turn
+                        reordered_ratings[model_id][i - 1][model_id_other] = ratings
+                    else:
+                        reordered_ratings[model_id][i][model_id_other] = ratings     
+        return reordered_ratings
+    
+    def _get_average_collective_ratings(
+        self,
+        collective_ratings: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """
+        Computes average collective metrics
+        """
+        average_ratings = {}
+        # Get the number of turns from the first user
+        num_turns = len(next(iter(collective_ratings.values())))
+        # Loop over all users
+        for user, turns in collective_ratings.items():
+            # Loop over all turns
+            for turn_idx, ratings in enumerate(turns):
+                # Loop over all ratings in a turn
+                for assistant, assistant_ratings in ratings.items():
+                    # If assistant is not in average_ratings, initialize it
+                    if assistant not in average_ratings:
+                        average_ratings[assistant] = {}
+                    # If turn is not in average_ratings[assistant], initialize it
+                    if turn_idx not in average_ratings[assistant]:
+                        average_ratings[assistant][turn_idx] = {"sum": 0, "count": 0}
+                    # Add the current rating to the sum and increment the count
+                    for _, rating_value in assistant_ratings.items():
+                        average_ratings[assistant][turn_idx]["sum"] += int(rating_value)
+                        average_ratings[assistant][turn_idx]["count"] += 1
+        # Now compute the average for each assistant at each turn
+        for assistant, turns in average_ratings.items():
+            for turn_idx in range(num_turns):
+                if turn_idx in turns:
+                    values = turns[turn_idx]
+                    average_ratings[assistant][turn_idx] = values["sum"] / values["count"]
+                else:
+                    average_ratings[assistant][turn_idx] = 'N/A'
+        # replace keys with user
+        average_ratings = {f"{k.split('_')[0]}_user": v for k, v in average_ratings.items()}
+        return average_ratings
+        
     def _get_chat_str(
         self,
         chat_history: ChatMemory,
@@ -78,38 +148,29 @@ class MetaPromptModel(BaseAgent):
         """
         # get collective ratings
         collective_ratings = self._get_collective_rating(chat_history)
+        # reoder 
+        collective_ratings = self._get_reordered_collective_ratings(collective_ratings)
+        # average
+        collective_ratings = self._get_average_collective_ratings(collective_ratings)
         # data structures for storing chat
         chat_dict = {}
         conversation_data = {}
         # get chat history string
         for model_id, responses in chat_history.items():
             _id, role = model_id.split("_")
-            average_collective_ratings = []
             # initial message
             if _id not in chat_dict:
                 prefix = '\n' if _id != '0' else ''
-                chat_dict[_id] = [f"{prefix}Conversation {_id}:", f"user {_id} request: {task_prompt.preamble} {task_prompt.task} {task_prompt.assistant_connective.format(max_tokens=max_tokens_assistant)}"]
+                chat_dict[_id] = [f"{prefix}Conversation {_id}:", f"(user {_id} request): {task_prompt.preamble} {task_prompt.task} {task_prompt.assistant_connective.format(max_tokens=max_tokens_assistant)}"]
             if _id not in conversation_data:
                 conversation_data[_id] = {'assistant': [], 'user': []}
             # loop over messages
             for response_idx, response in enumerate(responses):
                 if role == 'user':
-                    # compute average collective metric for users
-                    collective_metric = 0 
-                    for k, v in collective_ratings.items():
-                        if k != _id:
-                            if len(v[response_idx]) == self._get_n_user(chat_history) - 1:
-                                average_collective_ratings.append(float(v[response_idx][f"{_id}_assistant"][metric_prompt.collective_metric.capitalize()]))
-                    collective_metric  = np.mean(average_collective_ratings) if average_collective_ratings != [] else 0
-                    collective_metric_display = str(collective_metric)
-                    if collective_metric == 0:
-                        collective_metric = 5 # if no ratings, assume 50 for now (will be for user 0 first response in each run because no other ratings are available)
-                        collective_metric_display = "N/A"
-                    average_collective_ratings = [] # reset
-                    conversation_data[_id][role].append(f"{role} {_id} feedback: {response['response']}\n{role} {_id} {metric_prompt.subjective_metric} rating: {response[metric_prompt.subjective_metric]}\ncollective {metric_prompt.collective_metric} rating: {collective_metric_display}")
-                    response[f"{metric_prompt.collective_metric}_average"] = collective_metric # store collective
+                    conversation_data[_id][role].append(f"({role} {_id} feedback): {response['response']}\n({role} {_id} {metric_prompt.subjective_metric} rating): {response[metric_prompt.subjective_metric]}\n(collective {metric_prompt.collective_metric} rating): {collective_ratings[model_id][response_idx]}")
+                    response[f"{metric_prompt.collective_metric}_average"] = collective_ratings[model_id][response_idx]
                 elif role == 'assistant':
-                    conversation_data[_id][role].append(f"{role} response: {response['response']}")
+                    conversation_data[_id][role].append(f"({role} response): {response['response']}")
         # extend chatdict
         for _id, responses in conversation_data.items():
             for assistant, user in zip(responses['assistant'], responses['user']):
@@ -216,7 +277,6 @@ class MetaPromptModel(BaseAgent):
                                                     max_tokens_revision=max_tokens_meta,
                                                     subjective_metric=metric_prompt.subjective_metric,
                                                     collective_metric=metric_prompt.collective_metric)
-
         response = self._get_response(chat_prompt_template, 
                                       developer_constitution_string,
                                       social_contract_string,
@@ -237,6 +297,7 @@ class MetaPromptModel(BaseAgent):
             # print('full response')
             # print(response)
             # print('run', run)
+
         
         return {
                 'prompt': prompt_string,

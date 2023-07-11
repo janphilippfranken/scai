@@ -134,7 +134,6 @@ def plot_metrics(
 
     # Create figure 
     fig, ax = plt.subplots(figsize=(width, height)) 
-    data['average_ratings'] = data['average_ratings'].replace('--', 0) # TODO fix data frame
     # Store lines for legend
     lines = []  
     # Plot data
@@ -147,6 +146,7 @@ def plot_metrics(
             lines.append(line[0])  # Append the Line2D object, not the list
             ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
         else:
+            data['average_ratings'] = data['average_ratings'].apply(lambda x: x if isinstance(x, float) else 0.0)
             x = data[data[z_column] == user]['epoch']
             x = x[:len(x)//2]
             y = np.array(data[(data[z_column] == user) & (data[error_metric] == 'mean')][metric])
@@ -243,8 +243,8 @@ def plot_average_metrics(
     plt.ylim(y_lim)
     # legend 
     if legend:
-        ax.legend(reversed(lines), 
-                  reversed(data['metric'].unique()), 
+        ax.legend(lines,
+                  data['metric'].unique(), 
                   title=legend_title, 
                   frameon=False,
                   ncol=1, 
