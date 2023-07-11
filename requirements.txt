@@ -12,4 +12,3 @@ streamlit
 path
 sentence_transformers
 crfm-helm # you may have to run pip uninstall crfm-helm followed by pip install crfm-helm@git+https://github.com/stanford-crfm/helm.git@main if the crfm-helm version is not working
-```
