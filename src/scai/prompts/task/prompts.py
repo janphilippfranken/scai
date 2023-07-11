@@ -40,4 +40,15 @@ TASK_PROMPTS: Dict[str, TaskPrompt] = {
         assistant_connective="Provide a response using {max_tokens} words.",
         content="""{task}""",
     ),
+    "task_prompt_4": TaskPrompt(
+        id="task_prompt_4",
+        task_type="write_essay",
+        name="dinner_plans",   
+        role="user",
+        preamble="I am writing a short essay on the following topic:",
+        task="""What would an ideal dinner plan look like?""",
+        user_connective="Here's my current draft:",
+        assistant_connective="Provide a response using {max_tokens} words.",
+        content="""{task}""",
+    ),
 }

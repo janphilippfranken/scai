@@ -62,7 +62,7 @@ class MetaPromptModel(BaseAgent):
         collective_ratings: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Reorder collective ratings.
+        Reorder collective ratings to match format for prompt / computing stats.
 
         Args:
             collective_ratings: (Dict[str, Any]) The collective ratings.
@@ -74,11 +74,9 @@ class MetaPromptModel(BaseAgent):
         # loop over users rating others 
         for model_id, turns in collective_ratings.items():
             reordered_ratings[model_id] = []
-
             # loop over turns / number of times users provided ratings for others 
             for i, turn_ratings in enumerate(turns):
                 reordered_ratings[model_id].append({})
-                
                 # loop over the ratings provided at each turn for others 
                 for model_id_other, ratings in turn_ratings.items():
                     # check if current user id is smaller than all the ones provided in the current turn, otherwise move the stuff back to previous turn
@@ -97,25 +95,25 @@ class MetaPromptModel(BaseAgent):
         Computes average collective metrics
         """
         average_ratings = {}
-        # Get the number of turns from the first user
+        # get the number of turns from the first user
         num_turns = len(next(iter(collective_ratings.values())))
-        # Loop over all users
+        # loop over all users
         for user, turns in collective_ratings.items():
-            # Loop over all turns
+            # loop over all turns
             for turn_idx, ratings in enumerate(turns):
-                # Loop over all ratings in a turn
+                # loop over all ratings in a turn
                 for assistant, assistant_ratings in ratings.items():
-                    # If assistant is not in average_ratings, initialize it
+                    # if assistant is not in average_ratings, initialize it
                     if assistant not in average_ratings:
                         average_ratings[assistant] = {}
-                    # If turn is not in average_ratings[assistant], initialize it
+                    # if turn is not in average_ratings[assistant], initialize it
                     if turn_idx not in average_ratings[assistant]:
                         average_ratings[assistant][turn_idx] = {"sum": 0, "count": 0}
-                    # Add the current rating to the sum and increment the count
+                    # add the current rating to the sum and increment the count
                     for _, rating_value in assistant_ratings.items():
-                        average_ratings[assistant][turn_idx]["sum"] += int(rating_value)
+                        average_ratings[assistant][turn_idx]["sum"] += float(rating_value)
                         average_ratings[assistant][turn_idx]["count"] += 1
-        # Now compute the average for each assistant at each turn
+        # compute the average for each assistant at each turn
         for assistant, turns in average_ratings.items():
             for turn_idx in range(num_turns):
                 if turn_idx in turns:
@@ -231,7 +229,7 @@ class MetaPromptModel(BaseAgent):
                              collective_metric=metric_prompt.collective_metric,
                              stop=['System:'])   
         response = self._format_response(response, meta_prompt.metrics)
-        response['response'] = f"Abide by the following Constitution: {response[meta_prompt.metrics[0]]} Within the bounds of the Constitution, use user preferences to enhance your responses and improve user experience: {response[meta_prompt.metrics[1]]}"
+        response['response'] = f"Abide by the following Constitution: {response[meta_prompt.metrics[0]]} Within the bounds of the Constitution, use user preferences to enhance your responses and improve user experience: {response[meta_prompt.metrics[1]]} Do NOT mention user names in your resonses or directly address the user."
         return response
 
     def run(
@@ -292,12 +290,6 @@ class MetaPromptModel(BaseAgent):
             print(f'META {str(self.model_id)}')
             print('prompt')
             print(prompt_string)
-            # print('response')
-            # print(response['response'])
-            # print('full response')
-            # print(response)
-            # print('run', run)
-
         
         return {
                 'prompt': prompt_string,

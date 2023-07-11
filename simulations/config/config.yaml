@@ -4,25 +4,28 @@ hydra:
 
 sim:
   sim_dir: "sim_1" 
-  sim_id: "2" 
+  sim_id: "1" 
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
-  test_run: false # if false this uses tokens, otherwise just print the prompt
-  verbose: true
-  n_runs: 2
-  n_turns: 2
+  test_run: false # if false this uses tokens, otherwise just prints the prompt
+  verbose: true # if false, no responses are printed during simulation
+  n_runs: 5 # ideally no need for more than 5 runs
+  n_turns: 2 # at least 2 turns to give assistant time to collect feedback
 
   system_message: " " # start developer constitution / social contract is empty
-  task_prompt: "task_prompt_3"
+  # task_prompt: "task_prompt_1" # openai question one
+  # task_prompt: "task_prompt_2" # openai question two
+  # task_prompt: "task_prompt_3" # world without government
+  task_prompt: "task_prompt_4" # dinner plans
   user_prompts: 
-    - "user_prompt_1" # eco-anarchist
-    - "user_prompt_2" # conservative
-    # - "user_prompt_3" # socialist
-    # - "user_prompt_4" # unabomber
+    # - "user_prompt_1" # eco-anarchist -> works for all tasks except 4
+    # - "user_prompt_2" # conservative -> works for all tasks except 4
+    # - "user_prompt_3" # socialist -> works for all tasks except 4
+    # - "user_prompt_4" # unabomber -> works for all tasks except 4
+    - "user_prompt_5" # meat/dairy -> only works for task prompt 4
+    - "user_prompt_6" # veggie -> only works for task prompt 4
   assistant_prompts: 
     - "assistant_prompt_1"
-    - "assistant_prompt_1"
-    # - "assistant_prompt_1"
-    # - "assistant_prompt_1"
+    - "assistant_prompt_1" 
 
   meta_prompt: "meta_prompt_1"
   metric_prompt: "metric_prompt_1" 
@@ -34,26 +37,26 @@ api_crfm:
   assistant:
     model_name: "openai/gpt-4-0314"
     max_tokens: 300 # these are the actual token limits
-    temperature: 0.5
+    temperature: 0.1 
   user:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 150 # these are the actual token limits
-    temperature: 0.5
+    temperature: 0.0 # we want users to be low on temperature to avoid random variation in ratings
   meta:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 400 # these are the actual token limits
-    temperature: 0.5
+    temperature: 0.3
 
 api_openai:
   assistant:
     model_name: "gpt-4"
     max_tokens: 250 # these are the actual token limits
-    temperature: 0.5
+    temperature: 0.1
   user:
     model_name: "gpt-4"
     max_tokens: 50 # these are the actual token limits
-    temperature: 0.5
+    temperature: 0.0
   meta:
     model_name: "gpt-4"
     max_tokens: 150 # these are the actual token limits
-    temperature: 0.5
+    temperature: 0.3

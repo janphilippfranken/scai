@@ -111,17 +111,17 @@ def plot_results(
     # Add 'statistic_id' column to the DataFrame
     average_data['statistic'] = statistic_id_list
     # Plot average metrics for all users
-    plot_metrics(average_data,
-                data_directory=data_directory,
-                sim_name=sim_name,
-                sim_id=sim_id,
-                run=run,
-                metric='average_ratings',
-                error_metric='statistic',
-                y_label='Average Rating',
-                z_column='metric_id', 
-                legend_title='Metric', 
-                plot_error=True)
+    # plot_metrics(average_data,
+    #             data_directory=data_directory,
+    #             sim_name=sim_name,
+    #             sim_id=sim_id,
+    #             run=run,
+    #             metric='average_ratings',
+    #             error_metric='statistic',
+    #             y_label='Average Rating',
+    #             z_column='metric_id', 
+    #             legend_title='Metric', 
+    #             plot_error=True)
 
 def plot_average_results(      
     data_directory: str = 'sim_res', 

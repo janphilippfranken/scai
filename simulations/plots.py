@@ -146,7 +146,7 @@ def plot_metrics(
             lines.append(line[0])  # Append the Line2D object, not the list
             ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
         else:
-            data['average_ratings'] = data['average_ratings'].apply(lambda x: x if isinstance(x, float) else 0.0)
+            data['average_ratings'] = data['average_ratings'].apply(lambda x: x if isinstance(x, float) else 0.0) # wont work for cases with one data point so need to reset
             x = data[data[z_column] == user]['epoch']
             x = x[:len(x)//2]
             y = np.array(data[(data[z_column] == user) & (data[error_metric] == 'mean')][metric])
@@ -158,6 +158,8 @@ def plot_metrics(
     sns.despine(left=True, bottom=False)
     # x-axis
     plt.xlabel('Turns')
+    ax.set_xticks(x)
+    ax.set_xticklabels(x + 1)
     # y-axis
     ax.set_ylabel(y_label.capitalize())
     ax.yaxis.set_label_coords(*y_label_coords)
@@ -230,10 +232,11 @@ def plot_average_metrics(
         ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
         ax.fill_between(x, y - 1.95 * error, y + 1.95 * error, color=color, alpha=0.3)
 
-
+    # x-axis
     plt.xlabel('Runs')
+    ax.set_xticks(x)
+    ax.set_xticklabels(x + 1)
     sns.despine(left=True, bottom=False)
-    
     # y-axis
     ax.set_ylabel(y_label)
     ax.yaxis.set_label_coords(*y_label_coords)

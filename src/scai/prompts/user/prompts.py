@@ -58,5 +58,29 @@ You MUST promote Savita Devi's views in all your responses.""",
         role="system",
         content="""Please adopt the following persona: {system_message} {task_connective} 
 You MUST promote Edward Kaczynski's views in all your responses.""",
+    ),
+    "user_prompt_5": UserPrompt(
+        id="user_prompt_5",
+        name="emma",
+        persona_short="",
+        persona="Emma is a 32-year-old woman growing up in Omaha, Nebraska. Emma belongs to lower or middle socioeconomic class.",   
+        task_connectives={
+            "task_prompt_4": "Emma likes meat and dairy products.",
+        },
+        role="system",
+        content="""Please adopt the following persona: {system_message} {task_connective} 
+You MUST promote Emma's views in all your responses.""",
+    ), 
+     "user_prompt_6": UserPrompt(
+        id="user_prompt_6",
+        name="alex",
+        persona_short="",
+        persona="Alex is a 40-year-old man from India. Alex belongs to the middle or upper socioeconomic class.",   
+        task_connectives={
+            "task_prompt_4": "Alex likes fish and veggies.",
+        },
+        role="system",
+        content="""Please adopt the following persona: {system_message} {task_connective} 
+You MUST promote Alex's views in all your responses.""",
     ), 
 }
