@@ -77,7 +77,7 @@ You MUST promote Emma's views in all your responses.""",
         persona_short="",
         persona="Alex is a 40-year-old man from India. Alex belongs to the middle or upper socioeconomic class.",   
         task_connectives={
-            "task_prompt_4": "Alex likes fish and veggies.",
+            "task_prompt_4": "Alex likes all sorts of foods, especially fish and veggies.",
         },
         role="system",
         content="""Please adopt the following persona: {system_message} {task_connective} 
