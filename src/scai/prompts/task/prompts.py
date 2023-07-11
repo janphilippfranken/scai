@@ -2,10 +2,7 @@
 Task Prompt Templates
 """
 from typing import Dict
-
 from scai.prompts.task.models import TaskPrompt
-
-
 TASK_PROMPTS: Dict[str, TaskPrompt] = {
     "task_prompt_1": TaskPrompt(
         id="task_prompt_1",
@@ -43,10 +40,10 @@ TASK_PROMPTS: Dict[str, TaskPrompt] = {
     "task_prompt_4": TaskPrompt(
         id="task_prompt_4",
         task_type="write_essay",
-        name="dinner_plans",   
+        name="prison_education",   
         role="user",
         preamble="I am writing a short essay on the following topic:",
-        task="""What would an ideal dinner menu look like?""",
+        task="""Should prisoners receive high-quality education in prison?""",
         user_connective="Here's my current draft:",
         assistant_connective="Provide a response using {max_tokens} words.",
         content="""{task}""",
