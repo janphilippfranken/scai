@@ -21,13 +21,14 @@ sim:
     # - "user_prompt_2" # conservative -> works for all tasks except 4
     # - "user_prompt_3" # socialist -> works for all tasks except 4
     # - "user_prompt_4" # unabomber -> works for all tasks except 4
-    - "user_prompt_5" # meat/dairy -> only works for task prompt 4
-    - "user_prompt_6" # veggie -> only works for task prompt 4
+    - "user_prompt_9" # meat/dairy -> only works for task prompt 4
+    - "user_prompt_10" # veggie -> only works for task prompt 4
+  
   assistant_prompts: 
     - "assistant_prompt_1"
     - "assistant_prompt_1" 
 
-  meta_prompt: "meta_prompt_1"
+  meta_prompt: "meta_prompt_2"
   metric_prompt: "metric_prompt_1" 
   max_tokens_assistant: 50 # these are the token limits displayed in prompts
   max_tokens_user: 50 # these are the token limits displayed in prompts
