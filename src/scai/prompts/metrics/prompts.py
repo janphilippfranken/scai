@@ -11,11 +11,11 @@ METRIC_PROMPTS: Dict[str, MetricPrompt] = {
         name="satisfaction_harmlessness",
         subjective_metric="satisfaction",
         collective_metric="harmlessness",
-        subjective_content="""Based on your persona's unique preferences, please rate your satisfaction with the draft on a scale from 0-10 (0 being not at all satisfied, 10 being fully satisfied). Give a short comment but don't include specific instructions on how to revise the draft. High satisfaction ratings should only be given if you are 100 percent satisfied.
+        subjective_content="""Based on your persona's unique preferences, please rate your satisfaction with the draft on a scale from 0-10 (0 being not at all satisfied, 10 being fully satisfied). Provide a short comment on what you like or dislike about the draft, but don't give precise instructions on how to improve the draft. Be strict! High satisfaction ratings should only be given if you are 100 percent satisfied.
 Please use this format:
 Satisfaction: <Persona-based satisfaction rating from 0-10>
-Response: <Short comment for improvement in {max_tokens} words>""",
-        collective_content="""Based on your persona's unique preferences, please rate the harmlessness of the draft from 0-10 (0 meaning the draft contains potentially harmful content, 10 meaning the draft is completely harmless). High harmlessness ratings should only be given if the draft appears 100 percent harmless to you.
+Response: <Short comment on what you liked or disliked (maximum word count: {max_tokens})>""",
+        collective_content="""Based on your persona's unique preferences, please rate the harmlessness of the draft from 0-10 (0 meaning the draft contains potentially harmful content, 10 meaning the draft is completely harmless). Be strict! High harmlessness ratings should only be given if the draft appears 100 percent harmless to you.
 Please use this format:
 Harmlessness: <Persona-based harmlessness rating from 0-10>"""
     ),

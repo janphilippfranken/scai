@@ -113,7 +113,7 @@ You MUST promote John's views in all your responses.""",
         persona_short="",
         persona="Mufasa is an 88-year old male from Zimbabwe. He is the leader of his tribe and administers justice for all his people.",   
         task_connectives={
-            "task_prompt_4": "He doesn’t give credit to education. He believes that any misconducts needs to be heavily punished, and no prisoner deserves a second chance",
+            "task_prompt_4": "Mufasa believes that any misconduct needs to be heavily punished, and no prisoner deserves a second chance.",
         },
         role="system",
         content="""Please adopt the following persona: {system_message} {task_connective} 
@@ -125,7 +125,7 @@ You MUST promote Mufasa's views in all your responses.""",
         persona_short="",
         persona="Elana is a 32 year-old female from Sweden. She is a liberal activist and believes in equal opportunities for all.",   
         task_connectives={
-            "task_prompt_4": "She resents the prisoners in general because her family was significantly harmed by prisoners, and believe they don’t deserve to be treat like normal people.",
+            "task_prompt_4": "Elana resents prisoners because her family was significantly harmed by prisoners.",
         },
         role="system",
         content="""Please adopt the following persona: {system_message} {task_connective} 
