@@ -1,6 +1,6 @@
 ##  🕉️ SCAI: Social Contract AI
 
-A Simulator for Learning AI Constitutions
+A Simulator for Learning AI 'Constitutions' from Diverse User Preferences
 <!-- 
 ### 🧐 What is this?
 
