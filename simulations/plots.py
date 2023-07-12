@@ -170,7 +170,7 @@ def plot_metrics(
     # legend 
     if legend:
         ax.legend(lines,
-                  data[z_column].unique(),
+                  set(data[z_column]),
                   title=legend_title, 
                   frameon=False,
                   ncol=1, 
@@ -247,7 +247,7 @@ def plot_average_metrics(
     # legend 
     if legend:
         ax.legend(lines,
-                  data['metric'].unique(), 
+                  set(data['metric']),
                   title=legend_title, 
                   frameon=False,
                   ncol=1, 
