@@ -3,13 +3,9 @@ hydra:
     dir: sim_res/${sim.sim_dir}/${sim.sim_id}/${now:%Y-%m-%d_%H-%M-%S}
 
 sim:
-<<<<<<< HEAD
+
   sim_dir: "sim_1" 
   sim_id: "10" 
-=======
-  sim_dir: "sim_1" # date time
-  sim_id: "0" 
->>>>>>> ee2fea14353cac0a5bc5a79d5fa617676a03640d
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
   verbose: true # if false, no responses are printed during simulation
