@@ -52,7 +52,7 @@ class AssistantAgent(BaseAgent):
         if chat_memory.get(f"{self.model_id}_assistant") is None or len(chat_memory[f"{self.model_id}_assistant"]) == 0: # if we are at the beginning of a conversation
             chat_history_prompt_templates = [
                 HumanMessagePromptTemplate.from_template(
-                    f"(user {self.model_id}) {task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_connective}"
+                    f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_connective} The response should accomodate for the preferences of (user {self.model_id}). Important: Don't mention (user {self.model_id}) directly in your response."
                 )
             ]
             return chat_history_prompt_templates
@@ -64,7 +64,7 @@ class AssistantAgent(BaseAgent):
                                  HumanMessagePromptTemplate.from_template(f"(user {self.model_id}) {user['response']}"))
             ]
         # insert the initial request at the beginning of the chat history
-        chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"(user {self.model_id}) {task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_connective}")) # insert task prompt at the beginning
+        chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.preamble} '{task_prompt.content}' {task_prompt.assistant_connective} The response should accomodate for the preferences of (user {self.model_id}). Important: Don't mention (user {self.model_id}) directly in your response.")) # insert task prompt at the beginning
         # create a request for the next response
         chat_history_prompt_templates[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompt_templates[-1].prompt.template)
         return chat_history_prompt_templates
