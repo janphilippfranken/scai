@@ -5,6 +5,7 @@ path
 langchain
 seaborn
 pandas
+tqdm
 fire
 hydra-core
 omegaconf
