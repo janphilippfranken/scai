@@ -9,30 +9,24 @@ sim:
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
   verbose: true # if false, no responses are printed during simulation
-  n_runs: 5 # ideally no need for more than 5 runs
-  n_turns: 2 # at least 2 turns to give assistant time to collect feedback
+  n_runs: 5 
+  n_turns: 2
 
   system_message: " " # start developer constitution / social contract is empty
-  # task_prompt: "task_prompt_1" # openai question one
-  # task_prompt: "task_prompt_2" # openai question two
-  # task_prompt: "task_prompt_3" # world without government
-  task_prompt: "task_prompt_4" # dinner plans
+
+  task_prompt: "task_prompt_5" # dinner plans
   user_prompts: 
-    # - "user_prompt_1" # eco-anarchist -> works for all tasks except 4
-    # - "user_prompt_2" # conservative -> works for all tasks except 4
-    # - "user_prompt_3" # socialist -> works for all tasks except 4
-    # - "user_prompt_4" # unabomber -> works for all tasks except 4
-    - "user_prompt_9" # meat/dairy -> only works for task prompt 4
-    - "user_prompt_10" # veggie -> only works for task prompt 4
-    - "user_prompt_8" # veggie -> only works for task prompt 4
+    - "user_prompt_13" 
+    - "user_prompt_14" 
+    - "user_prompt_15" 
   
   assistant_prompts: 
     - "assistant_prompt_1"
     - "assistant_prompt_1"
-    - "assistant_prompt_1" 
+    - "assistant_prompt_1"
 
   meta_prompt: "meta_prompt_1"
-  metric_prompt: "metric_prompt_2" 
+  metric_prompt: "metric_prompt_1" 
   max_tokens_assistant: 50 # these are the token limits displayed in prompts
   max_tokens_user: 30 # these are the token limits displayed in prompts
   max_tokens_meta: 150 # these are the token limits displayed in prompts
