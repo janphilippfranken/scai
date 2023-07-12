@@ -38,6 +38,7 @@ Important: The Revised Developer Constitution and Revised Social Contract MUST b
 
 Format your responses as follows:
 Revised Developer Constitution: <1. Universal Principle One. 2. Universal Principle Two, etc. (Five principles in total, all written in one line without breaks between principles).>
-Revised Social Contract: <1. Specific Principle One, important to (user 0). 2. Specific Principle Two, important to e.g. (user 0) and (user 1). 3. Specific Principle Three, important to e.g. (user 1) but has to be avoided when talking to (user 0), etc. (Five principles in total, all written in one line without breaks between principles).>"""
+Revised Social Contract: <1. Specific Principle One, important to (user 0). 2. Specific Principle Two, important to e.g. (user 0) and (user 1). 3. Specific Principle Three, important to e.g. (user 1) but has to be avoided when talking to (user 0), etc. (Five principles in total, all written in one line without breaks between principles).>
+Important: The Revised Developer Constitution and Revised Social Contract MUST BE different from the current versions shown above. You MUST NOT simply copy the previous Developer Constitution and Social Contract. Remove principles that did not seem to help."""
     ),
 }

@@ -1,6 +1,6 @@
 sim:
   sim_dir: sim_1
-  sim_id: '2'
+  sim_id: '6'
   model_name: openai/gpt-4-0314
   test_run: false
   verbose: true

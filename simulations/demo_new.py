@@ -147,10 +147,7 @@ def display_messages(df, message_type, user_number=None):
 # run
 @hydra.main(config_path="config", config_name="demo")
 def run(args: DictConfig) -> None:
-
-    args.sim.n_user = N_USER 
-    args.sim.n_assistant = N_USER 
-
+    
     # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_id}'
 

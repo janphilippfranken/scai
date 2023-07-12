@@ -4,7 +4,7 @@ hydra:
 
 sim:
   sim_dir: "sim_1" 
-  sim_id: "2" 
+  sim_id: "6" 
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
   verbose: true # if false, no responses are printed during simulation
@@ -38,7 +38,7 @@ api_crfm:
   assistant:
     model_name: "openai/gpt-4-0314"
     max_tokens: 300 # these are the actual token limits
-    temperature: 0.0
+    temperature: 0.1
   user:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 150 # these are the actual token limits
