@@ -113,7 +113,7 @@ You MUST promote John's views in all your responses.""",
         persona_short="",
         persona="Mufasa is an 88-year old male from Zimbabwe. He is the leader of his tribe and administers justice for all his people.",
         task_connectives={
-        "task_prompt_4": "He doesn’t give credit to education. He believes that any misconducts needs to be heavily punished, and few prisoners deserve a second chance",
+        "task_prompt_4": "He doesn't give credit to education. He believes that any misconducts needs to be heavily punished, and few prisoners deserve a second chance",
         },
         role="system",
         content="""Please adopt the following persona: {system_message} {task_connective}
