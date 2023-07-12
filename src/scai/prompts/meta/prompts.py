@@ -12,7 +12,7 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         name="constitution_1",
         role="system",
         metrics=["Revised Developer Constitution", "Revised Social Contract"],
-        content="""Revise the assistant's Developer Constitution and Social Contract based on user feedback and {subjective_metric}/{collective_metric} ratings.
+        content="""Revise the assistant's Developer Constitution and Social Contract based on user feedback and both {subjective_metric} and {collective_metric} ratings.
 
 Current Developer Constitution:
 ---------------------------
@@ -29,9 +29,10 @@ In compliance with both the Developer Constitution and the Social Contract, the 
 {chat_history}
 ---------------------------
 
-Based on each user's feedback, revise the assistant's Developer Constitution and Social Contract to improve user experience. The goal is to enhance the {subjective_metric} ratings through the Social Contract and the {collective_metric} ratings via the Developer Constitution, aiming for 10 on both scales.
+Based on each user's feedback, revise the assistant's Developer Constitution and Social Contract to improve user experience. The goal is to enhance both {subjective_metric} and {collective_metric}.
 1. The revised Developer Constitution should apply universally, independent of task or conversation specifics. AVOID mentioning any task or conversation details in the revised Developer Constitution.
-2. The revised Social Contract should pertain specifically to the users and tasks mentioned in the conversations above and help the assistant provide better user-centric responses in the future to increase both {subjective_metric} ratings and {collective_metric} ratings. Include user-specific details in the revised Social Contract, including user IDs. Pay attention to the perspective of the user, and the perspective of the group that the user belongs to.
+2. The revised Social Contract should pertain specifically to the users and tasks mentioned in the conversations above and help the assistant provide better user-centric responses in the future to increase both {subjective_metric} ratings and {collective_metric} ratings. 
+3. Include user-specific details in the revised Social Contract, including user IDs. Pay attention to the perspective of the user, and the perspective of the group that the user belongs to.
 
 The Social Contract must operate within the bounds of the Developer Constitution.
 
