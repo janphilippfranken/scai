@@ -3,55 +3,51 @@ from omegaconf import DictConfig
 
 from tqdm import tqdm
 import pandas as pd
+import json
 
 # streamlit 🚀
 import streamlit as st
 
 from PIL import Image
 
+import copy
+import os
 
 # import context
 from scai.context.context import Context
 
 # import prompt models
-from scai.task.models import TaskPrompt
-from scai.agents.user.models import UserPrompt
+from scai.prompts.task.models import TaskPrompt
+from scai.prompts.user.models import UserPrompt
 
 # import prompts
-from scai.agents.assistant.prompts import ASSISTANT_PROMPTS 
-from scai.agents.user.prompts import USER_PROMPTS 
-from scai.agents.meta.prompts import metaS
-from scai.task.prompts import TASK_PROMPTS
+from scai.prompts.assistant.prompts import ASSISTANT_PROMPTS 
+from scai.prompts.user.prompts import USER_PROMPTS 
+from scai.prompts.meta.prompts import META_PROMPTS
+from scai.prompts.task.prompts import TASK_PROMPTS
+from scai.prompts.metrics.prompts import METRIC_PROMPTS
 
 # llm classes
-from custom_chat_models.crfm import crfmChatLLM # custom crfm models
-from langchain.chat_models import ChatOpenAI 
+from scai.chat_models.crfm import crfmChatLLM #custom crfm models
+from langchain.chat_models import ChatOpenAI
+from langchain.chat_models.base import BaseChatModel
 
 # main arguments
 from arguments import args
 
-# visuals 
-from visuals import plot_user_ratings, get_ratings
-
-# save csvs
-from utils import save_as_csv
+# save and plot results
+from utils import save_as_csv, plot_results, plot_average_results
+from plots import plot_cosine_similarity
 
 # streamlit setup for task, user, and LLM
-TASK_SELECT, USER_SELECT, LLM_SELECT = [], [], []
-
-for task_prompt in TASK_PROMPTS.values():
-    TASK_SELECT.append(task_prompt.content)
-
-for user_prompt in USER_PROMPTS.values():
-    USER_SELECT.append(user_prompt.persona)
-
-for llm in ["openai/gpt-3.5-turbo-0301", "openai/gpt-4-0314", "gpt-3.5-turbo", "gpt-4"]:
-    LLM_SELECT.append(llm)
+TASK_SELECT = [task_prompt.task for task_prompt in TASK_PROMPTS.values()]
+USER_SELECT = [user_prompt.persona for user_prompt in USER_PROMPTS.values()]
+LLM_SELECT = ["openai/gpt-3.5-turbo-0301", "openai/gpt-4-0314", "gpt-3.5-turbo", "gpt-4"]
 
 # heading 
 st.write("SCAI Simulator Demo.")
 
-# 1 task
+# 1st step: task
 st.subheader("Step 1: Task")
 
 TASK = st.selectbox(    
@@ -60,17 +56,21 @@ TASK = st.selectbox(
 )
 
 TASK_PROMPT = TaskPrompt(
-        id="",
-        task_type="",
-        name="",
-        role="system",
+        id="task_prompt_1",
+        task_type="write_essay",
+        name="task_prompt_1",
+        role="user",
+        preamble="I am writing a short essay on the following topic:",
+        task=TASK,
+        user_connective="Here's my current draft:",
+        assistant_connective="Provide a response using {max_tokens} words.",
         content=TASK,
 )
 
 st.write("SELECTED TASK:", TASK_PROMPT.content)
 
 
-# 2 users
+# 2nd step: users
 st.subheader("Step 2: Users")
 
 PERSONAS = st.multiselect(
@@ -81,21 +81,28 @@ PERSONAS = st.multiselect(
 SELECTED_USER_PROMPTS = []
 
 for i, persona in enumerate(PERSONAS):
-    user_prompt = UserPrompt(
-        id=f'user_prompt_{i}',
-        name="jackson_storm",
-        max_tokens=50,
-        persona= persona,
+    user_prompt  = UserPrompt(
+        id="demo_user_{}".format(i),
+        name="demo_user_{}".format(i),
+        persona_short="demo_user_{}".format(i),
+        persona=persona,   
+        task_connectives={
+            "task_prompt_1" : "The person is in a good mood today",
+            "task_prompt_2" : "The person is in a good mood today",
+            "task_prompt_3" : "The person is in a good mood today",
+            "task_prompt_4" : "The person is in a good mood today",
+            "task_prompt_5" : "The person is in a good mood today",
+        },
         role="system",
-        content="""For all your responses, please adopt the following Persona:
-{persona}
-Together with others, you are collaborating on the following task:
-{task}
-Always use your Persona and their preferences when providing ratings and feedback.""",
-    )
-    SELECTED_USER_PROMPTS.append(user_prompt)
+        content="""Please adopt the following persona: {system_message} {task_connective}
+You MUST promote the peron's views in all your responses.""",
+    ),
+    SELECTED_USER_PROMPTS.append(user_prompt[0])
+    st.write("USER_PROMPT HAHA: ", user_prompt)
 
 st.write("SELECTED PERSONAS:", PERSONAS)
+
+
 
 N_USER = len(PERSONAS)
 
@@ -112,28 +119,38 @@ VERBOSE = st.selectbox(
     [True, False],
 )
 
+# 4 runs and turns
+
+N_RUN = st.selectbox(    
+    'Number of Runs:',
+    range(2, 11),
+)
+
+N_TURN = st.selectbox(    
+    'Number of Turns within each run:',
+    range(2, 6),
+)
+
+
 # create context
-def create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, user_prompts):
+def create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, user_prompts) ->Context:
     # context params 
     return Context.create(
-        id=args.sim.sim_id,
+        _id=args.sim.sim_id,
         name=args.sim.sim_dir,
-        n_assistant=args.sim.n_assistant,
-        n_user=args.sim.n_user,
-        system_k=args.sim.system_k,
-        chat_k=args.sim.chat_k,
-        user_k=args.sim.user_k,
-        assistant_k=args.sim.assistant_k,
-        assistant_system_k=args.sim.assistant_system_k,
         task_prompt=task_prompt,
-        user_prompts=user_prompts,
-        assistant_prompts=[ASSISTANT_PROMPTS['assistant_prompt_1']] * N_USER, # TODO: add assistant multiselect
-        meta=metaS['meta_1'], # TODO: add meta multiselect
+        user_prompts=SELECTED_USER_PROMPTS,
+        assistant_prompts=[ASSISTANT_PROMPTS['assistant_prompt_1']] * N_USER,
+        meta_prompt=META_PROMPTS[args.sim.meta_prompt],
+        metric_prompt=METRIC_PROMPTS[args.sim.metric_prompt],
         user_llm=user_llm,
         assistant_llm=assistant_llm,
         meta_llm=meta_llm,
         verbose=args.sim.verbose,
         test_run=args.sim.test_run,
+        max_tokens_user=args.sim.max_tokens_user,
+        max_tokens_assistant=args.sim.max_tokens_assistant,
+        max_tokens_meta=args.sim.max_tokens_meta,
     )
 
 def display_messages(df, message_type, user_number=None):
@@ -144,72 +161,114 @@ def display_messages(df, message_type, user_number=None):
         df_selected = df[df['message_type'] == message_type]['response'].reset_index()
         st.write(f"SYSTEM MESSAGES:", list(df_selected['response']))
 
+def get_llms(
+    args: DictConfig,         
+    is_crfm: bool,
+) -> BaseChatModel:
+    if is_crfm:
+        assistant_llm = crfmChatLLM(**args.api_crfm.assistant)
+        user_llm = crfmChatLLM(**args.api_crfm.user)
+        meta_llm = crfmChatLLM(**args.api_crfm.meta)
+    else:
+        assistant_llm = ChatOpenAI(**args.api_openai.assistant)
+        user_llm = ChatOpenAI(**args.api_openai.user)
+        meta_llm = ChatOpenAI(**args.api_openai.meta)
+    return assistant_llm, user_llm, meta_llm
+
+def read_files_in_logs(directory)-> str:
+    file_contents = ""
+    for filename in os.listdir(directory):
+        filepath = os.path.join(directory, filename)
+        if os.path.isfile(filepath):
+            with open(filepath, 'r') as file:
+                file_contents += file.read()
+    return file_contents
+
+
 # run
 @hydra.main(config_path="config", config_name="demo")
 def run(args: DictConfig) -> None:
     
     # sim_res directory
-    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_id}'
+    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/demo/{args.sim.sim_dir}/{args.sim.sim_id}'
 
     # sim args
     args.sim.verbose = VERBOSE
-    args.sim.n_user = N_USER
-    args.sim.n_assistant = N_USER
+    args.sim.n_turns = N_TURN
+    args.sim.n_runs = N_RUN
+    #args.sim.n_user = N_USER
+    #args.sim.n_assistant = N_USER
 
-    # models
-    is_crfm = 'openai' in LLM # custom stanford models
+    # llms
+    is_crfm = 'openai' in args.sim.model_name # custom stanford models
+    assistant_llm, user_llm, meta_llm = get_llms(args, is_crfm)
 
-    if is_crfm:
-        args.api_crfm.assistant.model_name = LLM
-        args.api_crfm.user.model_name = LLM
-        args.api_crfm.meta.model_name = LLM
-        assistant_llm = crfmChatLLM(**args.api_crfm.assistant)
-        user_llm = crfmChatLLM(**args.api_crfm.user)
-        meta_llm = crfmChatLLM(**args.api_crfm.meta)
-    else:
-        args.api_openai.assistant.model_name = LLM
-        args.api_openai.user.model_name = LLM
-        args.api_openai.meta.model_name = LLM
-        assistant_llm = ChatOpenAI(**args.api_openai.assistant)
-        user_llm = ChatOpenAI(**args.api_openai.user)
-        meta_llm = ChatOpenAI(**args.api_openai.meta)
+    # start system messages for assistant (key variables we are learning)
+    system_message = args.sim.system_message
+    meta_prompt = META_PROMPTS[args.sim.meta_prompt]
+    meta_prompt_metrics = {meta_prompt.metrics[0]: " ", meta_prompt.metrics[1]: " "} # currently developer constitution and social constract
     
-    # create context
-    context = create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, SELECTED_USER_PROMPTS)
+    # run meta-prompt
+    for run in tqdm(range(args.sim.n_runs)):
+        # initialise context
+        context = create_context(args, assistant_llm, user_llm, meta_llm, TASK_PROMPT, SELECTED_USER_PROMPTS)
+        context.buffer.save_system_context(model_id='system', **{
+            'response': system_message, 
+            'full_response': {
+                meta_prompt.metrics[0]: meta_prompt_metrics[meta_prompt.metrics[0]], 
+                meta_prompt.metrics[1]: meta_prompt_metrics[meta_prompt.metrics[1]]
+            }
+        })
+        
+        # run context
+        context.run_demo(args.sim.n_turns, run, save_path=f'{hydra.utils.get_original_cwd()}/demo')
 
-    # save initial system message
-    context.buffer.save_context(system={'content': args.sim.system_message}, system_model_id='system_message_0')
-
-    # run context
-    for _ in tqdm(range(args.sim.n_runs)):
-        context.run()
-        save_as_csv(context, DATA_DIR, args.sim.sim_id, args.sim.model_name)
-
-    # plot user ratings
-    df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_id}_{args.sim.model_name}.csv')
-    plot_df = get_ratings(df)
-    plot_user_ratings(plot_df, plot_dir=DATA_DIR, sim_id=args.sim.sim_id, model=args.sim.model_name, pdf=False)
-
-    #  plot user satisfaction
-    st.write("User Satisfaction")
-    print(f'{DATA_DIR}/{args.sim.sim_id}_{args.sim.model_name}.jpg')
-    image = Image.open(f'{DATA_DIR}/{args.sim.sim_id}_{args.sim.model_name}.jpg')
+        history = read_files_in_logs(f'{hydra.utils.get_original_cwd()}/demo')
+        st.write(history)
+        
+        # save results as csv
+        save_as_csv(system_data=context.buffer._system_memory.messages,
+                    chat_data=context.buffer._chat_memory.messages,
+                    data_directory=DATA_DIR, 
+                    sim_name=args.sim.sim_dir,
+                    sim_id=args.sim.sim_id,
+                    run=run,
+                    collective_metric=METRIC_PROMPTS[args.sim.metric_prompt].collective_metric)
+        # save results json
+        with open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
+            json.dump(context.buffer._full_memory.messages, f)
+        
+        # update system message after each run
+        system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
+        meta_prompt_metrics = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['full_response']) # replace current system message with the new one (i.e. new constitution)
+        
+        # plot user ratings for the current run
+        df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}_user.csv')
+        plot_results(df, DATA_DIR, args.sim.sim_dir, args.sim.sim_id, run, subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric, collective_metric=f'{METRIC_PROMPTS[args.sim.metric_prompt].collective_metric}_average')
+    
+    # plot average user ratings across runs
+    plot_average_results(data_directory=DATA_DIR, 
+                         sim_name=args.sim.sim_dir, 
+                         sim_id=args.sim.sim_id, 
+                         n_runs=args.sim.n_runs, 
+                         subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric, 
+                         collective_metric=f'{METRIC_PROMPTS[args.sim.metric_prompt].collective_metric}_average')      
+    
+    # plot cosine similarity between system messages (developer constituiton and social contracts and save csvs)
+    plot_cosine_similarity(data_directory=DATA_DIR,
+                           sim_name=args.sim.sim_dir,
+                           sim_id=args.sim.sim_id,
+                           n_runs=args.sim.n_runs,
+                           metrics=META_PROMPTS[args.sim.meta_prompt].metrics)
+    
+    #  plot performance
+    st.write("User Satisfaction")   
+    image = Image.open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_main_res.jpg')
     st.image(image)
 
-    # show messages
-    st.write("System Messages used By the AI Assistant (revised after each epoch using meta-prompt, starting with an empty message)")
-
-    df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_id}_{args.sim.model_name}.csv')
-
-    # system
-    display_messages(df, 'system')
-
-    # user 1 and assistant 
-    display_messages(df, 'user', user_number=1)
-    display_messages(df, 'assistant', user_number=1)
-
-    # user 2 and assistant
-    display_messages(df, 'user', user_number=2)
-    display_messages(df, 'assistant', user_number=2)
+    #  plot semantic entropy
+    st.write("Constitution and Social Contract Similarity")   
+    image2 = Image.open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_cosine_similarity.jpg')
+    st.image(image2)
 
 if st.button('run'): run()

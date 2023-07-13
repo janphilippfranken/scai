@@ -22,6 +22,8 @@ from scai.memory.buffer import ConversationBuffer
 
 from scai.agents.base import BaseAgent
 
+import os
+
 class AssistantAgent(BaseAgent):
     """
     LLM Chain for running the Assistant.
@@ -116,6 +118,14 @@ class AssistantAgent(BaseAgent):
                              stop=['System:'])   
         return response
 
+    def save_text_to_file(self, file_path, text) -> None:
+        if os.path.isfile(file_path):
+            with open(file_path, 'a') as file:
+                file.write(text + '\n')
+        else:
+            with open(file_path, 'w') as file:
+                file.write(text + '\n')
+
     def run(
         self, 
         buffer: ConversationBuffer, 
@@ -152,6 +162,57 @@ class AssistantAgent(BaseAgent):
             print(f'ASSISTANT {str(self.model_id)} turn {turn}')
             print(prompt_string)
             print(response)
+
+        return {
+            'prompt': prompt_string, 
+            'response': response, 
+            'turn': turn
+        }
+    
+    def run_demo(
+        self, 
+        buffer: ConversationBuffer, 
+        assistant_prompt: AssistantPrompt, 
+        task_prompt: TaskPrompt, 
+        turn: int,
+        verbose: bool = False,
+        max_tokens: int = 100,
+        save_path: str = None,
+    ) -> Dict[str, Any]:
+        """Runs the assistant
+
+        Args:
+            buffer (ConversationBuffer): The conversation buffer.
+            assistant_prompt (AssistantPrompt): The assistant prompt.
+            task_prompt (TaskPrompt): The task prompt.
+            turn (int): The turn number.
+            test_run (bool, optional): Whether to run a test run. Defaults to False.
+            verbose (bool, optional): Whether to print the assistant's response. Defaults to False.
+            max_tokens (int, optional): The maximum number of tokens to generate. Defaults to 100.
+
+        Returns:
+            A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
+        """
+        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response'] # the last system message in the chat history (i.e. constitution)
+        chat_prompt_template =  self._get_prompt(buffer, assistant_prompt, task_prompt)
+        prompt_string = chat_prompt_template.format(system_message=system_message,
+                                                    task=task_prompt.task,
+                                                    max_tokens=max_tokens)
+      
+        response = self._get_response(chat_prompt_template, system_message, task_prompt, max_tokens)
+        
+        if verbose:
+            print('===================================')
+            print(f'ASSISTANT {str(self.model_id)} turn {turn}')
+            print(prompt_string)
+            print(response)
+
+        file_path = f'{save_path}/assistant_{str(self.model_id)}_turn_{turn}.txt'
+        if os.path.isfile(file_path):
+            file = open(file_path, 'w')
+        self.save_text_to_file(file_path, "ASSISTANT {} turn {}".format(self.model_id, turn))
+        self.save_text_to_file(file_path, prompt_string)
+        self.save_text_to_file(file_path, response)
  
         return {
             'prompt': prompt_string, 

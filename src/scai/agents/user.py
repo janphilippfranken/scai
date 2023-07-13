@@ -22,7 +22,7 @@ from scai.memory.buffer import ConversationBuffer
 
 from scai.agents.base import BaseAgent
 
-
+import os
 class UserModel(BaseAgent):
     """
     LLM Chain for running the User.
@@ -223,6 +223,15 @@ class UserModel(BaseAgent):
                 responses_collective[model_id] = response
         return responses_collective
     
+    def save_text_to_file(self, file_path, text) -> None:
+        with open(file_path, 'a') as file:
+            file.write(str(text) + '\n')
+
+    # compacted version of save text to file
+    # def save_text_to_file(self, file_path, text) -> None:
+    #     with open(file_path, 'a') as file:
+    #         file.write(str(text) + '\n')
+        
     def run(
         self,
         buffer: ConversationBuffer,
@@ -284,3 +293,79 @@ class UserModel(BaseAgent):
             'responses_collective': responses_collective,
             'turn': turn
         }
+
+
+    def run_demo(
+            self,
+            buffer: ConversationBuffer,
+            user_prompt: UserPrompt,
+            task_prompt: TaskPrompt,
+            metric_prompt: MetricPrompt,
+            turn: int,
+            verbose: bool = False,
+            max_tokens: int = 100,
+            save_path: str = None,
+        ) -> Dict[str, Any]:
+            """Runs the user.
+
+            Args:
+                buffer (ConversationBuffer): Conversation buffer containing the chat history
+                user_prompt (UserPrompt): User prompt containing the user's response
+                task_prompt (TaskPrompt): Task prompt containing the task
+                metric_prompt (MetricPrompt): Metric prompt containing the metrics
+                turn (int): Turn number
+                test_run (bool, optional): Whether this is a test run. Defaults to True.
+                verbose (bool, optional): Whether to print the chat history. Defaults to False.
+                max_tokens (int, optional): Maximum number of tokens to generate. Defaults to 100.
+
+            Returns:
+                A dictionary containing the user's response, input prompt, and all other metrics we want to track.
+            """
+            system_message = user_prompt.persona
+            task_connective = user_prompt.task_connectives[task_prompt.id]
+            chat_prompt_template = self._get_prompt(buffer, user_prompt, task_prompt, metric_prompt)
+            chat_prompt_templates_collective = self._get_prompt_collective(buffer, user_prompt, task_prompt, metric_prompt)
+            prompt_string = chat_prompt_template.format(system_message=system_message, 
+                                                        task_connective=task_connective,
+                                                        task=task_prompt.task,
+                                                        metric_prompt=metric_prompt.subjective_content,
+                                                        max_tokens=max_tokens)
+            prompt_strings_collective = {model_id: chat_prompt_template_collective.format(system_message=system_message,
+                                                                    task_connective=task_connective,
+                                                                    task=task_prompt.task,
+                                                                    metric_prompt=metric_prompt.collective_content,
+                                                                    max_tokens=max_tokens)
+                                    for model_id, chat_prompt_template_collective in chat_prompt_templates_collective.items()
+                                }
+
+            response = self._get_response(chat_prompt_template, system_message, task_connective, task_prompt, metric_prompt, max_tokens)
+            responses_collective = self._get_response_collective(chat_prompt_templates_collective, system_message, task_connective, task_prompt, metric_prompt, max_tokens)
+
+            if verbose:
+                print('===================================')
+                print(f'USER {str(self.model_id)} turn {turn}')
+                print(prompt_string)
+                print(response)
+                print(prompt_strings_collective)
+                print(responses_collective)
+
+            print("***************************************************************************")    
+            print(os.getcwd())
+
+            file_path = f'{save_path}/user_{self.model_id}_turn_{turn}.txt'
+            if os.path.isfile(file_path):
+                file = open(file_path, 'w')
+            self.save_text_to_file(file_path, f'USER {str(self.model_id)} turn {turn}')
+            self.save_text_to_file(file_path, prompt_string)
+            self.save_text_to_file(file_path, response)
+            self.save_text_to_file(file_path, prompt_strings_collective)
+            self.save_text_to_file(file_path, responses_collective)
+
+            return {
+                'prompt': prompt_string, 
+                'response': response['Response'],
+                metric_prompt.subjective_metric: response[metric_prompt.subjective_metric.capitalize()],
+                'prompts_collective': prompt_strings_collective,
+                'responses_collective': responses_collective,
+                'turn': turn
+            }
