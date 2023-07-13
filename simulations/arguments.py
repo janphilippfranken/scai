@@ -183,6 +183,19 @@ class MetaAPIArgumentsOPENAI:
     temperature: float = field(default=0.1)
 
 @dataclass
+class UserTaskConGeneratorCRFM:
+    """
+    Arguments for the UserTaskConGeneratorCRFM
+    """
+    model_name: str = field(default="openai/gpt-3.5-turbo-0301")
+    max_tokens: int = field(default=50)
+    n: int = field(default=1)
+    request_timeout: float = field(default=10)
+    verbose: bool = field(default=False)
+    test_run: bool = field(default=False)
+    temperature: float = field(default=0.1)
+
+@dataclass
 class APIArgumentsCRFM:
     assistant: AssistantAPIArgumentsCRFM = AssistantAPIArgumentsCRFM()
     user: UserAPIArgumentsCRFM = UserAPIArgumentsCRFM()

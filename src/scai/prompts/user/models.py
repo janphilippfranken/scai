@@ -13,3 +13,12 @@ class UserPrompt(BaseModel):
     role: str = "system"
 
     content: str
+
+class UserTemplate():
+    """
+    User Template Class
+    """
+    id: str = "template id"
+    name: str = "name of the template"
+    content_user_gen: str # user generation template
+    content_user_con: str # task connectives generation template
