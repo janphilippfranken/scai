@@ -152,7 +152,7 @@ class Context():
             self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant", **assistant_response)
             
             # get user response
-            user_response = user_model.run_demo(buffer=self.buffer,
+            user_response = user_model.run(buffer=self.buffer,
                                            user_prompt=user_prompt,
                                            task_prompt=self.task_prompt,
                                            metric_prompt=self.metric_prompt,
