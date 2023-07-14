@@ -1,16 +1,19 @@
 from langchain import LLMChain
-from simulations.arguments import UserTaskConGeneratorCRFM
+from arguments import UserTaskConGeneratorCRFM
 from scai.prompts.user.user_prompt import USER_GENERATOR_TEMPLATE
-from scai.prompts.task.prompts import TASK_PROMPTS
+from scai.chat_models.crfm import crfmChatLLM
 import streamlit as st
-
+from langchain.prompts import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+)
 class UserGenerator():
     """
     User Generator Class
     """
     def __init__(self, template):
         self.template = template
-        self.llm = UserTaskConGeneratorCRFM(model_name="openai/gpt-4-0314", temperature=0.9)
+        self.llm = crfmChatLLM(model_name="openai/gpt-4-0314", max_tokens=150, temperature=0.9)
         self.chain = LLMChain(llm=self.llm, prompt=self.template, memory=None)
 
 class TaskConGenerator():
@@ -19,34 +22,36 @@ class TaskConGenerator():
     """
     def __init__(self, template):
         self.template = template
-        self.llm = UserTaskConGeneratorCRFM(model_name="openai/gpt-4-0314", temperature=0.9)
+        self.llm = crfmChatLLM(model_name="openai/gpt-4-0314", max_tokens=150, temperature=0.9)
         self.chain = LLMChain(llm=self.llm, prompt=self.template, memory=None)
 
 class UserTaskConGenerator():
     """
     Generates A User as well as its Connectives
     """
-    def __init__(self, attributes, task_attributes):
-        self.user_data = USER_GENERATOR_TEMPLATE["user_prompt_1"]
+    def __init__(self):
+        self.user_data = USER_GENERATOR_TEMPLATE["user_template_1"]
         self.user_prompt, self.task_con_prompt = self.user_data.content_user_gen, self.user_data.content_user_con
-        self.attributes, self.task_attributes = attributes, task_attributes
+
+    def get_prompt(self, str):
+        if str == "user":
+            prompt_template = self.user_prompt
+        else:
+            prompt_template = self.task_con_prompt
+        system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability.\n")
+        return ChatPromptTemplate.from_messages([system_prompt_template, prompt_template])
 
     def create_user(self, attributes):
-        user_generator = UserGenerator(template=self.user_prompt)
-        user = user_generator.chain.predict(attribtes=attributes)
+        chat_prompt_template = self.get_prompt("user")
+        user_generator = UserGenerator(template=chat_prompt_template)
+        user = user_generator.chain.run(attributes=attributes, stop=["System:"])
         return user
 
     def create_task_con(self, task_attributes, user, task):
-        task_con_generator = TaskConGenerator(template=self.task_con_prompt)
+        chat_prompt_template = self.get_prompt("task_connectives")
+        task_con_generator = TaskConGenerator(template=chat_prompt_template)
         if task:
-            task_con = task_con_generator.chain.predict(user=user, task_attributes=task_attributes, question=task)
+            task_con = task_con_generator.chain.run(user=user, task_attributes=task_attributes, question=task, stop=["System:"])
             return task_con
         else:
-            task_cons = {}
-            for key, value in TASK_PROMPTS.items():
-                st.write(f"The current attribute(s) are {task_attributes}. If you would like to change this for the next task, which is {value.task}, write in the field below.")
-                task_attributes = st.text_input('Current Attribute(s):', task_attributes)
-                task_cons[key] = task_con_generator.run(user=user, task_attributes=task_attributes, question=value.task)
-            return task_cons
-
-        
+            raise Exception("No task specified!")
