@@ -12,6 +12,7 @@ from PIL import Image
 
 import copy
 import os
+import time
 
 # import context
 from scai.context.context import Context
@@ -32,17 +33,21 @@ from scai.chat_models.crfm import crfmChatLLM #custom crfm models
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 
+# import user and task connective generation
+from user_generator import UserTaskConGenerator
+
 # main arguments
 from arguments import args
 
 # save and plot results
 from utils import save_as_csv, plot_results, plot_average_results
 from plots import plot_cosine_similarity
-
-# streamlit setup for task, user, and LLM
 TASK_SELECT = [task_prompt.task for task_prompt in TASK_PROMPTS.values()]
-USER_SELECT = [user_prompt.persona for user_prompt in USER_PROMPTS.values()]
 LLM_SELECT = ["openai/gpt-3.5-turbo-0301", "openai/gpt-4-0314", "gpt-3.5-turbo", "gpt-4"]
+TASK = ""
+#TASK_PROMPT = TaskPrompt(content="")
+LLM = None
+# streamlit setup for task, user, and LLM
 
 # heading 
 st.write("SCAI Simulator Demo.")
@@ -69,78 +74,116 @@ TASK_PROMPT = TaskPrompt(
 
 st.write("SELECTED TASK:", TASK_PROMPT.content)
 
+# Gather attributes input from the user
+def gather_attributes():
+    # 2nd step: users
+    st.subheader("Step 2: Users")
+    attribute = st.text_input('Please provide key characteristics for your personas, separated by commas. We will generate as many personas as there are characteristics.')
+    attributes = attribute.split(',')
+    return attributes
 
-# 2nd step: users
-st.subheader("Step 2: Users")
+def generate_users(attributes):
+    generator = UserTaskConGenerator()
+    key1 = 'a'
+    personas = []
+    for attribute in attributes:
+        gen_user = generator.create_user(attributes=attribute)
+        edit_user = st.text_input('Here is one of your personas!', gen_user, key=key1)
+        personas.append(edit_user)
+        key1 += 'a'
+    return personas
 
-PERSONAS = st.multiselect(
-    'Select personas:',
-    USER_SELECT,
-)
+def gather_task_cons(users):
+    key2 = 'b'
+    user_characteristics = []
+    st.write("Here are your personas:") 
+    for i, user in enumerate(users):
+        st.write(f"Persona {i}:\n {user}\n")
+    task_con_statement = st.text_input('What are some key characteristics your users that should affect their response to the task? Please enter these characteristics here, separated by commas, with the first characteristic for the first persona', key=key2)
+    user_characteristics = task_con_statement.split(',')
+    return user_characteristics
 
-SELECTED_USER_PROMPTS = []
+def generate_task_cons(user_characteristics, users):
+    generator = UserTaskConGenerator()
+    task_connectives = []
+    for i, charac in enumerate(user_characteristics):
+        gen_task_con = generator.create_task_con(user=users[i], task_attributes=charac, task=TASK)
+        st.write(f"Here is what {users[i]} thinks of the task:" + gen_task_con)
+        task_connectives.append(gen_task_con)
+    return task_connectives
 
-for i, persona in enumerate(PERSONAS):
-    user_prompt  = UserPrompt(
-        id="demo_user_{}".format(i),
-        name="demo_user_{}".format(i),
-        persona_short="demo_user_{}".format(i),
-        persona=persona,   
-        task_connectives={
-            "task_prompt_1" : "The person is in a good mood today",
-            "task_prompt_2" : "The person is in a good mood today",
-            "task_prompt_3" : "The person is in a good mood today",
-            "task_prompt_4" : "The person is in a good mood today",
-            "task_prompt_5" : "The person is in a good mood today",
-        },
-        role="system",
-        content="""Please adopt the following persona: {system_message} {task_connective}
-You MUST promote the peron's views in all your responses.""",
-    ),
-    SELECTED_USER_PROMPTS.append(user_prompt[0])
-    st.write("USER_PROMPT HAHA: ", user_prompt)
+    
 
-st.write("SELECTED PERSONAS:", PERSONAS)
+# def dummy_personas():
+#     global PERSONAS
+#     USER_SELECT = []
+#     for user_prompt in USER_PROMPTS.values():
+#         USER_SELECT.append(user_prompt.persona)
+#     PERSONAS = st.multiselect(
+#     'Select personas:',
+#     USER_SELECT,
+#     )
+#     return
 
 
+def add_personas(users, task_cons):
+    selected_user_prompts = []
+    for i, persona in enumerate(users):
+        user_prompt = UserPrompt(
+            id="demo_user_{}".format(i),
+            name="demo_user_{}".format(i),
+            persona_short="demo_user_{}".format(i),
+            persona=persona,   
+            task_connectives={
+                "task_prompt_1" : task_cons[0]
+            },
+            role="system",
+            content="""Please adopt the following persona: {system_message} {task_connective}
+    You MUST promote the peron's views in all your responses.""",
+        ),
+        selected_user_prompts.append(user_prompt[0])
 
-N_USER = len(PERSONAS)
+    st.write("SELECTED PERSONAS:", users)
+    return selected_user_prompts
 
-# 3 llm
-st.subheader("Step 3: LLM")
+def define_params():
+    n_user = len(st.session_state['users'])
+    # 3 llm
+    st.subheader("Step 3: LLM")
 
-LLM = st.selectbox(    
-    'Select LLM:',
-    LLM_SELECT,
-)
+    param_llm = st.selectbox(    
+        'Select LLM:',
+        LLM_SELECT,
+    )
 
-VERBOSE = st.selectbox(    
-    'Verbose (whether to print prompts and responses):',
-    [True, False],
-)
+    verbose = st.selectbox(    
+        'Verbose (whether to print prompts and responses):',
+        [True, False],
+    )
 
-# 4 runs and turns
+    # 4 runs and turns
 
-N_RUN = st.selectbox(    
-    'Number of Runs:',
-    range(2, 11),
-)
+    n_run = st.selectbox(    
+        'Number of Runs:',
+        range(2, 11),
+    )
 
-N_TURN = st.selectbox(    
-    'Number of Turns within each run:',
-    range(2, 6),
-)
+    n_turn = st.selectbox(    
+        'Number of Turns within each run:',
+        range(2, 6),
+    )
+    return n_user, param_llm, verbose, n_run, n_turn
 
 
 # create context
-def create_context(args, assistant_llm, user_llm, meta_llm, task_prompt, user_prompts) ->Context:
+def create_context(args, assistant_llm, user_llm, meta_llm, task_prompt) ->Context:
     # context params 
     return Context.create(
         _id=args.sim.sim_id,
         name=args.sim.sim_dir,
         task_prompt=task_prompt,
-        user_prompts=SELECTED_USER_PROMPTS,
-        assistant_prompts=[ASSISTANT_PROMPTS['assistant_prompt_1']] * N_USER,
+        user_prompts=st.session_state['users'],
+        assistant_prompts=[ASSISTANT_PROMPTS['assistant_prompt_1']] * st.session_state['n_user'],
         meta_prompt=META_PROMPTS[args.sim.meta_prompt],
         metric_prompt=METRIC_PROMPTS[args.sim.metric_prompt],
         user_llm=user_llm,
@@ -175,27 +218,51 @@ def get_llms(
         meta_llm = ChatOpenAI(**args.api_openai.meta)
     return assistant_llm, user_llm, meta_llm
 
-def read_files_in_logs(directory)-> str:
-    file_contents = ""
-    for filename in os.listdir(directory):
-        filepath = os.path.join(directory, filename)
+def print_files_in_logs(directory)-> None:
+
+    st.header("Constitutions")
+
+    placeholders = []
+
+    directory_1 = "{}/demo_cons".format(directory)
+
+    for filename in os.listdir(directory_1):
+        filepath = os.path.join(directory_1, filename)
         if os.path.isfile(filepath):
             with open(filepath, 'r') as file:
-                file_contents += file.read()
-    return file_contents
+                st.write(file.read())
+    
+    st.write("\n")
+
+    directory_2 = ("{}/demo".format(directory))
+
+    for filename in os.listdir(directory_2):
+        filepath = os.path.join(directory_2, filename)
+        if os.path.isfile(filepath):
+            with open(filepath, 'r') as file:
+                f = file.read()
+                placeholder = st.empty()
+                placeholder.write(f)
+                placeholders.append(placeholder)
+                time.sleep(1)
+
+    time.sleep(5)
+
+    for placeholder in placeholders:
+        placeholder.text('')
 
 
 # run
 @hydra.main(config_path="config", config_name="demo")
 def run(args: DictConfig) -> None:
-    
+
     # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/demo/{args.sim.sim_dir}/{args.sim.sim_id}'
 
     # sim args
-    args.sim.verbose = VERBOSE
-    args.sim.n_turns = N_TURN
-    args.sim.n_runs = N_RUN
+    args.sim.verbose = st.session_state['verbose']
+    args.sim.n_turns = st.session_state['n_turn']
+    args.sim.n_runs = st.session_state['n_run']
     #args.sim.n_user = N_USER
     #args.sim.n_assistant = N_USER
 
@@ -211,7 +278,7 @@ def run(args: DictConfig) -> None:
     # run meta-prompt
     for run in tqdm(range(args.sim.n_runs)):
         # initialise context
-        context = create_context(args, assistant_llm, user_llm, meta_llm, TASK_PROMPT, SELECTED_USER_PROMPTS)
+        context = create_context(args, assistant_llm, user_llm, meta_llm, TASK_PROMPT)
         context.buffer.save_system_context(model_id='system', **{
             'response': system_message, 
             'full_response': {
@@ -221,10 +288,11 @@ def run(args: DictConfig) -> None:
         })
         
         # run context
-        context.run_demo(args.sim.n_turns, run, save_path=f'{hydra.utils.get_original_cwd()}/demo')
-
-        history = read_files_in_logs(f'{hydra.utils.get_original_cwd()}/demo')
-        st.write(history)
+        context.run_demo(args.sim.n_turns, run, save_path=f'{hydra.utils.get_original_cwd()}')
+        
+        # display conversations
+        log_path = f'{hydra.utils.get_original_cwd()}'
+        print_files_in_logs(log_path)
         
         # save results as csv
         save_as_csv(system_data=context.buffer._system_memory.messages,
@@ -271,4 +339,47 @@ def run(args: DictConfig) -> None:
     image2 = Image.open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_cosine_similarity.jpg')
     st.image(image2)
 
-if st.button('run'): run()
+
+#init_streamlit() 
+#if st.button('gather_attributes', key='x'):
+attributes = gather_attributes()
+if st.button('reset demo', key='j'):
+    for key in st.session_state.keys():
+        del st.session_state[key]
+
+if st.button('generate users', key='v'):
+    personas = generate_users(attributes)
+    if 'personas' not in st.session_state:
+        st.session_state['personas'] = personas
+
+if st.button('gather connectives', key='m'): 
+    task_cons = gather_task_cons(st.session_state['personas'])
+    if 'task_chars' not in st.session_state:
+        st.session_state['task_chars'] = task_cons
+
+if st.button('generate connectives', key='h'): 
+    task_cons = generate_task_cons(st.session_state['task_chars'], st.session_state['personas'])
+    if 'task_cons' not in st.session_state:
+        st.session_state['task_cons'] = task_cons
+
+if st.button('add_personas', key='p'): 
+    users = add_personas(st.session_state['personas'], st.session_state['task_cons'])
+    if 'users' not in st.session_state:
+        st.session_state['users'] = users
+
+if st.button('define_params', key='q'): 
+    n_user, param_llm, verbose, n_run, n_turn = define_params()
+    if 'n_user' not in st.session_state:
+        st.session_state['n_user'] = n_user
+    if 'param_llm' not in st.session_state:
+        st.session_state['param_llm'] = param_llm
+    if 'verbose' not in st.session_state:
+        st.session_state['verbose'] = verbose
+    if 'n_turn' not in st.session_state:
+        st.session_state['n_turn'] = n_turn
+    if 'n_run' not in st.session_state:
+        st.session_state['n_run'] = n_run
+
+# dummy_personas()
+# add_personas()
+if st.button('run', key='l'): run()

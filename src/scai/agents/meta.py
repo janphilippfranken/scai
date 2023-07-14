@@ -2,6 +2,7 @@ from typing import Dict, Any
 
 import numpy as np
 import copy
+import os
 
 from langchain.prompts.chat import (
     ChatPromptTemplate,
@@ -232,6 +233,24 @@ class MetaPromptModel(BaseAgent):
         response['response'] = f"Abide by the following Constitution: {response[meta_prompt.metrics[0]]} Within the bounds of the Constitution, use the following user preferences to enhance your responses and improve user experience: {response[meta_prompt.metrics[1]]} Important: Do NOT mention user names in your responses or directly address the user."
         return response
 
+    def save_text_to_file(self, file_path, text) -> None:
+        if os.path.isfile(file_path):
+            with open(file_path, 'a') as file:
+                file.write(text + '\n')
+        else:
+            with open(file_path, 'w') as file:
+                file.write(text + '\n')
+
+    def save_all(self, save_path, developer_constitution_string, social_contract_string)-> None:
+        file_path = f'{save_path}/META_{str(self.model_id)}.txt'
+        if os.path.isfile(file_path):
+            file = open(file_path, 'w')
+        self.save_text_to_file(file_path, "\n")
+        self.save_text_to_file(file_path, "Constitutions: \n {} ".format(developer_constitution_string))
+        self.save_text_to_file(file_path, "\n")
+        self.save_text_to_file(file_path, "Constracts: \n {}".format(social_contract_string))
+        self.save_text_to_file(file_path, "\n")
+
     def run(
         self,
         buffer: ConversationBuffer,
@@ -290,6 +309,75 @@ class MetaPromptModel(BaseAgent):
             print(f'META {str(self.model_id)}')
             print('prompt')
             print(prompt_string)
+        
+        return {
+                'prompt': prompt_string,
+                'response': response['response'],
+                'full_response': response,
+                'run': run,
+            }
+    
+    def run_demo(
+        self,
+        buffer: ConversationBuffer,
+        meta_prompt: MetaPrompt,
+        task_prompt: TaskPrompt,
+        metric_prompt: MetricPrompt,
+        run: int,
+        verbose: bool = False,
+        max_tokens_meta: int = 100,
+        max_tokens_assistant: int = 100,
+        save_path: str = None,
+    ) -> str:
+        """Runs meta-prompt
+
+        Args:
+            buffer (ConversationBuffer): The conversation buffer
+            meta_prompt (MetaPrompt): The meta-prompt
+            task_prompt (TaskPrompt): The task prompt
+            metric_prompt (MetricPrompt): The metric prompt
+            run (int): The run number
+            test_run (bool, optional): Whether this is a test run. Defaults to False.
+            verbose (bool, optional): Whether to print the meta-prompt. Defaults to False.
+            max_tokens_meta (int, optional): The maximum number of tokens for the meta-prompt. Defaults to 100.
+            max_tokens_assistant (int, optional): The maximum number of tokens for the assistant. Defaults to 100.
+
+        Returns:
+            A dictionary containing the input prompt and meta-prompt responses (revised system message, etc)
+        """
+        # get previous system messages (i.e. developer constitution and social contract)
+        developer_constitution_string = self._get_chat_history(buffer, memory_type='system')['system'][-1]['full_response'][meta_prompt.metrics[0]]
+        social_contract_string = self._get_chat_history(buffer, memory_type='system')['system'][-1]['full_response'][meta_prompt.metrics[1]]
+        # get chat history
+        chat_history = self._get_chat_history(buffer, memory_type="chat")
+        chat_history_string = self._get_chat_str(chat_history, metric_prompt, task_prompt, max_tokens_assistant)
+        # get meta-prompt template and string
+        chat_prompt_template = self._get_prompt(meta_prompt)
+        prompt_string = chat_prompt_template.format(developer_constitution=developer_constitution_string,
+                                                    social_contract=social_contract_string,
+                                                    n_user=self._get_n_user(chat_history),
+                                                    chat_history=chat_history_string,
+                                                    max_tokens_assistant=max_tokens_assistant,
+                                                    max_tokens_revision=max_tokens_meta,
+                                                    subjective_metric=metric_prompt.subjective_metric,
+                                                    collective_metric=metric_prompt.collective_metric)
+        response = self._get_response(chat_prompt_template, 
+                                      developer_constitution_string,
+                                      social_contract_string,
+                                      chat_history,
+                                      chat_history_string,
+                                      max_tokens_assistant,
+                                      max_tokens_meta,
+                                      metric_prompt,
+                                      meta_prompt)
+        
+        if verbose:
+            print('===================================')
+            print(f'META {str(self.model_id)}')
+            print('prompt')
+            print(prompt_string)
+
+        self.save_all(save_path, developer_constitution_string, social_contract_string)
         
         return {
                 'prompt': prompt_string,

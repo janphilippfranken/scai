@@ -227,10 +227,21 @@ class UserModel(BaseAgent):
         with open(file_path, 'a') as file:
             file.write(str(text) + '\n')
 
-    # compacted version of save text to file
-    # def save_text_to_file(self, file_path, text) -> None:
-    #     with open(file_path, 'a') as file:
-    #         file.write(str(text) + '\n')
+    def save_all(self, save_path, turn, response, responses_collective) -> None:
+        file_path = f'{save_path}/user_{self.model_id}_turn_{turn}.txt'
+        if os.path.isfile(file_path):
+            file = open(file_path, 'w')
+        self.save_text_to_file(file_path, "\n")
+        self.save_text_to_file(file_path, f'USER {str(self.model_id)} turn {turn}')
+        self.save_text_to_file(file_path, "\n")
+        self.save_text_to_file(file_path, "Based on your persona's unique preferences, please rate your satisfaction and give feedback:")
+        self.save_text_to_file(file_path, "\n")
+        self.save_text_to_file(file_path, response)
+        self.save_text_to_file(file_path, "\n")
+        self.save_text_to_file(file_path, "Rate other assistants' responses as well:")
+        self.save_text_to_file(file_path, "\n")
+        self.save_text_to_file(file_path, responses_collective)
+        self.save_text_to_file(file_path, "\n")
         
     def run(
         self,
@@ -349,17 +360,8 @@ class UserModel(BaseAgent):
                 print(prompt_strings_collective)
                 print(responses_collective)
 
-            print("***************************************************************************")    
-            print(os.getcwd())
 
-            file_path = f'{save_path}/user_{self.model_id}_turn_{turn}.txt'
-            if os.path.isfile(file_path):
-                file = open(file_path, 'w')
-            self.save_text_to_file(file_path, f'USER {str(self.model_id)} turn {turn}')
-            self.save_text_to_file(file_path, prompt_string)
-            self.save_text_to_file(file_path, response)
-            self.save_text_to_file(file_path, prompt_strings_collective)
-            self.save_text_to_file(file_path, responses_collective)
+            self.save_all(save_path, turn, response, responses_collective)
 
             return {
                 'prompt': prompt_string, 

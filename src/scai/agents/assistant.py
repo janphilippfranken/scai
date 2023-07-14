@@ -126,6 +126,19 @@ class AssistantAgent(BaseAgent):
             with open(file_path, 'w') as file:
                 file.write(text + '\n')
 
+    def save_all(self, save_path, turn, response) -> None:
+        file_path = f'{save_path}/assistant_{str(self.model_id)}_turn_{turn}.txt'
+        if os.path.isfile(file_path):
+            file = open(file_path, 'w')
+        self.save_text_to_file(file_path, "\n")
+        self.save_text_to_file(file_path, "ASSISTANT {} turn {}".format(self.model_id, turn))
+        self.save_text_to_file(file_path, "\n")
+        self.save_text_to_file(file_path, "Abiding by the constitution and contract, provide response:")
+        self.save_text_to_file(file_path, "\n")
+        self.save_text_to_file(file_path, response)
+        self.save_text_to_file(file_path, "\n")
+
+
     def run(
         self, 
         buffer: ConversationBuffer, 
@@ -207,12 +220,7 @@ class AssistantAgent(BaseAgent):
             print(prompt_string)
             print(response)
 
-        file_path = f'{save_path}/assistant_{str(self.model_id)}_turn_{turn}.txt'
-        if os.path.isfile(file_path):
-            file = open(file_path, 'w')
-        self.save_text_to_file(file_path, "ASSISTANT {} turn {}".format(self.model_id, turn))
-        self.save_text_to_file(file_path, prompt_string)
-        self.save_text_to_file(file_path, response)
+        self.save_all(save_path, turn, response)
  
         return {
             'prompt': prompt_string, 
