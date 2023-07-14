@@ -248,7 +248,7 @@ class MetaPromptModel(BaseAgent):
         self.save_text_to_file(file_path, "\n")
         self.save_text_to_file(file_path, "Constitutions: \n {} ".format(developer_constitution_string))
         self.save_text_to_file(file_path, "\n")
-        self.save_text_to_file(file_path, "Constracts: \n {}".format(social_contract_string))
+        self.save_text_to_file(file_path, "Contracts: \n {}".format(social_contract_string))
         self.save_text_to_file(file_path, "\n")
 
     def run(
