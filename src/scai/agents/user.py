@@ -228,6 +228,7 @@ class UserModel(BaseAgent):
             file.write(str(text) + '\n')
 
     def save_all(self, save_path, turn, response, responses_collective) -> None:
+        # TODO: refractor
         file_path = f'{save_path}/user_{self.model_id}_turn_{turn}.txt'
         if os.path.isfile(file_path):
             file = open(file_path, 'w')

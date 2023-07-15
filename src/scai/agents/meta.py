@@ -242,6 +242,7 @@ class MetaPromptModel(BaseAgent):
                 file.write(text + '\n')
 
     def save_all(self, save_path, developer_constitution_string, social_contract_string)-> None:
+        # TODO: refractor
         file_path = f'{save_path}/META_{str(self.model_id)}.txt'
         if os.path.isfile(file_path):
             file = open(file_path, 'w')
