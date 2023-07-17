@@ -4,6 +4,7 @@ from omegaconf import DictConfig
 from tqdm import tqdm
 import pandas as pd
 import json
+import sys
 
 # streamlit 🚀
 import streamlit as st
@@ -15,7 +16,7 @@ import os
 import time
 
 # import context
-from scai.context.context import Context
+from demo_context.context import Context
 
 # import prompt models
 from scai.prompts.task.models import TaskPrompt
@@ -23,7 +24,6 @@ from scai.prompts.user.models import UserPrompt
 
 # import prompts
 from scai.prompts.assistant.prompts import ASSISTANT_PROMPTS 
-from scai.prompts.user.prompts import USER_PROMPTS 
 from scai.prompts.meta.prompts import META_PROMPTS
 from scai.prompts.task.prompts import TASK_PROMPTS
 from scai.prompts.metrics.prompts import METRIC_PROMPTS
@@ -36,12 +36,11 @@ from langchain.chat_models.base import BaseChatModel
 # import user and task connective generation
 from user_generator import UserTaskConGenerator
 
-# main arguments
-from arguments import args
-
 # save and plot results
-from utils import save_as_csv, plot_results, plot_average_results
-from plots import plot_cosine_similarity
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(parent_dir)
+from simulations.utils import save_as_csv, plot_results, plot_average_results
+from simulations.plots import plot_cosine_similarity
 
 if st.button('reset demo', key='j'):
     attributes=None
@@ -87,7 +86,7 @@ def gather_attributes():
     attributes = st.text_input('Please provide key characteristics for your personas, separated by commas. We will generate as many personas as there are characteristics.').split(',')
     return attributes
 
-def generate_users(attributes):
+def generate_users(attributes: list) -> list:
     generator = UserTaskConGenerator()
     users = []
     key = 'a'
@@ -113,14 +112,8 @@ def generate_task_cons(user_characteristics, users):
     return task_cons
 
 def add_personas(users, task_cons):
-    new_users = []
-    for user in users:
-        joined_user = "".join(user)
-        new_users.append(joined_user)
-    new_task_cons = []
-    for task in task_cons:
-        new_task = "".join(task)
-        new_task_cons.append(new_task)
+    new_users = ["".join(user) for user in users]
+    new_task_cons = ["".join(task) for task in task_cons]
     
     selected_user_prompts = [
         UserPrompt(
@@ -209,7 +202,7 @@ def print_files_in_logs(directory)-> None:
 
     placeholders = []
 
-    directory_1 = "{}/demo_cons".format(directory)
+    directory_1 = "{}/constitutions".format(directory)
 
     for filename in os.listdir(directory_1):
         filepath = os.path.join(directory_1, filename)
@@ -219,7 +212,7 @@ def print_files_in_logs(directory)-> None:
     
     st.write("\n")
 
-    directory_2 = ("{}/demo".format(directory))
+    directory_2 = ("{}/conversations".format(directory))
 
     for filename in os.listdir(directory_2):
         filepath = os.path.join(directory_2, filename)
@@ -268,7 +261,7 @@ def run(args: DictConfig) -> None:
 
 
 def get_data_dir(args: DictConfig) -> str:
-    return f'{hydra.utils.get_original_cwd()}/sim_res/demo/{args.sim.sim_dir}/{args.sim.sim_id}'
+    return f'{hydra.utils.get_original_cwd()}/sim_demo/{args.sim.sim_dir}/{args.sim.sim_id}'
 
 
 def process_and_save_results(context, run, DATA_DIR, args):

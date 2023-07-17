@@ -117,8 +117,17 @@ class AssistantAgent(BaseAgent):
                              max_tokens=max_tokens,
                              stop=['System:'])   
         return response
-        
-    def run(
+
+    def save_all(self, save_path, turn, response) -> None:
+
+        # TODO: refractor
+        file_path = f'{save_path}/assistant_{self.model_id}_turn_{turn}.txt'
+        to_write = 'a' if os.path.isfile(file_path) else 'w'
+        text = f"\n\n ASSISTANT {str(self.model_id)} turn {turn} \n\n Abiding by the constitution and contract, provide response: \n\n {response} \n\n"
+        with open(file_path, to_write) as file:
+            file.write(text)
+    
+    def run_demo(
         self, 
         buffer: ConversationBuffer, 
         assistant_prompt: AssistantPrompt, 
@@ -126,6 +135,7 @@ class AssistantAgent(BaseAgent):
         turn: int,
         verbose: bool = False,
         max_tokens: int = 100,
+        save_path: str = None,
     ) -> Dict[str, Any]:
         """Runs the assistant
 
@@ -155,9 +165,10 @@ class AssistantAgent(BaseAgent):
             print(prompt_string)
             print(response)
 
+        self.save_all(save_path, turn, response)
+ 
         return {
             'prompt': prompt_string, 
             'response': response, 
             'turn': turn
         }
-    
