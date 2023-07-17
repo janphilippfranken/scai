@@ -3,12 +3,24 @@ from typing import (
     List, 
     Any,
 )
-
 import pandas as pd
 import scipy.stats as stats
 
-from plots import plot_metrics, plot_average_metrics
+import inspect
 
+# Function to check if a module is in the call stack
+def is_module_in_stack(module):
+    for info in inspect.stack():
+        if module in info.filename:
+            return True
+    return False
+
+# If 'main.py' is in the call stack
+if is_module_in_stack('main.py'):
+    from plots import plot_metrics, plot_average_metrics
+# If 'streamlit_demo.py' is in the call stack
+elif is_module_in_stack('streamlit_demo.py'):
+    from simulations.plots import plot_metrics, plot_average_metrics
 
 def save_as_csv(
     system_data: Dict[str, List[Any]],    
