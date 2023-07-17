@@ -11,7 +11,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 
 # import context
-from scai.context.context import Context
+from scai.games.v1 import Context
 
 import copy
 
