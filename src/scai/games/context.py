@@ -223,27 +223,3 @@ class Context():
                                             max_tokens_assistant=self.max_tokens_assistant)                 
         # save meta-prompt response for start of next conversation
         self.buffer.save_system_context(model_id="system", **meta_response)
-
-    def run_demo(
-        self, 
-        n_turns: int,
-        run: int,
-        demo: bool = False,
-        save_path: str = None,
-    ) -> None:
-        # run the context for n_turns
-        save_path_1 = save_path + '/demo'
-        save_path_2 = save_path + '/demo_cons'
-        for turn in range(n_turns):
-            self.run_turn_demo(turn, save_path_1)
-        # run meta-prompt at end of conversation
-        meta_response = self.meta_model.run_demo(buffer=self.buffer,
-                                            meta_prompt=self.meta_prompt,
-                                            task_prompt=self.task_prompt, 
-                                            metric_prompt=self.metric_prompt,
-                                            run=run,
-                                            verbose=self.verbose,
-                                            max_tokens_meta=self.max_tokens_meta,
-                                            max_tokens_assistant=self.max_tokens_assistant, save_path=save_path_2)                 
-        # save meta-prompt response for start of next conversation
-        self.buffer.save_system_context(model_id="system", **meta_response)
