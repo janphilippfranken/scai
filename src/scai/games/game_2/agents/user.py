@@ -22,7 +22,6 @@ from scai.memory.buffer import ConversationBuffer
 
 from scai.games.game_2.agents.base import BaseAgent
 
-import os
 class UserModel(BaseAgent):
     """
     LLM Chain for running the User.
