@@ -163,46 +163,6 @@ class Context():
             # save user response
             self.buffer.save_user_context(model_id=f"{user_model.model_id}_user", **user_response)
 
-
-    def run_turn_demo(
-        self,
-        turn: int,
-        save_path: str,
-    ) -> None:
-        """
-        Runs one turn of each conversation.
-
-        Args:
-            turn: turn number
-        """
-        assert len(self.assistant_models) == len(self.assistant_prompts), "Mismatch between assistant models and prompts"
-        assert len(self.user_models) == len(self.user_prompts), "Mismatch between user models and prompts"
-
-        for assistant_model, assistant_prompt, user_model, user_prompt \
-            in zip(self.assistant_models, self.assistant_prompts, self.user_models, self.user_prompts):
-
-            # get assistant response
-            assistant_response = assistant_model.run_demo(buffer=self.buffer,
-                                                     assistant_prompt=assistant_prompt,
-                                                     task_prompt=self.task_prompt, 
-                                                     turn=turn,
-                                                     verbose=self.verbose,
-                                                     max_tokens=self.max_tokens_assistant, save_path=save_path)
-            # save assistant response
-            self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant", **assistant_response)
-            
-            # get user response
-            user_response = user_model.run_demo(buffer=self.buffer,
-                                           user_prompt=user_prompt,
-                                           task_prompt=self.task_prompt,
-                                           metric_prompt=self.metric_prompt,
-                                           turn=turn,
-
-                                           verbose=self.verbose,
-                                           max_tokens=self.max_tokens_user, save_path=save_path)
-            # save user response
-            self.buffer.save_user_context(model_id=f"{user_model.model_id}_user", **user_response)
-
     def run(
         self, 
         n_turns: int,
