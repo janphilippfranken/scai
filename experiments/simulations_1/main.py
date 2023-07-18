@@ -11,16 +11,16 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 
 # import context
-from scai.games.game_2.context import Context
+from scai.games.game_1.context import Context
 
 import copy
 
 # prompts 
-from scai.games.game_2.prompts.task.prompts import TASK_PROMPTS
-from scai.games.game_2.prompts.assistant.prompts import ASSISTANT_PROMPTS 
-from scai.games.game_2.prompts.user.prompts import USER_PROMPTS 
-from scai.games.game_2.prompts.meta.prompts import META_PROMPTS
-from scai.games.game_2.prompts.metrics.prompts import METRIC_PROMPTS
+from scai.games.game_1.prompts.task.prompts import TASK_PROMPTS
+from scai.games.game_1.prompts.assistant.prompts import ASSISTANT_PROMPTS
+from scai.games.game_1.prompts.user.prompts import USER_PROMPTS 
+from scai.games.game_1.prompts.meta.prompts import META_PROMPTS
+from scai.games.game_1.prompts.metrics.prompts import METRIC_PROMPTS
 
 # save and plot results
 from utils import save_as_csv, plot_results, plot_average_results

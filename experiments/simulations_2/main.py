@@ -11,16 +11,16 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 
 # import context
-from scai.games.game_1.context import Context
+from scai.games.game_2.context import Context
 
 import copy
 
 # prompts 
-from scai.games.game_1.prompts.task.prompts import TASK_PROMPTS
-from scai.games.game_1.prompts.assistant.prompts import ASSISTANT_PROMPTS 
-from scai.games.game_1.prompts.user.prompts import USER_PROMPTS 
-from scai.games.game_1.prompts.meta.prompts import META_PROMPTS
-from scai.games.game_1.prompts.metrics.prompts import METRIC_PROMPTS
+from scai.games.game_2.prompts.task.prompts import TASK_PROMPTS
+from scai.games.game_2.prompts.assistant.prompts import ASSISTANT_PROMPTS 
+from scai.games.game_2.prompts.user.prompts import USER_PROMPTS 
+from scai.games.game_2.prompts.meta.prompts import META_PROMPTS
+from scai.games.game_2.prompts.metrics.prompts import METRIC_PROMPTS
 
 # save and plot results
 from utils import save_as_csv, plot_results, plot_average_results
@@ -39,11 +39,11 @@ def create_context(
     return Context.create(
         _id=args.sim.sim_id,
         name=args.sim.sim_dir,
-        task_prompt=TASK_PROMPTS[args.sim.task_prompt],
+        task_prompt_dictator = DICTATOR_TASK_PROMPTS[args.sim.task_prompt],
+        task_prompt_decider = DECIDER_TASK_PROMPTS[args.sim.task_prompt],
         user_prompts=[USER_PROMPTS[user_prompt] for user_prompt in args.sim.user_prompts],
         assistant_prompts=[ASSISTANT_PROMPTS[assistant_prompt] for assistant_prompt in args.sim.assistant_prompts],
         meta_prompt=META_PROMPTS[args.sim.meta_prompt],
-        metric_prompt=METRIC_PROMPTS[args.sim.metric_prompt],
         user_llm=user_llm,
         assistant_llm=assistant_llm,
         meta_llm=meta_llm,
