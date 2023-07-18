@@ -223,77 +223,64 @@ class UserModel(BaseAgent):
                 responses_collective[model_id] = response
         return responses_collective
     
+    def run(
+        self,
+        buffer: ConversationBuffer,
+        user_prompt: UserPrompt,
+        task_prompt: TaskPrompt,
+        metric_prompt: MetricPrompt,
+        turn: int,
+        verbose: bool = False,
+        max_tokens: int = 100,
+    ) -> Dict[str, Any]:
+        """Runs the user.
 
-    def save_all(self, save_path, turn, response, responses_collective) -> None:
-        # TODO: refractor
-        file_path = f'{save_path}/user_{self.model_id}_turn_{turn}.txt'
-        to_write = 'a' if os.path.isfile(file_path) else 'w'
-        text = f"\n\n USER {str(self.model_id)} turn {turn} \n\n Based on your persona's unique preferences, please rate your satisfaction and give feedback: \n\n {response} \n\n Rate other assistants' responses as well: \n\n {responses_collective} \n\n"
-        with open(file_path, to_write) as file:
-            file.write(text)
+        Args:
+            buffer (ConversationBuffer): Conversation buffer containing the chat history
+            user_prompt (UserPrompt): User prompt containing the user's response
+            task_prompt (TaskPrompt): Task prompt containing the task
+            metric_prompt (MetricPrompt): Metric prompt containing the metrics
+            turn (int): Turn number
+            test_run (bool, optional): Whether this is a test run. Defaults to True.
+            verbose (bool, optional): Whether to print the chat history. Defaults to False.
+            max_tokens (int, optional): Maximum number of tokens to generate. Defaults to 100.
 
-    def run_demo(
-            self,
-            buffer: ConversationBuffer,
-            user_prompt: UserPrompt,
-            task_prompt: TaskPrompt,
-            metric_prompt: MetricPrompt,
-            turn: int,
-            verbose: bool = False,
-            max_tokens: int = 100,
-            save_path: str = None,
-        ) -> Dict[str, Any]:
-            """Runs the user.
+        Returns:
+            A dictionary containing the user's response, input prompt, and all other metrics we want to track.
+        """
+        system_message = user_prompt.persona
+        task_connective = user_prompt.task_connectives[task_prompt.id]
+        chat_prompt_template = self._get_prompt(buffer, user_prompt, task_prompt, metric_prompt)
+        chat_prompt_templates_collective = self._get_prompt_collective(buffer, user_prompt, task_prompt, metric_prompt)
+        prompt_string = chat_prompt_template.format(system_message=system_message, 
+                                                    task_connective=task_connective,
+                                                    task=task_prompt.task,
+                                                    metric_prompt=metric_prompt.subjective_content,
+                                                    max_tokens=max_tokens)
+        prompt_strings_collective = {model_id: chat_prompt_template_collective.format(system_message=system_message,
+                                                                  task_connective=task_connective,
+                                                                  task=task_prompt.task,
+                                                                  metric_prompt=metric_prompt.collective_content,
+                                                                  max_tokens=max_tokens)
+                                for model_id, chat_prompt_template_collective in chat_prompt_templates_collective.items()
+                            }
 
-            Args:
-                buffer (ConversationBuffer): Conversation buffer containing the chat history
-                user_prompt (UserPrompt): User prompt containing the user's response
-                task_prompt (TaskPrompt): Task prompt containing the task
-                metric_prompt (MetricPrompt): Metric prompt containing the metrics
-                turn (int): Turn number
-                test_run (bool, optional): Whether this is a test run. Defaults to True.
-                verbose (bool, optional): Whether to print the chat history. Defaults to False.
-                max_tokens (int, optional): Maximum number of tokens to generate. Defaults to 100.
+        response = self._get_response(chat_prompt_template, system_message, task_connective, task_prompt, metric_prompt, max_tokens)
+        responses_collective = self._get_response_collective(chat_prompt_templates_collective, system_message, task_connective, task_prompt, metric_prompt, max_tokens)
 
-            Returns:
-                A dictionary containing the user's response, input prompt, and all other metrics we want to track.
-            """
-            system_message = user_prompt.persona
-            task_connective = user_prompt.task_connectives[task_prompt.id]
-            chat_prompt_template = self._get_prompt(buffer, user_prompt, task_prompt, metric_prompt)
-            chat_prompt_templates_collective = self._get_prompt_collective(buffer, user_prompt, task_prompt, metric_prompt)
-            prompt_string = chat_prompt_template.format(system_message=system_message, 
-                                                        task_connective=task_connective,
-                                                        task=task_prompt.task,
-                                                        metric_prompt=metric_prompt.subjective_content,
-                                                        max_tokens=max_tokens)
-            prompt_strings_collective = {model_id: chat_prompt_template_collective.format(system_message=system_message,
-                                                                    task_connective=task_connective,
-                                                                    task=task_prompt.task,
-                                                                    metric_prompt=metric_prompt.collective_content,
-                                                                    max_tokens=max_tokens)
-                                    for model_id, chat_prompt_template_collective in chat_prompt_templates_collective.items()
-                                }
+        if verbose:
+            print('===================================')
+            print(f'USER {str(self.model_id)} turn {turn}')
+            print(prompt_string)
+            print(response)
+            print(prompt_strings_collective)
+            print(responses_collective)
 
-            response = self._get_response(chat_prompt_template, system_message, task_connective, task_prompt, metric_prompt, max_tokens)
-            responses_collective = self._get_response_collective(chat_prompt_templates_collective, system_message, task_connective, task_prompt, metric_prompt, max_tokens)
-
-            if verbose:
-                print('===================================')
-                print(f'USER {str(self.model_id)} turn {turn}')
-                print(prompt_string)
-                print(response)
-                print(prompt_strings_collective)
-                print(responses_collective)
-
-
-            self.save_all(save_path, turn, response, responses_collective)
-
-            return {
-                'prompt': prompt_string, 
-                'response': response['Response'],
-                metric_prompt.subjective_metric: response[metric_prompt.subjective_metric.capitalize()],
-                'prompts_collective': prompt_strings_collective,
-                'responses_collective': responses_collective,
-                'turn': turn
-            }
+        return {
+            'prompt': prompt_string, 
+            'response': response['Response'],
+            metric_prompt.subjective_metric: response[metric_prompt.subjective_metric.capitalize()],
+            'prompts_collective': prompt_strings_collective,
+            'responses_collective': responses_collective,
+            'turn': turn
+        }
