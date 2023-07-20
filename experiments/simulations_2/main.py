@@ -16,14 +16,17 @@ from scai.games.game_2.dictator import Context
 import copy
 
 # prompts 
-from scai.games.game_2.prompts.task.prompts import TASK_PROMPTS
+from scai.games.game_2.prompts.task.prompts import DICTATOR_TASK_PROMPTS
+from scai.games.game_2.prompts.task.prompts import DECIDER_TASK_PROMPTS
 from scai.games.game_2.prompts.assistant.prompts import ASSISTANT_PROMPTS 
 from scai.games.game_2.prompts.user.prompts import USER_PROMPTS 
 from scai.games.game_2.prompts.meta.prompts import META_PROMPTS
 
+
+
 # save and plot results
-from utils import save_as_csv, plot_results, plot_average_results      # Change util functions
-from plots import plot_cosine_similarity                                # Change plot functions
+# from utils import save_as_csv, plot_results, plot_average_results      # Change util functions
+# from plots import plot_cosine_similarity                                # Change plot functions
 
 # create context
 def create_context(
@@ -48,6 +51,9 @@ def create_context(
         meta_llm=meta_llm,
         verbose=args.sim.verbose,
         test_run=args.sim.test_run,
+        n_user_interactions = args.sim.n_user_interactions,
+        n_assistant_interactions = args.sim.n_assistant_interactions,
+        utility = args.sim.utility
     )
 
 def get_llms(
@@ -69,7 +75,7 @@ def get_llms(
 def main(args: DictConfig) -> None:
     
     # sim_res directory
-    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_dir}/{args.sim.sim_id}'
+    # DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_dir}/{args.sim.sim_id}'
     
     # llms
     is_crfm = 'openai' in args.sim.model_name # custom stanford models
@@ -77,8 +83,8 @@ def main(args: DictConfig) -> None:
     
     # start system messages for assistant (key variables we are learning)
     system_message = args.sim.system_message
-    meta_prompt = META_PROMPTS[args.sim.meta_prompt]
-    meta_prompt_metrics = {meta_prompt.metrics[0]: " ", meta_prompt.metrics[1]: " "} # currently developer constitution and social constract
+    # meta_prompt = META_PROMPTS[args.sim.meta_prompt]
+    # meta_prompt_metrics = {meta_prompt.metrics[0]: " ", meta_prompt.metrics[1]: " "} # currently developer constitution and social constract
     
     # run meta-prompt
     for run in tqdm(range(args.sim.n_runs)):
@@ -89,42 +95,42 @@ def main(args: DictConfig) -> None:
         })
         
         # run context
-        context.run(args.sim.n_turns, run)
+        context.run(run)
         
-        # save results as csv
-        save_as_csv(system_data=context.buffer._system_memory.messages,
-                    chat_data=context.buffer._chat_memory.messages,
-                    data_directory=DATA_DIR, 
-                    sim_name=args.sim.sim_dir,
-                    sim_id=args.sim.sim_id,
-                    run=run,
-                    collective_metric=METRIC_PROMPTS[args.sim.metric_prompt].collective_metric)
+        # # save results as csv
+        # save_as_csv(system_data=context.buffer._system_memory.messages,
+        #             chat_data=context.buffer._chat_memory.messages,
+        #             data_directory=DATA_DIR, 
+        #             sim_name=args.sim.sim_dir,
+        #             sim_id=args.sim.sim_id,
+        #             run=run,
+        #             collective_metric=METRIC_PROMPTS[args.sim.metric_prompt].collective_metric)
         # save results json
-        with open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
-            json.dump(context.buffer._full_memory.messages, f)
+        # with open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
+        #     json.dump(context.buffer._full_memory.messages, f)
         
         # update system message after each run
         system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
-        meta_prompt_metrics = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['full_response']) # replace current system message with the new one (i.e. new constitution)
+        # meta_prompt_metrics = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['full_response']) # replace current system message with the new one (i.e. new constitution)
         
         # plot user ratings for the current run
-        df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}_user.csv')
-        plot_results(df, DATA_DIR, args.sim.sim_dir, args.sim.sim_id, run, subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric, collective_metric=f'{METRIC_PROMPTS[args.sim.metric_prompt].collective_metric}_average')
+        # df = pd.read_csv(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}_user.csv')
+        # plot_results(df, DATA_DIR, args.sim.sim_dir, args.sim.sim_id, run, subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric, collective_metric=f'{METRIC_PROMPTS[args.sim.metric_prompt].collective_metric}_average')
     
-    # plot average user ratings across runs
-    plot_average_results(data_directory=DATA_DIR, 
-                         sim_name=args.sim.sim_dir, 
-                         sim_id=args.sim.sim_id, 
-                         n_runs=args.sim.n_runs, 
-                         subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric, 
-                         collective_metric=f'{METRIC_PROMPTS[args.sim.metric_prompt].collective_metric}_average')      
+    # # plot average user ratings across runs
+    # plot_average_results(data_directory=DATA_DIR, 
+    #                      sim_name=args.sim.sim_dir, 
+    #                      sim_id=args.sim.sim_id, 
+    #                      n_runs=args.sim.n_runs, 
+    #                      subjective_metric=METRIC_PROMPTS[args.sim.metric_prompt].subjective_metric, 
+    #                      collective_metric=f'{METRIC_PROMPTS[args.sim.metric_prompt].collective_metric}_average')      
     
-    # plot cosine similarity between system messages (developer constituiton and social contracts and save csvs)
-    plot_cosine_similarity(data_directory=DATA_DIR,
-                           sim_name=args.sim.sim_dir,
-                           sim_id=args.sim.sim_id,
-                           n_runs=args.sim.n_runs,
-                           metrics=META_PROMPTS[args.sim.meta_prompt].metrics)
+    # # plot cosine similarity between system messages (developer constituiton and social contracts and save csvs)
+    # plot_cosine_similarity(data_directory=DATA_DIR,
+    #                        sim_name=args.sim.sim_dir,
+    #                        sim_id=args.sim.sim_id,
+    #                        n_runs=args.sim.n_runs,
+    #                        metrics=META_PROMPTS[args.sim.meta_prompt].metrics)
 
 if __name__ == '__main__':
     main()

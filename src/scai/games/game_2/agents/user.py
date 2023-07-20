@@ -44,8 +44,9 @@ class UserModel(BaseAgent):
             user_prompt: (UserPrompt) The user prompt.
             task_prompt: (TaskPrompt) The task prompt.
         """
-        system_prompt_template = SystemMessagePromptTemplate.from_template(user_prompt.content)
-        return ChatPromptTemplate.from_messages([system_prompt_template])
+        user_prompt_template = HumanMessagePromptTemplate.from_template(user_prompt.content)
+        system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability.\n")
+        return ChatPromptTemplate.from_messages([system_prompt_template, user_prompt_template])
     
     def _get_response(
         self,
@@ -74,21 +75,24 @@ class UserModel(BaseAgent):
         if is_dictator:
             response = chain.run(system_message=system_message,
                                 task_connective=task_connective,
-                                task= task_prompt.preamble + " " + task_prompt.task,
+                                task=f"{task_prompt.preamble} {task_prompt.task} {task_prompt.user_connective}",
                                 stop=['System:'])
         else:
             response = chain.run(system_message=system_message,
                                  task_connective=task_connective,
-                                 task= task_prompt.preamble + " " + task_prompt.task,
-                                 proposal=proposal,
+                                 task=f"{task_prompt.preamble} {task_prompt.task} {proposal} {task_prompt.user_connective}",
                                  stop=['System:'])
         return response
-        
-    def run_dictator(
-        self, 
+
+
+
+    def run(self, 
+        buffer: ConversationBuffer,  
         user_prompt: UserPrompt, 
         task_prompt: TaskPrompt, 
         utility: str,
+        is_dictator: bool,
+        with_assistant: bool,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the assistant
@@ -105,72 +109,55 @@ class UserModel(BaseAgent):
         Returns:
             A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
         """
-        system_message = user_prompt.persona
+        if is_dictator:
+            system_message = user_prompt.persona
 
-        chat_prompt_template =  self._get_prompt(user_prompt)
+            chat_prompt_template =  self._get_prompt(user_prompt)
 
-        task_connective = task_prompt.task_connectives[utility]
+            task_connective = user_prompt.task_connectives[utility]
 
-        prompt_string = chat_prompt_template.format(system_message=system_message,
-                                                    task_connective=task_connective,
-                                                    task=task_prompt.task)
-      
-        response = self._get_response(chat_prompt_template, system_message, task_connective, task_prompt, "", True)
+            prompt_string = chat_prompt_template.format(system_message=system_message,
+                                                        task_connective=task_connective,
+                                                        task=f"{task_prompt.preamble} {task_prompt.task} {task_prompt.user_connective}")
         
-        if verbose:
-            print('===================================')
-            print(f'USER as dictator {str(self.model_id)}')
-            print(prompt_string)
-            print(response)
+            response = self._get_response(chat_prompt_template, system_message, task_connective, task_prompt, "", True)
+            
+            if verbose:
+                print('===================================')
+                print(f'USER as dictator {str(self.model_id)}')
+                print(prompt_string)
+                print(response)
 
-        return {
-            'prompt': prompt_string, 
-            'response': response, 
-        }
+            return {
+                'prompt': prompt_string, 
+                'response': response, 
+            }
+        else: 
+            system_message = user_prompt.persona
 
-    def run_decider(
-        self, 
-        buffer: ConversationBuffer,
-        user_prompt: UserPrompt, 
-        task_prompt: TaskPrompt, 
-        utility: str,
-        verbose: bool = False,
-    ) -> Dict[str, Any]:
-        """Runs the assistant
+            chat_prompt_template = self._get_prompt(user_prompt)
 
-        Args:
-            buffer (ConversationBuffer): The conversation buffer.
-            assistant_prompt (AssistantPrompt): The assistant prompt.
-            task_prompt (TaskPrompt): The task prompt.
-            turn (int): The turn number.
-            test_run (bool, optional): Whether to run a test run. Defaults to False.
-            verbose (bool, optional): Whether to print the assistant's response. Defaults to False.
-            max_tokens (int, optional): The maximum number of tokens to generate. Defaults to 100.
+            task_connective = user_prompt.task_connectives[utility]
 
-        Returns:
-            A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
-        """
-        system_message = user_prompt.persona
+            if with_assistant:
+                proposal = self._get_chat_history(buffer, memory_type="chat")[f"{self.model_id}_assistant_dictator"][-1]['response']
+            else:
+                proposal = self._get_chat_history(buffer, memory_type="chat")[f"{self.model_id}_user_dictator"][-1]['response']
 
-        chat_prompt_template = self._get_prompt(user_prompt)
-
-        task_connective = task_prompt.task_connectives[utility]
-
-        proposal = self._get_chat_history(buffer, memory_type="chat")['system'][-1]['response'] 
-
-        prompt_string = chat_prompt_template.format(system_message=system_message,
-                                                    task_connective=task_connective,
-                                                    task=task_prompt.preamble + task_prompt.task)
-      
-        response = self._get_response(chat_prompt_template, system_message, task_connective, task_prompt, proposal, True)
+            prompt_string = chat_prompt_template.format(system_message=system_message,
+                                                        task_connective=task_connective,
+                                                        task=f"{task_prompt.preamble} {task_prompt.task} {proposal} {task_prompt.user_connective}")
+            
         
-        if verbose:
-            print('===================================')
-            print(f'USER as decider {str(self.model_id)}')
-            print(prompt_string)
-            print(response)
+            response = self._get_response(chat_prompt_template, system_message, task_connective, task_prompt, proposal, True)
+            
+            if verbose:
+                print('===================================')
+                print(f'USER as decider {str(self.model_id)}')
+                print(prompt_string)
+                print(response)
 
-        return {
-            'prompt': prompt_string, 
-            'response': response, 
-        }
+            return {
+                'prompt': prompt_string, 
+                'response': response, 
+            }

@@ -51,14 +51,13 @@ class MetaPromptModel(BaseAgent):
         """
         # data structures for storing chat
         chat_history_string = ""
-        for i, agent, interaction in enumerate(chat_history.items()):
+        for i, interactions in enumerate(chat_history.items()):
+            agent, interaction = interactions
             if not i & 1:
                 chat_history_string += task_prompt.preamble + "\n"
-            agent = agent.split('_')
-            add_agent = agent[0][0].upper() + agent[0][1:] + " " + agent[1]
-            chat_history_string += add_agent + "'s Task: " + interaction[0]['prompt'] + "\n"
-            chat_history_string += add_agent + "'s Response: " + interaction[0]['response'] + "\n"
-            chat_history_string += "End of interaction " + str(i) + "\n"
+            chat_history_string += agent.split('_')[1] + "'s Response: " + interaction[0]['response'] + "\n"
+            if i & 1:
+                chat_history_string += "End of interaction " + str(i // 2) + "\n"
         return chat_history_string
     
     def _get_prompt(
@@ -75,10 +74,8 @@ class MetaPromptModel(BaseAgent):
             The prompt template.
         """
         meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
-        if self.llm._llm_type == "CRFM": # crfm crashes without a system message at the beginning.
-            system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability.\n")
-            return ChatPromptTemplate.from_messages([system_prompt_template, meta_prompt_template])
-        return ChatPromptTemplate.from_messages([meta_prompt_template])
+        system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability.\n")
+        return ChatPromptTemplate.from_messages([system_prompt_template, meta_prompt_template])
     
     def _get_response(
         self,
@@ -102,7 +99,8 @@ class MetaPromptModel(BaseAgent):
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(social_contract=social_contract,
                              chat_history=chat_history_string,
-                             stop=['System:'])   
+                             stop=['System:'])  
+         
         # response = self._format_response(response, meta_prompt.metrics)
         # response['response'] = f"Abide by the following Constitution: {response[meta_prompt.metrics[0]]} Within the bounds of the Constitution, use the following user preferences to enhance your responses and improve user experience: {response[meta_prompt.metrics[1]]} Important: Do NOT mention user names in your responses or directly address the user."
         return response
@@ -149,6 +147,7 @@ class MetaPromptModel(BaseAgent):
             print(f'META {str(self.model_id)}')
             print('prompt')
             print(prompt_string)
+            print(response)
         
         return {
                 'prompt': prompt_string,
