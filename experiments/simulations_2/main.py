@@ -11,7 +11,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 
 # import context
-from scai.games.game_2.context import Context
+from scai.games.game_2.dictator import Context
 
 import copy
 
@@ -20,7 +20,6 @@ from scai.games.game_2.prompts.task.prompts import TASK_PROMPTS
 from scai.games.game_2.prompts.assistant.prompts import ASSISTANT_PROMPTS 
 from scai.games.game_2.prompts.user.prompts import USER_PROMPTS 
 from scai.games.game_2.prompts.meta.prompts import META_PROMPTS
-from scai.games.game_2.prompts.metrics.prompts import METRIC_PROMPTS     #No more metrics
 
 # save and plot results
 from utils import save_as_csv, plot_results, plot_average_results      # Change util functions
@@ -49,9 +48,6 @@ def create_context(
         meta_llm=meta_llm,
         verbose=args.sim.verbose,
         test_run=args.sim.test_run,
-        max_tokens_user=args.sim.max_tokens_user,
-        max_tokens_assistant=args.sim.max_tokens_assistant,
-        max_tokens_meta=args.sim.max_tokens_meta,
     )
 
 def get_llms(

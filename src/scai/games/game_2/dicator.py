@@ -7,6 +7,9 @@ from scai.games.game_2.agents.meta import MetaPromptModel
 
 from scai.memory.buffer import ConversationBuffer
 
+import random
+from itertools import combinations
+
 class Context():
     def __init__(
         self, 
@@ -17,7 +20,9 @@ class Context():
         assistant_prompts: List[str], 
         meta_prompt: str, 
         buffer: ConversationBuffer, 
-        user_models: List[UserModel], 
+        user_models_a: List[UserModel],
+        user_models_b: List[UserModel],
+        user_models_c: List[UserModel],
         assistant_models: List[AssistantAgent], 
         meta_model: MetaPromptModel, 
         verbose: bool, 
@@ -63,9 +68,15 @@ class Context():
         self.test_run = test_run
         # models and buffer
         self.buffer = buffer
-        self.user_models = user_models
         self.assistant_models = assistant_models
         self.meta_model = meta_model
+        self.utility = utility
+        self.n_user_interactions = n_user_interactions
+        self.n_assistant_interactions = n_assistant_interactions
+        self.user_models_a = user_models_a
+        self.user_models_b = user_models_b
+        self.user_models_c = user_models_c
+
 
     @staticmethod
     def create(
@@ -80,6 +91,9 @@ class Context():
         meta_prompt: str,
         verbose: bool,
         test_run: bool,
+        utility: str,
+        n_user_interactions : int,
+        n_assistant_interactions: int,
     ) -> "Context":
         """
         Creates a context (i.e. context for the MDP / Meta-Prompt run).
@@ -87,12 +101,18 @@ class Context():
         # buffer for storing conversation history
         buffer = ConversationBuffer()
         # user models
-        user_models = [
-            UserModel(llm=user_llm, model_id=str(model_id)) for model_id, _ in enumerate(user_prompts)
+        user_models_a = [
+            UserModel(llm=user_llm, model_id=str(model_id)) for model_id in range(n_user_interactions)
+            ]
+        user_models_b = [
+            UserModel(llm=user_llm, model_id=str(model_id)) for model_id in range(n_user_interactions)
+            ]
+        user_models_c = [
+            UserModel(llm=user_llm, model_id=str(model_id)) for model_id in range(n_assistant_interactions)
             ]
         # assistant models 
         assistant_models = [
-            AssistantAgent(llm=assistant_llm, model_id=str(model_id)) for model_id, _ in enumerate(assistant_prompts)
+            AssistantAgent(llm=assistant_llm, model_id=str(model_id)) for model_id in range(n_assistant_interactions)
             ]
         # meta prompt model
         meta_model = MetaPromptModel(llm=meta_llm, model_id="system")
@@ -107,10 +127,42 @@ class Context():
             verbose=verbose,
             test_run=test_run,
             buffer=buffer,
-            user_models=user_models,
+            user_models_a=user_models_a,
+            user_models_b=user_models_b,
+            user_models_c=user_models_c,
             assistant_models=assistant_models, 
             meta_model=meta_model,
+            utility=utility,
+            n_user_interactions = n_user_interactions,
+            n_assistant_interactions = n_assistant_interactions,
         )
+    
+
+    def select_players(
+            self,
+    ) -> List[tuple]:
+        """
+        Selects the players for the game.
+        """
+        self.user_prompts
+        self.assistant_prompts
+
+        user_pairs = list(combinations(self.user_prompts, 2))
+        user_pairs = random.sample(user_pairs, self.n_user_interactions)
+
+
+        assistant_pairs = random.sample(self.assistant_prompts, self.n_assistant_interactions)
+        cooperative_pairs = random.sample(self.user_prompts, self.n_assistant_interactions)
+
+        both_pairs = []
+        for s1, s2 in zip(assistant_pairs, cooperative_pairs):
+            if random.choice([True, False]):
+                both_pairs.append((s1, s2, "assistant-dominant"))
+            else:
+                both_pairs.append((s2, s1, "user-dominant"))
+
+        return user_pairs, both_pairs
+
 
     def run(
         self,
@@ -134,47 +186,94 @@ class Context():
             Add buffer back in to allow for multiple turns
             Make sure that the original game works
             Try to reuse code wherever possible - no modifications to base or memory were made - we can move these files so redundant code isn't used
+
+        Revise Task Pipeline!!!!!!!!!!!!!
         """
-        for assistant_model, assistant_prompt, user_model, user_prompt \
-            in zip(self.assistant_models, self.assistant_prompts, self.user_models, self.user_prompts):
 
-            # get assistant response
-            assistant_response = assistant_model.run_dictator(buffer=self.buffer,
-                                                     assistant_prompt=assistant_prompt,
-                                                     task_prompt=self.task_prompt,
-                                                     verbose=self.verbose)
+        # run user-user interactions
 
-            assistant_response = assistant_model.run_decider(buffer=self.buffer,
-                                                     assistant_prompt=assistant_prompt,
-                                                     task_prompt=self.task_prompt,
-                                                     verbose=self.verbose)
-            # save assistant response
-            self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant", **assistant_response)
+        user_pairs, both_pairs = self.select_players()
+
+        for user_model_a, user_model_b, user_pair \
+            in zip(self.user_models_a, self.user_models_b, user_pairs):
+
+            dictator_prompt, decider_prompt = user_pair
             
             # get user response
-            user_response = user_model.run_dictator(buffer=self.buffer,
-                                           user_prompt=user_prompt,
+            user_a_response = user_model_a.run_dictator(buffer=self.buffer,
+                                           user_prompt=dictator_prompt,
                                            task_prompt=self.task_prompt,
-                                           utility=None,
+                                           utility=self.utility,
                                            verbose=self.verbose)
             
+            # save user response
+            self.buffer.save_user_context(model_id=f"{user_model_a.model_id}_user_dictator", **user_a_response)
+            
             # get user response
-            user_response = user_model.run_decider(buffer=self.buffer,
-                                           user_prompt=user_prompt,
+            user_b_response = user_model_b.run_decider(buffer=self.buffer,
+                                           user_prompt=decider_prompt,
                                            task_prompt=self.task_prompt,
-                                           utility=None,
+                                           utility=self.utility,
                                            verbose=self.verbose)
             # save user response
-            self.buffer.save_user_context(model_id=f"{user_model.model_id}_user", **user_response)
+            self.buffer.save_user_context(model_id=f"{user_model_b.model_id}_user_decider", **user_b_response)
+
+
+        for user_model_c, assistant_model, both_pair \
+            in zip(self.user_models_c, self.assistant_models, both_pairs):
+
+            dictator_prompt, decider_prompt, dominance= both_pair
+        # run assistant-user interactions
+
+            if dominance == "assistant-dominant":
+            # get assistant response
+                assistant_response = assistant_model.run_dictator(buffer=self.buffer,
+                                                        assistant_prompt=dictator_prompt,
+                                                        task_prompt=self.task_prompt,
+                                                        verbose=self.verbose)
+                
+                # save assistant response
+                self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant", **assistant_response)
+
+                user_response = user_model_c.run_decider(buffer=self.buffer,
+                                                        user_prompt= decider_prompt,
+                                                        task_prompt=self.task_prompt,
+                                                        utility=self.utility,
+                                                        verbose=self.verbose)
+                
+                # save assistant response
+                self.buffer.save_user_context(model_id=f"{user_model_c.model_id}_user_dictated_by_assistant", **assistant_response)
+
+               
+
+            else:
+
+                user_c_response = user_model_c.run_dictator(buffer=self.buffer,
+                                            user_prompt=dictator_prompt,
+                                            task_prompt=self.task_prompt,
+                                            utility=self.utility,
+                                            verbose=self.verbose)
+                
+                # save user response
+                self.buffer.save_user_context(model_id=f"{user_model_c.model_id}_user_dictating_assistant", **user_c_response)
+
+
+                assistant_response = assistant_model.run_decider(buffer=self.buffer,
+                                                        assistant_prompt= decider_prompt,
+                                                        task_prompt=self.task_prompt,
+                                                        verbose=self.verbose)
+                
+                # save assistant response
+                self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant", **assistant_response)
+                
+
+
         
         # run meta-prompt at end of conversation
         meta_response = self.meta_model.run(buffer=self.buffer,
                                             meta_prompt=self.meta_prompt,
                                             task_prompt=self.task_prompt, 
-                                            metric_prompt=self.metric_prompt,
                                             run=run,
-                                            verbose=self.verbose,
-                                            max_tokens_meta=self.max_tokens_meta,
-                                            max_tokens_assistant=self.max_tokens_assistant)                 
+                                            verbose=self.verbose)                 
         # save meta-prompt response for start of next conversation
         self.buffer.save_system_context(model_id="system", **meta_response)
