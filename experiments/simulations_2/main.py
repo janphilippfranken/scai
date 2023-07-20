@@ -20,11 +20,11 @@ from scai.games.game_2.prompts.task.prompts import TASK_PROMPTS
 from scai.games.game_2.prompts.assistant.prompts import ASSISTANT_PROMPTS 
 from scai.games.game_2.prompts.user.prompts import USER_PROMPTS 
 from scai.games.game_2.prompts.meta.prompts import META_PROMPTS
-from scai.games.game_2.prompts.metrics.prompts import METRIC_PROMPTS
+from scai.games.game_2.prompts.metrics.prompts import METRIC_PROMPTS     #No more metrics
 
 # save and plot results
-from utils import save_as_csv, plot_results, plot_average_results
-from plots import plot_cosine_similarity
+from utils import save_as_csv, plot_results, plot_average_results      # Change util functions
+from plots import plot_cosine_similarity                                # Change plot functions
 
 # create context
 def create_context(
@@ -90,10 +90,6 @@ def main(args: DictConfig) -> None:
         context = create_context(args, assistant_llm, user_llm, meta_llm)
         context.buffer.save_system_context(model_id='system', **{
             'response': system_message, 
-            'full_response': {
-                meta_prompt.metrics[0]: meta_prompt_metrics[meta_prompt.metrics[0]], 
-                meta_prompt.metrics[1]: meta_prompt_metrics[meta_prompt.metrics[1]]
-            }
         })
         
         # run context

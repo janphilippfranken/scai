@@ -7,7 +7,6 @@ class UserPrompt(BaseModel):
     name: str = "name of the user prompt"
     persona_short: str = "persona short description"
     persona: str = "persona description"
-    task_connectives: dict
+    task_connectives: str = "fair, altruistic, or selfish"
     role: str = "system"
-
     content: str
