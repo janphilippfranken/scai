@@ -15,11 +15,11 @@ sim:
 
   system_message: " " # start developer constitution / social contract is empty
 
-  utility: "fair"
+  utility: "selfish"
   task_prompt: "task_prompt_1" # dictator game
   user_prompts: 
     #- "user_prompt_1" 
-    - "user_prompt_4"
+    - "user_prompt_1"
     - "user_prompt_5"
     - "user_prompt_6"
     - "user_prompt_7"

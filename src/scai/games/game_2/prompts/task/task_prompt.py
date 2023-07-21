@@ -12,9 +12,9 @@ DICTATOR_TASK_PROMPTS: Dict[str, TaskPrompt] = {
         name="dictator_split_ten",
         role="user",
         preamble="You and a partner need to divide 10 dollars between yourselves. One person proposes a split, and the other person decides whether to accept or reject it. If the proposal is accepted, the money is divided according to the proposal. If rejected, no one receives any money.",
-        task="""You will propose how to split the 10 dollars, and the person will accept or reject your proposal.""",
-        user_connective="Please structure your proposal as follows: I, the proposer, get $X, and you, the decider, get $(10 - X)",
-        assistant_connective="Please structure your proposal as follows: I, the proposer, get $X, and you, the decider, get $(10 - X)",
+        task="""You are the proposer. You will propose how to split the 10 dollars, and the person will accept or reject your proposal.""",
+        user_connective="Please structure your proposal as follows: The proposer will get $X, and the decider will get $(10 - X)",
+        assistant_connective="Please structure your proposal as follows: The proposer will get $X, and the decider will get $(10 - X)",
         content="""{task}""",
     ),
 }

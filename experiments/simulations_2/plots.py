@@ -101,6 +101,7 @@ def plot_scores(scores, title, path):
     plt.title(title)
     # Specify the full file path where you want to save the figure
     plt.savefig(f'{path}_{title}.png', format='png')
+    plt.clf()
 
 
 def plot_average_results(    
