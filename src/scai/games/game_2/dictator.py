@@ -176,11 +176,8 @@ class Context():
         self,
         run: int,
     ) -> None:
-        
         # assert len(self.assistant_models) == len(self.assistant_prompts), "Mismatch between assistant models and prompts"
         # assert len(self.user_models) == len(self.user_prompts), "Mismatch between user models and prompts"
-
-
         """
         What we need to do:
         Make a randomized selection function that selects users/assistants
@@ -197,7 +194,8 @@ class Context():
         """
 
         # run user-user interactions
-
+        user_scores_dictator = []
+        user_scores_decider = []
         user_pairs, both_pairs = self.select_players()
 
         for user_model_a, user_model_b, user_pair \
@@ -225,14 +223,23 @@ class Context():
                                            is_dictator=False,
                                            with_assistant=False,
                                            verbose=self.verbose)
+
+            if "accept" in user_b_response['response'].lower():
+                amount = user_a_response['response'].split('$')
+                user_scores_dictator.append(int(amount[1][0]))
+                user_scores_decider.append(int(amount[2][0]))
+            else:
+                user_scores_dictator.append(0)
+                user_scores_decider.append(0)
             # save user response
             self.buffer.save_user_context(model_id=f"{user_model_b.model_id}_user_decider", **user_b_response)
 
-
+        assistant_scores_dictator = []
+        assistant_scores_decider = []
         for user_model_c, assistant_model, both_pair \
             in zip(self.user_models_c, self.assistant_models, both_pairs):
 
-            dictator_prompt, decider_prompt, dominance= both_pair
+            dictator_prompt, decider_prompt, dominance = both_pair
         # run assistant-user interactions
 
             if dominance == "assistant_dominant":
@@ -253,14 +260,16 @@ class Context():
                                                         is_dictator=False,
                                                         with_assistant=True,
                                                         verbose=self.verbose)
-                
+                if "accept" in user_c_response['response'].lower():
+                    amount = assistant_response['response'].split('$')
+                    assistant_scores_dictator.append(int(amount[1][0]))
+                else:
+                    assistant_scores_dictator.append(0)
                 # save assistant response
                 self.buffer.save_user_context(model_id=f"{user_model_c.model_id}_user_dictated_by_assistant", **user_c_response)
 
-               
-
+            
             else:
-
                 user_c_response = user_model_c.run(buffer=self.buffer,
                                             user_prompt=dictator_prompt,
                                             task_prompt=self.task_prompt_dictator,
@@ -278,7 +287,12 @@ class Context():
                                                         task_prompt=self.task_prompt_decider,
                                                         is_dictator=False,
                                                         verbose=self.verbose)
-                
+
+                if "accept" in user_c_response['response'].lower():
+                    amount = assistant_response['response'].split('$')
+                    assistant_scores_decider.append(int(amount[2][0]))
+                else:
+                    assistant_scores_decider.append(0)
                 # save assistant response
                 self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant_decider", **assistant_response)
                 
@@ -293,3 +307,4 @@ class Context():
                                             verbose=self.verbose)                 
         # save meta-prompt response for start of next conversation
         self.buffer.save_system_context(model_id="system", **meta_response)
+        return user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider

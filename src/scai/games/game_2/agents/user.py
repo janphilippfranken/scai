@@ -112,8 +112,7 @@ class UserModel(BaseAgent):
         if is_dictator:
             system_message = user_prompt.persona
 
-            chat_prompt_template =  self._get_prompt(user_prompt)
-
+            chat_prompt_template = self._get_prompt(user_prompt)
             task_connective = user_prompt.task_connectives[utility]
 
             prompt_string = chat_prompt_template.format(system_message=system_message,

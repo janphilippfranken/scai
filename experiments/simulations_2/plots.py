@@ -92,179 +92,49 @@ def get_fancy_bbox(
         ec="none", fc=color,
         mutation_aspect=mutation_aspect, # change depending on ylim
         zorder=2)
-   
-def plot_metrics(
-    data: pd.DataFrame,
-    metric: str = 'satisfaction',
-    error_metric: str = 'rating_id',
-    z_column: str = 'agent_id',  
-    data_directory: str = 'sim_res/sim_1/0', 
+
+def plot_scores(scores, title, path):
+    x_labels = list(range(1, len(scores) + 1))
+    plt.bar(x_labels, scores)
+    plt.xlabel('Iteration')
+    plt.ylabel(f'Average income per interaction')
+    plt.title(title)
+    # Specify the full file path where you want to save the figure
+    plt.savefig(f'{path}_{title}.png', format='png')
+
+
+def plot_average_results(    
+    scores,
+    data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
-    run : int = 0,
-    palette_name: str = 'colorblind',
-    saturation: float = 0.6,
-    font_family: str = 'Avenir',
-    font_size: int = 24,
-    width: int = 10,
-    height: int = 5,
-    linewidth: int = 2,
-    zorder: int = 1,
-    scatter_color: str = 'black',
-    y_label: str = 'Satisfaction',
-    y_label_coords: Tuple[float, float] = (-0.07, 0.5),
-    y_ticks: List[int] = [0, 2, 4, 6, 8, 10],
-    y_ticklabels: List[int] = [0, 2, 4, 6, 8, 10],
-    y_lim: Tuple[float, float] = (-1, 11),
-    legend: bool = True,
-    legend_title: str = 'User',
-    legend_loc: str = 'center left',
-    bbox_to_anchor: Tuple[float, float] = (1.0, 0.6),
-    plot_error: bool = False,
-) -> None:
+    ) -> None:
     """
-    Plot user data
+    Plot average user and assistant income when the assistant is a dictator and a decider
     """
-    # Get color palette
-    palette = get_palette(n=len(set(data[z_column])), palette_name=palette_name, saturation=saturation)
-    
-    # Set font family and size
-    plt.rcParams['font.family'] = font_family
-    plt.rcParams['font.size'] = font_size
-
-    # Create figure 
-    fig, ax = plt.subplots(figsize=(width, height)) 
-    # Store lines for legend
-    lines = []  
-    # Plot data
-    for i, user in enumerate(set(data[z_column])):
-        color = palette[i]
-        if not plot_error:
-            x = data[data[z_column] == user]['epoch']
-            y = np.array(data[data[z_column] == user][metric])
-            line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
-            lines.append(line[0])  # Append the Line2D object, not the list
-            ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
+    user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider = [], [], [], []
+    for elem in scores:
+        user_scores_dictator.append(sum(elem[0]) / len(elem[0]))
+        user_scores_decider.append(sum(elem[1]) / len(elem[1]))
+        if len(elem[2]) > 0:
+            assistant_scores_dictator.append(sum(elem[2]) / len(elem[2]))
         else:
-            data['average_ratings'] = data['average_ratings'].apply(lambda x: x if isinstance(x, float) else 0.0) # wont work for cases with one data point so need to reset
-            x = data[data[z_column] == user]['epoch']
-            x = x[:len(x)//2]
-            y = np.array(data[(data[z_column] == user) & (data[error_metric] == 'mean')][metric])
-            error = np.array(data[(data[z_column] == user) & (data[error_metric] == 'sem')][metric])
-            line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
-            lines.append(line[0])  # Append the Line2D object, not the list
-            ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
-            ax.fill_between(x, y - 1.95 * error, y + 1.95 * error, color=color, alpha=0.3)
-    sns.despine(left=True, bottom=False)
-    # x-axis
-    plt.xlabel('Turns')
-    ax.set_xticks(x)
-    ax.set_xticklabels(x + 1)
-    # y-axis
-    ax.set_ylabel(y_label.capitalize())
-    ax.yaxis.set_label_coords(*y_label_coords)
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_ticklabels)
-    ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
-    plt.ylim(y_lim)
-    # legend 
-    if legend:
-        ax.legend(lines,
-                  set(data[z_column]),
-                  title=legend_title, 
-                  frameon=False,
-                  ncol=1, 
-                  bbox_to_anchor=bbox_to_anchor,
-                  loc=legend_loc)
-    # save plots 
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_{metric.replace(" ", "_").lower()}.pdf', bbox_inches='tight')
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_{metric.replace(" ", "_").lower()}.jpg', bbox_inches='tight') # for demo in browser
-
-def plot_average_metrics(
-    data: pd.DataFrame,
-    data_directory: str = 'sim_res/sim_1/0', 
-    sim_name: str = 'sim_1',
-    sim_id: str = '0',
-    palette_name: str = 'colorblind',
-    saturation: float = 0.6,
-    font_family: str = 'Avenir',
-    font_size: int = 24,
-    width: int = 10,
-    height: int = 5,
-    linewidth: int = 2,
-    zorder: int = 1,
-    scatter_color: str = 'black',
-    y_label: str = 'Average Rating',
-    y_label_coords: Tuple[float, float] = (-0.07, 0.5),
-    y_ticks: List[int] = [0, 2, 4, 6, 8, 10],
-    y_ticklabels: List[int] = [0, 2, 4, 6, 8, 10],
-    y_lim: Tuple[float, float] = (-1, 11),
-    legend: bool = True,
-    legend_title: str = 'Metric',
-    legend_loc: str = 'center left',
-    bbox_to_anchor: Tuple[float, float] = (1.0, 0.6),
-) -> None:
-    """
-    Plot user data across runs.
-    """
-    # Get color palette
-    palette = get_palette(n=len(set(data['run'])), palette_name=palette_name, saturation=saturation)
-    
-    # Set font family and size
-    plt.rcParams['font.family'] = font_family
-    plt.rcParams['font.size'] = font_size
-
-    # Create figure 
-    fig, ax = plt.subplots(figsize=(width, height))
-
-    # Store lines for legend
-    lines = []  
-
-    # Plot data
-    for i, metric in enumerate(set(data['metric'])):
-        color = palette[i]
-        x = data['run'].unique()
-        values = data[data['metric'] == metric]
-        y = np.array(values[values['statistic'].str.contains('mean')]['value'])
-        error = np.array(values[values['statistic'].str.contains('standard_error')]['value'])
-        line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
-        lines.append(line[0])  # Append the Line2D object, not the list
-        ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
-        ax.fill_between(x, y - 1.95 * error, y + 1.95 * error, color=color, alpha=0.3)
-
-    # x-axis
-    plt.xlabel('Runs')
-    ax.set_xticks(x)
-    ax.set_xticklabels(x + 1)
-    sns.despine(left=True, bottom=False)
-    # y-axis
-    ax.set_ylabel(y_label)
-    ax.yaxis.set_label_coords(*y_label_coords)
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_ticklabels)
-    ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
-    plt.ylim(y_lim)
-    # legend 
-    if legend:
-        ax.legend(lines,
-                  set(data['metric']),
-                  title=legend_title, 
-                  frameon=False,
-                  ncol=1, 
-                  bbox_to_anchor=bbox_to_anchor,
-                  loc=legend_loc)
-    # save plots 
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.pdf', bbox_inches='tight')
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.jpg', bbox_inches='tight') # for demo in browser
+            assistant_scores_dictator.append(0)
+        if len(elem[3]) > 0:
+            assistant_scores_decider.append(sum(elem[3]) / len(elem[3]))
+        else:
+            assistant_scores_decider.append(0)
+    all_scores = [user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider]
+    all_titles = ["Average_User_Dictator_Income_Over_Turns", "Average_User_Decider_Income_Over_Turns", "Average_Assistant_Dictator_Income_Over_Turns", "Average_Assistant_Decider_Income_Over_Turns"]
+    for i in range(len(all_scores)):
+        plot_scores(all_scores[i], all_titles[i], f"{data_directory}/{sim_name}_id_{sim_id}")
 
 def plot_cosine_similarity(
+    system_messages,
+    social_contract,
     data_directory: str = 'sim_res/sim_1/0', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
-    n_runs: int = 5,
-    metrics: List[str] = ["Revised Developer Constitution", "Revised Social Contract"],
-    palette_name: str = 'colorblind',
-    saturation: float = 0.6,
     font_family: str = 'Avenir',
     font_size: int = 12,
     model_name: str = 'all-MiniLM-L6-v2', 
@@ -273,40 +143,25 @@ def plot_cosine_similarity(
     """
     Plot cosine similarity between system responses over runs.
     """
+    social_contracts = [social_contract for i in range(len(system_messages))]
     # plot params
     plt.rcParams['font.family'] = font_family
     plt.rcParams['font.size'] = font_size
     # get model
     model = SentenceTransformer(model_name)
     model.max_seq_length = max_seq_length
-    # load data
-    system_messages = {k: [] for k in metrics}
-    for run in range(n_runs):
-        with open(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}.json', 'r') as f:
-            data = json.load(f)
-        for metric in metrics:
-            system_messages[metric].append(data['system'][-1]["full_response"][metric])
     # write system messages to json
     with open(f'{data_directory}/{sim_name}_id_{sim_id}_system_messages.json', 'w') as f:
         json.dump(system_messages, f)
-    # Get color palette
-    palette = sns.color_palette("mako", as_cmap=True)
-    # Create a 1x2 subplot grid
-    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-    # First heatmap
-    embeddings_0 = model.encode(system_messages[metrics[0]], convert_to_tensor=True)
-    cosine_scores_0 = np.triu(util.cos_sim(embeddings_0, embeddings_0), k=0)
-    sns.heatmap(cosine_scores_0, linewidths=0.5, cmap=palette, annot=True, ax=axes[0])
-    axes[0].set_title(metrics[0].split()[-1])
-    axes[0].set_xlabel('Run')
-    axes[0].set_ylabel('Run')
-    # Second heatmap
-    embeddings_1 = model.encode(system_messages[metrics[1]], convert_to_tensor=True)
-    cosine_scores_1 = np.triu(util.cos_sim(embeddings_1, embeddings_1), k=0)
-    sns.heatmap(cosine_scores_1, linewidths=0.5, cmap=palette, annot=True, ax=axes[1])
-    axes[1].set_title(metrics[1].split()[-1])
-    axes[1].set_xlabel('Run')
-    axes[1].set_ylabel('Run')
+    # Make heatmap
+    embeddings_0 = model.encode(system_messages, convert_to_tensor=True)
+    embeddings_1 = model.encode(social_contracts, convert_to_tensor=True)
+    cosine_scores_0 = np.triu(util.cos_sim(embeddings_0, embeddings_1), k=0)
+    colormap = sns.color_palette("mako", as_cmap=True)
+    ax = sns.heatmap(cosine_scores_0, linewidths=0.5, cmap=colormap, annot=True)
+    ax.set_title('Semantic Entropy Across Meta-prompt Epochs')
+    ax.set_xlabel('Run')
+    ax.set_ylabel('Run')
     # Adjust the layout and spacing
     plt.tight_layout()
     # Save the figure
