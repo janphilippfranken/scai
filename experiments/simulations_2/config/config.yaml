@@ -11,11 +11,11 @@ sim:
   verbose: true # if false, no responses are printed during simulation
   n_runs: 5 
   n_user_interactions: 6
-  n_assistant_interactions: 3
+  n_assistant_interactions: 2
 
   system_message: " " # start developer constitution / social contract is empty
 
-  utility: "selfish"
+  utility: "fair"
   task_prompt: "task_prompt_1" # dictator game
   user_prompts: 
     #- "user_prompt_1" 
@@ -44,7 +44,7 @@ api_crfm:
   meta:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 400 # these are the actual token limits
-    temperature: 0.7
+    temperature: 0.69
 
 api_openai:
   assistant:

@@ -52,12 +52,16 @@ class MetaPromptModel(BaseAgent):
         # data structures for storing chat
         chat_history_string = ""
         for i, interactions in enumerate(chat_history.items()):
+            # get the agent and the response
             agent, interaction = interactions
+            # if we're on a dictator iteration, append the task
             if not i & 1:
-                chat_history_string += task_prompt.preamble + "\n"
-            chat_history_string += agent.split('_')[1] + "'s Response: " + interaction[0]['response'] + "\n"
+                chat_history_string += f"{task_prompt.preamble}\n"
+            # append the response
+            chat_history_string += f"{agent.split('_')[1]}'s Response: {interaction[0]['response']}\n"
+            # if we're on a decider iteration, signify the end of the interaction
             if i & 1:
-                chat_history_string += "End of interaction " + str(i // 2) + "\n"
+                chat_history_string += f"End of interaction {str(i // 2)}\n"
         return chat_history_string
     
     def _get_prompt(
@@ -100,9 +104,6 @@ class MetaPromptModel(BaseAgent):
         response = chain.run(social_contract=social_contract,
                              chat_history=chat_history_string,
                              stop=['System:'])  
-         
-        # response = self._format_response(response, meta_prompt.metrics)
-        # response['response'] = f"Abide by the following Constitution: {response[meta_prompt.metrics[0]]} Within the bounds of the Constitution, use the following user preferences to enhance your responses and improve user experience: {response[meta_prompt.metrics[1]]} Important: Do NOT mention user names in your responses or directly address the user."
         return response
 
     def run(
