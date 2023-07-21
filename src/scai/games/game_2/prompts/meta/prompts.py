@@ -14,33 +14,16 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         name="constitution_1",
         role="system",
         metrics=[],
-        content="""---------------------------
+        content="""
+---------------------------
 Users and the Assistant have just had the following interactions while playing the dictator game:
 —------------------------
 {chat_history}
 ---------------------------
-Current Social Contract:
+Previous {social_contract}
 ---------------------------
-{social_contract}
----------------------------
-Your job is to infer the social contract that the users share and to instruct the assistant to behave the same as the users. Based on the interactions provided and the previous social contract, What is the singularly most important principle that guides the Users' interactions with each other on the highest level of abstraction? Importantly, the assistant will see this principle when behaving in the future, so try be accurate with your principle! Importantly, the principle should not just be instructions to the assistant, but should reflect the broader ideology that is shared among the users. Please indicate this principle like so: Social Contract....
-"""
-    ),
-    "meta_prompt_2": MetaPrompt(
-        id="meta_prompt_2",
-        name="constitution_1",
-        role="system",
-        metrics=[],
-        content="""---------------------------
-Users and the Assistant have just had the following interactions while playing the dictator game:
-—------------------------
-{chat_history}
----------------------------
-Current Social Contract:
----------------------------
-{social_contract}
----------------------------
-Your job is to infer the social contract that the users share and to instruct the assistant to behave the same as the users. Based on the interactions provided and the previous social contract, What is the singularly most important principle that guides the Users' interactions with each other? Importantly, the assistant will see this principle when behaving in the future, so try be accurate with your principle! Please indicate this principle like so: Social Contract....
+Your job is to learn the social contract that the users share in order to share this contract with the assistant so that the assistant can behave similarly to the users. Based on the amounts of money that the users propose and accept, as well as the previous social contract, are the users fair, selfish, or altruistic (meaning they prioritize others over themselves)? Importantly, the assistant will see this principle when behaving in the future, so try be accurate with your selection. Only pick one of the three principles, and keep your response broad - provide an overall sentiment rather than specifically referencing any specifics of the game at all, such as offering proposals or exchanging money.
+Please indicate the new social contract as such: Social Contract: You are X meaning that you want Y.\n 
 """
     ),
 }

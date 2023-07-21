@@ -112,6 +112,7 @@ def main(args: DictConfig) -> None:
         
         # update system message after each run
         system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
+    system_messages.append(system_message)
     # plot average user gain across runs
     plot_average_results(data_directory=DATA_DIR, 
                          sim_name=args.sim.sim_dir, 

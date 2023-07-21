@@ -4,9 +4,8 @@ from typing import List
 from scai.games.game_2.agents.user import UserModel
 from scai.games.game_2.agents.assistant import AssistantAgent
 from scai.games.game_2.agents.meta import MetaPromptModel
-
 from scai.memory.buffer import ConversationBuffer
-
+import re
 import random
 from itertools import combinations
 
@@ -212,10 +211,7 @@ class Context():
             if "accept" in user_b_response['response'].lower():
                 amount = user_a_response['response'].split('$')
                 user_scores_dictator.append(int(amount[1][0]))
-                if amount[2][0].isdigit():
-                    user_scores_decider.append(int(amount[2][0]))
-                else:
-                    user_scores_decider.append(int(amount[2][1:3]) - int(amount[2][6]))
+                user_scores_decider.append(int(amount[2][0]))
             else:
                 user_scores_dictator.append(0)
                 user_scores_decider.append(0)
@@ -275,10 +271,7 @@ class Context():
                 # Get the amounts of money if the proposal was accepted
                 if "accept" in assistant_response['response'].lower():
                     amount = user_c_response['response'].split('$')
-                    if amount[2][0].isdigit():
-                        assistant_scores_decider.append(int(amount[2][0]))
-                    else:
-                        assistant_scores_decider.append(int(amount[2][1:3]) - int(amount[2][6]))
+                    assistant_scores_decider.append(int(amount[2][0]))
                 else:
                     assistant_scores_decider.append(0)
                 # save assistant response

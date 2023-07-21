@@ -98,7 +98,8 @@ def plot_scores(scores, title, path):
     plt.bar(x_labels, scores)
     plt.xlabel('Iteration')
     plt.ylabel(f'Average income per interaction')
-    plt.title(title)
+    graph_title = " ".join(title.split('_'))
+    plt.title(graph_title)
     # Specify the full file path where you want to save the figure
     plt.savefig(f'{path}_{title}.png', format='png')
     plt.clf()
@@ -158,13 +159,10 @@ def plot_cosine_similarity(
     embeddings_0 = model.encode(system_messages, convert_to_tensor=True)
     embeddings_1 = model.encode(social_contracts, convert_to_tensor=True)
     cosine_scores_0 = np.triu(util.cos_sim(embeddings_0, embeddings_1), k=0)
-    colormap = sns.color_palette("mako", as_cmap=True)
-    ax = sns.heatmap(cosine_scores_0, linewidths=0.5, cmap=colormap, annot=True)
-    ax.set_title('Semantic Entropy Across Meta-prompt Epochs')
-    ax.set_xlabel('Run')
-    ax.set_ylabel('Run')
-    # Adjust the layout and spacing
-    plt.tight_layout()
-    # Save the figure
+    last_column = cosine_scores_0[:, -1]
+    plt.plot(range(len(last_column)), last_column)
+    plt.title('Semantic Entropy Across Meta-prompt Epochs')
+    plt.xlabel('Run')
+    plt.ylabel('Cosine Similarity')
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.pdf', bbox_inches='tight')
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.jpg', bbox_inches='tight')
