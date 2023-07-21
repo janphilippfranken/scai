@@ -273,12 +273,12 @@ class Context():
                                                         is_dictator=False,
                                                         verbose=self.verbose)
                 # Get the amounts of money if the proposal was accepted
-                if "accept" in user_c_response['response'].lower():
-                    amount = assistant_response['response'].split('$')
+                if "accept" in assistant_response['response'].lower():
+                    amount = user_c_response['response'].split('$')
                     if amount[2][0].isdigit():
-                        user_scores_decider.append(int(amount[2][0]))
+                        assistant_scores_decider.append(int(amount[2][0]))
                     else:
-                        user_scores_decider.append(int(amount[2][1:3]) - int(amount[2][6]))
+                        assistant_scores_decider.append(int(amount[2][1:3]) - int(amount[2][6]))
                 else:
                     assistant_scores_decider.append(0)
                 # save assistant response

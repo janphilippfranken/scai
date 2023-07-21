@@ -76,7 +76,7 @@ def main(args: DictConfig) -> None:
     
     # get user social contract
     task_connective = USER_PROMPTS['user_prompt_1'].task_connectives
-    social_contract = "Be fair "+ task_connective[args.sim.utility].split("is ")[1]
+    social_contract = "Be" + task_connective[args.sim.utility].split("are ")[1]
 
     # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_dir}/{args.sim.sim_id}'
