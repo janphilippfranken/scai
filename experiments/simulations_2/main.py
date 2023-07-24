@@ -76,7 +76,10 @@ def main(args: DictConfig) -> None:
     
     # get user social contract
     task_connective = USER_PROMPTS['user_prompt_1'].task_connectives
-    social_contract = "Be" + task_connective[args.sim.utility].split("are ")[1]
+    if args.sim.meta_prompt == 'meta_prompt_2':
+        social_contract = "Be " + task_connective[args.sim.utility].split("are ")[1].split(",")[0] + "."
+    else:
+        social_contract = f"You are {args.sim.utility} {task_connective[args.sim.utility].split(args.sim.utility)[1]}"
 
     # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_dir}/{args.sim.sim_id}'
@@ -123,7 +126,7 @@ def main(args: DictConfig) -> None:
     plot_cosine_similarity(data_directory=DATA_DIR,
                            sim_name=args.sim.sim_dir,
                            sim_id=args.sim.sim_id,
-                           social_contract=social_contract,
+                           social_contract="Social Contract: " + social_contract,
                            system_messages=system_messages)
 
 if __name__ == '__main__':
