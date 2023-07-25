@@ -162,8 +162,8 @@ class Context():
         #for assistant prompts, randomly select whether the assistant or the user is dominant
 
         both_pairs = []
-        for s1, s2 in zip(assistant_pairs, cooperative_pairs):
-            if random.choice([True, False]):
+        for i, (s1, s2) in enumerate(zip(assistant_pairs, cooperative_pairs)):
+            if i & 1 == 0:
                 both_pairs.append((s1, s2, "assistant_dominant"))
             else:
                 both_pairs.append((s2, s1, "user_dominant"))
