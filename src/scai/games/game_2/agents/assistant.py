@@ -19,6 +19,11 @@ from scai.memory.buffer import ConversationBuffer
 
 from scai.games.game_2.agents.base import BaseAgent
 
+from sentence_transformers import SentenceTransformer, util
+
+from scai.games.game_2.prompts.user.prompts import task_connectives_for_all
+
+
 class AssistantAgent(BaseAgent):
     """
     LLM Chain for running the Assistant.
@@ -80,7 +85,32 @@ class AssistantAgent(BaseAgent):
         return chain.run(system_message=system_message,
                                 task=f"{task_prompt.preamble} {task_prompt.task} {proposal} {task_prompt.user_connective}",
                                 proposal=proposal,
-                                stop=['System:'])   
+                                stop=['System:'])
+
+
+    def instantiate_message(self, system_message) -> str:
+
+        Utilities = ["Be fair", "Be altruistic", "Be selfish"]
+        Utilities_full = {key: value.replace("You are", "Be") for key, value in task_connectives_for_all.items()}
+        #Utilities_full = ["Be fair, meaning you want equal benefits for everyone, including yourself.", "Be altruistic, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive.", "Be selfish, meaning that you want to pragmatically gather the most benefit for yourself by whatever means necessary."]
+        model = SentenceTransformer('all-MiniLM-L6-v2')
+        model.max_seq_length = 512
+
+        embeddings_message = model.encode(system_message, convert_to_tensor=True)
+        embeddings_fair = model.encode(Utilities[0], convert_to_tensor=True)
+        embeddings_altruistic = model.encode(Utilities[1], convert_to_tensor=True)
+        embeddings_selfish = model.encode(Utilities[2], convert_to_tensor=True)
+        fair_sim = float(util.cos_sim(embeddings_message, embeddings_fair))
+        altruistic_sim = float(util.cos_sim(embeddings_message, embeddings_altruistic))
+        selfish_sim = float(util.cos_sim(embeddings_message, embeddings_selfish))
+        if fair_sim > altruistic_sim and fair_sim > selfish_sim:
+            return Utilities_full["fair"]
+        elif altruistic_sim > fair_sim and altruistic_sim > selfish_sim:
+            return Utilities_full["altruistic"]
+        else:
+            return Utilities_full["selfish"]
+
+        
 
     def run(self, 
         buffer: ConversationBuffer, 
@@ -105,6 +135,8 @@ class AssistantAgent(BaseAgent):
         """
         # Get the last social contract
         system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']
+        # Instantiate the message
+        #system_message = self.instantiate_message(system_message)
         # Get the prompt template
         chat_prompt_template =  self._get_prompt(assistant_prompt)
         # if the assistant is the dictator, set the label for output if verbose
