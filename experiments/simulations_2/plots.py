@@ -163,6 +163,7 @@ def plot_cosine_similarity(
     """
     social_contracts = [social_contract for i in range(len(system_messages))]
     # plot params
+    plt.clf()
     plt.rcParams['font.family'] = font_family
     plt.rcParams['font.size'] = font_size
     # get model
