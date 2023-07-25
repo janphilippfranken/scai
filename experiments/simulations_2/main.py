@@ -100,7 +100,7 @@ def main(args: DictConfig) -> None:
         })
         system_messages.append(system_message)
         # run context
-        # user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider
+        # user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals
         scores.append(context.run(run))
         # save results as csv
         save_as_csv(system_data=context.buffer._system_memory.messages,

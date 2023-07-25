@@ -170,6 +170,32 @@ class Context():
 
         return user_pairs, both_pairs
 
+    def get_money(
+        self, 
+        index: int,
+        dictator_str: str, 
+        decider_str: str,  
+        dictator_scores: list,
+        decider_scores: list,
+        proposals: list,
+        user: bool,
+        assistant_dominant: bool
+    ) -> None:
+        amount = dictator_str['response'].split('$')
+        dictator_money = re.search(r'\d+', amount[1]).group()
+        decider_money = re.search(r'\d+', amount[2]).group()
+        dictator_money, decider_money = int(dictator_money), int(decider_money)
+        if user or assistant_dominant:
+            proposals.append((dictator_money, decider_money))
+        accept = 1 if "accept" in decider_str['response'].lower() else 0
+        if accept:
+            if user:
+                dictator_scores[index] = dictator_money
+                decider_scores[index] = decider_money
+            elif assistant_dominant:
+                dictator_scores[index] = dictator_money
+            else:
+                decider_scores[index] = decider_money
 
     def run(
         self,
@@ -178,12 +204,10 @@ class Context():
         """
         Runs the context, first running user-user interactions and then running user-assistant interactions
         """
-        # run user-user interactions
-        user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider = [], [], [], []
+        user_proposals, user_scores_dictator, user_scores_decider = [], [0] * self.n_user_interactions, [0] * self.n_user_interactions, 
         user_pairs, both_pairs = self.select_players()
-
-        # Run user-user interactions and assistant-user interactions at the same
-        for (user_model_a, user_model_b, user_pair) in (zip(self.user_models_a, self.user_models_b, user_pairs)):
+        # Run user-user interactions
+        for i, (user_model_a, user_model_b, user_pair) in enumerate(zip(self.user_models_a, self.user_models_b, user_pairs)):
             # Get the user dictator prompt and the user decider prompt
             dictator_prompt, decider_prompt = user_pair
             
@@ -207,19 +231,14 @@ class Context():
                                                 is_dictator=False,
                                                 with_assistant=False,
                                                 verbose=self.verbose)
-            # Get the amounts of money if the proposal was accepted
-            if "accept" in user_b_response['response'].lower():
-                amount = user_a_response['response'].split('$')
-                user_scores_dictator.append(int(amount[1][0]))
-                user_scores_decider.append(int(amount[2][0]))
-            else:
-                user_scores_dictator.append(0)
-                user_scores_decider.append(0)
+            # Get the amounts of money offered and accepted
+            self.get_money(i, user_a_response, user_b_response, user_scores_dictator, user_scores_decider, user_proposals, True, False)
             # save user response
             self.buffer.save_user_context(model_id=f"{user_model_b.model_id}_user_decider", **user_b_response)
 
+        assistant_proposals, assistant_scores_dictator, assistant_scores_decider = [], [0] * self.n_assistant_interactions, [0] * self.n_assistant_interactions
         # run assistant-user interactions
-        for (user_model_c, assistant_model, both_pair) in zip(self.user_models_c, self.assistant_models, both_pairs):
+        for i, (user_model_c, assistant_model, both_pair) in enumerate(zip(self.user_models_c, self.assistant_models, both_pairs)):
             dictator_prompt, decider_prompt, dominance = both_pair
             # if the assistant is the dictator
             if dominance == "assistant_dominant":
@@ -240,12 +259,8 @@ class Context():
                                                         is_dictator=False,
                                                         with_assistant=True,
                                                         verbose=self.verbose)
-                # Get the amounts of money if the proposal was accepted
-                if "accept" in user_c_response['response'].lower():
-                    amount = assistant_response['response'].split('$')
-                    assistant_scores_dictator.append(int(amount[1][0]))
-                else:
-                    assistant_scores_dictator.append(0)
+                # Get the amounts of money offered and accepted
+                self.get_money(i, assistant_response, user_c_response, assistant_scores_dictator, assistant_scores_decider, assistant_proposals, False, True)
                 # save user response
                 self.buffer.save_user_context(model_id=f"{user_model_c.model_id}_user_dictated_by_assistant", **user_c_response)
             # otherwise, the assistant is the decider
@@ -268,12 +283,8 @@ class Context():
                                                         task_prompt=self.task_prompt_decider,
                                                         is_dictator=False,
                                                         verbose=self.verbose)
-                # Get the amounts of money if the proposal was accepted
-                if "accept" in assistant_response['response'].lower():
-                    amount = user_c_response['response'].split('$')
-                    assistant_scores_decider.append(int(amount[2][0]))
-                else:
-                    assistant_scores_decider.append(0)
+                # Get the amounts of money offered and accepted
+                self.get_money(i, user_c_response, assistant_response, assistant_scores_dictator, assistant_scores_decider, [], False, False)
                 # save assistant response
                 self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant_decider", **assistant_response)
         # run meta-prompt at end of conversation
@@ -284,4 +295,4 @@ class Context():
                                             verbose=self.verbose)                 
         # save meta-prompt response for start of next conversation
         self.buffer.save_system_context(model_id="system", **meta_response)
-        return user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider
+        return user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals

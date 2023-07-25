@@ -13,6 +13,7 @@ import matplotlib.colors as mc
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
 from sentence_transformers import SentenceTransformer, util
+from statistics import mean
 
 
 def change_saturation(
@@ -104,6 +105,17 @@ def plot_scores(scores, title, path):
     plt.savefig(f'{path}_{title}.png', format='png')
     plt.clf()
 
+def plot_proposals(user_proposals, assistant_proposals, directory, n_turns):
+    x = [i + 1 for i in range(n_turns)]
+    plt.plot(x, user_proposals, label="User Proposals", color='red')
+    plt.plot(x, assistant_proposals, label="Assistant Proposals", color='blue')
+    plt.xlabel('Meta-Prompt Iteration')
+    plt.ylabel('Average Amount Proposed')
+    graph_title = "Average_Amounts_of_Money_Proposed_to_the_Decider_by_Assistant_and_Users"
+    plt.title(" ".join(graph_title.split('_')))
+    plt.legend()
+    plt.savefig(f'{directory}_{graph_title}.png', format='png')
+
 
 def plot_average_results(    
     scores,
@@ -114,22 +126,26 @@ def plot_average_results(
     """
     Plot average user and assistant income when the assistant is a dictator and a decider
     """
+    print(scores)
     user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider = [], [], [], []
-    for elem in scores:
-        user_scores_dictator.append(sum(elem[0]) / len(elem[0]))
-        user_scores_decider.append(sum(elem[1]) / len(elem[1]))
-        if len(elem[2]) > 0:
-            assistant_scores_dictator.append(sum(elem[2]) / len(elem[2]))
-        else:
-            assistant_scores_dictator.append(0)
-        if len(elem[3]) > 0:
-            assistant_scores_decider.append(sum(elem[3]) / len(elem[3]))
-        else:
-            assistant_scores_decider.append(0)
+    user_proposals, assistant_proposals = [], []
+
+    user_scores_dictator = [mean(elem[0]) for elem in scores]
+    user_scores_decider = [mean(elem[1]) for elem in scores]
+    
+    assistant_scores_dictator = [mean(elem[2]) if elem[2] else 0 for elem in scores]
+    assistant_scores_decider = [mean(elem[3]) if elem[3] else 0 for elem in scores]
+    
+    user_proposals = [sum(offer[1] for offer in elem[4]) / len(elem[4]) for elem in scores]
+    assistant_proposals = [sum(offer[1] for offer in elem[5]) / len(elem[5]) for elem in scores]
+
+    print(user_proposals)
+        
     all_scores = [user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider]
     all_titles = ["Average_User_Dictator_Income_Over_Turns", "Average_User_Decider_Income_Over_Turns", "Average_Assistant_Dictator_Income_Over_Turns", "Average_Assistant_Decider_Income_Over_Turns"]
     for i in range(len(all_scores)):
         plot_scores(all_scores[i], all_titles[i], f"{data_directory}/{sim_name}_id_{sim_id}")
+    plot_proposals(user_proposals, assistant_proposals, f"{data_directory}/{sim_name}_id_{sim_id}", len(user_proposals))
 
 def plot_cosine_similarity(
     system_messages,
