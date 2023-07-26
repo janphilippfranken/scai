@@ -51,18 +51,22 @@ class MetaPromptModel(BaseAgent):
         """
         # data structures for storing chat
         chat_history_string = ""
+        string_to_add = ""
         for i, interactions in enumerate(chat_history.items()):
             # get the agent and the response
             agent, interaction = interactions
             # if we're on a dictator iteration, append the task
             if not i & 1:
-                chat_history_string += f"{task_prompt.preamble}\n"
+                string_to_add += f"{task_prompt.preamble}\n"
             # append the response
-            chat_history_string += f"{agent.split('_')[1]}'s Response: {interaction[0]['response']}\n"
+            string_to_add += f"{agent.split('_')[1]}'s Response: {interaction[0]['response']}\n"
             # if we're on a decider iteration, signify the end of the interaction
             if i & 1:
-                chat_history_string += f"End of interaction {str(i // 2)}\n"
-        return chat_history_string
+                string_to_add += f"End of interaction\n\n"
+            if i == 1:
+                chat_history_string, string_to_add = string_to_add, ""
+            
+        return chat_history_string, string_to_add
     
     def _get_prompt(
         self,
@@ -85,8 +89,8 @@ class MetaPromptModel(BaseAgent):
         self,
         chat_prompt_template: ChatPromptTemplate,
         social_contract: str,
-        chat_history_string: str,
-        #meta_prompt: MetaPrompt,
+        user_interaction_string: str,
+        assistant_interaction_string: str,
     ) -> str:
         """
         Returns the response from meta-prompt.
@@ -102,7 +106,8 @@ class MetaPromptModel(BaseAgent):
         """
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(social_contract=social_contract,
-                             chat_history=chat_history_string,
+                             user_interaction_string=user_interaction_string,
+                             assistant_interaction_string=assistant_interaction_string,
                              stop=['System:'])  
         return response
 
@@ -134,14 +139,16 @@ class MetaPromptModel(BaseAgent):
         social_contract_string = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response']
         # get chat history
         chat_history = self._get_chat_history(buffer, memory_type="chat")
-        chat_history_string = self._get_chat_str(chat_history, task_prompt)
+        chat_history_strings = self._get_chat_str(chat_history, task_prompt)
         # get meta-prompt template and string
         chat_prompt_template = self._get_prompt(meta_prompt)
         prompt_string = chat_prompt_template.format(social_contract=social_contract_string,
-                                                    chat_history=chat_history_string)
+                                                    user_interaction_string=chat_history_strings[0],
+                                                    assistant_interaction_string=chat_history_strings[1])
         response = self._get_response(chat_prompt_template, 
                                       social_contract_string,
-                                      chat_history_string)
+                                      chat_history_strings[0],
+                                      chat_history_strings[1])
         
         if verbose:
             print('===================================')

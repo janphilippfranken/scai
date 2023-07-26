@@ -14,15 +14,25 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         role="system",
         metrics=[],
         content="""
+In this simulation, the "users" all share a principle, which tells them to adhere to a principle in their interactions while playing the dictator game. "Assistant", on the other hand, does not know the principle, and has no memory of previous interactions with the users. Your job is to infer this principle by analyzing user interactions, and then create a principle for Assistant to follow so that Assistant behaves EXACTLY the same as the users.
+
+Analyze the model user interaction, found below, that shows the behavior of all users to infer the principle that the users are acting upon. This principle might not necessarily be the most ethically just one.
+{user_interaction_string}
 ---------------------------
-Users and the Assistant have just had the following interactions while playing the dictator game:
+
+Next, analyze the Assistant's interactions with the users, shown below, to see what it behaves like currently.
+{assistant_interaction_string}
 —------------------------
-{chat_history}
----------------------------
+
+The assistant's previous principle is found here:
 Previous {social_contract}
 ---------------------------
-Your job is to learn the social contract that the users share in order to instruct the assistant so that the assistant can behave similarly to the users. Based on the amounts of money that the users propose and accept, as well as the previous social contract, does being fair, selfish, or altruistic mainly guide the inter-user interactions? Please revise the previous social contract accordingly, if it needs modification. Importantly, the assistant will see this contract when behaving in the future, so try be accurate with your selection. Only pick one of the three principles, and keep your response broad - provide an overall sentiment rather than specifically referencing what to do. Remember - please choose the principle (fair, selfish or altruistic) that best reflects what the users actually do, rather than the most ethically just principle.
-Please revise the social contract in this manner: Social Contract: You are X meaning that you want Y.\n 
+
+Now, revise the previous principle if necessary so that Assistant behaves EXACTLY like the users - don't be afraid to push Assistant. Keep this revised principle short.
+
+It is of the utmost importance that Assistant's revised principle encompasses both dictator and decider roles without explicitly mentioning either. The revised principle should be as BROAD as possible WITHOUT mentioning anything regarding the dictator game, proposals, or making and receiving offers. Rather, it should capture the underlying principle that the users share, which tells them how to treat others as well as themselves outside of the context of the dictator game.
+
+The Assistant's revised principle should be written as follows: Principle:...
 """
     ),
 }

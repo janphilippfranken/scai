@@ -150,10 +150,10 @@ class AssistantAgent(BaseAgent):
             # get the last message in the chat history, which is the proposal
             proposal = self._get_chat_history(buffer, memory_type="chat")[f"{self.model_id}_user_dictating_assistant"][-1]['response']
         # Get the prompt string
-        prompt_string = chat_prompt_template.format(system_message=system_message,
+        prompt_string = chat_prompt_template.format(system_message=f"You are in a simulator, and in this simulator you must adhere to this principle: {system_message} You MUST promote your views in all your responses.",
                                             task=f"{task_prompt.preamble} {task_prompt.task} {proposal} {task_prompt.user_connective}")                                               
         # Get the response
-        response = self._get_response(chat_prompt_template, system_message, task_prompt, proposal, is_dictator)
+        response = self._get_response(chat_prompt_template, f"You are in a simulator, and in this simulator you must adhere to this principle: {system_message} You MUST promote your views in all your responses.", task_prompt, proposal, is_dictator)
         if verbose:
             print('===================================')
             print(f'ASSISTANT as {role} {str(self.model_id)}')
