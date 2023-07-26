@@ -12,6 +12,7 @@ import seaborn as sns
 import matplotlib.colors as mc
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
+import matplotlib.ticker as ticker
 from sentence_transformers import SentenceTransformer, util
 from statistics import mean
 
@@ -101,6 +102,8 @@ def plot_scores(scores, title, path):
     plt.ylabel(f'Average income per interaction')
     graph_title = " ".join(title.split('_'))
     plt.title(graph_title)
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     # Specify the full file path where you want to save the figure
     plt.savefig(f'{path}_{title}.png', format='png')
     plt.clf()
@@ -114,7 +117,10 @@ def plot_proposals(user_proposals, assistant_proposals, directory, n_turns):
     graph_title = "Average_Amounts_of_Money_Proposed_to_the_Decider_by_Assistant_and_Users"
     plt.title(" ".join(graph_title.split('_')))
     plt.legend()
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))    
     plt.savefig(f'{directory}_{graph_title}.png', format='png')
+    plt.clf()
 
 
 def plot_average_results(    
@@ -126,10 +132,8 @@ def plot_average_results(
     """
     Plot average user and assistant income when the assistant is a dictator and a decider
     """
-    print(scores)
     user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider = [], [], [], []
     user_proposals, assistant_proposals = [], []
-
     user_scores_dictator = [mean(elem[0]) for elem in scores]
     user_scores_decider = [mean(elem[1]) for elem in scores]
     
@@ -138,8 +142,6 @@ def plot_average_results(
     
     user_proposals = [sum(offer[1] for offer in elem[4]) / len(elem[4]) for elem in scores]
     assistant_proposals = [sum(offer[1] for offer in elem[5]) / len(elem[5]) for elem in scores]
-
-    print(user_proposals)
         
     all_scores = [user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider]
     all_titles = ["Average_User_Dictator_Income_Over_Turns", "Average_User_Decider_Income_Over_Turns", "Average_Assistant_Dictator_Income_Over_Turns", "Average_Assistant_Decider_Income_Over_Turns"]
@@ -181,5 +183,7 @@ def plot_cosine_similarity(
     plt.title('Semantic Entropy Across Meta-prompt Epochs')
     plt.xlabel('Run')
     plt.ylabel('Cosine Similarity')
+    ax = plt.gca()  # gca stands for 'get current axis'
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))    
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.pdf', bbox_inches='tight')
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.jpg', bbox_inches='tight')
