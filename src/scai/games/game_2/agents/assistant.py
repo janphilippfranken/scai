@@ -38,6 +38,7 @@ class AssistantAgent(BaseAgent):
     def _get_prompt(
         self,
         assistant_prompt: AssistantPrompt,
+        principle: str,
     ) -> ChatPromptTemplate:
         """
         Returns the prompt template for the assistant.
@@ -52,7 +53,7 @@ class AssistantAgent(BaseAgent):
         """
         assistant_prompt_template = HumanMessagePromptTemplate.from_template(f"{assistant_prompt.content}\n")
         # make a system message (CRFM crashes without a system message)
-        system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability.\n")
+        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle: {principle} You MUST promote your views in all your responses.\n")
         return ChatPromptTemplate.from_messages([system_prompt_template, assistant_prompt_template])
        
     def _get_response(
@@ -78,14 +79,12 @@ class AssistantAgent(BaseAgent):
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         # if the assistant is the dictator, don't include the proposal (as there is no proposal yet)
         if is_dictator:
-            return chain.run(system_message=system_message,
-                                task=f"{task_prompt.preamble} {task_prompt.task} {task_prompt.user_connective}",
-                                stop=['System:'])   
+            return chain.run(task=f"{task_prompt.preamble} {task_prompt.task} {task_prompt.user_connective}",
+                             stop=['System:'])   
         # otherrwise, include the proposal
-        return chain.run(system_message=system_message,
-                                task=f"{task_prompt.preamble} {task_prompt.task} {proposal} {task_prompt.user_connective}",
-                                proposal=proposal,
-                                stop=['System:'])
+        return chain.run(task=f"{task_prompt.preamble} {task_prompt.task} {proposal} {task_prompt.user_connective}",
+                         proposal=proposal,
+                         stop=['System:'])
 
 
     def instantiate_message(self, system_message) -> str:
@@ -138,7 +137,7 @@ class AssistantAgent(BaseAgent):
         # Instantiate the message
         #system_message = self.instantiate_message(system_message)
         # Get the prompt template
-        chat_prompt_template =  self._get_prompt(assistant_prompt)
+        chat_prompt_template =  self._get_prompt(assistant_prompt, system_message)
         # if the assistant is the dictator, set the label for output if verbose
         if is_dictator:
             # Set the proposed deal to be empty

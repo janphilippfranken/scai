@@ -35,7 +35,6 @@ class MetaPromptModel(BaseAgent):
     def _get_chat_str(
         self,
         chat_history: ChatMemory,
-        task_prompt: TaskPrompt,
     ) -> str:
         """
         Formats the chat history into a string which is placed within the meta-prompt prompt.
@@ -57,7 +56,7 @@ class MetaPromptModel(BaseAgent):
             agent, interaction = interactions
             # if we're on a dictator iteration, append the task
             if not i & 1:
-                string_to_add += f"{task_prompt.preamble}\n"
+                string_to_add += "Split $10\n"
             # append the response
             string_to_add += f"{agent.split('_')[1]}'s Response: {interaction[0]['response']}\n"
             # if we're on a decider iteration, signify the end of the interaction
@@ -82,7 +81,7 @@ class MetaPromptModel(BaseAgent):
             The prompt template.
         """
         meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
-        system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability.\n")
+        system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability")
         return ChatPromptTemplate.from_messages([system_prompt_template, meta_prompt_template])
     
     def _get_response(
@@ -139,7 +138,7 @@ class MetaPromptModel(BaseAgent):
         social_contract_string = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response']
         # get chat history
         chat_history = self._get_chat_history(buffer, memory_type="chat")
-        chat_history_strings = self._get_chat_str(chat_history, task_prompt)
+        chat_history_strings = self._get_chat_str(chat_history)
         # get meta-prompt template and string
         chat_prompt_template = self._get_prompt(meta_prompt)
         prompt_string = chat_prompt_template.format(social_contract=social_contract_string,

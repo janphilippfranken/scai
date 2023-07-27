@@ -35,6 +35,7 @@ class UserModel(BaseAgent):
     def _get_prompt(
         self, 
         user_prompt: UserPrompt,
+        utility: str,
     ) -> ChatPromptTemplate:
         """
         Get prompt for user.
@@ -44,16 +45,13 @@ class UserModel(BaseAgent):
             user_prompt: (UserPrompt) The user prompt.
             task_prompt: (TaskPrompt) The task prompt.
         """
-        user_prompt_template = HumanMessagePromptTemplate.from_template(user_prompt.content)
-        # Make a system message so CRFM doesn't crash
-        system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability.\n")
+        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. {user_prompt.task_connectives[utility]} You MUST promote your views in all your responses.\n")
+        user_prompt_template = HumanMessagePromptTemplate.from_template(f"{user_prompt.content}\n")
         return ChatPromptTemplate.from_messages([system_prompt_template, user_prompt_template])
     
     def _get_response(
         self,
         chat_prompt_template: ChatPromptTemplate,
-        system_message: str,
-        task_connective: str,
         task_prompt: TaskPrompt,
         proposal: str,
         is_dictator: bool
@@ -74,14 +72,10 @@ class UserModel(BaseAgent):
         """
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         if is_dictator:
-            return chain.run(system_message=system_message,
-                                task_connective=task_connective,
-                                task=f"{task_prompt.preamble} {task_prompt.task} {task_prompt.user_connective}",
-                                stop=['System:'])
-        return chain.run(system_message=system_message,
-                                task_connective=task_connective,
-                                task=f"{task_prompt.preamble} {task_prompt.task} {proposal} {task_prompt.user_connective}",
-                                stop=['System:'])
+            return chain.run(task=f"{task_prompt.preamble} {task_prompt.task} {task_prompt.user_connective}",
+                             stop=['System:'])
+        return chain.run(task=f"{task_prompt.preamble} {task_prompt.task} {proposal} {task_prompt.user_connective}",
+                         stop=['System:'])
 
 
 
@@ -111,7 +105,7 @@ class UserModel(BaseAgent):
         # Get the persona
         system_message = user_prompt.persona
         # Get the prompt template
-        chat_prompt_template = self._get_prompt(user_prompt)
+        chat_prompt_template = self._get_prompt(user_prompt, utility)
         # Get the utility
         task_connective = user_prompt.task_connectives[utility]
         # If the user is the dictator, set the role and the proposal to be empty
@@ -125,7 +119,7 @@ class UserModel(BaseAgent):
             proposal = self._get_chat_history(buffer, memory_type="chat")[f"{self.model_id}{connective}"][-1]['response']
             
         # get the response and the prompt string
-        response = self._get_response(chat_prompt_template, system_message, task_connective, task_prompt, proposal, is_dictator)
+        response = self._get_response(chat_prompt_template, task_prompt, proposal, is_dictator)
             
         prompt_string = chat_prompt_template.format(system_message=system_message,
                                                     task_connective=task_connective,

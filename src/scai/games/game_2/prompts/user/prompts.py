@@ -19,7 +19,7 @@ USER_PROMPTS: Dict[str, UserPrompt] = {
         persona="",
         task_connectives=task_connectives_for_all,
         role="system",
-        content="""{system_message} {task_connective} You MUST promote your views in all your responses. {task}""",
+        content="""{task}""",
     ),
         "user_prompt_2": UserPrompt(
         id="user_prompt_2",
@@ -28,6 +28,6 @@ USER_PROMPTS: Dict[str, UserPrompt] = {
         persona="",
         task_connectives=task_connectives_for_all,
         role="system",
-        content="""{system_message} {task_connective} You MUST promote your views in all your responses. {task}""",
+        content="""{task}""",
     ),
 }
