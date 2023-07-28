@@ -3,35 +3,51 @@ hydra:
     dir: sim_res/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-
   sim_dir: "sim_2" 
   sim_id: "0" 
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
   verbose: true # if false, no responses are printed during simulation
-  n_runs: 4
-  n_user_interactions: 5
-  n_assistant_interactions: 5
-
   system_message: " " # start developer constitution / social contract is empty
 
-  utility: "altruistic"
-  task_prompt: "task_prompt_1" # dictator game
-  user_prompts: 
-    - "user_prompt_1"
-    - "user_prompt_2"
-    - "user_prompt_3"
-    - "user_prompt_4"
-    - "user_prompt_1"
-  
-  assistant_prompts: 
-    - "assistant_prompt_1"
-    - "assistant_prompt_1"
-    - "assistant_prompt_1"
-    - "assistant_prompt_1"
-    - "assistant_prompt_1"
+random: # Worry about this later
+  is_random: false
+  n_fixed_inter: ""
+    n_mixed_utility_inter: ""
+  n_mixed_inter: ""
+  n_flex_inter: ""
 
+environment:
+  n_runs: 5
+  vary_amounts: false
+  amount: 10
+  currencies: 
+   - "dollars"
+  task_prompt: "task_prompt_1"
   meta_prompt: "meta_prompt_1"
+  n_fixed_inter: 1
+  n_mixed_inter: 4
+  n_flex_inter: 0
+  
+agents:
+  fixed_agents:
+    - name: "fixed_agent_1"
+      manners: "neutral"
+      utilities:
+        money: "fair"
+  flex_agents:
+    - name: "flex_agent_1"
+      manners: "neutral"
+
+interactions:
+  all_same: true
+  runs:
+    - run_1:
+      - "fixed_agent_1-fixed_agent_1"
+      - "fixed_agent_1-flex_agent_1"
+      - "fixed_agent_1-flex_agent_1"
+      - "fixed_agent_1-flex_agent_1"
+      - "fixed_agent_1-flex_agent_1"
 
 api_crfm:
   assistant:

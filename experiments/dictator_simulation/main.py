@@ -10,23 +10,28 @@ from scai.chat_models.crfm import crfmChatLLM
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 
-# import context
-from scai.games.game_2.dictator import Context
+from scai.games.dictator_games.all_prompts.user_class import UserPrompt
+from scai.games.dictator_games.all_prompts.user_prompts import utilities_dict_for_all, content
+
 
 import copy
-
-# prompts 
-from scai.games.game_2.prompts.task.prompts import DICTATOR_TASK_PROMPTS
-from scai.games.game_2.prompts.task.prompts import DECIDER_TASK_PROMPTS
-from scai.games.game_2.prompts.assistant.prompts import ASSISTANT_PROMPTS 
-from scai.games.game_2.prompts.user.prompts import USER_PROMPTS 
-from scai.games.game_2.prompts.meta.prompts import META_PROMPTS
-
-
+import importlib
 
 # save and plot results
 from utils import save_as_csv
-from plots import plot_average_results, plot_cosine_similarity                        
+from plots import plot_average_results, plot_cosine_similarity   
+
+# prompts 
+def import_prompts(game_number: int) -> None:
+    task_module = importlib.import_module(f"scai.games.dictator_games.dictator_{game_number}.prompts.task_prompts")
+    assistant_module = importlib.import_module(f"scai.games.dictator_games.dictator_{game_number}.prompts.assistant_prompts")
+    user_module = importlib.import_module(f"scai.games.dictator_games.dictator_{game_number}.prompts.user_prompts")
+    meta_module = importlib.import_module(f"scai.games.dictator_games.dictator_{game_number}.prompts.meta_prompts")
+    Context = importlib.import_module(f"scai.games.dictator_games.dictator_{game_number}.context")
+    DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS = task_module._DICTATOR_TASK_PROMPTS, task_module._DECIDER_TASK_PROMPTS
+    ASSISTANT_PROMPTS, USER_PROMPTS = assistant_module.ASSISTANT_PROMPTS, user_module.USER_PROMPTS
+    META_PROMPTS = meta_module.META_PROMPTS
+    return DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, ASSISTANT_PROMPTS, USER_PROMPTS, META_PROMPTS, Context                     
 
 # create context
 def create_context(
@@ -34,6 +39,12 @@ def create_context(
     assistant_llm, 
     user_llm, 
     meta_llm,
+    Context,
+    DICTATOR_TASK_PROMPTS, 
+    DECIDER_TASK_PROMPTS, 
+    ASSISTANT_PROMPTS, 
+    USER_PROMPTS, 
+    META_PROMPTS
 ) -> "Context":
     """
     Create context
@@ -51,9 +62,9 @@ def create_context(
         meta_llm=meta_llm,
         verbose=args.sim.verbose,
         test_run=args.sim.test_run,
-        n_user_interactions = args.sim.n_user_interactions,
-        n_assistant_interactions = args.sim.n_assistant_interactions,
-        utility = args.sim.utility
+        n_fixed_inter = args.sim.n_fixed_inter,
+        n_mixed_inter = args.sim.n_mixed_inter,
+        n_flex_inter = args.sim.n_flex_inter,
     )
 
 def get_llms(
@@ -70,16 +81,53 @@ def get_llms(
         meta_llm = ChatOpenAI(**args.api_openai.meta)
     return assistant_llm, user_llm, meta_llm
 
+def create_users(agents_dict, currencies, n_fixed, n_mixed, n_flex):
+    fixed_prompts = []
+    if n_fixed or n_mixed:
+        for agent in agents_dict.fixed_agents:
+            utilities = ""
+            for currency in currencies:
+                utilities += utilities_dict_for_all[agent.utilities.currency].format(currency)
+            fixed_prompts.append(UserPrompt(
+                id=agent.name,
+                utility=utilities,
+                utilies_dict=utilities_dict_for_all,
+                manners=agent.manners,
+                role="system",
+                content=content
+            ))
+    flex_prompts = []
+    if n_flex or n_mixed:
+        for agent in agents_dict.flex_agents:
+            flex_prompts.append(AssistantPrompt(
+                id=agent.name,
+                role="system",
+                manners=agent.manners,
+                content="""{task}"""
+            ))
+
+    return fixed_prompts, flex_prompts
+
+
 # run simulator
 @hydra.main(config_path="config", config_name="config")
 def main(args: DictConfig) -> None:
+
+    n_fixed = 1 if args.environment.n_fixed_inter else 0
+    n_mixed = 1 if args.environment.n_mixed_inter else 0
+    n_flex = 1 if args.environment.n_flex_inter else 0
+
+    
+    # determines the type of game based on the number of fixed, mixed, and flexible interactions
+    game_number = int(f"{int(n_fixed)}{int(n_mixed)}{int(n_flex)}", 2)
+
+    DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, ASSISTANT_PROMPTS, USER_PROMPTS, META_PROMPTS, Context = import_prompts(game_number)
+
+    agents = create_users(args.agents, args.environment.currencies, n_fixed, n_mixed, n_flex)
     
     # get user social contract
-    task_connective = USER_PROMPTS['user_prompt_1'].task_connectives
-    if args.sim.meta_prompt == 'meta_prompt_2':
-        social_contract = "Be " + task_connective[args.sim.utility].split("are ")[1].split(",")[0] + "."
-    else:
-        social_contract = f"You are {args.sim.utility} {task_connective[args.sim.utility].split(args.sim.utility)[1]}"
+    # task_connective = USER_PROMPTS['user_prompt_1'].utilities_dict
+    # social_contract = f"You are {args.sim.utility} {task_connective[args.sim.utility].split(args.sim.utility)[1]}"
 
     # sim_res directory
     DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_dir}/{args.sim.sim_id}'
@@ -94,7 +142,8 @@ def main(args: DictConfig) -> None:
     # run meta-prompt
     for run in tqdm(range(args.sim.n_runs)):
         # initialise context
-        context = create_context(args, assistant_llm, user_llm, meta_llm)
+        context = create_context(args, assistant_llm, user_llm, meta_llm, Context,     
+                                 DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, ASSISTANT_PROMPTS, USER_PROMPTS, META_PROMPTS)
         context.buffer.save_system_context(model_id='system', **{
             'response': system_message, 
         })
@@ -123,11 +172,11 @@ def main(args: DictConfig) -> None:
                          scores=scores)      
     
     # plot cosine similarity between system messages (developer constituiton and social contracts and save csvs)
-    plot_cosine_similarity(data_directory=DATA_DIR,
-                           sim_name=args.sim.sim_dir,
-                           sim_id=args.sim.sim_id,
-                           social_contract="Social Contract: " + social_contract,
-                           system_messages=system_messages)
+    # plot_cosine_similarity(data_directory=DATA_DIR,
+    #                        sim_name=args.sim.sim_dir,
+    #                        sim_id=args.sim.sim_id,
+    #                        social_contract="Social Contract: " + social_contract,
+    #                        system_messages=system_messages)
 
 if __name__ == '__main__':
     main()
