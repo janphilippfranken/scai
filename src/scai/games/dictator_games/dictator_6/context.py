@@ -233,14 +233,14 @@ class Context():
             #run interaction
             if dictator == "fixed_dictator":
                 if decider == "fixed_decider":
-                    run_fixed_fixed(prompt_dictator, model_dictator, prompt_decider, model_decider)
+                    run_fixed_fixed(prompt_dictator, model_dictator, prompt_decider, model_decider, i, user_scores_dictator, user_scores_decider)
                 else:
-                    run_fixed_flex(prompt_dictator, model_dictator, prompt_decider, model_decider)
+                    run_fixed_flex(prompt_dictator, model_dictator, prompt_decider, model_decider, i, user_scores_dictator, assistant_scores_decider)
             else:
                 if decider == "fixed_decider":
-                    run_flex_fixed(prompt_dictator, model_dictator, prompt_decider, model_decider)
+                    run_flex_fixed(prompt_dictator, model_dictator, prompt_decider, model_decider, i, assistant_scores_dictator, user_scores_decider)
                 else:
-                    run_flex_flex(prompt_dictator, model_dictator, prompt_decider, model_decider)
+                    run_flex_flex(prompt_dictator, model_dictator, prompt_decider, model_decider, i, assistant_scores_dictator, assistant_scores_decider)
 
             self.get_money(i, dictator_response, decider_response, assistant_scores_dictator, assistant_scores_decider, [], False, False)
 
@@ -348,7 +348,7 @@ class Context():
                                             task_prompt=self.task_prompt_decider,
                                             utility=self.utility,
                                             is_dictator=False,
-                                            with_assistant=False,
+                                            with_assistant=True,
                                             verbose=self.verbose)
         
         # save user response
