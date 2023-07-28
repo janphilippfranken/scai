@@ -10,19 +10,25 @@ sim:
   verbose: true # if false, no responses are printed during simulation
   system_message: " " # start developer constitution / social contract is empty
 
-random: # Worry about this later
-  is_random: false
-  n_fixed_inter: ""
-    n_mixed_utility_inter: ""
-  n_mixed_inter: ""
-  n_flex_inter: ""
+# random: # Worry about this later
+#   is_random: false
+#   n_fixed_inter: ""
+#     n_mixed_utility_inter: ""
+#   n_mixed_inter: ""
+#   n_flex_inter: ""
 
 environment:
   n_runs: 5
-  vary_amounts: false
-  amount: 10
+  random_amounts: false # do later
+  amounts_per_run:
+    - 10
+    - 5
+    - 16
+    - 24
+    - 1800000
   currencies: 
    - "dollars"
+   - "apples"
   task_prompt: "task_prompt_1"
   meta_prompt: "meta_prompt_1"
   n_fixed_inter: 1
@@ -34,7 +40,8 @@ agents:
     - name: "fixed_agent_1"
       manners: "neutral"
       utilities:
-        money: "fair"
+        dollars: "selfish"
+        apples: "fair"
   flex_agents:
     - name: "flex_agent_1"
       manners: "neutral"
@@ -42,12 +49,12 @@ agents:
 interactions:
   all_same: true
   runs:
-    - run_1:
-      - "fixed_agent_1-fixed_agent_1"
-      - "fixed_agent_1-flex_agent_1"
-      - "fixed_agent_1-flex_agent_1"
-      - "fixed_agent_1-flex_agent_1"
-      - "fixed_agent_1-flex_agent_1"
+    run_1:
+      - "fixed_agent_1-fixed_agent_1-dollars,apples"
+      - "fixed_agent_1-flex_agent_1-dollars,apples"
+      - "fixed_agent_1-flex_agent_1-dollars,apples"
+      - "fixed_agent_1-flex_agent_1-dollars,apples"
+      - "fixed_agent_1-flex_agent_1-dollars,apples"
 
 api_crfm:
   assistant:

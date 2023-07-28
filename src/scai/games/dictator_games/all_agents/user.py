@@ -14,8 +14,8 @@ from langchain.prompts.chat import (
 from langchain.chains.llm import LLMChain
 from langchain.chat_models.base import BaseChatModel
 
-from scai.games.dictator_games.all_prompts.user.models import UserPrompt
-from scai.games.dictator_games.all_prompts.task.models import TaskPrompt
+from scai.games.dictator_games.all_prompts.user.user_class import UserPrompt
+from scai.games.dictator_games.all_prompts.task.task_class import TaskPrompt
 
 from scai.memory.buffer import ConversationBuffer
 
@@ -35,7 +35,6 @@ class UserModel(BaseAgent):
     def _get_prompt(
         self, 
         user_prompt: UserPrompt,
-        utility: str,
     ) -> ChatPromptTemplate:
         """
         Get prompt for user.
@@ -45,16 +44,15 @@ class UserModel(BaseAgent):
             user_prompt: (UserPrompt) The user prompt.
             task_prompt: (TaskPrompt) The task prompt.
         """
-        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. {user_prompt.task_connectives[utility]} You MUST promote your views in all your responses.\n")
+        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. {user_prompt.utility} You MUST promote your views in all your responses.\n")
         user_prompt_template = HumanMessagePromptTemplate.from_template(f"{user_prompt.content}\n")
         return ChatPromptTemplate.from_messages([system_prompt_template, user_prompt_template])
     
     def _get_response(
         self,
         chat_prompt_template: ChatPromptTemplate,
-        task_prompt: TaskPrompt,
-        proposal: str,
-        is_dictator: bool
+        task: str,
+        manners: str,
     ) -> str:
         """
         Returns the response from the assistant.
@@ -70,22 +68,20 @@ class UserModel(BaseAgent):
         Returns:
             The response from the assistant.
         """
-        chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
-        if is_dictator:
-            return chain.run(task=f"{task_prompt.preamble} {task_prompt.task} {task_prompt.user_connective}",
-                             stop=['System:'])
-        return chain.run(task=f"{task_prompt.preamble} {task_prompt.task} {proposal} {task_prompt.user_connective}",
+        chain = LLMChain(llm=self.llm[0], prompt=chat_prompt_template)
+        return chain.run(task=task,
+                         manners=manners,
                          stop=['System:'])
 
 
 
     def run(self, 
         buffer: ConversationBuffer,  
-        user_prompt: UserPrompt, 
-        task_prompt: TaskPrompt, 
-        utility: str,
+        amount_and_currency: str,
+        stipulations: str,
+        agent_prompt: UserPrompt, 
+        task_prompt: TaskPrompt,
         is_dictator: bool,
-        with_assistant: bool,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the assistant
@@ -102,28 +98,28 @@ class UserModel(BaseAgent):
         Returns:
             A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
         """
-        # Get the persona
-        system_message = user_prompt.persona
         # Get the prompt template
-        chat_prompt_template = self._get_prompt(user_prompt, utility)
-        # Get the utility
-        task_connective = user_prompt.task_connectives[utility]
+        chat_prompt_template = self._get_prompt(agent_prompt)
         # If the user is the dictator, set the role and the proposal to be empty
         if is_dictator:
             role = "dictator"
             proposal = ""
+            formatted_task = task_prompt.task.format(amount_and_currency=amount_and_currency, stipulations=stipulations)
         # Otherwise, set the role and the proposal to be according to whether the assistant was the dictator or not
         else: 
             role = "decider"
-            connective = "_assistant_dictator" if with_assistant else "_user_dictator"
-            proposal = self._get_chat_history(buffer, memory_type="chat")[f"{self.model_id}{connective}"][-1]['response']
+            proposal = self._get_chat_history(buffer, memory_type="chat")[f"{self.model_id}_dictator"][-1]['response']
+            formatted_task = task_prompt.task.format(proposal=proposal)
             
         # get the response and the prompt string
-        response = self._get_response(chat_prompt_template, task_prompt, proposal, is_dictator)
+        formatted_preamble = task_prompt.preamble.format(amount_and_currency=amount_and_currency)
+
+        task=f"{formatted_preamble} {formatted_task} {task_prompt.task_structure}"
+
+        response = self._get_response(chat_prompt_template, task, agent_prompt.manners)
             
-        prompt_string = chat_prompt_template.format(system_message=system_message,
-                                                    task_connective=task_connective,
-                                                    task=f"{task_prompt.preamble} {task_prompt.task} {proposal} {task_prompt.user_connective}")
+        prompt_string = chat_prompt_template.format(manners=agent_prompt.manners,
+                                                    task=task)
         if verbose:
             print('===================================')
             print(f'USER as {role} {str(self.model_id)}')

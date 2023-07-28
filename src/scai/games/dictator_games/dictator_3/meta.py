@@ -15,11 +15,11 @@ from langchain.chat_models.base import BaseChatModel
 
 from scai.memory.memory import ChatMemory
 
-from scai.games.dictator_games.all_prompts.meta.meta_class import MetaPrompt
+from scai.games.game_2.prompts.meta.models import MetaPrompt
 from scai.memory.buffer import ConversationBuffer
-from scai.games.dictator_games.all_prompts.task.task_class import TaskPrompt
+from scai.games.game_2.prompts.task.models import TaskPrompt
 
-from scai.games.dictator_games.all_agents.base import BaseAgent
+from scai.games.game_2.agents.base import BaseAgent
 
 class MetaPromptModel(BaseAgent):
     """
