@@ -185,134 +185,66 @@ class Context():
             else:
                 decider_scores[index] = decider_money
 
+    # takes in a list of paired prompts
+    # returns list with tuples structured as this: (prompt_dictator, model_dictator, prompt_decider, model_decider, "dictator", "decider")
     def pair_models_with_prompts(
         self,
         user_llm: UserModel, 
         assistant_llm: AssistantAgent, 
-        meta_llm: MetaPromptModel,
         prompt_pairs: list[tuple],
     ) -> List:
         
         pairs = []
-        for (prompt_a, prompt_b) in prompt_pairs:
-            pair = [prompt_a, prompt_b]
-            if type(prompt_a) == UserPrompt:
-                model_a = UserModel(llm=user_llm, model_id=str(0)) # TODO: change model_id
+        for (prompt_dictator, prompt_decider) in prompt_pairs:
+            pair = [prompt_dictator, prompt_decider]
+            if type(prompt_dictator) == UserPrompt:
+                model_dictator = UserModel(llm=user_llm, model_id=str(0)) # TODO: change model_id
+                pair.append("fixed_dictator")
             else:
-                model_a = AssistantAgent(llm=assistant_llm, model_id=str(0))
-            pair.append(model_a)
-            if type(prompt_b) == UserPrompt:
-                model_b = UserModel(llm=user_llm, model_id=str(1))
+                model_dictator = AssistantAgent(llm=assistant_llm, model_id=str(0))
+                pair.append("flex_dictator")
+            pair.insert(1, model_dictator)
+            if type(prompt_decider) == UserPrompt:
+                model_decider = UserModel(llm=user_llm, model_id=str(1))
+                pair.append("fixed_decider")
             else:
-                model_b = AssistantAgent(llm=assistant_llm, model_id=str(1))
-            pair.append(model_b)
+                model_decider = AssistantAgent(llm=assistant_llm, model_id=str(1))
+                pair.append("flex_decider")
+            pair.insert(3, model_decider)
             pairs.append(pair)
+        return pairs
 
+
+    #TODO: Reconcile Run branches or modeify GetMoney to work with all
 
     def run(
         self,
         run: int,
-        fixed_pairs: list[tuple],
+        pairs: list[tuple],
     ) -> None:
-        pass
         
-            
-
-
-    def run(
-        self,
-        run: int,
-        fixed_pairs: list[tuple],
-    ) -> None:
-        """
-        Runs the context, first running user-user interactions and then running user-assistant interactions
-        """
-        user_proposals, user_scores_dictator, user_scores_decider = [], [0] * self.n_user_interactions, [0] * self.n_user_interactions, 
-        user_pairs, both_pairs = self.select_players()
-        # Run user-user interactions
-        for i, (user_model_a, user_model_b, user_pair) in enumerate(zip(self.user_models_a, self.user_models_b, user_pairs)):
-            # Get the user dictator prompt and the user decider prompt
-            dictator_prompt, decider_prompt = user_pair
-            
-            # get user proposal
-            user_a_response = user_model_a.run(buffer=self.buffer, 
-                                               user_prompt=dictator_prompt,
-                                               task_prompt=self.task_prompt_dictator,
-                                               utility=self.utility,
-                                               is_dictator=True,
-                                               with_assistant=False,
-                                               verbose=self.verbose)
-            
-            # save user proposal
-            self.buffer.save_user_context(model_id=f"{user_model_a.model_id}_user_dictator", **user_a_response)
-            
-            # get user response
-            user_b_response = user_model_b.run(buffer=self.buffer,
-                                                user_prompt=decider_prompt,
-                                                task_prompt=self.task_prompt_decider,
-                                                utility=self.utility,
-                                                is_dictator=False,
-                                                with_assistant=False,
-                                                verbose=self.verbose)
-            # Get the amounts of money offered and accepted
-            self.get_money(i, user_a_response, user_b_response, user_scores_dictator, user_scores_decider, user_proposals, True, False)
-            # save user response
-            self.buffer.save_user_context(model_id=f"{user_model_b.model_id}_user_decider", **user_b_response)
-
-
-
-
+        user_proposals, user_scores_dictator, user_scores_decider = [], [0] * self.n_user_interactions, [0] * self.n_user_interactions
         assistant_proposals, assistant_scores_dictator, assistant_scores_decider = [], [0] * self.n_assistant_interactions, [0] * self.n_assistant_interactions
-        # run assistant-user interactions
-        for i, (user_model_c, assistant_model, both_pair) in enumerate(zip(self.user_models_c, self.assistant_models, both_pairs)):
-            dictator_prompt, decider_prompt, dominance = both_pair
-            # if the assistant is the dictator
-            if dominance == "assistant_dominant":
-                # get assistant proposal
-                assistant_response = assistant_model.run(buffer=self.buffer,
-                                                        assistant_prompt=dictator_prompt,
-                                                        task_prompt=self.task_prompt_dictator,
-                                                        is_dictator=True,
-                                                        verbose=self.verbose)           
-                # save assistant proposal
-                self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant_dictator", **assistant_response)
+        
+        for i, pair in enumerate(pairs):
 
-                # get user response
-                user_c_response = user_model_c.run(buffer=self.buffer,
-                                                        user_prompt= decider_prompt,
-                                                        task_prompt=self.task_prompt_decider,
-                                                        utility=self.utility,
-                                                        is_dictator=False,
-                                                        with_assistant=True,
-                                                        verbose=self.verbose)
-                # Get the amounts of money offered and accepted
-                self.get_money(i, assistant_response, user_c_response, assistant_scores_dictator, assistant_scores_decider, assistant_proposals, False, True)
-                # save user response
-                self.buffer.save_user_context(model_id=f"{user_model_c.model_id}_user_dictated_by_assistant", **user_c_response)
-            # otherwise, the assistant is the decider
+            prompt_dictator, model_dictator, prompt_decider, model_decider, dictator, decider = pair
+
+            #run interaction
+            if dictator == "fixed_dictator":
+                if decider == "fixed_decider":
+                    run_fixed_fixed(prompt_dictator, model_dictator, prompt_decider, model_decider)
+                else:
+                    run_fixed_flex(prompt_dictator, model_dictator, prompt_decider, model_decider)
             else:
-                # get the user proposal
-                user_c_response = user_model_c.run(buffer=self.buffer,
-                                            user_prompt=dictator_prompt,
-                                            task_prompt=self.task_prompt_dictator,
-                                            utility=self.utility,
-                                            is_dictator=True,
-                                            with_assistant=True,
-                                            verbose=self.verbose)
-                
-                # save user proposal
-                self.buffer.save_user_context(model_id=f"{user_model_c.model_id}_user_dictating_assistant", **user_c_response)
+                if decider == "fixed_decider":
+                    run_flex_fixed(prompt_dictator, model_dictator, prompt_decider, model_decider)
+                else:
+                    run_flex_flex(prompt_dictator, model_dictator, prompt_decider, model_decider)
 
-                # Get assistant response
-                assistant_response = assistant_model.run(buffer=self.buffer,
-                                                        assistant_prompt= decider_prompt,
-                                                        task_prompt=self.task_prompt_decider,
-                                                        is_dictator=False,
-                                                        verbose=self.verbose)
-                # Get the amounts of money offered and accepted
-                self.get_money(i, user_c_response, assistant_response, assistant_scores_dictator, assistant_scores_decider, [], False, False)
-                # save assistant response
-                self.buffer.save_assistant_context(model_id=f"{assistant_model.model_id}_assistant_decider", **assistant_response)
+            self.get_money(i, dictator_response, decider_response, assistant_scores_dictator, assistant_scores_decider, [], False, False)
+
+            
         # run meta-prompt at end of conversation
         meta_response = self.meta_model.run(buffer=self.buffer,
                                             meta_prompt=self.meta_prompt,
@@ -322,3 +254,134 @@ class Context():
         # save meta-prompt response for start of next conversation
         self.buffer.save_system_context(model_id="system", **meta_response)
         return user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals
+
+
+        
+        
+    def run_fixed_fixed(
+            self,
+            prompt_dictator,
+            model_dictator,
+            prompt_decider,
+            model_decider,
+    ) -> None:
+        
+        # get user proposal
+        dictator_response = model_dictator.run(buffer=self.buffer, 
+                                            user_prompt=prompt_dictator,
+                                            task_prompt=self.task_prompt_dictator,
+                                            utility=self.utility,
+                                            is_dictator=True,
+                                            with_assistant=False,
+                                            verbose=self.verbose)
+        
+        # save user proposal
+        self.buffer.save_user_context(model_id=f"{model_dictator.model_id}_user_dictator", **dictator_response)
+        
+        # get user response
+        decider_response = model_decider.run(buffer=self.buffer,
+                                            user_prompt=prompt_decider,
+                                            task_prompt=self.task_prompt_decider,
+                                            utility=self.utility,
+                                            is_dictator=False,
+                                            with_assistant=False,
+                                            verbose=self.verbose)
+        
+        # save user response
+        self.buffer.save_user_context(model_id=f"{model_decider.model_id}_user_decider", **decider_response)
+        
+        return dictator_response, decider_response
+    
+    def run_fixed_flex(
+            self,
+            prompt_dictator,
+            model_dictator,
+            prompt_decider,
+            model_decider,
+    ) -> None:
+        
+        # get user proposal
+        dictator_response = model_dictator.run(buffer=self.buffer, 
+                                            user_prompt=prompt_dictator,
+                                            task_prompt=self.task_prompt_dictator,
+                                            utility=self.utility,
+                                            is_dictator=True,
+                                            with_assistant=False,
+                                            verbose=self.verbose)
+        
+        # save user proposal
+        self.buffer.save_user_context(model_id=f"{model_dictator.model_id}_user_dictator", **dictator_response)
+        
+        # get assistant response
+        decider_response = model_decider.run(buffer=self.buffer,
+                                            assistant_prompt=prompt_decider,
+                                            task_prompt=self.task_prompt_decider,
+                                            is_dictator=False,
+                                            verbose=self.verbose)
+        
+        # save assistant response
+        self.buffer.save_user_context(model_id=f"{model_decider.model_id}_user_decider", **decider_response)
+        
+        return dictator_response, decider_response
+    
+    def run_flex_fixed(
+            self,
+            prompt_dictator,
+            model_dictator,
+            prompt_decider,
+            model_decider,
+    ) -> None:
+        
+        # get assistant proposal
+        dictator_response = model_dictator.run(buffer=self.buffer, 
+                                            assistant_prompt=prompt_dictator,
+                                            task_prompt=self.task_prompt_dictator,
+                                            is_dictator=True,
+                                            verbose=self.verbose)
+        
+        # save assistant proposal
+        self.buffer.save_user_context(model_id=f"{model_dictator.model_id}_user_dictator", **dictator_response)
+        
+        # get user response
+        decider_response = model_decider.run(buffer=self.buffer,
+                                            user_prompt=prompt_decider,
+                                            task_prompt=self.task_prompt_decider,
+                                            utility=self.utility,
+                                            is_dictator=False,
+                                            with_assistant=False,
+                                            verbose=self.verbose)
+        
+        # save user response
+        self.buffer.save_user_context(model_id=f"{model_decider.model_id}_user_decider", **decider_response)
+        
+        return dictator_response, decider_response
+    
+    def run_flex_flex(
+            self,
+            prompt_dictator,
+            model_dictator,
+            prompt_decider,
+            model_decider,
+    ) -> None:
+        
+        # get assistant proposal
+        dictator_response = model_dictator.run(buffer=self.buffer, 
+                                            assistant_prompt=prompt_dictator,
+                                            task_prompt=self.task_prompt_dictator,
+                                            is_dictator=True,
+                                            verbose=self.verbose)
+        
+        # save assistant proposal
+        self.buffer.save_user_context(model_id=f"{model_dictator.model_id}_user_dictator", **dictator_response)
+        
+        # get assistant response
+        decider_response = model_decider.run(buffer=self.buffer,
+                                            assistant_prompt=prompt_decider,
+                                            task_prompt=self.task_prompt_decider,
+                                            is_dictator=False,
+                                            verbose=self.verbose)
+        
+        # save assistant response
+        self.buffer.save_user_context(model_id=f"{model_decider.model_id}_user_decider", **decider_response)
+        
+        return dictator_response, decider_response
