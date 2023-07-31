@@ -18,14 +18,13 @@ sim:
 #   n_flex_inter: ""
 
 environment:
-  n_runs: 5
+  n_runs: 4
   random_amounts: false # do later
   amounts_per_run:
     - 10
     - 5
     - 16
     - 24
-    - 1800000
   currencies: 
    - "dollars"
    - "apples"
@@ -40,7 +39,7 @@ agents:
     - name: "fixed_agent_1"
       manners: "neutral"
       utilities:
-        dollars: "selfish"
+        dollars: "altruistic"
         apples: "fair"
   flex_agents:
     - name: "flex_agent_1"
@@ -50,25 +49,44 @@ interactions:
   all_same: true
   runs:
     run_1:
-      - "fixed_agent_1-fixed_agent_1-dollars,apples"
-      - "fixed_agent_1-flex_agent_1-dollars,apples"
-      - "fixed_agent_1-flex_agent_1-dollars,apples"
-      - "fixed_agent_1-flex_agent_1-dollars,apples"
-      - "fixed_agent_1-flex_agent_1-dollars,apples"
+      - "flex_agent_1-flex_agent_1-dollars"
+      - "flex_agent_1-flex_agent_1-dollars"
+      - "flex_agent_1-flex_agent_1-dollars"
+      - "flex_agent_1-flex_agent_1-dollars"
+      - "flex_agent_1-flex_agent_1-dollars"
+    run_21:
+      - "fixed_agent_1-flex_agent_1-dollars"
+      - "fixed_agent_1-flex_agent_1-dollars"
+      - "fixed_agent_1-flex_agent_1-dollars"
+      - "fixed_agent_1-flex_agent_1-dollars"
+      - "fixed_agent_1-flex_agent_1-dollars"
+    run_3:
+      - "fixed_agent_1-flex_agent_1-dollars"
+      - "flex_agent_1-fixed_agent_1-dollars"
+      - "flex_agent_1-fixed_agent_1-dollars"
+      - "fixed_agent_1-fixed_agent_1-dollars"
+      - "flex_agent_1-flex_agent_1-dollars"
+    run_4:
+      - "fixed_agent_1-fixed_agent_1-dollars"
+      - "fixed_agent_1-fixed_agent_1-dollars"
+      - "fixed_agent_1-fixed_agent_1-dollars"
+      - "fixed_agent_1-fixed_agent_1-dollars"
+      - "fixed_agent_1-fixed_agent_1-dollars"
+
 
 api_crfm:
   assistant:
     model_name: "openai/gpt-4-0314"
     max_tokens: 300 # these are the actual token limits
-    temperature: 0.2021
+    temperature: 0.102
   user:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 150 # these are the actual token limits
-    temperature: 0.2021 # we want users to be low on temperature to avoid random variation in ratings
+    temperature: 0.102 # we want users to be low on temperature to avoid random variation in ratings
   meta:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 400 # these are the actual token limits
-    temperature: 0.4021
+    temperature: 0.102
 
 api_openai:
   assistant:

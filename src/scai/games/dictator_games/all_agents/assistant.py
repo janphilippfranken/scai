@@ -47,7 +47,7 @@ class AssistantAgent(BaseAgent):
         """
         assistant_prompt_template = HumanMessagePromptTemplate.from_template(f"{assistant_prompt.content}\n")
         # make a system message (CRFM crashes without a system message)
-        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this {principle} You MUST promote your views in all your responses.\n")
+        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these {principle} You MUST promote your views in all your responses.\n")
         return ChatPromptTemplate.from_messages([system_prompt_template, assistant_prompt_template])
        
     def _get_response(
@@ -67,7 +67,7 @@ class AssistantAgent(BaseAgent):
         Returns:
             str
         """
-        chain = LLMChain(llm=self.llm[0], prompt=chat_prompt_template)
+        chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         return chain.run(task=task, stop=['System:'])
 
 
@@ -109,7 +109,9 @@ class AssistantAgent(BaseAgent):
         else: 
             role = "decider"
             # get the last message in the chat history, which is the proposal
-            proposal = self._get_chat_history(buffer, memory_type="chat")[f"{self.model_id}_dictator"][-1]['response']
+            history_dict = self._get_chat_history(buffer, memory_type="chat")
+            key = f"{self.model_id}_fixed_policy_dictator" if f"{self.model_id}_fixed_policy_dictator" in history_dict else f"{self.model_id}_flexible_policy_dictator"
+            proposal = history_dict[key][-1]['response']
             formatted_task = task_prompt.task.format(proposal=proposal)
         # Get the prompt string
         formatted_preamble = task_prompt.preamble.format(amount_and_currency=amount_and_currency)

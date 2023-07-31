@@ -108,13 +108,14 @@ def plot_scores(scores, title, path):
     plt.savefig(f'{path}_{title}.png', format='png')
     plt.clf()
 
-def plot_proposals(user_proposals, assistant_proposals, directory, n_turns):
-    x = [i + 1 for i in range(n_turns)]
-    plt.plot(x, user_proposals, label="User Proposals", color='red')
-    plt.plot(x, assistant_proposals, label="Assistant Proposals", color='blue')
+def plot_proposals(list_fixed_proportions, list_flex_proportions, currency, amounts_per_run, n_runs, directory):
+    x = [f"{i + 1}: {amounts_per_run[i]} {currency}" for i in range(n_runs)]
+
+    plt.plot(x, list_fixed_proportions, label="User Proposals", color='red')
+    plt.plot(x, list_flex_proportions, label="Assistant Proposals", color='blue')
     plt.xlabel('Meta-Prompt Iteration')
     plt.ylabel('Average Amount Proposed')
-    graph_title = "Average_Amounts_of_Money_Proposed_to_the_Decider_by_Assistant_and_Users"
+    graph_title = f"Proportions_of_{currency}_Proposed_by_Assistant_and_Users"
     plt.title(" ".join(graph_title.split('_')))
     plt.legend()
     ax = plt.gca()
@@ -122,9 +123,11 @@ def plot_proposals(user_proposals, assistant_proposals, directory, n_turns):
     plt.savefig(f'{directory}_{graph_title}.png', format='png')
     plt.clf()
 
-
 def plot_average_results(    
     scores,
+    currencies,
+    amounts_per_run,
+    n_runs,
     data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
@@ -132,22 +135,48 @@ def plot_average_results(
     """
     Plot average user and assistant income when the assistant is a dictator and a decider
     """
-    user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider = [], [], [], []
-    user_proposals, assistant_proposals = [], []
-    user_scores_dictator = [mean(elem[0]) for elem in scores]
-    user_scores_decider = [mean(elem[1]) for elem in scores]
+    # user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider = [], [], [], []
+    # user_scores_dictator = [mean(elem[0]) for elem in scores]
+    # user_scores_decider = [mean(elem[1]) for elem in scores]
     
-    assistant_scores_dictator = [mean(elem[2]) if elem[2] else 0 for elem in scores]
-    assistant_scores_decider = [mean(elem[3]) if elem[3] else 0 for elem in scores]
-    
-    user_proposals = [sum(offer[1] for offer in elem[4]) / len(elem[4]) for elem in scores]
-    assistant_proposals = [sum(offer[1] for offer in elem[5]) / len(elem[5]) for elem in scores]
+    # assistant_scores_dictator = [mean(elem[2]) if elem[2] else 0 for elem in scores]
+    # assistant_scores_decider = [mean(elem[3]) if elem[3] else 0 for elem in scores]
+    fixed_agent_proposals, flexible_agent_proposals = [], []
+    for i in range(len(scores)):
+        for currency in currencies:
+            fixed_dict_offer = 0
+            len_dict = 0
+            for amount_dict in scores[i][4]:
+                if currency in amount_dict:
+                    fixed_dict_offer += amount_dict[currency][1]
+                    len_dict += 1
+
+            if len_dict == 0:
+                fixed_agent_proposals.append({currency: None})
+            else:
+                fixed_agent_proposals.append({currency: float(fixed_dict_offer) / float(amounts_per_run[i] * len_dict)})
+            
         
-    all_scores = [user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider]
-    all_titles = ["Average_User_Dictator_Income_Over_Turns", "Average_User_Decider_Income_Over_Turns", "Average_Assistant_Dictator_Income_Over_Turns", "Average_Assistant_Decider_Income_Over_Turns"]
-    for i in range(len(all_scores)):
-        plot_scores(all_scores[i], all_titles[i], f"{data_directory}/{sim_name}_id_{sim_id}")
-    plot_proposals(user_proposals, assistant_proposals, f"{data_directory}/{sim_name}_id_{sim_id}", len(user_proposals))
+            flex_dict_offer = 0
+            len_deci = 0
+            for amount_dict in scores[i][5]:
+                if currency in amount_dict:
+                    flex_dict_offer += amount_dict[currency][1]
+                    len_deci += 1
+            if len_deci == 0:
+                flexible_agent_proposals.append({currency: None})
+            else:
+                flexible_agent_proposals.append({currency: float(flex_dict_offer) / float(amounts_per_run[i] * len_deci)})
+
+        
+    # all_scores = [user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider]
+    # all_titles = ["Average_User_Dictator_Income_Over_Turns", "Average_User_Decider_Income_Over_Turns", "Average_Assistant_Dictator_Income_Over_Turns", "Average_Assistant_Decider_Income_Over_Turns"]
+    # for i in range(len(all_scores)):
+    #     plot_scores(all_scores[i], all_titles[i], f"{data_directory}/{sim_name}_id_{sim_id}")
+    for currency in currencies:
+        list_fixed_proportions = [elem[currency] for elem in fixed_agent_proposals if currency in elem]
+        list_flex_proportions = [elem[currency] for elem in flexible_agent_proposals if currency in elem]
+        plot_proposals(list_fixed_proportions, list_flex_proportions, currency, amounts_per_run, n_runs, f"{data_directory}/{sim_name}_id_{sim_id}")
 
 def plot_cosine_similarity(
     system_messages,

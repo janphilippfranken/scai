@@ -32,41 +32,52 @@ class MetaPromptModel(BaseAgent):
     ) -> None:
         super().__init__(llm, model_id)
         
-    def _get_chat_str(
-        self,
-        chat_history: ChatMemory,
-    ) -> str:
-        """
-        Formats the chat history into a string which is placed within the meta-prompt prompt.
+    def _get_chat_str(self, chat_history: ChatMemory, n_fixed: int, n_mixed: int) -> str:
+        fixed_history = ""
+        mixed_history = ""
+        flex_history = ""
 
-        Args:
-            chat_history: (ChatMemory) The chat history.
-            metric_prompt: (MetricPrompt) The metric prompt.
-            task_prompt: (TaskPrompt) The task prompt.
-            max_tokens_assistant: (int) The maximum number of tokens for the assistant.
-
-        Returns:
-            The chat history string.
-        """
-        # data structures for storing chat
-        chat_history_string = ""
-        string_to_add = ""
-        for i, interactions in enumerate(chat_history.items()):
-            # get the agent and the response
-            agent, interaction = interactions
-            # if we're on a dictator iteration, append the task
-            if not i & 1:
-                string_to_add += "Split $10\n"
-            # append the response
-            string_to_add += f"{agent.split('_')[1]}'s Response: {interaction[0]['response']}\n"
-            # if we're on a decider iteration, signify the end of the interaction
-            if i & 1:
-                string_to_add += f"End of interaction\n\n"
-            if i == 1:
-                chat_history_string, string_to_add = string_to_add, ""
+        for i, (agent, interaction) in enumerate(chat_history.items()):
+            response = interaction[-1]['response']
+            agent_name = agent.split('_')[1]
             
-        return chat_history_string, string_to_add
-    
+            # Determine which history we are appending to
+            is_fixed = i < n_fixed * 2
+            is_mixed = n_fixed * 2 <= i < n_mixed * 2
+            
+            # If it's a dictator iteration
+            if not i & 1:
+                message = "Start of interaction\n"
+                if is_fixed:
+                    fixed_history += message
+                elif is_mixed:
+                    mixed_history += message
+                else:
+                    flex_history += message
+            
+            # Append agent's response
+            message = f"{agent_name}'s Response: {response}\n"
+            if is_fixed:
+                fixed_history += message
+            elif is_mixed:
+                mixed_history += message
+            else:
+                flex_history += message
+            
+            # If it's a decider iteration
+            if i & 1:
+                message = "End of interaction\n\n"
+                if is_fixed:
+                    fixed_history += message
+                elif is_mixed:
+                    mixed_history += message
+                else:
+                    flex_history += message
+                
+        return fixed_history, mixed_history, flex_history
+
+
+
     def _get_prompt(
         self,
         meta_prompt: MetaPrompt,
@@ -80,16 +91,18 @@ class MetaPromptModel(BaseAgent):
         Returns:
             The prompt template.
         """
+        game_description = "You are about to analyze a set of dictator games. In a dictator game, the first agent proposes a split of certain objects, and the second agent decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives anything."
         meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
-        system_prompt_template = SystemMessagePromptTemplate.from_template("Always respond to the best of your ability")
+        system_prompt_template = SystemMessagePromptTemplate.from_template(game_description)
         return ChatPromptTemplate.from_messages([system_prompt_template, meta_prompt_template])
     
     def _get_response(
         self,
         chat_prompt_template: ChatPromptTemplate,
         social_contract: str,
-        user_interaction_string: str,
-        assistant_interaction_string: str,
+        fixed_string: str,
+        mixed_string: str,
+        flex_string: str,
     ) -> str:
         """
         Returns the response from meta-prompt.
@@ -105,17 +118,19 @@ class MetaPromptModel(BaseAgent):
         """
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(social_contract=social_contract,
-                             user_interaction_string=user_interaction_string,
-                             assistant_interaction_string=assistant_interaction_string,
-                             stop=['System:'])  
+                             fixed_string=fixed_string,
+                             mixed_string=mixed_string,
+                             flex_string=flex_string,
+                             stop=['System:'])
         return response
 
     def run(
         self,
         buffer: ConversationBuffer,
         meta_prompt: MetaPrompt,
-        task_prompt: TaskPrompt,
         run: int,
+        n_fixed: int,
+        n_mixed: int,
         verbose: bool = False,
     ) -> str:
         """Runs meta-prompt
@@ -124,7 +139,6 @@ class MetaPromptModel(BaseAgent):
             buffer (ConversationBuffer): The conversation buffer
             meta_prompt (MetaPrompt): The meta-prompt
             task_prompt (TaskPrompt): The task prompt
-            metric_prompt (MetricPrompt): The metric prompt
             run (int): The run number
             test_run (bool, optional): Whether this is a test run. Defaults to False.
             verbose (bool, optional): Whether to print the meta-prompt. Defaults to False.
@@ -138,16 +152,20 @@ class MetaPromptModel(BaseAgent):
         social_contract_string = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response']
         # get chat history
         chat_history = self._get_chat_history(buffer, memory_type="chat")
-        chat_history_strings = self._get_chat_str(chat_history)
+        chat_history_strings = self._get_chat_str(chat_history, n_fixed, n_mixed)
         # get meta-prompt template and string
         chat_prompt_template = self._get_prompt(meta_prompt)
         prompt_string = chat_prompt_template.format(social_contract=social_contract_string,
-                                                    user_interaction_string=chat_history_strings[0],
-                                                    assistant_interaction_string=chat_history_strings[1])
+                                                    fixed_string=chat_history_strings[0],
+                                                    mixed_string=chat_history_strings[1],
+                                                    flex_string=chat_history_strings[2]
+                                                    )
         response = self._get_response(chat_prompt_template, 
                                       social_contract_string,
                                       chat_history_strings[0],
-                                      chat_history_strings[1])
+                                      chat_history_strings[1],
+                                      chat_history_strings[2]
+                                      )
         
         if verbose:
             print('===================================')

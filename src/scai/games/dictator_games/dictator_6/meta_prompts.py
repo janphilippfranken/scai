@@ -14,25 +14,27 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         role="system",
         metrics=[],
         content="""
-In this simulation, the "users" all share a principle, which tells them to adhere to a principle in their interactions while playing the dictator game. "Assistant", on the other hand, does not know the principle, and has no memory of previous interactions with the users. Your job is to infer this principle by analyzing user interactions, and then create a principle for Assistant to follow so that Assistant behaves EXACTLY the same as the users.
+In this simulation, every fixed-policy agent has a policy for every object to split, such as "be selfish about apples" and "be fair about dollars", which tells them to adhere to the policies in their interactions while splitting these objects in the dictator game. Flexible-policy agents, on the other hand, does not know the policies, and has no memory of previous interactions with the users. Your job is to infer the policies most commonly used by fixed-policy agents by analyzing fixed-policy interactions, and then create a set of policies for the flexible-policy agents to follow so that they behave EXACTLY the same as the fixed-policy agents.
 
-Analyze the model user interaction, found below, that shows the behavior of all users to infer the principle that the users are acting upon. This principle might not necessarily be the most ethically just one.
-{user_interaction_string}
+Analyze the fixed-policy interactions, found below, that shows the behavior of all fixed-policy agents to infer the policies that they are acting upon. These policies might not necessarily be the most ethically just one.
+{fixed_string}
 ---------------------------
 
-Next, analyze the Assistant's interactions with the users, shown below, to see what it behaves like currently.
-{assistant_interaction_string}
+Next, analyze the flexible-policy agents' interactions with the fixed-policy agents, shown below, to see what their behaviours currently are.
+{mixed_string}
 —------------------------
 
-The assistant's previous principle is found here:
+The flexible-policy agents' previous policies are found here:
 Previous {social_contract}
 ---------------------------
 
-Now, revise the previous principle if necessary so that Assistant behaves EXACTLY like the users - don't be afraid to push Assistant. Keep this revised principle short.
+Now, revise the previous policies if necessary so that the flexible-policy agents behave EXACTLY like the fixed-policy agents - don't be afraid to push the agents. Keep these revised policies short.
 
-It is of the utmost importance that Assistant's revised principle encompasses both dictator and decider roles without explicitly mentioning either. The revised principle should be as BROAD as possible WITHOUT mentioning anything regarding the dictator game, proposals, or making and receiving offers. Rather, it should capture the underlying principle that the users share, which tells them how to treat others as well as themselves outside of the context of the dictator game.
+It is of the utmost importance that flexible-policy agents' revised principle encompasses both dictator and decider roles without explicitly mentioning either. The revised principle should be as BROAD as possible WITHOUT mentioning anything regarding the dictator game, proposals, or making and receiving offers. Rather, it should capture the underlying principle that the users share, which tells them how to treat others as well as themselves outside of the context of the dictator game.
 
-The Assistant's revised principle should be written as follows: Principle:...
+The flexible-policy agents' revised policies should be written as follows: "Policies:..." Include only this in your response.
+
+{flex_string}
 """
     ),
 }

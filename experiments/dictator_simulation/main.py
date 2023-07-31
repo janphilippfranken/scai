@@ -15,13 +15,13 @@ import importlib
 
 # save and plot results
 from utils import save_as_csv
-from plots import plot_average_results, plot_cosine_similarity   
+from plots import plot_average_results
 
 # import meta and task prompts, as well as context, from the appropriate game
 def import_prompts(game_number: int) -> None:
     task_module = importlib.import_module(f"scai.games.dictator_games.all_prompts.task.task_prompts")
     meta_module = importlib.import_module(f"scai.games.dictator_games.dictator_{game_number}.meta_prompts")
-    context = importlib.import_module(f"scai.games.dictator_games.dictator_{game_number}.context")
+    context = importlib.import_module(f"scai.games.dictator_games.context")
     DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS = task_module.DICTATOR_TASK_PROMPTS, task_module.DECIDER_TASK_PROMPTS
     META_PROMPTS = meta_module.META_PROMPTS
     Context = context.Context
@@ -58,7 +58,7 @@ def create_context(
         n_flex_inter=args.environment.n_flex_inter,
         currencies=args.environment.currencies,
         agents_dict=args.agents,
-        interactions_dict=args.interactions
+        interactions_dict=args.interactions,
     )
 
 
@@ -105,6 +105,7 @@ def main(args: DictConfig) -> None:
     # run meta-prompt
     for run in tqdm(range(args.environment.n_runs)):
         # initialise context
+
         context = create_context(args, assistant_llm, user_llm, meta_llm, Context,     
                                  DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS)
 
@@ -131,9 +132,12 @@ def main(args: DictConfig) -> None:
     system_messages.append(system_message)
     # plot average user gain across runs
     plot_average_results(data_directory=DATA_DIR, 
-                         sim_name=args.sim.sim_dir, 
-                         sim_id=args.sim.sim_id, 
-                         scores=scores)      
+                         sim_name=args.sim.sim_dir,
+                         sim_id=args.sim.sim_id,
+                         scores=scores,
+                         n_runs=args.environment.n_runs,
+                         currencies=args.environment.currencies,
+                         amounts_per_run=args.environment.amounts_per_run)
                          
 if __name__ == '__main__':
     main()

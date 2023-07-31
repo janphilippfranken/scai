@@ -68,7 +68,7 @@ class UserModel(BaseAgent):
         Returns:
             The response from the assistant.
         """
-        chain = LLMChain(llm=self.llm[0], prompt=chat_prompt_template)
+        chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         return chain.run(task=task,
                          manners=manners,
                          stop=['System:'])
@@ -108,7 +108,9 @@ class UserModel(BaseAgent):
         # Otherwise, set the role and the proposal to be according to whether the assistant was the dictator or not
         else: 
             role = "decider"
-            proposal = self._get_chat_history(buffer, memory_type="chat")[f"{self.model_id}_dictator"][-1]['response']
+            history_dict = self._get_chat_history(buffer, memory_type="chat")
+            key = f"{self.model_id}_fixed_policy_dictator" if f"{self.model_id}_fixed_policy_dictator" in history_dict else f"{self.model_id}_flexible_policy_dictator"
+            proposal = history_dict[key][-1]['response']
             formatted_task = task_prompt.task.format(proposal=proposal)
             
         # get the response and the prompt string
