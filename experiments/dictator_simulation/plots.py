@@ -15,6 +15,8 @@ from matplotlib.patches import FancyBboxPatch
 import matplotlib.ticker as ticker
 from sentence_transformers import SentenceTransformer, util
 import math
+from scipy.stats import sem
+from statistics import mean
 
 
 def change_saturation(
@@ -108,16 +110,14 @@ def plot_scores(scores, title, path):
     plt.savefig(f'{path}_{title}.png', format='png')
     plt.clf()
 
-def plot_proposals(list_fixed_proportions: list, 
-                   list_flex_proportions: list, 
+def plot_proposals(list_fixed: list,
+                   list_flex: int,
                    currency: str, 
-                   amounts_per_run: int,
+                   amounts_per_run: list,
                    n_runs: int, 
                    directory: str,
                    font_family: str = 'Avenir',
                    font_size: int = 24,
-                   palette_name: str = 'colorblind',
-                   saturation: float = 0.6,
                    linewidth: int = 2,
                    zorder: int = 1,
                    scatter_color: str = 'black',
@@ -129,7 +129,6 @@ def plot_proposals(list_fixed_proportions: list,
                    legend_title: str = 'Agent',
                    legend_loc: str = 'center left',
                    bbox_to_anchor: Tuple[float, float] = (1.0, 0.6)):
-    x = [f"{i + 1}: {amounts_per_run[i]} {currency}" for i in range(n_runs)]
     # Set font family and size
 
     fig, ax = plt.subplots(figsize=(20, 10))
@@ -141,43 +140,46 @@ def plot_proposals(list_fixed_proportions: list,
 
     palette = sns.color_palette("husl", 2)
 
-    list_fixed_proportions = [x for x in list_fixed_proportions if x is not None]
-    list_flex_proportions = [x for x in list_flex_proportions if x is not None]
-    for i, elem in enumerate([list_flex_proportions, list_fixed_proportions]):
-        if not elem:
-            continue
-        
-        standard_error = np.std(elem, ddof=1) / math.sqrt(len(elem))
+    x = [f"{i + 1}: {amounts_per_run[i]} {currency}" for i in range(n_runs)]
 
-        line = ax.plot(x, elem, color=palette[i], linewidth=linewidth, zorder=zorder)
+    for i, item in enumerate([list_fixed, list_flex]):
+        label = "Fixed Agent" if not i else "Flexible Agent"
+        y = [float(sum(item[k])) / (amounts_per_run[k] * len(item[k])) for k in range(len(item))]
+        for j, elem in enumerate(item):
+            label = None if j > 0 else label
+            elem = [z for z in elem if z is not None]
 
-        lines.append(line[0])
+            standard_error = sem(elem)
 
-        ax.scatter(x, elem, color=[lighten_color(scatter_color)]*len(x))
+            line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
 
-        ax.fill_between(x, elem - 1.95 * standard_error, elem + 1.95 * standard_error, color=palette[i], alpha=0.3)
+            lines.append(line[0])
+
+            ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
+
+            ax.fill_between(x, y - 1.95 * standard_error, y + 1.95 * standard_error, color=palette[i], alpha=0.3)
 
     plt.xlabel('Meta-Prompt Iteration')
     sns.despine(left=True, bottom=False)
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True)) 
 
     ax.set_ylabel('Average Proportion of Total Proposed')
     ax.yaxis.set_label_coords(*y_label_coords)
     ax.set_yticks(y_ticks)
     ax.set_yticklabels(y_ticklabels)
-    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True)) 
     ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
     plt.ylim(y_lim)
+    plt.subplots_adjust(left=0.1, right=0.8)
 
-    graph_title = f"Proportions_of_{currency}_Proposed_by_Assistant_and_Users"
+    graph_title = f"Proportions_of_{currency}_Proposed_by_Flexible-Contract_and_Fixed-Contract Agents"
     plt.title(" ".join(graph_title.split('_')))
     if legend:
-        ax.legend(lines,
-                    ["Flexible Agent", "Fixed Agent"],
-                    title=legend_title, 
-                    frameon=False,
-                    ncol=1, 
-                    bbox_to_anchor=bbox_to_anchor,
-                    loc=legend_loc) 
+        ax.legend(title=legend_title, 
+                  frameon=False,
+                  ncol=1, 
+                  bbox_to_anchor=bbox_to_anchor,
+                  loc=legend_loc) 
+
     plt.savefig(f'{directory}_{graph_title}.png', format='png')
     plt.clf()
 
@@ -202,29 +204,25 @@ def plot_average_results(
     fixed_agent_proposals, flexible_agent_proposals = [], []
     for i in range(len(scores)):
         for currency in currencies:
-            fixed_dict_offer = 0
-            len_dict = 0
+            fixed_dict_offer = []
             for amount_dict in scores[i][4]:
                 if currency in amount_dict:
-                    fixed_dict_offer += amount_dict[currency][1]
-                    len_dict += 1
+                    fixed_dict_offer.append(amount_dict[currency][1])
 
-            if len_dict == 0:
+            if not fixed_dict_offer:
                 fixed_agent_proposals.append({currency: None})
             else:
-                fixed_agent_proposals.append({currency: float(fixed_dict_offer) / float(amounts_per_run[i] * len_dict)})
+                fixed_agent_proposals.append({currency: fixed_dict_offer})
             
         
-            flex_dict_offer = 0
-            len_deci = 0
+            flex_dict_offer = []
             for amount_dict in scores[i][5]:
                 if currency in amount_dict:
-                    flex_dict_offer += amount_dict[currency][1]
-                    len_deci += 1
-            if len_deci == 0:
+                    flex_dict_offer.append(amount_dict[currency][1])
+            if not flex_dict_offer:
                 flexible_agent_proposals.append({currency: None})
             else:
-                flexible_agent_proposals.append({currency: float(flex_dict_offer) / float(amounts_per_run[i] * len_deci)})
+                flexible_agent_proposals.append({currency: flex_dict_offer})
 
         
     # all_scores = [user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider]
