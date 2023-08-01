@@ -43,7 +43,7 @@ class MetaPromptModel(BaseAgent):
             
             # Determine which history we are appending to
             is_fixed = i < n_fixed * 2
-            is_mixed = n_fixed * 2 <= i < n_mixed * 2
+            is_mixed = n_fixed * 2 <= i < (n_fixed * 2 + n_mixed * 2)
             
             # If it's a dictator iteration
             if not i & 1:
@@ -56,7 +56,7 @@ class MetaPromptModel(BaseAgent):
                     flex_history += message
             
             # Append agent's response
-            message = f"{agent_name}'s Response: {response}\n"
+            message = f"{agent_name}-policy agent's response: {response}\n"
             if is_fixed:
                 fixed_history += message
             elif is_mixed:

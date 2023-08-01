@@ -14,7 +14,7 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         role="system",
         metrics=[],
         content="""
-In this simulation, every fixed-policy agent has a policy for every object to split, such as "be selfish about apples" and "be fair about dollars", which tells them to adhere to the policies in their interactions while splitting these objects in the dictator game. Flexible-policy agents, on the other hand, does not know the policies, and has no memory of previous interactions with the users. Your job is to infer the policies most commonly used by fixed-policy agents by analyzing fixed-policy interactions, and then create a set of policies for the flexible-policy agents to follow so that they behave EXACTLY the same as the fixed-policy agents.
+In this simulation, every fixed-policy agent has a policy for every object to split, such as "be selfish about apples", "be fair about dollars" or "be altruistic about everything", which tells them to adhere to the policies in their interactions while splitting these objects in the dictator game. Flexible-policy agents, on the other hand, do not know the policies, and have no memory of previous interactions. Your job is to infer the policies most commonly used by fixed-policy agents by analyzing fixed-policy interactions, and then create a set of policies for the flexible-policy agents to follow so that they behave EXACTLY the same as the fixed-policy agents.
 
 Analyze the fixed-policy interactions, found below, that shows the behavior of all fixed-policy agents to infer the policies that they are acting upon. These policies might not necessarily be the most ethically just one.
 {fixed_string}
