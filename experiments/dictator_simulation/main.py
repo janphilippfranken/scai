@@ -19,7 +19,7 @@ from plots import plot_average_results
 
 # import meta and task prompts, as well as context, from the appropriate game
 def import_prompts(game_number: int) -> None:
-    task_module = importlib.import_module(f"scai.games.dictator_games.all_prompts.task.task_prompts")
+    task_module = importlib.import_module(f"scai.games.dictator_games.all_prompts.task.task_prompt")
     meta_module = importlib.import_module(f"scai.games.dictator_games.dictator_{game_number}.meta_prompts")
     context = importlib.import_module(f"scai.games.dictator_games.context")
     DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS = task_module.DICTATOR_TASK_PROMPTS, task_module.DECIDER_TASK_PROMPTS
@@ -77,6 +77,18 @@ def get_llms(
         meta_llm = ChatOpenAI(**args.api_openai.meta)
     return assistant_llm, user_llm, meta_llm
 
+# get number of different interaction types per run
+def get_interactions(
+    args: DictConfig,
+    run: int,
+) -> None:
+    
+    run_list = args.interactions.runs[f"run_{run+1}"]
+
+    args.environment.n_fixed_inter = sum(1 for s in run_list if s.count("flex") == 0)
+    args.environment.n_mixed_inter = sum(1 for s in run_list if s.count("flex") == 1)
+    args.environment.n_flex_inter = sum(1 for s in run_list if s.count("flex") == 2)
+
 
 # run simulator
 @hydra.main(config_path="config", config_name="config")
@@ -105,6 +117,8 @@ def main(args: DictConfig) -> None:
     # run meta-prompt
     for run in tqdm(range(args.environment.n_runs)):
         # initialise context
+
+        if not args.interactions.all_same: get_interactions(args, run)
 
         context = create_context(args, assistant_llm, user_llm, meta_llm, Context,     
                                  DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS)

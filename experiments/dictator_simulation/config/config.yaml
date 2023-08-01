@@ -46,7 +46,7 @@ agents:
       manners: "neutral"
 
 interactions:
-  all_same: true
+  all_same: false
   runs:
     run_1:
       - "flex_agent_1-flex_agent_1-dollars"
@@ -54,7 +54,7 @@ interactions:
       - "flex_agent_1-flex_agent_1-dollars"
       - "flex_agent_1-flex_agent_1-dollars"
       - "flex_agent_1-flex_agent_1-dollars"
-    run_21:
+    run_2:
       - "fixed_agent_1-flex_agent_1-dollars"
       - "fixed_agent_1-flex_agent_1-dollars"
       - "fixed_agent_1-flex_agent_1-dollars"
