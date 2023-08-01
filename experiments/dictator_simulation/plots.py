@@ -138,26 +138,32 @@ def plot_proposals(list_fixed: list,
 
     lines = []
 
-    palette = sns.color_palette("husl", 2)
+    palette = sns.color_palette("mako", 2)
 
     x = [f"{i + 1}: {amounts_per_run[i]} {currency}" for i in range(n_runs)]
 
     for i, item in enumerate([list_fixed, list_flex]):
         label = "Fixed Agent" if not i else "Flexible Agent"
+        item = [z for z in item if z is not None]
         y = [float(sum(item[k])) / (amounts_per_run[k] * len(item[k])) for k in range(len(item))]
+        
+        if not y:
+            continue
+
+        errors = []
         for j, elem in enumerate(item):
-            label = None if j > 0 else label
-            elem = [z for z in elem if z is not None]
 
-            standard_error = sem(elem)
+            elem = [float(elem[h]) / amounts_per_run[j] for h in range(len(elem)) if elem[h] is not None]
 
-            line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
+            errors.append(sem(elem))
 
-            lines.append(line[0])
+        line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
 
-            ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
+        lines.append(line[0])
 
-            ax.fill_between(x, y - 1.95 * standard_error, y + 1.95 * standard_error, color=palette[i], alpha=0.3)
+        ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
+
+        ax.fill_between(x, [y_val - 1.95 * err for y_val, err in zip(y, errors)], [y_val + 1.95 * err for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
 
     plt.xlabel('Meta-Prompt Iteration')
     sns.despine(left=True, bottom=False)
@@ -183,11 +189,22 @@ def plot_proposals(list_fixed: list,
     plt.savefig(f'{directory}_{graph_title}.png', format='png')
     plt.clf()
 
+# Collect the proposals
+def collect_proposals(scores: list, 
+                      currencies: list, 
+                      agent_index: int):
+    agent_proposals = []
+    for score in scores:
+        for currency in currencies:
+            dict_offer = [amount_dict[currency][1] for amount_dict in score[agent_index] if currency in amount_dict]
+            agent_proposals.append({currency: dict_offer if dict_offer else None})
+    return agent_proposals
+
 def plot_average_results(    
-    scores,
-    currencies,
-    amounts_per_run,
-    n_runs,
+    scores: list,
+    currencies: list,
+    amounts_per_run: list,
+    n_runs: int,
     data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
@@ -195,44 +212,21 @@ def plot_average_results(
     """
     Plot average user and assistant income when the assistant is a dictator and a decider
     """
-    # user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider = [], [], [], []
-    # user_scores_dictator = [mean(elem[0]) for elem in scores]
-    # user_scores_decider = [mean(elem[1]) for elem in scores]
-    
-    # assistant_scores_dictator = [mean(elem[2]) if elem[2] else 0 for elem in scores]
-    # assistant_scores_decider = [mean(elem[3]) if elem[3] else 0 for elem in scores]
+    # Plot proposals:
     fixed_agent_proposals, flexible_agent_proposals = [], []
-    for i in range(len(scores)):
-        for currency in currencies:
-            fixed_dict_offer = []
-            for amount_dict in scores[i][4]:
-                if currency in amount_dict:
-                    fixed_dict_offer.append(amount_dict[currency][1])
-
-            if not fixed_dict_offer:
-                fixed_agent_proposals.append({currency: None})
-            else:
-                fixed_agent_proposals.append({currency: fixed_dict_offer})
-            
-        
-            flex_dict_offer = []
-            for amount_dict in scores[i][5]:
-                if currency in amount_dict:
-                    flex_dict_offer.append(amount_dict[currency][1])
-            if not flex_dict_offer:
-                flexible_agent_proposals.append({currency: None})
-            else:
-                flexible_agent_proposals.append({currency: flex_dict_offer})
-
-        
-    # all_scores = [user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider]
-    # all_titles = ["Average_User_Dictator_Income_Over_Turns", "Average_User_Decider_Income_Over_Turns", "Average_Assistant_Dictator_Income_Over_Turns", "Average_Assistant_Decider_Income_Over_Turns"]
-    # for i in range(len(all_scores)):
-    #     plot_scores(all_scores[i], all_titles[i], f"{data_directory}/{sim_name}_id_{sim_id}")
+    fixed_agent_index, flexible_agent_index = 4, 5
+    # Get the proposals offered by the fixed and flex agents
+    fixed_agent_proposals = collect_proposals(scores, currencies, fixed_agent_index)
+    flexible_agent_proposals = collect_proposals(scores, currencies, flexible_agent_index)
+    # Get the relevant statistics and plot the proposals
     for currency in currencies:
         list_fixed_proportions = [elem[currency] for elem in fixed_agent_proposals if currency in elem]
         list_flex_proportions = [elem[currency] for elem in flexible_agent_proposals if currency in elem]
         plot_proposals(list_fixed_proportions, list_flex_proportions, currency, amounts_per_run, n_runs, f"{data_directory}/{sim_name}_id_{sim_id}")
+
+    # Plot Acceptance/Rejection Tables:
+
+
 
 def plot_cosine_similarity(
     system_messages,
