@@ -30,7 +30,7 @@ Previous {social_contract}
 
 Now, if the flexible-policy agents behave differently than the fixed agents, revise the previous principle if necessary so that flexible-policy agent behaves EXACTLY like the fixed-policy agents - don't be afraid to push the flexible-policy agent TO THE EXTREME, and keep this revised principle short. Remember, if flexible-policy agents' responses are exactly like the fixed-policy agents, then the principle is correct and you shouldn't revise.
 
-It is of the utmost importance that flexible-policy agent's principle encompasses both dictator and decider roles without explicitly mentioning either. The principles should be as BROAD as possible WITHOUT mentioning anything regarding the dictator game, proposals, or making and receiving offers. Rather, it should capture the underlying principles that the users have, which tells them how to treat others as well as themselves outside of the context of the dictator game.
+It is of the utmost importance that flexible-policy agent's principle encompasses both dictator and decider roles without explicitly mentioning either. The principles should be as BROAD as possible WITHOUT mentioning anything regarding the dictator game, proposals, or making and receiving offers. Rather, it should capture the underlying principles that the agents have, which tells them how to treat others as well as themselves outside of the context of the dictator game.
 
 Give a very short reason for revising the previous principle, in one sentence: Reason for revising the previous principle:...
 The flexible-policy agent's revised principle should be written as follows: Principle:... 
