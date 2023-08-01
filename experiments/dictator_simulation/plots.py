@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
 import matplotlib.ticker as ticker
 from sentence_transformers import SentenceTransformer, util
-from statistics import mean
+import math
 
 
 def change_saturation(
@@ -108,18 +108,76 @@ def plot_scores(scores, title, path):
     plt.savefig(f'{path}_{title}.png', format='png')
     plt.clf()
 
-def plot_proposals(list_fixed_proportions, list_flex_proportions, currency, amounts_per_run, n_runs, directory):
+def plot_proposals(list_fixed_proportions: list, 
+                   list_flex_proportions: list, 
+                   currency: str, 
+                   amounts_per_run: int,
+                   n_runs: int, 
+                   directory: str,
+                   font_family: str = 'Avenir',
+                   font_size: int = 24,
+                   palette_name: str = 'colorblind',
+                   saturation: float = 0.6,
+                   linewidth: int = 2,
+                   zorder: int = 1,
+                   scatter_color: str = 'black',
+                   y_label_coords: Tuple[float, float] = (-0.07, 0.5),
+                   y_ticks: List[int] = [0, 0.2, 0.4, 0.6, 0.8, 1],
+                   y_ticklabels: List[int] = [0, 20, 40, 60, 80, 100],
+                   y_lim: Tuple[float, float] = (-0.1, 1.1),
+                   legend: bool = True,
+                   legend_title: str = 'Agent',
+                   legend_loc: str = 'center left',
+                   bbox_to_anchor: Tuple[float, float] = (1.0, 0.6)):
     x = [f"{i + 1}: {amounts_per_run[i]} {currency}" for i in range(n_runs)]
+    # Set font family and size
 
-    plt.plot(x, list_fixed_proportions, label="User Proposals", color='red')
-    plt.plot(x, list_flex_proportions, label="Assistant Proposals", color='blue')
+    fig, ax = plt.subplots(figsize=(20, 10))
+
+    plt.rcParams['font.family'] = font_family
+    plt.rcParams['font.size'] = font_size
+
+    lines = []
+
+    palette = sns.color_palette("husl", 2)
+
+    list_fixed_proportions = [x for x in list_fixed_proportions if x is not None]
+    list_flex_proportions = [x for x in list_flex_proportions if x is not None]
+    for i, elem in enumerate([list_flex_proportions, list_fixed_proportions]):
+        if not elem:
+            continue
+        
+        standard_error = np.std(elem, ddof=1) / math.sqrt(len(elem))
+
+        line = ax.plot(x, elem, color=palette[i], linewidth=linewidth, zorder=zorder)
+
+        lines.append(line[0])
+
+        ax.scatter(x, elem, color=[lighten_color(scatter_color)]*len(x))
+
+        ax.fill_between(x, elem - 1.95 * standard_error, elem + 1.95 * standard_error, color=palette[i], alpha=0.3)
+
     plt.xlabel('Meta-Prompt Iteration')
-    plt.ylabel('Average Amount Proposed')
+    sns.despine(left=True, bottom=False)
+
+    ax.set_ylabel('Average Proportion of Total Proposed')
+    ax.yaxis.set_label_coords(*y_label_coords)
+    ax.set_yticks(y_ticks)
+    ax.set_yticklabels(y_ticklabels)
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True)) 
+    ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
+    plt.ylim(y_lim)
+
     graph_title = f"Proportions_of_{currency}_Proposed_by_Assistant_and_Users"
     plt.title(" ".join(graph_title.split('_')))
-    plt.legend()
-    ax = plt.gca()
-    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))    
+    if legend:
+        ax.legend(lines,
+                    ["Flexible Agent", "Fixed Agent"],
+                    title=legend_title, 
+                    frameon=False,
+                    ncol=1, 
+                    bbox_to_anchor=bbox_to_anchor,
+                    loc=legend_loc) 
     plt.savefig(f'{directory}_{graph_title}.png', format='png')
     plt.clf()
 
