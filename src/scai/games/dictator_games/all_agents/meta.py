@@ -91,7 +91,7 @@ class MetaPromptModel(BaseAgent):
         Returns:
             The prompt template.
         """
-        game_description = "You are about to analyze a set of dictator games. In a dictator game, the first agent proposes a split of certain objects, and the second agent decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives anything."
+        game_description = "Your job is to observe agents playing the dictator game and extract a principle from their interactions. In the dictator game, the dictator proposes a split of resources, and the decider decides whether to accept or reject it. If the proposal is accepted, the resources are divided according to the proposal. If the proposal is rejected, no one receives anything."
         meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
         system_prompt_template = SystemMessagePromptTemplate.from_template(game_description)
         return ChatPromptTemplate.from_messages([system_prompt_template, meta_prompt_template])

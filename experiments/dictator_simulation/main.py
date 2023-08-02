@@ -15,7 +15,7 @@ import importlib
 
 # save and plot results
 from utils import save_as_csv
-from plots import plot_average_results
+from plots import plot_results
 
 # import meta and task prompts, as well as context, from the appropriate game
 def import_prompts(game_number: int) -> None:
@@ -145,12 +145,13 @@ def main(args: DictConfig) -> None:
         system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
     system_messages.append(system_message)
     # plot average user gain across runs
-    plot_average_results(data_directory=DATA_DIR, 
+    plot_results(data_directory=DATA_DIR, 
                          sim_name=args.sim.sim_dir,
                          sim_id=args.sim.sim_id,
                          scores=scores,
                          n_runs=args.environment.n_runs,
                          currencies=args.environment.currencies,
+                         interactions=args.interactions,
                          amounts_per_run=args.environment.amounts_per_run)
                          
 if __name__ == '__main__':

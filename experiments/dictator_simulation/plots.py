@@ -97,19 +97,6 @@ def get_fancy_bbox(
         mutation_aspect=mutation_aspect, # change depending on ylim
         zorder=2)
 
-def plot_scores(scores, title, path):
-    x_labels = list(range(1, len(scores) + 1))
-    plt.bar(x_labels, scores)
-    plt.xlabel('Iteration')
-    plt.ylabel(f'Average income per interaction')
-    graph_title = " ".join(title.split('_'))
-    plt.title(graph_title)
-    ax = plt.gca()
-    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
-    # Specify the full file path where you want to save the figure
-    plt.savefig(f'{path}_{title}.png', format='png')
-    plt.clf()
-
 def plot_proposals(list_fixed: list,
                    list_flex: int,
                    currency: str, 
@@ -132,10 +119,6 @@ def plot_proposals(list_fixed: list,
     # Set font family and size
 
     fig, ax = plt.subplots(figsize=(20, 10))
-
-    plt.rcParams['font.family'] = font_family
-    plt.rcParams['font.size'] = font_size
-
     lines = []
 
     palette = sns.color_palette("mako", 2)
@@ -146,45 +129,45 @@ def plot_proposals(list_fixed: list,
         label = "Fixed Agent" if not i else "Flexible Agent"
         item = [z for z in item if z is not None]
         y = [float(sum(item[k])) / (amounts_per_run[k] * len(item[k])) for k in range(len(item))]
-        
+
         if not y:
             continue
 
         errors = []
         for j, elem in enumerate(item):
-
             elem = [float(elem[h]) / amounts_per_run[j] for h in range(len(elem)) if elem[h] is not None]
-
             errors.append(sem(elem))
 
         line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
-
         lines.append(line[0])
-
         ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
-
         ax.fill_between(x, [y_val - 1.95 * err for y_val, err in zip(y, errors)], [y_val + 1.95 * err for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
 
-    plt.xlabel('Meta-Prompt Iteration')
+    plt.xlabel('Meta-Prompt Iteration', family=font_family, size=font_size)
     sns.despine(left=True, bottom=False)
+    ax.set_xticks(range(len(x)))
+    ax.set_xticklabels(x, fontsize=20)
     ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True)) 
 
-    ax.set_ylabel('Average Proportion of Total Proposed')
+    ax.set_ylabel('Average Proportion of Total Proposed', family=font_family, size=font_size)
     ax.yaxis.set_label_coords(*y_label_coords)
     ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_ticklabels)
+    ax.set_yticklabels(y_ticklabels, size=font_size)
     ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
     plt.ylim(y_lim)
     plt.subplots_adjust(left=0.1, right=0.8)
 
     graph_title = f"Proportions_of_{currency}_Proposed_by_Flexible-Contract_and_Fixed-Contract Agents"
-    plt.title(" ".join(graph_title.split('_')))
+    plt.title(" ".join(graph_title.split('_')), family=font_family, size=font_size + 5)
     if legend:
         ax.legend(title=legend_title, 
                   frameon=False,
                   ncol=1, 
                   bbox_to_anchor=bbox_to_anchor,
-                  loc=legend_loc) 
+                  loc=legend_loc,
+                  fontsize=font_size,  # Change the font size of legend items
+                  title_fontsize=font_size
+                  ) 
 
     plt.savefig(f'{directory}_{graph_title}.png', format='png')
     plt.clf()
@@ -200,11 +183,12 @@ def collect_proposals(scores: list,
             agent_proposals.append({currency: dict_offer if dict_offer else None})
     return agent_proposals
 
-def plot_average_results(    
+def plot_results(    
     scores: list,
     currencies: list,
     amounts_per_run: list,
     n_runs: int,
+    interactions: list,
     data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
@@ -223,10 +207,54 @@ def plot_average_results(
         list_fixed_proportions = [elem[currency] for elem in fixed_agent_proposals if currency in elem]
         list_flex_proportions = [elem[currency] for elem in flexible_agent_proposals if currency in elem]
         plot_proposals(list_fixed_proportions, list_flex_proportions, currency, amounts_per_run, n_runs, f"{data_directory}/{sim_name}_id_{sim_id}")
+    #user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals
 
     # Plot Acceptance/Rejection Tables:
+    fixed_dictator_scores, fixed_decider_scores, flex_dictator_scores, flex_decider_scores = [], [], [], []
+    for score in scores:
+        fixed_dictator_scores.append(score[0])
+        fixed_decider_scores.append(score[1])
+        flex_dictator_scores.append(score[2])
+        flex_decider_scores.append(score[3])
+    titles = ["Rate_of_Fixed-Policy_Agent_Acceptance_per_Iteration", "Rate_of_Flexible-Policy_Agent_Acceptance_per_Iteration"]
+    for i, score_list in enumerate([(fixed_dictator_scores, fixed_decider_scores), (flex_dictator_scores, flex_decider_scores)]):
+        plot_scores(score_list[1], f"{data_directory}/{sim_name}_id_{sim_id}", titles[i], n_runs)
 
+# def print_scores(scores):
 
+    
+def plot_scores(scores: list, 
+                path: str, 
+                title: str, 
+                n_runs: int,
+                font_family: str = 'Avenir', 
+                font_size: int = 24):
+    acceptance_rates = []
+    for score in scores:
+        total, total_accepted = 0, 0
+        for dict in score:
+            if dict != -1:
+                total += 1
+                if dict != 0:
+                    total_accepted += 1
+
+        acceptance_rates.append(float(total_accepted) / float(total))
+
+    plt.rcParams['font.family'] = font_family
+    plt.rcParams['font.size'] = font_size
+
+    x = [f"{i + 1}" for i in range(n_runs)]
+    plt.bar(x, acceptance_rates)
+    plt.xlabel('Meta-Prompt-Iteration')
+
+    plt.ylabel(f'Percentage of Proposals Accepted')
+    graph_title = " ".join(title.split('_'))
+    plt.title(graph_title)
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    # Specify the full file path where you want to save the figure
+    plt.savefig(f'{path}_{title}.png', format='png')
+    plt.clf()
 
 def plot_cosine_similarity(
     system_messages,
