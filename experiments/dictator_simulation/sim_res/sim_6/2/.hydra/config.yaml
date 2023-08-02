@@ -1,0 +1,69 @@
+sim:
+  sim_dir: sim_2
+  sim_id: '2'
+  model_name: openai/gpt-4-0314
+  test_run: false
+  verbose: true
+  system_message: ' '
+environment:
+  n_runs: 7
+  random_amounts: false
+  amounts_per_run:
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  currencies:
+  - dollars
+  task_prompt: task_prompt_1
+  meta_prompt: meta_prompt_1
+  n_fixed_inter: 1
+  n_mixed_inter: 4
+  n_flex_inter: 0
+agents:
+  fixed_agents:
+  - name: fixed_agent_1
+    manners: neutral
+    utilities:
+      dollars: selfish
+  flex_agents:
+  - name: flex_agent_1
+    manners: neutral
+interactions:
+  all_same: true
+  runs:
+    run_1:
+    - fixed_agent_1-flex_agent_1-dollars
+    - flex_agent_1-fixed_agent_1-dollars
+    - flex_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-flex_agent_1-dollars
+    - fixed_agent_1-flex_agent_1-dollars
+api_crfm:
+  assistant:
+    model_name: openai/gpt-4-0314
+    max_tokens: 300
+    temperature: 8.8e-05
+  user:
+    model_name: openai/gpt-4-0314
+    max_tokens: 150
+    temperature: 8.8e-05
+  meta:
+    model_name: openai/gpt-4-0314
+    max_tokens: 400
+    temperature: 8.8e-05
+api_openai:
+  assistant:
+    model_name: gpt-4
+    max_tokens: 250
+    temperature: 0.0
+  user:
+    model_name: gpt-4
+    max_tokens: 50
+    temperature: 0.0
+  meta:
+    model_name: gpt-4
+    max_tokens: 150
+    temperature: 0.0

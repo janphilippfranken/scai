@@ -14,7 +14,7 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         role="system",
         metrics=[],
         content="""
-In this simulation, all agents share a policy for every object to split, such as "be selfish about apples" and "be fair about dollars", which tells them to adhere to the policies in their interactions while splitting these objects in the dictator game. Your job is to infer the policies, and revise them so that more agents can behave in a way that ends up getting them the most benefit.
+In this simulation, all agents share some principles for every object to split, such as "be selfish about apples" and "be fair about dollars", which tells them to adhere to the policies in their interactions while splitting these objects in the dictator game. Your job is to infer the policies, and revise them so that more agents can behave in a way that ends up getting them the most benefit.
 
 
 Analyze the interactions between all agents, shown below, to see what their behaviours currently are.
@@ -31,7 +31,6 @@ It is of the utmost importance that agents' revised principle encompasses both d
 
 The agents' revised policies should be written as follows: "Policies:..." Include only this in your response.
 
-{fixed_string} {mixed_string}
 """
     ),
 }
