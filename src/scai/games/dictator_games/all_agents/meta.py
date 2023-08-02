@@ -88,7 +88,7 @@ class MetaPromptModel(BaseAgent):
         Args:
             meta_prompt: (MetaPrompt) The meta-prompt.
 
-        Returns:
+        Returns: 
             The prompt template.
         """
         game_description = "Your job is to observe agents playing the dictator game and extract a principle from their interactions. In the dictator game, the dictator proposes a split of resources, and the decider decides whether to accept or reject it. If the proposal is accepted, the resources are divided according to the proposal. If the proposal is rejected, no one receives anything."

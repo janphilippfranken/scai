@@ -120,7 +120,7 @@ def plot_proposals(list_fixed: list,
 
     fig, ax = plt.subplots(figsize=(20, 10))
     lines = []
-
+ 
     palette = sns.color_palette("mako", 2)
 
     x = [f"{i + 1}: {amounts_per_run[i]} {currency}" for i in range(n_runs)]
