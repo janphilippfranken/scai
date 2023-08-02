@@ -133,15 +133,22 @@ def plot_proposals(list_fixed: list,
         if not y:
             continue
 
+        while len(y) < len(x):
+            y.append(None)
+
         errors = []
+        
         for j, elem in enumerate(item):
             elem = [float(elem[h]) / amounts_per_run[j] for h in range(len(elem)) if elem[h] is not None]
             errors.append(sem(elem))
 
+        while len(errors) < len(x):
+            errors.append(0)
+
         line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
         lines.append(line[0])
         ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
-        ax.fill_between(x, [y_val - 1.95 * err for y_val, err in zip(y, errors)], [y_val + 1.95 * err for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
+        ax.fill_between(x, [y_val - 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
 
     plt.xlabel('Meta-Prompt Iteration: Amount and Currency', family=font_family, size=font_size)
     sns.despine(left=True, bottom=False)
@@ -237,8 +244,10 @@ def plot_scores(scores: list,
                 total += 1
                 if dict != 0:
                     total_accepted += 1
-
-        acceptance_rates.append(float(total_accepted) / float(total))
+        if total:
+            acceptance_rates.append(float(total_accepted) / float(total))
+        else: 
+            acceptance_rates.append(0)
 
     plt.rcParams['font.family'] = font_family
     plt.rcParams['font.size'] = font_size
