@@ -143,10 +143,10 @@ def plot_proposals(list_fixed: list,
         ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
         ax.fill_between(x, [y_val - 1.95 * err for y_val, err in zip(y, errors)], [y_val + 1.95 * err for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
 
-    plt.xlabel('Meta-Prompt Iteration', family=font_family, size=font_size)
+    plt.xlabel('Meta-Prompt Iteration: Amount and Currency', family=font_family, size=font_size)
     sns.despine(left=True, bottom=False)
     ax.set_xticks(range(len(x)))
-    ax.set_xticklabels(x, fontsize=20)
+    ax.set_xticklabels(x, fontsize=font_size)
     ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True)) 
 
     ax.set_ylabel('Average Proportion of Total Proposed', family=font_family, size=font_size)
