@@ -1,48 +1,50 @@
 hydra:
   run:
-    dir: sim_res/${sim.sim_dir}/${sim.sim_id}
+    dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "sim_demo" 
-  sim_id: "vary_utilities_equal_influence" 
+  sim_dir: "experiment_1"
+  sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
   verbose: true # if false, no responses are printed during simulation
   system_message: " " # start developer constitution / social contract is empty
 
-# random: # Worry about this later
-#   is_random: false
-#   n_fixed_inter: ""
-#     n_mixed_utility_inter: ""
-#   n_mixed_inter: ""
-#   n_flex_inter: ""
-
 environment:
+  random:
+    is_random: false
+    n_rand_iter: 10
+    rand_variables:
+      currency: true
+      amount: true
+      n_fixed_inter: true
+      n_mixed_inter: true
+      n_utility: false
+      manners: false
+
   n_runs: 4
   random_amounts: false # do later
-  amounts_per_run:
+  amounts_per_run: #check to have n_run entries
     - 10
     - 10
     - 10
     - 10
   currencies: 
    - "dollars"
+   #- "apples"
   task_prompt: "task_prompt_1"
   meta_prompt: "meta_prompt_1"
-  n_fixed_inter: 2
-  n_mixed_inter: 2
-  n_flex_inter: 0
+  n_fixed_inter: 0
+  n_mixed_inter: 4 # ideally involve the flexible agent as dictator and as decider
+  n_flex_inter: 2
   
 agents:
   fixed_agents:
     - name: "fixed_agent_1"
       manners: "neutral"
-      utilities:
-        dollars: "selfish"
-    - name: "fixed_agent_2"
-      manners: "neutral"
-      utilities:
+      utilities:                 #utilities should have the same entries as prescirbed in currencies
         dollars: "altruistic"
+        #apples: "altruistic"
   flex_agents:
     - name: "flex_agent_1"
       manners: "neutral"
@@ -50,27 +52,29 @@ agents:
 interactions:
   all_same: true
   runs:
-    run_1:
-      - "fixed_agent_1-fixed_agent_1-dollars"
-      - "fixed_agent_2-fixed_agent_1-dollars"
-      - "flex_agent_1-fixed_agent_1-dollars"
+    run_1:                     # check to have n_fixed_inter, n_mixed_inter, and n_flex_inter entries
+      #- "fixed_agent_1-fixed_agent_1-dollars"
       - "fixed_agent_1-flex_agent_1-dollars"
-
+      - "fixed_agent_1-flex_agent_1-dollars"
+      - "flex_agent_1-fixed_agent_1-dollars"
+      - "flex_agent_1-fixed_agent_1-dollars"
+      - "flex_agent_1-flex_agent_1-dollars"
+      - "flex_agent_1-flex_agent_1-dollars"
 
 
 api_crfm:
   assistant:
     model_name: "openai/gpt-4-0314"
     max_tokens: 300 # these are the actual token limits
-    temperature: 0.0
+    temperature: 0.000066
   user:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 150 # these are the actual token limits
-    temperature: 0.0 # we want users to be low on temperature to avoid random variation in ratings
+    temperature: 0.000066 # we want users to be low on temperature to avoid random variation in ratings
   meta:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 400 # these are the actual token limits
-    temperature: 0.0
+    temperature: 0.000067
 
 api_openai:
   assistant:

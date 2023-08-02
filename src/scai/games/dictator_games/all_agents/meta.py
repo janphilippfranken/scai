@@ -1,8 +1,5 @@
 from typing import Dict, Any
-
-import numpy as np
-import copy
-import os
+import random
 
 from langchain.prompts.chat import (
     ChatPromptTemplate,
@@ -31,11 +28,12 @@ class MetaPromptModel(BaseAgent):
         model_id: str, 
     ) -> None:
         super().__init__(llm, model_id)
-        
-    def _get_chat_str(self, chat_history: ChatMemory, n_fixed: int, n_mixed: int) -> str:
-        fixed_history = ""
-        mixed_history = ""
-        flex_history = ""
+
+
+    def _get_chat_str(self, chat_history: dict, n_fixed: int, n_mixed: int) -> tuple:
+        fixed_history_list = []
+        mixed_history_list = []
+        flex_history_list = []
 
         for i, (agent, interaction) in enumerate(chat_history.items()):
             response = interaction[-1]['response']
@@ -49,32 +47,46 @@ class MetaPromptModel(BaseAgent):
             if not i & 1:
                 message = "Start of interaction\n"
                 if is_fixed:
-                    fixed_history += message
+                    fixed_history_list.append(message)
                 elif is_mixed:
-                    mixed_history += message
+                    mixed_history_list.append(message)
                 else:
-                    flex_history += message
+                    flex_history_list.append(message)
             
             # Append agent's response
             message = f"{agent_name}-policy agent's response: {response}\n"
             if is_fixed:
-                fixed_history += message
+                fixed_history_list.append(message)
             elif is_mixed:
-                mixed_history += message
+                mixed_history_list.append(message)
             else:
-                flex_history += message
+                flex_history_list.append(message)
             
             # If it's a decider iteration
             if i & 1:
                 message = "End of interaction\n\n"
                 if is_fixed:
-                    fixed_history += message
+                    fixed_history_list.append(message)
                 elif is_mixed:
-                    mixed_history += message
+                    mixed_history_list.append(message)
                 else:
-                    flex_history += message
-                
-        return fixed_history, mixed_history, flex_history
+                    flex_history_list.append(message)
+
+
+        # Concatenate and Shuffle the lists
+        fixed_history_list = [''.join(fixed_history_list[i:i+4]) for i in range(0, len(fixed_history_list), 4)]
+        mixed_history_list = [''.join(mixed_history_list[i:i+4]) for i in range(0, len(mixed_history_list), 4)]
+        flex_history_list = [''.join(flex_history_list[i:i+4]) for i in range(0, len(flex_history_list), 4)]
+        
+        random.shuffle(fixed_history_list)
+        random.shuffle(mixed_history_list)
+        random.shuffle(flex_history_list)
+
+        fixed_history_str = ''.join(fixed_history_list)
+        mixed_history_str = ''.join(mixed_history_list)
+        flex_history_str = ''.join(flex_history_list)
+
+        return fixed_history_str, mixed_history_str, flex_history_str
 
 
 

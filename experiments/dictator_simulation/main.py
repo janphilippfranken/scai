@@ -93,19 +93,8 @@ def get_interactions(
 # run simulator
 @hydra.main(config_path="config", config_name="config")
 def main(args: DictConfig) -> None:
-
-    n_fixed = 1 if args.environment.n_fixed_inter else 0
-    n_mixed = 1 if args.environment.n_mixed_inter else 0
-    n_flex = 1 if args.environment.n_flex_inter else 0
-
-    
-    # determines the type of game based on the number of fixed, mixed, and flexible interactions
-    game_number = int(f"{int(n_fixed)}{int(n_mixed)}{int(n_flex)}", 2)
-
-    DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS, Context = import_prompts(game_number)
-
     # sim_res directory
-    DATA_DIR = f'{hydra.utils.get_original_cwd()}/sim_res/{args.sim.sim_dir}/{args.sim.sim_id}'
+    DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
     
     # llms
     is_crfm = 'openai' in args.sim.model_name # custom stanford models
@@ -118,7 +107,18 @@ def main(args: DictConfig) -> None:
     for run in tqdm(range(args.environment.n_runs)):
         # initialise context
 
-        if not args.interactions.all_same: get_interactions(args, run)
+        if args.interactions.all_same: 
+            get_interactions(args, 0)
+        else:
+            get_interactions(args, run)
+
+        n_fixed = 1 if args.environment.n_fixed_inter else 0
+        n_mixed = 1 if args.environment.n_mixed_inter else 0
+        n_flex = 1 if args.environment.n_flex_inter else 0
+
+        game_number = int(f"{int(n_fixed)}{int(n_mixed)}{int(n_flex)}", 2)
+
+        DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS, Context = import_prompts(game_number)
 
         context = create_context(args, assistant_llm, user_llm, meta_llm, Context,     
                                  DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS)
