@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
 import matplotlib.ticker as ticker
 from sentence_transformers import SentenceTransformer, util
-import math
 from scipy.stats import sem
 from statistics import mean
 
@@ -98,7 +97,7 @@ def get_fancy_bbox(
         zorder=2)
 
 def plot_all_averages(
-                   total_scores: List[List[List(float)]],
+                   total_scores: list,
                    n_runs: int, 
                    directory: str,
                    font_family: str = 'Avenir',
@@ -205,7 +204,26 @@ def plot_all_averages(
     # Specify the full file path where you want to save the figure
     plt.savefig(f'{directory}_{graph_title}.png', format='png')
     plt.clf()
-    
+
+    acceptance_rates = list_flex_bars[0]
+    x = [f"{i + 1}" for i in range(n_runs)]
+    plt.bar(x, acceptance_rates)
+    plt.xlabel('Meta-Prompt-Iteration')
+
+    plt.ylabel(f'Percentage of Proposals Accepted')
+    graph_title = " ".join(bar_title.split('_'))
+    plt.title(graph_title)
+
+    for i in range(len(acceptance_rates)):
+        if np.isnan(acceptance_rates[i]):
+            plt.text(i, 0, 'No data\nprovided', ha='center', va='bottom')
+
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    # Specify the full file path where you want to save the figure
+    plt.savefig(f'{directory}_{graph_title}.png', format='png')
+    plt.clf()
+
     return y_fixed, y_flex
 
 

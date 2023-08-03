@@ -15,7 +15,7 @@ import importlib
 
 # save and plot results
 from utils import save_as_csv
-from plots import plot_results
+from plots import plot_results, plot_all_averages
 
 # import meta and task prompts, as well as context, from the appropriate game
 def import_prompts(game_number: int) -> None:
@@ -167,7 +167,7 @@ def main(args: DictConfig) -> None:
                                                                   )
         total_scores.append([fixed_plot, flex_plot, fixed_bar, flex_bar])
 
-    plot_all_averages(total_scores)
+    plot_all_averages(total_scores = total_scores, n_runs = args.environment.n_runs, directory = DATA_DIR)
                          
 if __name__ == '__main__':
     main()
