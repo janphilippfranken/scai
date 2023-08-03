@@ -93,66 +93,81 @@ def get_interactions(
 # run simulator
 @hydra.main(config_path="config", config_name="config")
 def main(args: DictConfig) -> None:
-    # sim_res directory
-    DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
-    
     # llms
     is_crfm = 'openai' in args.sim.model_name # custom stanford models
     assistant_llm, user_llm, meta_llm = get_llms(args, is_crfm)
-    
-    system_message = args.sim.system_message
-    system_messages = []
-    scores = []
-    # run meta-prompt
-    for run in tqdm(range(args.environment.n_runs)):
-        # initialise context
 
-        if args.interactions.all_same: 
-            get_interactions(args, 0)
-        else:
-            get_interactions(args, run)
+    num_iter = args.environment.random.n_rand_iter if args.environment.random.is_random else 1
+    total_scores = []
+    for i in range(num_iter):
 
-        n_fixed = 1 if args.environment.n_fixed_inter else 0
-        n_mixed = 1 if args.environment.n_mixed_inter else 0
-        n_flex = 1 if args.environment.n_flex_inter else 0
+        if args.environment.random.is_random:
+            args.sim.sim_id = i
+            args.environment.amounts_per_run = None
+            args.environment.currencies = None
+            args.environment.n_fixed_inter = None
+            args.environment.n_mixed_inter = None
+            args.manners = None
 
-        game_number = int(f"{int(n_fixed)}{int(n_mixed)}{int(n_flex)}", 2)
+        # sim_res directory
+        DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
+        system_message = args.sim.system_message
+        system_messages = []
+        scores = []
+        # run meta-prompt
+        for run in tqdm(range(args.environment.n_runs)):
+            # initialise context
 
-        DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS, Context = import_prompts(game_number)
+            if args.interactions.all_same: 
+                get_interactions(args, 0)
+            else:
+                get_interactions(args, run)
 
-        context = create_context(args, assistant_llm, user_llm, meta_llm, Context,     
-                                 DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS)
+            n_fixed = 1 if args.environment.n_fixed_inter else 0
+            n_mixed = 1 if args.environment.n_mixed_inter else 0
+            n_flex = 1 if args.environment.n_flex_inter else 0
 
-        context.buffer.save_system_context(model_id='system', **{
-            'response': system_message, 
-        })
+            game_number = int(f"{int(n_fixed)}{int(n_mixed)}{int(n_flex)}", 2)
+
+            DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS, Context = import_prompts(game_number)
+
+            context = create_context(args, assistant_llm, user_llm, meta_llm, Context,     
+                                    DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS)
+
+            context.buffer.save_system_context(model_id='system', **{
+                'response': system_message, 
+            })
+            system_messages.append(system_message)
+            # run context
+            # user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals
+            scores.append(context.run(run))
+            # save results as csv
+            save_as_csv(system_data=context.buffer._system_memory.messages,
+                        chat_data=context.buffer._chat_memory.messages,
+                        data_directory=DATA_DIR, 
+                        sim_name=args.sim.sim_dir,
+                        sim_id=args.sim.sim_id,
+                        run=run)
+            # save results json
+            with open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
+                json.dump(context.buffer._full_memory.messages, f)
+            
+            # update system message after each run
+            system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
         system_messages.append(system_message)
-        # run context
-        # user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals
-        scores.append(context.run(run))
-        # save results as csv
-        save_as_csv(system_data=context.buffer._system_memory.messages,
-                    chat_data=context.buffer._chat_memory.messages,
-                    data_directory=DATA_DIR, 
-                    sim_name=args.sim.sim_dir,
-                    sim_id=args.sim.sim_id,
-                    run=run)
-        # save results json
-        with open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
-            json.dump(context.buffer._full_memory.messages, f)
-        
-        # update system message after each run
-        system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
-    system_messages.append(system_message)
-    # plot average user gain across runs
-    plot_results(data_directory=DATA_DIR, 
-                         sim_name=args.sim.sim_dir,
-                         sim_id=args.sim.sim_id,
-                         scores=scores,
-                         n_runs=args.environment.n_runs,
-                         currencies=args.environment.currencies,
-                         interactions=args.interactions,
-                         amounts_per_run=args.environment.amounts_per_run)
+        # plot average user gain across runs
+        fixed_plot, flex_plot, fixed_bar, flex_bar = plot_results(data_directory=DATA_DIR, 
+                                                                  sim_name=args.sim.sim_dir,
+                                                                  sim_id=args.sim.sim_id,
+                                                                  scores=scores,
+                                                                  n_runs=args.environment.n_runs,
+                                                                  currencies=args.environment.currencies,
+                                                                  interactions=args.interactions,
+                                                                  amounts_per_run=args.environment.amounts_per_run
+                                                                  )
+        total_scores.append([fixed_plot, flex_plot, fixed_bar, flex_bar])
+
+    plot_all_averages(total_scores)
                          
 if __name__ == '__main__':
     main()
