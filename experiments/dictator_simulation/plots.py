@@ -15,7 +15,6 @@ from matplotlib.patches import FancyBboxPatch
 import matplotlib.ticker as ticker
 from sentence_transformers import SentenceTransformer, util
 from scipy.stats import sem
-from statistics import mean
 
 
 def change_saturation(
@@ -115,7 +114,6 @@ def plot_all_averages(
                    legend_title: str = 'Agent',
                    legend_loc: str = 'center left',
                    bbox_to_anchor: Tuple[float, float] = (1.0, 0.6),
-                   bar_title: str = 'Average Score',
                    ):
     
     # unzip the list of lists of lists
@@ -137,29 +135,22 @@ def plot_all_averages(
     _, ax = plt.subplots(figsize=(20, 10))
     palette = sns.color_palette("mako", 2)
 
-    x = [f"{i+1}" for i in range(n_runs)]
+    x = [f"Iteration: {i+1}" for i in range(n_runs)]
 
     for i, item in enumerate([list_fixed_plots, list_flex_plots]):
         label = "Fixed Agent" if not i else "Flexible Agent"
         y = [z for z in item[0] if z is not None]
 
-        if not y: continue
-        while len(y) < len(x):
-            y.append(None)
-
         errors = item[1]
 
-        while len(errors) < len(x):
-            errors.append(0)
+        if not y: continue
+        while len(y) < len(x): y.append(None)
+        while len(errors) < len(x): errors.append(0)
 
         line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
         lines.append(line[0])
         ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
         ax.fill_between(x, [y_val - 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
-        if not i:
-            y_fixed = y
-        else:
-            y_flex = y
             
     plt.xlabel('Meta-Prompt Iteration: Amount and Currency', family=font_family, size=font_size)
     sns.despine(left=True, bottom=False)
@@ -175,7 +166,7 @@ def plot_all_averages(
     plt.ylim(y_lim)
     plt.subplots_adjust(left=0.1, right=0.8)
 
-    graph_title = f"Proportion Averages Across all Random Iterations"
+    graph_title = f"Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations"
     plt.title(" ".join(graph_title.split('_')), family=font_family, size=font_size + 5)
     if legend:
         ax.legend(title=legend_title, 
@@ -190,39 +181,52 @@ def plot_all_averages(
     plt.savefig(f'{directory}/{sim_dir}_id_{sim_id}__{graph_title}.png', format='png')
     plt.clf()
 
-    #Fixed Bars:
+    # Fixed Bars
     y = list_fixed_bars[0]
     errors = list_fixed_bars[1]
-    x = [f"{i + 1}" for i in range(n_runs)]
-    plt.bar(x, y)
-    plt.xlabel('Meta-Prompt-Iteration')
-
-    plt.ylabel(f'Percentage of Proposals Accepted')
-    graph_title = " ".join(bar_title.split('_'))
-    plt.title(graph_title)
-
-    for i in range(len(y)):
-        if np.isnan(y[i]):
-            plt.text(i, 0, 'No data\nprovided', ha='center', va='bottom')
-
-    ax = plt.gca()
-    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
-    while len(y) < len(x): y.append(None)
-    while len(errors) < len(x): errors.append(0)
-    ax.fill_between(x, [y_val - 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], color=palette[0], alpha=0.3)
-    # Specify the full file path where you want to save the figure
-    plt.savefig(f'{directory}/{sim_dir}_id_{sim_id}_{graph_title}_fix_bar.png', format='png')
-    plt.clf()
-
+    plot_bar_graph(directory=directory, 
+                   sim_dir=sim_dir,
+                   sim_id=sim_id,
+                   graph_title="Percentage of Proposal Acceptance for Fixed-Policy Agents",
+                   ylabel='Percentage of Proposals Accepted',
+                   xlabel = 'Meta-Prompt-Iteration',
+                   path_suffix="fix_bar",
+                   x=x,
+                   y=y,
+                   errors=errors)
     #Flex Bars
     y = list_flex_bars[0]
     errors = list_flex_bars[1]
-    x = [f"{i + 1}" for i in range(n_runs)]
-    plt.bar(x, y)
-    plt.xlabel('Meta-Prompt-Iteration')
+    plot_bar_graph(directory=directory, 
+                   sim_id=sim_id,
+                   sim_dir=sim_dir,
+                   graph_title="Percentage of Proposal Acceptance for Flexible-Policy Agents",
+                   ylabel='Percentage of Proposals Accepted',
+                   xlabel = 'Meta-Prompt-Iteration',
+                   path_suffix="flex_bar",
+                   x=x,
+                   y=y,
+                   errors=errors)
 
-    plt.ylabel(f'Percentage of Proposals Accepted')
-    graph_title = " ".join(bar_title.split('_'))
+# def plot_proposal_line_graph()
+
+def plot_bar_graph(directory: str,
+                   sim_dir: str,
+                   sim_id: str,
+                   graph_title: str,
+                   ylabel: str,
+                   xlabel: str,
+                   path_suffix: str,
+                   x: list,
+                   y: list,
+                   errors: list,
+                   ):
+
+    plt.bar(x, y, yerr=errors)
+    plt.xlabel(xlabel)
+
+    plt.ylabel(ylabel)
+    graph_title = " ".join(graph_title.split('_'))
     plt.title(graph_title)
 
     for i in range(len(y)):
@@ -231,16 +235,9 @@ def plot_all_averages(
 
     ax = plt.gca()
     ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
-    while len(y) < len(x): y.append(None)
-    while len(errors) < len(x): errors.append(0)
-    ax.fill_between(x, [y_val - 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], color=palette[1], alpha=0.3)
     # Specify the full file path where you want to save the figure
-    plt.savefig(f'{directory}/{sim_dir}_id_{sim_id}__{graph_title}_flex_bar.png', format='png')
+    plt.savefig(f'{directory}/{sim_dir}_id_{sim_id}__{graph_title}_{path_suffix}.png', format='png')
     plt.clf()
-
-    return y_fixed, y_flex
-
-
 
 def plot_proposals(list_fixed: list,
                    list_flex: int,

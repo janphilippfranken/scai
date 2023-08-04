@@ -13,6 +13,7 @@ from langchain.chat_models.base import BaseChatModel
 import random
 import copy
 import importlib
+import os
 
 # save and plot results
 from utils import save_as_csv
@@ -90,51 +91,79 @@ def get_num_interactions(
     args.env.n_mixed_inter = sum(1 for s in run_list if s.count("flex") == 1)
     args.env.n_flex_inter = sum(1 for s in run_list if s.count("flex") == 2)
 
-        
-def generate_interactions(args):
 
-    if args.env.vary_population_utility.vary_utilities:
-        #randomize population composition of utility, for both dictator and decider
-        if args.env.vary_population_utility.vary_pop_composition:
-            percentage = random.randint(1, 9) / 10.0
-            args.env.vary_population_utility.n_dictator_1st_utility = percentage
-            args.env.vary_population_utility.n_dictator_2nd_utility = 1 - percentage
-            percentage = random.randint(1, 9) / 10.0
-            args.env.vary_population_utility.n_decider_1st_utility = percentage
-            args.env.vary_population_utility.n_decider_2nd_utility = 1 - percentage
 
-        #generate number of decider heads based on utility compositions
-        fixed_dictator_heads = args.env.n_fixed_inter + (args.env.n_mixed_inter + 1) // 2
-        percent_dictator_1st_utility = args.env.vary_population_utility.n_dictator_1st_utility
-        n_dictator_1st_utility =  round(percent_dictator_1st_utility * fixed_dictator_heads)
-        n_dictator_2nd_utility = fixed_dictator_heads - n_dictator_1st_utility
+def generate_percentages(n):
+    if n <= 0:
+        raise ValueError("n must be a positive integer.")
 
-        #generate a list, as representions for interactions on the dictator side
-        dictator_list = ["fixed_agent_1-"] * n_dictator_1st_utility + ["fixed_agent_2-"] * n_dictator_2nd_utility
-        random.shuffle(dictator_list)
-        dictator_list[args.env.n_fixed_inter:args.env.n_fixed_inter] = ["flex_agent_1-"] * (args.env.n_fixed_inter + args.env.n_mixed_inter - fixed_dictator_heads)
-        dictator_list[:args.env.n_fixed_inter] + random.sample(dictator_list[args.env.n_fixed_inter:], len(dictator_list) - args.env.n_fixed_inter)
+    values = [random.randint(1, 10) for _ in range(n - 1)]
+    total = sum(values)
+    values = [round(v / total, 1) for v in values]
+    values.append(round(1 - sum(values), 1))
 
-        #repeat the process for deciders
-        fixed_decider_heads = args.env.n_fixed_inter + args.env.n_mixed_inter // 2
-        percent_decider_1st_utility = args.env.vary_population_utility.n_decider_1st_utility
-        n_decider_1st_utility =  round(percent_decider_1st_utility * fixed_decider_heads)
-        n_decider_2nd_utility = fixed_decider_heads - n_decider_1st_utility
-        
-        decider_list = ["fixed_agent_1-"] * n_decider_1st_utility + ["fixed_agent_2-"] * n_decider_2nd_utility
-        random.shuffle(decider_list)
-        decider_list += ["flex_agent_1-"] * (args.env.n_fixed_inter + args.env.n_mixed_inter - fixed_decider_heads)
-        decider_list[:args.env.n_fixed_inter] + random.sample(decider_list[args.env.n_fixed_inter:], len(decider_list) - args.env.n_fixed_inter)
+    return values
 
-        args.interactions.runs.run_1 = []
 
-        currencies = ','.join(args.env.currencies)
+#For fixed-mixed scenarios, generate the run lists containing interactions
+def generate_interactions_fixed_mixed(args):
 
-        for dictator, decider in zip(dictator_list,decider_list):
-            args.interactions.runs.run_1.append(dictator + decider + currencies)
+    
+    dir = args.env.vary_population_utility
+    n_utils = len(dir.utilities.split(','))
+    currencies = ','.join(args.env.currencies)
 
-    else:
-        pass
+    #If population is not split by 2 utilities, use single utility
+    if not args.env.vary_population_utility.vary_utilities:
+        dir.n_dictator_utility = [1]
+        dir.n_decider_utility = [1]
+        n_utils = 1
+
+    # If population is split by 2 utilities, use the utilities specified in the config file
+    # make no changes to the utilities
+
+    #if needed, randomize population composition of utility
+    elif dir.vary_pop_composition:
+        dir.n_dictator_utility = generate_percentages(n_utils)
+        dir.n_decider_utility = generate_percentages(n_utils)
+
+    #generate number of agent heads based on utility compositions
+    all_heads = args.env.n_fixed_inter + args.env.n_mixed_inter
+    fixed_dictator_heads = args.env.n_fixed_inter + (args.env.n_mixed_inter + 1) // 2
+    fixed_decider_heads = args.env.n_fixed_inter + args.env.n_mixed_inter // 2
+    num_dictator_utility = []
+    num_decider_utility = []
+
+    for percentage in dir.n_dictator_utility:
+        num_dictator_utility.append(round(percentage * fixed_dictator_heads))
+    num_dictator_utility.pop()
+    num_dictator_utility.append(fixed_dictator_heads - sum(num_dictator_utility))
+
+    for percentage in dir.n_decider_utility:
+        num_decider_utility.append(round(percentage * fixed_decider_heads))
+    num_decider_utility.pop()
+    num_decider_utility.append(fixed_decider_heads - sum(num_decider_utility))
+
+
+    #generate two lists, as representions for interactions on the dictator side
+    dictator_list = []
+    decider_list = []
+    for i in range(n_utils):
+        dictator_list += [f"fixed_agent_{i + 1}-"] * num_dictator_utility[i]
+        decider_list += [f"fixed_agent_{i + 1}-"] * num_decider_utility[i]
+    random.shuffle(dictator_list)
+    random.shuffle(decider_list)
+
+    #make mixed
+    dictator_list[args.env.n_fixed_inter:args.env.n_fixed_inter] = ["flex_agent_1-"] * (all_heads - fixed_dictator_heads)
+    decider_list += ["flex_agent_1-"] * (all_heads - fixed_decider_heads)
+    dictator_list[:args.env.n_fixed_inter] + random.sample(dictator_list[args.env.n_fixed_inter:], args.env.n_mixed_inter)
+    decider_list[:args.env.n_fixed_inter] + random.sample(decider_list[args.env.n_fixed_inter:], args.env.n_mixed_inter)
+
+    #reset and generate the run list
+    args.interactions.runs.run_1 = []
+    for dictator, decider in zip(dictator_list,decider_list):
+        args.interactions.runs.run_1.append(dictator + decider + currencies)
 
 def generate_agents(vary_pop_utility, vary_currency_utility, vary_manners, env, args):
     num_agents = 0
@@ -143,7 +172,7 @@ def generate_agents(vary_pop_utility, vary_currency_utility, vary_manners, env, 
         num_agents = len(utilities)
     elif vary_currency_utility.vary_utilities:
         utilities = vary_currency_utility.utilities
-        num_agents = 1 
+        num_agents = 1
     else:
         utilities = [env.single_fixed_utility]
         num_agents = 1
@@ -227,10 +256,11 @@ def main(args: DictConfig) -> None:
             
             generate_agents(env_dir.vary_population_utility, env_dir.vary_currency_utility, env_dir.vary_manners, env_dir, args)
 
-            generate_interactions(args)
+            generate_interactions_fixed_mixed(args)
 
         # sim_res directory
         DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
+        os.makedirs(DATA_DIR, exist_ok=True)
         system_message = args.sim.system_message
         system_messages = []
         scores = []
@@ -289,7 +319,11 @@ def main(args: DictConfig) -> None:
         with open(f"{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_config", "w") as f:
             f.write(OmegaConf.to_yaml(args))
 
-    plot_all_averages(total_scores = total_scores, n_runs = args.env.n_runs, directory = DATA_DIR, sim_dir=args.sim.sim_dir, sim_id=args.sim.sim_id)
+    directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/final_graphs'
+    
+    os.makedirs(directory, exist_ok=True)
+
+    plot_all_averages(total_scores=total_scores, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id=args.sim.sim_id)
 
                          
 if __name__ == '__main__':
