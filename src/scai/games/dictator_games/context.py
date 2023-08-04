@@ -233,6 +233,8 @@ class Context():
         deci_scores = {}
         prop = {}
         for i in range(0, len(numbers), 2):
+            if i // 2 > len(self.currencies) - 1:
+                continue
             dict_scores[self.currencies[i // 2]] = numbers[i]
             deci_scores[self.currencies[i // 2]] = numbers[i + 1]
             prop[self.currencies[i // 2]] = numbers[i], numbers[i + 1]

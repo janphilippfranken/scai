@@ -100,6 +100,8 @@ def plot_all_averages(
                    total_scores: list,
                    n_runs: int, 
                    directory: str,
+                   sim_dir: str,
+                   sim_id: str,
                    font_family: str = 'Avenir',
                    font_size: int = 24,
                    linewidth: int = 2,
@@ -118,8 +120,11 @@ def plot_all_averages(
     
     # unzip the list of lists of lists
     total_scores = np.array(total_scores)
+    
     mean_matrix = np.nanmean(total_scores, axis=0)
+    mean_matrix = mean_matrix.reshape(1, total_scores.shape[1], total_scores.shape[2])
     sem_matrix = sem(total_scores, nan_policy='omit', axis=0)
+    sem_matrix = sem_matrix.reshape(1, total_scores.shape[1], total_scores.shape[2])
     flattened_scores = np.concatenate([mean_matrix, sem_matrix], axis=0)
 
     list_fixed_plots = flattened_scores[:, 0, :]
@@ -170,7 +175,7 @@ def plot_all_averages(
     plt.ylim(y_lim)
     plt.subplots_adjust(left=0.1, right=0.8)
 
-    graph_title = f"Proportions_Proposed_by_Flexible-Contract_and_Fixed-Contract Agents"
+    graph_title = f"Proportion Averages Across all Random Iterations"
     plt.title(" ".join(graph_title.split('_')), family=font_family, size=font_size + 5)
     if legend:
         ax.legend(title=legend_title, 
@@ -180,48 +185,57 @@ def plot_all_averages(
                   loc=legend_loc,
                   fontsize=font_size,  # Change the font size of legend items
                   title_fontsize=font_size
-                  ) 
+                  )
 
-    plt.savefig(f'{directory}_{graph_title}.png', format='png')
+    plt.savefig(f'{directory}/{sim_dir}_id_{sim_id}__{graph_title}.png', format='png')
     plt.clf()
 
-    #Graph Bars:
-    acceptance_rates = list_fixed_bars[0]
+    #Fixed Bars:
+    y = list_fixed_bars[0]
+    errors = list_fixed_bars[1]
     x = [f"{i + 1}" for i in range(n_runs)]
-    plt.bar(x, acceptance_rates)
+    plt.bar(x, y)
     plt.xlabel('Meta-Prompt-Iteration')
 
     plt.ylabel(f'Percentage of Proposals Accepted')
     graph_title = " ".join(bar_title.split('_'))
     plt.title(graph_title)
 
-    for i in range(len(acceptance_rates)):
-        if np.isnan(acceptance_rates[i]):
+    for i in range(len(y)):
+        if np.isnan(y[i]):
             plt.text(i, 0, 'No data\nprovided', ha='center', va='bottom')
 
     ax = plt.gca()
     ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    while len(y) < len(x): y.append(None)
+    while len(errors) < len(x): errors.append(0)
+    ax.fill_between(x, [y_val - 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], color=palette[0], alpha=0.3)
     # Specify the full file path where you want to save the figure
-    plt.savefig(f'{directory}_{graph_title}.png', format='png')
+    plt.savefig(f'{directory}/{sim_dir}_id_{sim_id}_{graph_title}_fix_bar.png', format='png')
     plt.clf()
 
-    acceptance_rates = list_flex_bars[0]
+    #Flex Bars
+    y = list_flex_bars[0]
+    errors = list_flex_bars[1]
     x = [f"{i + 1}" for i in range(n_runs)]
-    plt.bar(x, acceptance_rates)
+    plt.bar(x, y)
     plt.xlabel('Meta-Prompt-Iteration')
 
     plt.ylabel(f'Percentage of Proposals Accepted')
     graph_title = " ".join(bar_title.split('_'))
     plt.title(graph_title)
 
-    for i in range(len(acceptance_rates)):
-        if np.isnan(acceptance_rates[i]):
+    for i in range(len(y)):
+        if np.isnan(y[i]):
             plt.text(i, 0, 'No data\nprovided', ha='center', va='bottom')
 
     ax = plt.gca()
     ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    while len(y) < len(x): y.append(None)
+    while len(errors) < len(x): errors.append(0)
+    ax.fill_between(x, [y_val - 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], color=palette[1], alpha=0.3)
     # Specify the full file path where you want to save the figure
-    plt.savefig(f'{directory}_{graph_title}.png', format='png')
+    plt.savefig(f'{directory}/{sim_dir}_id_{sim_id}__{graph_title}_flex_bar.png', format='png')
     plt.clf()
 
     return y_fixed, y_flex
@@ -355,9 +369,8 @@ def plot_results(
         list_flex_proportions = [elem[currency] for elem in flexible_agent_proposals if currency in elem]
         y_fixed_plot, y_flex_plot = plot_proposals(list_fixed_proportions, list_flex_proportions, currency, amounts_per_run, n_runs, f"{data_directory}/{sim_name}_id_{sim_id}")
         all_currency_plots.append([y_fixed_plot, y_flex_plot])
-    
     all_currency_plots = np.array(all_currency_plots)
-    all_currency_plots.transpose()
+    all_currency_plots.transpose(1, 0, 2)
 
     # Plot Acceptance/Rejection Tables:
     fixed_dictator_scores, fixed_decider_scores, flex_dictator_scores, flex_decider_scores = [], [], [], []
@@ -366,16 +379,19 @@ def plot_results(
         fixed_decider_scores.append(score[1])
         flex_dictator_scores.append(score[2])
         flex_decider_scores.append(score[3])
+
     titles = ["Rate_of_Fixed-Policy_Agent_Acceptance_per_Iteration", "Rate_of_Flexible-Policy_Agent_Acceptance_per_Iteration"]
     for i, score_list in enumerate([(fixed_dictator_scores, fixed_decider_scores), (flex_dictator_scores, flex_decider_scores)]):
-        y_fixed_bar, y_flex_bar = plot_scores(score_list[1], f"{data_directory}/{sim_name}_id_{sim_id}", titles[i], n_runs)
-    
-    if len(all_currency_plots[0]) <= 1:
-        ret_y_fixed_plot = all_currency_plots[0][0]
-    if len(all_currency_plots[1]) <= 1:
-        ret_y_fixed_plot = all_currency_plots[1][0]
+        if not i:
+            y_fixed_bar = plot_scores(score_list[1], f"{data_directory}/{sim_name}_id_{sim_id}", titles[i], n_runs)
+        else:
+            y_flex_bar = plot_scores(score_list[1], f"{data_directory}/{sim_name}_id_{sim_id}", titles[i], n_runs)
+    if all_currency_plots.shape[1] <= 1:
+        y_fixed_plot = all_currency_plots[0, 0, :]
+        y_flex_plot = all_currency_plots[0, 1, :]
 
-    return ret_y_fixed_plot, ret_y_fixed_plot, y_fixed_bar, y_flex_bar
+        
+    return y_fixed_plot, y_flex_plot, y_fixed_bar, y_flex_bar
 
 # def print_scores(scores):
 
@@ -419,7 +435,7 @@ def plot_scores(scores: list,
     # Specify the full file path where you want to save the figure
     plt.savefig(f'{path}_{title}.png', format='png')
     plt.clf()
-    return 
+    return acceptance_rates
 
 def plot_cosine_similarity(
     system_messages,

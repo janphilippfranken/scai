@@ -10,39 +10,61 @@ sim:
   verbose: true # if false, no responses are printed during simulation
   system_message: " " # start developer constitution / social contract is empty
 
-environment:
+env: 
+  manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
   random:
-    is_random: false
-    n_rand_iter: 10
+    n_rand_iter: 10 # number of times the entire functionality is run
     rand_variables:
-      currency: true
-      amount: true
-      n_fixed_inter: true
-      n_mixed_inter: true
-      n_utility: false
-      manners: false
+      currency: true # if true, the currency will vary for each random iteration
+      amount: true # if true, amount-to-be-split will vary for each random iteration
+      n_fixed_inter: true # if true, the number of intra-fixed-policy agent interactions varies for each random iteration
+      n_mixed_inter: true # if true, the number of flexible-fixed policy agent interactions varies
+
+  single_fixed_utility: "selfish" # the default utility for the fixed users to adpot
+
+  vary_population_utility: 
+    vary_utilities: true # if true, the utilities will vary between fixed policy agents
+    vary_pop_composition: false # if true, then the amount of variation in each run will be random, otherwise it will be set to the proportions below
+    n_dictator_1st_utility: 0.7
+    n_dictator_2nd_utility: 0.3
+    n_decider_1st_utility: 0.5
+    n_decider_2nd_utility: 0.5
+    utilities: "altruistic,fair" # utilities that vary between fixed agents
+
+  vary_currency_utility:
+    multiple_utilities: false # if true, then each fixed-policy-agent will have varying utilities per currency
+    vary_utilities: false # if true, then the fixed-policy-agent will have 
+    utilities: "altruistic,fair"
+    
+  vary_manners:
+    vary: false
+    manners: "rude"
+
+  n_total_interactions: 10
 
   n_runs: 4
-  random_amounts: false # do later
-  amounts_per_run: #check to have n_run entries
+  amounts_per_run: # Contains the amounts per run, should match with the n_runs parameter
     - 10
     - 10
     - 10
     - 10
   currencies: 
    - "dollars"
-   #- "apples"
+   - "apples"
   task_prompt: "task_prompt_1"
   meta_prompt: "meta_prompt_1"
-  n_fixed_inter: 0
-  n_mixed_inter: 4 # ideally involve the flexible agent as dictator and as decider
+  n_fixed_inter: 1
+  n_mixed_inter: 4 
   n_flex_inter: 2
   
+
+
+
 agents:
   fixed_agents:
     - name: "fixed_agent_1"
       manners: "neutral"
-      utilities:                 #utilities should have the same entries as prescirbed in currencies
+      utilities:    
         dollars: "altruistic"
         #apples: "altruistic"
   flex_agents:
@@ -52,7 +74,7 @@ agents:
 interactions:
   all_same: true
   runs:
-    run_1:                     # check to have n_fixed_inter, n_mixed_inter, and n_flex_inter entries
+    run_1:             
       #- "fixed_agent_1-fixed_agent_1-dollars"
       - "fixed_agent_1-flex_agent_1-dollars"
       - "fixed_agent_1-flex_agent_1-dollars"

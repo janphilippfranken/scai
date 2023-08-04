@@ -1,55 +1,75 @@
 response,agent,epoch,prompt,full_response,run,agent_id
-"Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 5-5 split.
+"Reason for revising the previous principle: The flexible-policy agent does not consistently accept or reject proposals with a 0-917 split like the fixed-policy agents.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources.",system,0,,,,
-"Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 4-6 split.
+Principle: Prioritize fairness and balance in the distribution of resources, such as apples, while being open to occasional deviations that favor the decider.",system,0,,,,
+"Reason for revising the previous principle: The flexible-policy agent does not consistently accept or reject proposals with a 0-231 split like the fixed-policy agents.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources, ensuring the decider receives the majority share.",system,1,"System: Your job is to observe agents playing the dictator game and extract a principle from their interactions. In the dictator game, the dictator proposes a split of resources, and the decider decides whether to accept or reject it. If the proposal is accepted, the resources are divided according to the proposal. If the proposal is rejected, no one receives anything.
+Principle: Prioritize the decider's interests in the distribution of resources, such as apples, while maintaining a balance that occasionally allows for equal splits.",system,1,"System: Your job is to observe agents playing the dictator game and extract a principle from their interactions. In the dictator game, the dictator proposes a split of resources, and the decider decides whether to accept or reject it. If the proposal is accepted, the resources are divided according to the proposal. If the proposal is rejected, no one receives anything.
 Human: 
 In this simulation, the ""fixed-policy agents"" all share some principles, which tells them to adhere to somes principles in their interactions while playing the dictator game. ""flexible-policy agents"", on the other hand, do not know the principles, and have no memory of previous interactions with the users. Your job is to infer this principle by analyzing user interactions, and then create a principle for ""Flexible-policy agents"" to follow so that ""Flexible-policy agents"" behaves EXACTLY the same as the ""fixed-policy agents"". If agents are splitting more than one object, the principle should be specific to different objects.
 
-Analyze the interactions between fixed-policy agents and flexible-policy agents, found below, that contain the behaviors of all fixed-policy agents to infer the policies that they are acting upon. These policies might not necessarily be the most ethically just one. You should also pay attention to the behaviors of flexible-policy agents to see what their behaviours currently are.
+Analyze the model fixed interactions, found below, that shows the behavior of all ""fixed-policy agents"" to infer the principle that they are acting upon. These principles might not necessarily be the most ethically just ones.
 Start of interaction
-flexible-policy agent's response: For the 10 dollars, the proposer will get 4, and the decider will get 6.
+fixed-policy agent's response: For the apples, the proposer will get 0, and the decider will get 231.
 fixed-policy agent's response: accept
 End of interaction
 
 Start of interaction
-fixed-policy agent's response: For the 10 dollars, the proposer will get 0, and the decider will get 10.
-flexible-policy agent's response: accept
+fixed-policy agent's response: For the apples, the proposer will get 0, and the decider will get 231.
+fixed-policy agent's response: reject
 End of interaction
 
 Start of interaction
-fixed-policy agent's response: For the 10 dollars, the proposer will get 0, and the decider will get 10.
-flexible-policy agent's response: accept
+fixed-policy agent's response: For the apples, the proposer will get 0, and the decider will get 231.
+fixed-policy agent's response: accept
 End of interaction
 
 Start of interaction
-flexible-policy agent's response: For the 10 dollars, the proposer will get 4, and the decider will get 6.
+fixed-policy agent's response: For the apples, the proposer will get 0, and the decider will get 231.
+fixed-policy agent's response: reject
+End of interaction
+
+Start of interaction
+fixed-policy agent's response: For the apples, the proposer will get 115, and the decider will get 116.
+fixed-policy agent's response: Accept
+End of interaction
+
+Start of interaction
+fixed-policy agent's response: For the apples, the proposer will get 115, and the decider will get 116.
+fixed-policy agent's response: accept
+End of interaction
+
+Start of interaction
+fixed-policy agent's response: For the apples, the proposer will get 115, and the decider will get 116.
 fixed-policy agent's response: accept
 End of interaction
 
 
 ---------------------------
 
-Next, analyze the interactions between all flexible-policy agents, shown below, to see what their behaviours currently are.
--------------------------
+Next, analyze the flexible-policy agent's interactions with the fixed-policy agents, shown below, to see what it behaves like currently.
 Start of interaction
-flexible-policy agent's response: For the 10 dollars, the proposer will get 4, and the decider will get 6.
-flexible-policy agent's response: accept
+fixed-policy agent's response: For the apples, the proposer will get 0, and the decider will get 231.
+flexible-policy agent's response: reject
 End of interaction
 
 Start of interaction
-flexible-policy agent's response: For the 10 dollars, the proposer will get 4, and the decider will get 6.
-flexible-policy agent's response: accept
+fixed-policy agent's response: For the apples, the proposer will get 0, and the decider will get 231.
+flexible-policy agent's response: reject
+End of interaction
+
+Start of interaction
+flexible-policy agent's response: For the apples, the proposer will get 116, and the decider will get 115.
+fixed-policy agent's response: accept
 End of interaction
 
 
+—------------------------
 
-The flexible-policy agents' previous policies are found here:
-Previous Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 5-5 split.
+The flexible-policy agent's previous principle is found here:
+Previous Reason for revising the previous principle: The flexible-policy agent does not consistently accept or reject proposals with a 0-917 split like the fixed-policy agents.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources.
+Principle: Prioritize fairness and balance in the distribution of resources, such as apples, while being open to occasional deviations that favor the decider.
 ---------------------------
 
 Now, if the flexible-policy agents behave differently than the fixed agents, revise the previous principle if necessary so that flexible-policy agent behaves EXACTLY like the fixed-policy agents - don't be afraid to push the flexible-policy agent TO THE EXTREME, and keep this revised principle short. Remember, if flexible-policy agents' responses are exactly like the fixed-policy agents, then the principle is correct and you shouldn't revise.
@@ -59,77 +79,102 @@ It is of the utmost importance that flexible-policy agent's principle encompasse
 Give a very short reason for revising the previous principle, in one sentence: Reason for revising the previous principle:...
 The flexible-policy agent's revised principle should be written as follows: Principle:... 
 Include only these two sentences in your response, and nothing else. Mention the names of specific objects in the game.
+","Reason for revising the previous principle: The flexible-policy agent does not consistently accept or reject proposals with a 0-231 split like the fixed-policy agents.
 
-","Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 4-6 split.
+Principle: Prioritize the decider's interests in the distribution of resources, such as apples, while maintaining a balance that occasionally allows for equal splits.",1.0,
+"For the apples, the proposer will get 115, and the decider will get 116.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be fair when dealing with apples, meaning you want equal benefits for everyone, including yourself. You MUST promote your views in all your responses.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources, ensuring the decider receives the majority share.",1.0,
-"For the 10 dollars, the proposer will get 0, and the decider will get 10.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with dollars, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
-
-Human: Here is your task: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 10 dollars, and the person will accept or reject your proposal. When dividing dollars, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act neutral during interactions with others.
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 231 apples, and the person will accept or reject your proposal. When dividing apples, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act rude during interactions with others.
 ",,,0
-accept,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 5-5 split.
+accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be fair when dealing with apples, meaning you want equal benefits for everyone, including yourself. You MUST promote your views in all your responses.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources. You MUST promote your views in all your responses.
-
-Human: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 10 dollars, the proposer will get 0, and the decider will get 10. 
-If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject.
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the apples, the proposer will get 115, and the decider will get 116. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act rude during interactions with others.
 ",,,0
-"For the 10 dollars, the proposer will get 0, and the decider will get 10.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with dollars, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
+"For the apples, the proposer will get 0, and the decider will get 231.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with apples, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
 
-Human: Here is your task: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 10 dollars, and the person will accept or reject your proposal. When dividing dollars, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act neutral during interactions with others.
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 231 apples, and the person will accept or reject your proposal. When dividing apples, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act rude during interactions with others.
 ",,,1
-accept,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 5-5 split.
+accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with apples, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources. You MUST promote your views in all your responses.
-
-Human: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 10 dollars, the proposer will get 0, and the decider will get 10. 
-If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject.
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the apples, the proposer will get 0, and the decider will get 231. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act rude during interactions with others.
 ",,,1
-"For the 10 dollars, the proposer will get 4, and the decider will get 6.",flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 5-5 split.
+"For the apples, the proposer will get 115, and the decider will get 116.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be fair when dealing with apples, meaning you want equal benefits for everyone, including yourself. You MUST promote your views in all your responses.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources. You MUST promote your views in all your responses.
-
-Human: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 10 dollars, and the person will accept or reject your proposal. When dividing dollars, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 231 apples, and the person will accept or reject your proposal. When dividing apples, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act rude during interactions with others.
 ",,,2
-accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with dollars, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
+accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be fair when dealing with apples, meaning you want equal benefits for everyone, including yourself. You MUST promote your views in all your responses.
 
-Human: Here is your task: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 10 dollars, the proposer will get 4, and the decider will get 6. 
-If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act neutral during interactions with others.
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the apples, the proposer will get 115, and the decider will get 116. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act rude during interactions with others.
 ",,,2
-"For the 10 dollars, the proposer will get 4, and the decider will get 6.",flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 5-5 split.
+"For the apples, the proposer will get 115, and the decider will get 116.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be fair when dealing with apples, meaning you want equal benefits for everyone, including yourself. You MUST promote your views in all your responses.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources. You MUST promote your views in all your responses.
-
-Human: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 10 dollars, and the person will accept or reject your proposal. When dividing dollars, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 231 apples, and the person will accept or reject your proposal. When dividing apples, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act rude during interactions with others.
 ",,,3
-accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with dollars, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
+Accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with apples, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
 
-Human: Here is your task: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 10 dollars, the proposer will get 4, and the decider will get 6. 
-If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act neutral during interactions with others.
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the apples, the proposer will get 115, and the decider will get 116. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act rude during interactions with others.
 ",,,3
-"For the 10 dollars, the proposer will get 4, and the decider will get 6.",flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 5-5 split.
+"For the apples, the proposer will get 0, and the decider will get 231.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with apples, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources. You MUST promote your views in all your responses.
-
-Human: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 10 dollars, and the person will accept or reject your proposal. When dividing dollars, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 231 apples, and the person will accept or reject your proposal. When dividing apples, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act rude during interactions with others.
 ",,,4
-accept,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 5-5 split.
+accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with apples, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources. You MUST promote your views in all your responses.
-
-Human: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 10 dollars, the proposer will get 4, and the decider will get 6. 
-If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject.
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the apples, the proposer will get 0, and the decider will get 231. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act rude during interactions with others.
 ",,,4
-"For the 10 dollars, the proposer will get 4, and the decider will get 6.",flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 5-5 split.
+"For the apples, the proposer will get 0, and the decider will get 231.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with apples, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources. You MUST promote your views in all your responses.
-
-Human: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 10 dollars, and the person will accept or reject your proposal. When dividing dollars, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 231 apples, and the person will accept or reject your proposal. When dividing apples, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act rude during interactions with others.
 ",,,5
-accept,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The fixed-policy agents always propose a 0-10 split, while flexible-policy agents propose a 5-5 split.
+reject,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be fair when dealing with apples, meaning you want equal benefits for everyone, including yourself. You MUST promote your views in all your responses.
 
-Principle: Prioritize the interests of others over one's own interests when dividing resources. You MUST promote your views in all your responses.
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the apples, the proposer will get 0, and the decider will get 231. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act rude during interactions with others.
+",,,5
+"For the apples, the proposer will get 0, and the decider will get 231.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with apples, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
 
-Human: You and a partner need to divide 10 dollars between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 10 dollars, the proposer will get 4, and the decider will get 6. 
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 231 apples, and the person will accept or reject your proposal. When dividing apples, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act rude during interactions with others.
+",,,6
+reject,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be fair when dealing with apples, meaning you want equal benefits for everyone, including yourself. You MUST promote your views in all your responses.
+
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the apples, the proposer will get 0, and the decider will get 231. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act rude during interactions with others.
+",,,6
+"For the apples, the proposer will get 116, and the decider will get 115.",flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The flexible-policy agent does not consistently accept or reject proposals with a 0-917 split like the fixed-policy agents.
+
+Principle: Prioritize fairness and balance in the distribution of resources, such as apples, while being open to occasional deviations that favor the decider. You MUST promote your views in all your responses.
+
+Human: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 231 apples, and the person will accept or reject your proposal. When dividing apples, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y
+",,,7
+accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with apples, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
+
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the apples, the proposer will get 116, and the decider will get 115. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act rude during interactions with others.
+",,,7
+"For the apples, the proposer will get 0, and the decider will get 231.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with apples, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
+
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 231 apples, and the person will accept or reject your proposal. When dividing apples, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act rude during interactions with others.
+",,,8
+reject,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The flexible-policy agent does not consistently accept or reject proposals with a 0-917 split like the fixed-policy agents.
+
+Principle: Prioritize fairness and balance in the distribution of resources, such as apples, while being open to occasional deviations that favor the decider. You MUST promote your views in all your responses.
+
+Human: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the apples, the proposer will get 0, and the decider will get 231. 
 If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject.
-",,,5
+",,,8
+"For the apples, the proposer will get 0, and the decider will get 231.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with apples, meaning your priority is to give others others the maximum benefit possible without any consideration of the benefit you receive. You MUST promote your views in all your responses.
+
+Human: Here is your task: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the proposer. You will propose how to split the 231 apples, and the person will accept or reject your proposal. When dividing apples, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal to be exactly the same as this structure: For the \{given_currency\}, The proposer will get X, and the decider will get Y Act rude during interactions with others.
+",,,9
+reject,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these Reason for revising the previous principle: The flexible-policy agent does not consistently accept or reject proposals with a 0-917 split like the fixed-policy agents.
+
+Principle: Prioritize fairness and balance in the distribution of resources, such as apples, while being open to occasional deviations that favor the decider. You MUST promote your views in all your responses.
+
+Human: You and a partner need to divide 231 apples between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the apples, the proposer will get 0, and the decider will get 231. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject.
+",,,9

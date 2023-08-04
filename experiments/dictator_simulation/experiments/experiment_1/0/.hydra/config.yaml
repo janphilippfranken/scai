@@ -5,19 +5,33 @@ sim:
   test_run: false
   verbose: true
   system_message: ' '
-environment:
+env:
+  manual_run: false
   random:
-    is_random: false
     n_rand_iter: 10
     rand_variables:
       currency: true
       amount: true
       n_fixed_inter: true
       n_mixed_inter: true
-      n_utility: false
-      manners: false
+  single_fixed_utility: selfish
+  vary_population_utility:
+    vary_utilities: true
+    vary_pop_composition: false
+    n_dictator_1st_utility: 0.7
+    n_dictator_2nd_utility: 0.3
+    n_decider_1st_utility: 0.5
+    n_decider_2nd_utility: 0.5
+    utilities: altruistic,fair
+  vary_currency_utility:
+    multiple_utilities: false
+    vary_utilities: false
+    utilities: altruistic,fair
+  vary_manners:
+    vary: false
+    manners: rude
+  n_total_interactions: 10
   n_runs: 4
-  random_amounts: false
   amounts_per_run:
   - 10
   - 10
@@ -25,9 +39,10 @@ environment:
   - 10
   currencies:
   - dollars
+  - apples
   task_prompt: task_prompt_1
   meta_prompt: meta_prompt_1
-  n_fixed_inter: 0
+  n_fixed_inter: 1
   n_mixed_inter: 4
   n_flex_inter: 2
 agents:
