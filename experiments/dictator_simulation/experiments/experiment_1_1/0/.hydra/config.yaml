@@ -8,12 +8,12 @@ sim:
 env:
   manual_run: false
   random:
-    n_rand_iter: 6
+    n_rand_iter: 7
     rand_variables:
       currency: true
       amount: true
-      n_fixed_inter: true
-      n_mixed_inter: true
+      n_fixed_inter: false
+      n_mixed_inter: false
   single_fixed_utility: selfish
   vary_population_utility:
     vary_utilities: false
@@ -33,8 +33,9 @@ env:
     vary: false
     manners: neutral
   n_total_interactions: 10
-  n_runs: 5
+  n_runs: 6
   amounts_per_run:
+  - 10
   - 10
   - 10
   - 10
@@ -45,8 +46,8 @@ env:
   - apples
   task_prompt: task_prompt_1
   meta_prompt: meta_prompt_1
-  n_fixed_inter: 4
-  n_mixed_inter: 4
+  n_fixed_inter: 7
+  n_mixed_inter: 3
   n_flex_inter: 0
 agents:
   fixed_agents:

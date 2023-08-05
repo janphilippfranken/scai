@@ -13,7 +13,7 @@ sim:
 env: 
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
   random:
-    n_rand_iter: 6 # number of times the entire functionality is run
+    n_rand_iter: 7 # number of times the entire functionality is run
     rand_variables:
       currency: true # if true, the currency will vary for each random iteration
       amount: true # if true, amount-to-be-split will vary for each random iteration
@@ -44,8 +44,9 @@ env:
 
   n_total_interactions: 10
 
-  n_runs: 5
+  n_runs: 6
   amounts_per_run: # Contains the amounts per run, should match with the n_runs parameter
+    - 10
     - 10
     - 10
     - 10
@@ -56,8 +57,8 @@ env:
    - "apples"
   task_prompt: "task_prompt_1"
   meta_prompt: "meta_prompt_1"
-  n_fixed_inter: 4
-  n_mixed_inter: 4 
+  n_fixed_inter: 7
+  n_mixed_inter: 3
   n_flex_inter: 0
   
 

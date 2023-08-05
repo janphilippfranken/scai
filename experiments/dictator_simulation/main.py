@@ -21,8 +21,8 @@ from plots import plot_results, plot_all_averages
 
 # import meta and task prompts, as well as context, from the appropriate game
 def import_prompts(game_number: int) -> None:
-    task_module = importlib.import_module(f"scai.games.dictator_games.all_prompts.task.task_prompt")
-    meta_module = importlib.import_module(f"scai.games.dictator_games.dictator_{game_number}.meta_prompts")
+    task_module = importlib.import_module(f"scai.games.dictator_games.prompts.task.task_prompt")
+    meta_module = importlib.import_module(f"scai.games.dictator_games.meta_prompts.dictator_{game_number}_meta_prompts")
     context = importlib.import_module(f"scai.games.dictator_games.context")
     DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS = task_module.DICTATOR_TASK_PROMPTS, task_module.DECIDER_TASK_PROMPTS
     META_PROMPTS = meta_module.META_PROMPTS
@@ -221,7 +221,7 @@ def generate_random_params(args: dict,
     
     # If the amount is set to be random, generate a random amount that's constant throughout runs
     if random_dir.amount:
-        env_dir.amounts_per_run = [random.randint(10, 1000) for _ in range(args.env.n_runs)]
+        env_dir.amounts_per_run = [random.randint(10, 100) for _ in range(args.env.n_runs)]
         
     # If the number of fixed-fixed interactions is random and the population composition is varied, generate any number of fixed and mixed interactions
     if random_dir.n_fixed_inter and env_dir.vary_population_utility.vary_pop_composition:

@@ -9,6 +9,7 @@ import json
 
 import colorsys
 import seaborn as sns
+from matplotlib.axes import Axes
 import matplotlib.colors as mc
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
@@ -101,19 +102,9 @@ def plot_all_averages(
                    directory: str,
                    sim_dir: str,
                    sim_id: str,
-                   font_family: str = 'Avenir',
-                   font_size: int = 24,
                    linewidth: int = 2,
                    zorder: int = 1,
                    scatter_color: str = 'black',
-                   y_label_coords: Tuple[float, float] = (-0.07, 0.5),
-                   y_ticks: List[int] = [0, 0.2, 0.4, 0.6, 0.8, 1],
-                   y_ticklabels: List[int] = [0, 20, 40, 60, 80, 100],
-                   y_lim: Tuple[float, float] = (-0.1, 1.1),
-                   legend: bool = True,
-                   legend_title: str = 'Agent',
-                   legend_loc: str = 'center left',
-                   bbox_to_anchor: Tuple[float, float] = (1.0, 0.6),
                    ):
     
     # unzip the list of lists of lists
@@ -151,36 +142,14 @@ def plot_all_averages(
         lines.append(line[0])
         ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
         ax.fill_between(x, [y_val - 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
-            
-    plt.xlabel('Meta-Prompt Iteration: Amount and Currency', family=font_family, size=font_size)
-    sns.despine(left=True, bottom=False)
-    ax.set_xticks(range(len(x)))
-    ax.set_xticklabels(x, fontsize=font_size)
-    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True)) 
-
-    ax.set_ylabel('Average Proportion of Total Proposed', family=font_family, size=font_size)
-    ax.yaxis.set_label_coords(*y_label_coords)
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_ticklabels, size=font_size)
-    ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
-    plt.ylim(y_lim)
-    plt.subplots_adjust(left=0.1, right=0.8)
-
-    graph_title = f"Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations"
-    plt.title(" ".join(graph_title.split('_')), family=font_family, size=font_size + 5)
-    if legend:
-        ax.legend(title=legend_title, 
-                  frameon=False,
-                  ncol=1, 
-                  bbox_to_anchor=bbox_to_anchor,
-                  loc=legend_loc,
-                  fontsize=font_size,  # Change the font size of legend items
-                  title_fontsize=font_size
-                  )
-
-    plt.savefig(f'{directory}/{sim_dir}_id_{sim_id}__{graph_title}.png', format='png')
-    plt.clf()
-
+        
+    plot_proposal_line_graph(ax=ax,
+                             x=x,
+                             graph_title="Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations",
+                             xlabel='Meta-Prompt Iteration: Amount and Currency',
+                             ylabel='Average Proportion of Total Proposed',
+                             directory=f'{directory}/{sim_dir}_id_{sim_id}'
+                             )
     # Fixed Bars
     y = list_fixed_bars[0]
     errors = list_fixed_bars[1]
@@ -208,7 +177,53 @@ def plot_all_averages(
                    y=y,
                    errors=errors)
 
-# def plot_proposal_line_graph()
+def plot_proposal_line_graph(ax: Axes,
+                             x: list,
+                             graph_title: str,
+                             xlabel: str,
+                             ylabel: str,
+                             directory: str,
+                             font_family: str = 'Avenir',
+                             font_size: int = 24,
+                             y_label_coords: Tuple[float, float] = (-0.07, 0.5),
+                             y_ticks: List[int] = [0, 0.2, 0.4, 0.6, 0.8, 1],
+                             y_ticklabels: List[int] = [0, 20, 40, 60, 80, 100],
+                             y_lim: Tuple[float, float] = (-0.1, 1.1),
+                             legend: bool = True,
+                             legend_title: str = 'Agent',
+                             legend_loc: str = 'center left',
+                             bbox_to_anchor: Tuple[float, float] = (1.0, 0.6),
+                             ):
+
+    plt.xlabel(xlabel, family=font_family, size=font_size)
+    sns.despine(left=True, bottom=False)
+    ax.set_xticks(range(len(x)))
+    ax.set_xticklabels(x, fontsize=font_size)
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True)) 
+
+    ax.set_ylabel(ylabel, family=font_family, size=font_size)
+    ax.yaxis.set_label_coords(*y_label_coords)
+    ax.set_yticks(y_ticks)
+    ax.set_yticklabels(y_ticklabels, size=font_size)
+    ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
+    plt.ylim(y_lim)
+    plt.subplots_adjust(left=0.1, right=0.8)
+
+    graph_title = f"Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations"
+    plt.title(" ".join(graph_title.split('_')), family=font_family, size=font_size + 5)
+    if legend:
+        ax.legend(title=legend_title, 
+                  frameon=False,
+                  ncol=1, 
+                  bbox_to_anchor=bbox_to_anchor,
+                  loc=legend_loc,
+                  fontsize=font_size,  # Change the font size of legend items
+                  title_fontsize=font_size
+                  )
+
+    plt.savefig(f'{directory}_{graph_title}.png', format='png')
+    plt.clf()
+
 
 def plot_bar_graph(directory: str,
                    sim_dir: str,
@@ -221,7 +236,6 @@ def plot_bar_graph(directory: str,
                    y: list,
                    errors: list,
                    ):
-
     plt.bar(x, y, yerr=errors)
     plt.xlabel(xlabel)
 
@@ -297,6 +311,14 @@ def plot_proposals(list_fixed: list,
         else:
             y_flex = y
 
+    plot_proposal_line_graph(ax=ax,
+                            x=x,
+                            graph_title="Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations",
+                            xlabel='Meta-Prompt Iteration: Amount and Currency',
+                            ylabel='Average Proportion of Total Proposed',
+                            directory=directory
+                            )
+
 
     plt.xlabel('Meta-Prompt Iteration: Amount and Currency', family=font_family, size=font_size)
     sns.despine(left=True, bottom=False)
@@ -327,7 +349,6 @@ def plot_proposals(list_fixed: list,
     plt.savefig(f'{directory}_{graph_title}.png', format='png')
     plt.clf()
     return y_fixed, y_flex
-
 
 # Collect the proposals
 def collect_proposals(scores: list, 

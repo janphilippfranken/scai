@@ -1,17 +1,17 @@
 from typing import List, Tuple
 
 
-from scai.games.dictator_games.all_agents.user import UserModel
-from scai.games.dictator_games.all_agents.assistant import AssistantAgent
-from scai.games.dictator_games.all_agents.meta import MetaPromptModel
+from scai.games.dictator_games.agents.user import UserModel
+from scai.games.dictator_games.agents.assistant import AssistantAgent
+from scai.games.dictator_games.agents.meta import MetaPromptModel
 
 
-from scai.games.dictator_games.all_prompts.user.user_class import UserPrompt
-from scai.games.dictator_games.all_prompts.user.user_prompt import utilities_dict_for_all, content
+from scai.games.dictator_games.prompts.user.user_class import UserPrompt
+from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, content
 
-from scai.games.dictator_games.all_prompts.assistant.assistant_class import AssistantPrompt
+from scai.games.dictator_games.prompts.assistant.assistant_class import AssistantPrompt
 
-from scai.games.dictator_games.all_prompts.task.task_prompt_template import STIPULATIONS
+from scai.games.dictator_games.prompts.task.task_prompt_template import STIPULATIONS
 
 
 from scai.memory.buffer import ConversationBuffer
