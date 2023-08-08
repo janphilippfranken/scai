@@ -32,10 +32,10 @@ Now, if the flexible-policy agents behave differently than the fixed agents, rev
 
 It is of the utmost importance that your created flexible-policy agent's principle encompasses both dictator and decider roles without explicitly mentioning either. The principle should be as GENERAL as possible WITHOUT mentioning anything regarding the dictator game, proposals, specific amounts and currencies, or making and receiving offers. Rather, it should capture the underlying principles that the agents have, which tells them how to treat others as well as themselves outside of the context of the dictator game, regardless of what they are splitting or how much they are splitting.
 
-If you are revising the principle, give a very short reason for revising the previous principle, in one sentence: Reason for revising the previous principle:...
-If you are not revising the principle, include this sentence instead in your response: Principle stays the same.
-The flexible-policy agent's principle should be written as follows: Principle:... 
-Include only the two sentences and nothing else. Mention the names of specific objects in the game.
+If you are revising the principle, give a detailed reason for revising the previous principle without explicitly referencing numerical values: Critique:...
+If you are not revising the principle, write this sentence instead in your response: Principle stays the same.
+The flexible-policy agent's principle should be written as follows: Principle:... Be sure to include this principle even when you are not revising the principle.
+Besides these sentences, include nothing else. Mention the names of specific objects in the game.
 """
     ),
 }

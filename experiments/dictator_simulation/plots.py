@@ -146,7 +146,7 @@ def plot_all_averages(
     plot_proposal_line_graph(ax=ax,
                              x=x,
                              graph_title="Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations",
-                             xlabel='Meta-Prompt Iteration: Amount and Currency',
+                             xlabel='Meta-Prompt Iteration',
                              ylabel='Average Proportion of Total Proposed',
                              directory=f'{directory}/{sim_dir}_id_{sim_id}'
                              )
@@ -314,13 +314,13 @@ def plot_proposals(list_fixed: list,
     plot_proposal_line_graph(ax=ax,
                             x=x,
                             graph_title="Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations",
-                            xlabel='Meta-Prompt Iteration: Amount and Currency',
+                            xlabel='Meta-Prompt Iteration',
                             ylabel='Average Proportion of Total Proposed',
                             directory=directory
                             )
 
 
-    plt.xlabel('Meta-Prompt Iteration: Amount and Currency', family=font_family, size=font_size)
+    plt.xlabel('Meta-Prompt Iteration', family=font_family, size=font_size)
     sns.despine(left=True, bottom=False)
     ax.set_xticks(range(len(x)))
     ax.set_xticklabels(x, fontsize=font_size)

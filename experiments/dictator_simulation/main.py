@@ -93,16 +93,45 @@ def get_num_interactions(
 
 
 
-def generate_percentages(n):
+def generate_percentages_no(n):
     if n <= 0:
         raise ValueError("n must be a positive integer.")
 
-    values = [random.randint(1, 10) for _ in range(n - 1)]
+    values = [random.randint(2, 8) for _ in range(n - 1)]
     total = sum(values)
     values = [round(v / total, 1) for v in values]
     values.append(round(1 - sum(values), 1))
 
     return values
+
+def generate_percentages(n):
+    """
+    Split the number 1 into n 1-decimal numbers strictly between 0.1 and 0.9 with random proportions.
+    """
+    # Ensure n is within valid range
+    if n < 2 or n > 10:
+        raise ValueError("n must be between 2 and 10")
+    
+    # Generate n-1 random numbers between 0 and 1
+    random_values = [random.uniform(0, 1) for _ in range(n-1)]
+    
+    # Add 0 and 1 to the list and then sort to create intervals
+    random_values.extend([0, 1])
+    random_values.sort()
+    
+    # Calculate differences to split 1 into n parts
+    split_values = []
+    for i in range(1, len(random_values)):
+        value = round(random_values[i] - random_values[i-1], 1)
+        
+        # Ensure the value is strictly between 0.1 and 0.9
+        while value < 0.1 or value > 0.9:
+            random_value = random.uniform(0, 1)
+            value = round(random_value - random_values[i-1], 1)
+        
+        split_values.append(value)
+    
+    return split_values
 
 
 #For fixed-mixed scenarios, generate the run lists containing interactions
@@ -235,6 +264,15 @@ def generate_random_params(args: dict,
 # run simulator
 @hydra.main(config_path="config", config_name="config")
 def main(args: DictConfig) -> None:
+
+    #create a copy of the config file for reference
+
+    config_directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/config_history'
+    os.makedirs(config_directory, exist_ok=True)
+
+    with open(f'{config_directory}/config_original', "w") as f:
+            f.write(OmegaConf.to_yaml(args))
+
     # llms
     is_crfm = 'openai' in args.sim.model_name # custom stanford models
     assistant_llm, user_llm, meta_llm = get_llms(args, is_crfm)
@@ -319,11 +357,13 @@ def main(args: DictConfig) -> None:
         with open(f"{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_config", "w") as f:
             f.write(OmegaConf.to_yaml(args))
 
+        with open(f'{config_directory}/{args.sim.sim_dir}_id_{args.sim.sim_id}_config', "w") as f:
+            f.write(OmegaConf.to_yaml(args))
+
     directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/final_graphs'
-    
     os.makedirs(directory, exist_ok=True)
 
-    plot_all_averages(total_scores=total_scores, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id=args.sim.sim_id)
+    plot_all_averages(total_scores=total_scores, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
 
                          
 if __name__ == '__main__':

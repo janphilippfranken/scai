@@ -1,0 +1,103 @@
+sim:
+  sim_dir: experiment_2_randomized_composition
+  sim_id: 5
+  model_name: openai/gpt-4-0314
+  test_run: false
+  verbose: true
+  system_message: ' '
+env:
+  manual_run: false
+  random:
+    n_rand_iter: 10
+    rand_variables:
+      currency: true
+      amount: true
+      n_fixed_inter: true
+      n_mixed_inter: true
+  single_fixed_utility: selfish
+  vary_population_utility:
+    vary_utilities: true
+    vary_pop_composition: true
+    n_dictator_utility:
+    - 0.7
+    - 0.3
+    n_decider_utility:
+    - 0.1
+    - 0.9
+    utilities: altruistic,selfish
+  vary_currency_utility:
+    multiple_utilities: false
+    vary_utilities: false
+    utilities: altruistic,fair
+  vary_manners:
+    vary: false
+    manners: neutral
+  n_total_interactions: 10
+  n_runs: 6
+  amounts_per_run:
+  - 14
+  - 12
+  - 27
+  - 65
+  - 42
+  - 71
+  currencies:
+  - apples
+  task_prompt: task_prompt_1
+  meta_prompt: meta_prompt_1
+  n_fixed_inter: 6
+  n_mixed_inter: 4
+  n_flex_inter: 0
+agents:
+  fixed_agents:
+  - name: fixed_agent_1
+    manners: neutral
+    utilities:
+      apples: altruistic
+  - name: fixed_agent_2
+    manners: neutral
+    utilities:
+      apples: selfish
+  flex_agents:
+  - name: flex_agent_1
+    manners: neutral
+interactions:
+  all_same: true
+  runs:
+    run_1:
+    - fixed_agent_1-fixed_agent_2-apples
+    - fixed_agent_2-fixed_agent_1-apples
+    - fixed_agent_2-fixed_agent_2-apples
+    - fixed_agent_1-fixed_agent_2-apples
+    - fixed_agent_1-fixed_agent_2-apples
+    - fixed_agent_1-fixed_agent_2-apples
+    - flex_agent_1-fixed_agent_2-apples
+    - flex_agent_1-fixed_agent_2-apples
+    - fixed_agent_1-flex_agent_1-apples
+    - fixed_agent_1-flex_agent_1-apples
+api_crfm:
+  assistant:
+    model_name: openai/gpt-4-0314
+    max_tokens: 300
+    temperature: 0.0
+  user:
+    model_name: openai/gpt-4-0314
+    max_tokens: 150
+    temperature: 0.0
+  meta:
+    model_name: openai/gpt-4-0314
+    max_tokens: 400
+    temperature: 0.0
+api_openai:
+  assistant:
+    model_name: gpt-4
+    max_tokens: 250
+    temperature: 0.0
+  user:
+    model_name: gpt-4
+    max_tokens: 50
+    temperature: 0.0
+  meta:
+    model_name: gpt-4
+    max_tokens: 150
+    temperature: 0.0

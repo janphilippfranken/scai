@@ -129,18 +129,18 @@ hydra:
   runtime:
     version: 1.3.2
     version_base: '1.1'
-    cwd: /Users/PatrickYe/Documents/internship_w7/scai/experiments/dictator_simulation
+    cwd: /Users/PatrickYe/Documents/internship_w8/scai/experiments/dictator_simulation
     config_sources:
     - path: hydra.conf
       schema: pkg
       provider: hydra
-    - path: /Users/PatrickYe/Documents/internship_w7/scai/experiments/dictator_simulation/config
+    - path: /Users/PatrickYe/Documents/internship_w8/scai/experiments/dictator_simulation/config
       schema: file
       provider: main
     - path: ''
       schema: structured
       provider: schema
-    output_dir: /Users/PatrickYe/Documents/internship_w7/scai/experiments/dictator_simulation/experiments/experiment_1_1/0
+    output_dir: /Users/PatrickYe/Documents/internship_w8/scai/experiments/dictator_simulation/experiments/experiment_1_selfish/0
     choices:
       hydra/env: default
       hydra/callbacks: null
