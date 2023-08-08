@@ -26,8 +26,8 @@ env:
     - 0.5
     utilities: altruistic,selfish
   vary_currency_utility:
-    multiple_utilities: false
-    vary_utilities: false
+    multiple_utilities: true
+    vary_utilities: true
     utilities: altruistic,fair
   vary_manners:
     vary: false
@@ -55,6 +55,7 @@ agents:
     manners: neutral
     utilities:
       dollars: altruistic
+      apples: altruistic
   flex_agents:
   - name: flex_agent_1
     manners: neutral

@@ -1,6 +1,6 @@
 sim:
   sim_dir: experiment_3_1
-  sim_id: '0'
+  sim_id: 1
   model_name: openai/gpt-4-0314
   test_run: false
   verbose: true
@@ -19,11 +19,9 @@ env:
     vary_utilities: false
     vary_pop_composition: false
     n_dictator_utility:
-    - 0.5
-    - 0.5
+    - 1
     n_decider_utility:
-    - 0.5
-    - 0.5
+    - 1
     utilities: altruistic,selfish
   vary_currency_utility:
     multiple_utilities: true
@@ -35,12 +33,11 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 10
-  - 10
-  - 10
-  - 10
-  - 10
-  - 10
+  - 75
+  - 23
+  - 73
+  - 30
+  - 45
   currencies:
   - dollars
   - apples
@@ -55,7 +52,7 @@ agents:
     manners: neutral
     utilities:
       dollars: altruistic
-      apples: altruistic
+      apples: fair
   flex_agents:
   - name: flex_agent_1
     manners: neutral
@@ -63,12 +60,16 @@ interactions:
   all_same: true
   runs:
     run_1:
-    - fixed_agent_1-flex_agent_1-dollars
-    - fixed_agent_1-flex_agent_1-dollars
-    - flex_agent_1-fixed_agent_1-dollars
-    - flex_agent_1-fixed_agent_1-dollars
-    - flex_agent_1-flex_agent_1-dollars
-    - flex_agent_1-flex_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-fixed_agent_1-dollars,apples
+    - flex_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-flex_agent_1-dollars,apples
+    - fixed_agent_1-flex_agent_1-dollars,apples
 api_crfm:
   assistant:
     model_name: openai/gpt-4-0314

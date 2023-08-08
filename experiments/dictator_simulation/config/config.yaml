@@ -13,7 +13,7 @@ sim:
 env: 
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
   random:
-    n_rand_iter: 2 # number of times the entire functionality is run
+    n_rand_iter: 2 # number of times the entire functionality is run, at least 2
     rand_variables:
       currency: true # if true, the currency will vary for each random iteration
       amount: true # if true, amount-to-be-split will vary for each random iteration
@@ -34,8 +34,8 @@ env:
     utilities: "altruistic,selfish" # utilities that vary between fixed agents
 
   vary_currency_utility:
-    multiple_utilities: false # if true, then each fixed-policy-agent will have varying utilities per currency
-    vary_utilities: false # if true, then the fixed-policy-agent will have 
+    multiple_utilities: true # if true, then each fixed-policy-agent will have varying utilities per currency
+    vary_utilities: true # if true, then the fixed-policy-agent will have 
     utilities: "altruistic,fair"
     
   vary_manners:
@@ -70,7 +70,7 @@ agents:
       manners: "neutral"
       utilities:    
         dollars: "altruistic"
-        #apples: "altruistic"
+        apples: "altruistic"
   flex_agents:
     - name: "flex_agent_1"
       manners: "neutral"

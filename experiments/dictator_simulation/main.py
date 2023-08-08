@@ -217,8 +217,8 @@ def generate_agents(vary_pop_utility, vary_currency_utility, vary_manners, env, 
     for j in range(num_agents):
         currencies_dict = {}
         if len(env.currencies) > 1:
-            for i in env.currencies:
-                currencies_dict[env.currencies[i]] = utilities[i]
+            for i in range(len(env.currencies)):
+                currencies_dict[env.currencies[i]] = utilities.split(',')[i]
         else:
             currencies_dict[env.currencies[0]] = utilities[j]
         fixed_agent_dict = {'name': f"fixed_agent_{j + 1}",
@@ -243,7 +243,8 @@ def generate_random_params(args: dict,
     if random_dir.currency:
         # If the utilities are meant to vary per currency, include as many currencies as there are split utilities
         if env_dir.vary_currency_utility.multiple_utilities:
-            env_dir.currencies = [random.sample(args.env.currencies, k=len(env_dir.vary_currency_utility.utilities.split(',')))]
+            #env_dir.currencies = [random.choice(args.env.currencies)]
+            env_dir.currencies = random.sample(args.env.currencies, k=len(env_dir.vary_currency_utility.utilities.split(',')))
         # Otherwise, pick one utility
         else:
             env_dir.currencies = [random.choice(args.env.currencies)]

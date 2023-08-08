@@ -311,13 +311,13 @@ def plot_proposals(list_fixed: list,
         else:
             y_flex = y
 
-    plot_proposal_line_graph(ax=ax,
-                            x=x,
-                            graph_title="Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations",
-                            xlabel='Meta-Prompt Iteration',
-                            ylabel='Average Proportion of Total Proposed',
-                            directory=directory
-                            )
+    # plot_proposal_line_graph(ax=ax,
+    #                         x=x,
+    #                         graph_title="Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations",
+    #                         xlabel='Meta-Prompt Iteration',
+    #                         ylabel='Average Proportion of Total Proposed',
+    #                         directory=directory
+    #                         )
 
 
     plt.xlabel('Meta-Prompt Iteration', family=font_family, size=font_size)
@@ -334,7 +334,7 @@ def plot_proposals(list_fixed: list,
     plt.ylim(y_lim)
     plt.subplots_adjust(left=0.1, right=0.8)
 
-    graph_title = f"Proportions_of_{currency}_Proposed_by_Flexible-Contract_and_Fixed-Contract Agents"
+    graph_title = f"Proportions_of_{currency}_Proposed_by_Flexible_and_Fixed Agents"
     plt.title(" ".join(graph_title.split('_')), family=font_family, size=font_size + 5)
     if legend:
         ax.legend(title=legend_title, 
