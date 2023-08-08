@@ -19,14 +19,14 @@ import time
 from demo_context.context import Context
 
 # import prompt models
-from scai.games.game_1.prompts.task.models import TaskPrompt
-from scai.games.game_1.prompts.user.models import UserPrompt
+from scai.games.essay_writing.prompts.task.models import TaskPrompt
+from scai.games.essay_writing.prompts.user.models import UserPrompt
 
 # import prompts
-from scai.games.game_1.prompts.assistant.prompts import ASSISTANT_PROMPTS 
-from scai.games.game_1.prompts.meta.prompts import META_PROMPTS
-from scai.games.game_1.prompts.task.prompts import TASK_PROMPTS
-from scai.games.game_1.prompts.metrics.prompts import METRIC_PROMPTS
+from scai.games.essay_writing.prompts.assistant.prompts import ASSISTANT_PROMPTS 
+from scai.games.essay_writing.prompts.meta.prompts import META_PROMPTS
+from scai.games.essay_writing.prompts.task.prompts import TASK_PROMPTS
+from scai.games.essay_writing.prompts.metrics.prompts import METRIC_PROMPTS
 
 # llm classes
 from scai.chat_models.crfm import crfmChatLLM #custom crfm models
