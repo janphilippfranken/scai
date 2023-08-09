@@ -3,17 +3,18 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "experiment_5_2"
+  sim_dir: "experiment_222_alrtuistic"
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
   verbose: true # if false, no responses are printed during simulation
   system_message: " " # start developer constitution / social contract is empty
 
-env: 
+env:
+  propose_decide_alignment: false # if true, then the propose-decide alignment is used
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
   random:
-    n_rand_iter: 4 # number of times the entire functionality is run, at least 2
+    n_rand_iter: 5 # number of times the entire functionality is run, at least 2
     rand_variables:
       currency: true # if true, the currency will vary for each random iteration
       amount: true # if true, amount-to-be-split will vary for each random iteration

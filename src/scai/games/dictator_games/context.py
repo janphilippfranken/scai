@@ -7,7 +7,7 @@ from scai.games.dictator_games.agents.meta import MetaPromptModel
 
 
 from scai.games.dictator_games.prompts.user.user_class import UserPrompt
-from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, content
+from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, utilities_dict_for_all_2, content
 
 from scai.games.dictator_games.prompts.assistant.assistant_class import AssistantPrompt
 
@@ -40,6 +40,7 @@ class Context():
         user_llm: UserModel,
         assistant_llm: AssistantAgent,
         meta_llm: MetaPromptModel,
+        propose_decide_alignment: bool,
     ) -> None:
         """
         Initializes a context (i.e. context for the MDP / Meta-Prompt run).
@@ -91,6 +92,7 @@ class Context():
         self.user_llm = user_llm
         self.assistant_llm = assistant_llm
         self.meta_llm = meta_llm
+        self.propose_decide_alignment = propose_decide_alignment
 
 
     @staticmethod
@@ -112,6 +114,7 @@ class Context():
         currencies: List,
         agents_dict: dict,
         interactions_dict: dict,
+        propose_decide_alignment: bool,
     ) -> "Context":
         """
         Creates a context (i.e. context for the MDP / Meta-Prompt run).
@@ -141,6 +144,7 @@ class Context():
             user_llm=user_llm,
             assistant_llm=assistant_llm,
             meta_llm=meta_llm,
+            propose_decide_alignment=propose_decide_alignment,
         )
 
     # This function loops through the users that the operator requested and creates a prompt for each of them, depending on whether they are flex of fixed
@@ -149,19 +153,21 @@ class Context():
                      currencies: List[str], 
                      n_fixed: int, 
                      n_mixed: int, 
-                     n_flex: int) ->  Tuple[List[UserPrompt], List[AssistantPrompt]]:
+                     n_flex: int,
+                     ) ->  Tuple[List[UserPrompt], List[AssistantPrompt]]:
         fixed_prompts = []
+        utilities_dict = utilities_dict_for_all_2 if self.propose_decide_alignment else utilities_dict_for_all
         if n_fixed or n_mixed:
             for agent in agents_dict.fixed_agents:
                 utilities = "You are in a simulator, and in this simulator, you must follow this principle:"
                 # Get the utility regarding each currency
                 for currency in currencies:
-                    utilities += utilities_dict_for_all[agent.utilities[currency]].format(currency=currency)
+                    utilities += utilities_dict[agent.utilities[currency]].format(currency=currency)
                 # Create the user_prompt
                 fixed_prompts.append(UserPrompt(
                     id=agent.name,
                     utility=utilities,
-                    utilies_dict=utilities_dict_for_all,
+                    utilies_dict=utilities_dict,
                     manners=agent.manners,
                     role="system",
                     content=content[0]

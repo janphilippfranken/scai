@@ -61,6 +61,7 @@ def create_context(
         currencies=args.env.currencies,
         agents_dict=args.agents,
         interactions_dict=args.interactions,
+        propose_decide_alignment=args.env.propose_decide_alignment,
     )
 
 
