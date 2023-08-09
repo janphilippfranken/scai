@@ -1,0 +1,117 @@
+hydra:
+  run:
+    dir: experiments/${sim.sim_dir}/${sim.sim_id}
+
+sim:
+  sim_dir: "experiment_4_2_1"
+  sim_id: "0"
+  model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
+  test_run: false # if false this uses tokens, otherwise just prints the prompt
+  verbose: true # if false, no responses are printed during simulation
+  system_message: " " # start developer constitution / social contract is empty
+
+env: 
+  manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
+  random:
+    n_rand_iter: 10 # number of times the entire functionality is run, at least 2
+    rand_variables:
+      currency: true # if true, the currency will vary for each random iteration
+      amount: true # if true, amount-to-be-split will vary for each random iteration
+      n_fixed_inter: true # if true, the number of intra-fixed-policy agent interactions varies for each random iteration
+      n_mixed_inter: true # if true, the number of flexible-fixed policy agent interactions varies
+
+  single_fixed_utility: "selfish" # the default utility for the fixed users to adpot
+
+  vary_population_utility: 
+    vary_utilities: true # if true, the utilities will vary between fixed policy agents
+    vary_pop_composition: false # if true, then the amount of variation in each run will be random, otherwise it will be set to the proportions below
+    n_dictator_utility:
+      - 0.8
+      - 0.2
+    n_decider_utility:
+      - 0.5
+      - 0.5
+    utilities: "altruistic,selfish" # utilities that vary between fixed agents
+
+  vary_currency_utility:
+    multiple_utilities: false # if true, then each fixed-policy-agent will have varying utilities per currency
+    vary_utilities: false # if true, then the fixed-policy-agent will have 
+    utilities: "altruistic,selfish"
+    
+  vary_manners:
+    vary: false
+    manners: "rude"
+
+  n_total_interactions: 10
+
+  n_runs: 5
+  amounts_per_run: # Contains the amounts per run, should match with the n_runs parameter
+    - 10
+    - 10
+    - 10
+    - 10
+    - 10
+    - 10
+  currencies: 
+   - "dollars"
+   - "apples"
+  task_prompt: "task_prompt_1"
+  meta_prompt: "meta_prompt_1"
+  n_fixed_inter: 7
+  n_mixed_inter: 3
+  n_flex_inter: 0
+  
+
+
+
+agents:
+  fixed_agents:
+    - name: "fixed_agent_1"
+      manners: "neutral"
+      utilities:    
+        dollars: "altruistic"
+        apples: "altruistic"
+  flex_agents:
+    - name: "flex_agent_1"
+      manners: "neutral"
+
+interactions:
+  all_same: true #should be true if manual runs is false
+  runs:
+    run_1:             
+      #- "fixed_agent_1-fixed_agent_1-dollars"
+      - "fixed_agent_1-flex_agent_1-dollars"
+      - "fixed_agent_1-flex_agent_1-dollars"
+      - "flex_agent_1-fixed_agent_1-dollars"
+      - "flex_agent_1-fixed_agent_1-dollars"
+      - "flex_agent_1-flex_agent_1-dollars"
+      - "flex_agent_1-flex_agent_1-dollars"
+
+
+api_crfm:
+  assistant:
+    model_name: "openai/gpt-4-0314"
+    max_tokens: 300 # these are the actual token limits
+    temperature: 0.0
+  user:
+    model_name: "openai/gpt-4-0314" 
+    max_tokens: 150 # these are the actual token limits
+    temperature: 0.0 # we want users to be low on temperature to avoid random variation in ratings
+  meta:
+    model_name: "openai/gpt-4-0314" 
+    max_tokens: 400 # these are the actual token limits
+    temperature: 0.0
+
+api_openai:
+  assistant:
+    model_name: "gpt-4"
+    max_tokens: 250 # these are the actual token limits
+    temperature: 0.0
+  user:
+    model_name: "gpt-4"
+    max_tokens: 50 # these are the actual token limits
+    temperature: 0.0
+  meta:
+    model_name: "gpt-4"
+    max_tokens: 150 # these are the actual token limits
+    temperature: 0.0

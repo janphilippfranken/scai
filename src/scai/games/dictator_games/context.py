@@ -223,10 +223,16 @@ class Context():
         decider_scores: list,
         proposals: list,
     ) -> None:
+        
+        # Extract all numbers from the string
+        numbers = [int(num) for num in re.findall(r'\d+', dictator_str['response'])]
+        
+        # Drop numbers at the indices 1, 4, 7, ... using list comprehension
+        numbers = [num for idx, num in enumerate(numbers) if (idx + 1) % 3 != 1]
 
-        numbers = re.findall(r'will get (\d+)', dictator_str['response'].replace(',', '')) 
-        # Remove commas
-        numbers = [int(num.replace(',', '')) for num in numbers]
+        # numbers = re.findall(r'will get (\d+)', dictator_str['response'].replace(',', '')) 
+        # # Remove commas
+        # numbers = [int(num.replace(',', '')) for num in numbers]
 
         accept = True if "accept" in decider_str['response'].lower() else False
         dict_scores = {}
