@@ -8,9 +8,9 @@ sim:
 env:
   manual_run: false
   random:
-    n_rand_iter: 2
+    n_rand_iter: 10
     rand_variables:
-      currency: true
+      currency: false
       amount: true
       n_fixed_inter: true
       n_mixed_inter: true

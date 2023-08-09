@@ -8,9 +8,9 @@ sim:
 env:
   manual_run: false
   random:
-    n_rand_iter: 2
+    n_rand_iter: 10
     rand_variables:
-      currency: true
+      currency: false
       amount: true
       n_fixed_inter: true
       n_mixed_inter: true
@@ -33,18 +33,18 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 75
-  - 23
-  - 73
-  - 30
-  - 45
+  - 52
+  - 95
+  - 96
+  - 48
+  - 56
   currencies:
   - dollars
   - apples
   task_prompt: task_prompt_1
   meta_prompt: meta_prompt_1
-  n_fixed_inter: 7
-  n_mixed_inter: 3
+  n_fixed_inter: 3
+  n_mixed_inter: 7
   n_flex_inter: 0
 agents:
   fixed_agents:
@@ -63,11 +63,11 @@ interactions:
     - fixed_agent_1-fixed_agent_1-dollars,apples
     - fixed_agent_1-fixed_agent_1-dollars,apples
     - fixed_agent_1-fixed_agent_1-dollars,apples
-    - fixed_agent_1-fixed_agent_1-dollars,apples
-    - fixed_agent_1-fixed_agent_1-dollars,apples
-    - fixed_agent_1-fixed_agent_1-dollars,apples
-    - fixed_agent_1-fixed_agent_1-dollars,apples
     - flex_agent_1-fixed_agent_1-dollars,apples
+    - flex_agent_1-fixed_agent_1-dollars,apples
+    - flex_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-flex_agent_1-dollars,apples
+    - fixed_agent_1-flex_agent_1-dollars,apples
     - fixed_agent_1-flex_agent_1-dollars,apples
     - fixed_agent_1-flex_agent_1-dollars,apples
 api_crfm:

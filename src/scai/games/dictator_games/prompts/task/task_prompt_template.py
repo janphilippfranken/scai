@@ -7,7 +7,10 @@ from scai.games.dictator_games.prompts.task.task_class import TaskPrompt
 
 STIPULATIONS: Dict[str, str] = {
     "dollars": "When dividing dollars, please only propose integer values.",
-    "apples" : "When dividing apples, please only propose integer values."
+    "apples" : "When dividing apples, please only propose integer values.",
+    "coconuts" : "When dividing coconuts, please only propose integer values.",
+    "blankets": "When dividing blankets, please only propose integer values."
+    
 }
 
 
@@ -18,7 +21,7 @@ DICTATOR_TASK_PROMPTS: Dict[str, TaskPrompt] = {
         name="dictator_propose",
         role="user",
         preamble="You and a partner need to divide {amount_and_currency} between yourselves. One person proposes a split, and the other person decides whether to accept or reject it. If the proposal is accepted, the money is divided according to the proposal. If the proposal is rejected, no one receives any money.",
-        task="""You are the proposer. You will propose how to split the {amount_and_currency}, and the person will accept or reject your proposal. {stipulations}. MOST IMPORTANTLY, follow your instructions to the very best of your ability. """,
+        task="""You are the proposer. You will propose how to split the {amount_and_currency}, and the person will accept or reject your proposal. {stipulations}. Make the most logical decision according to your principle, given by the system. MOST IMPORTANTLY, follow your principle to the very best of your ability. """,
         task_structure="Please structure your proposal to be exactly the same as this structure: The proposer will get X, and the decider will get Y",
         content="""{task}""",
     ),

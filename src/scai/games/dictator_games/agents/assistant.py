@@ -47,7 +47,7 @@ class AssistantAgent(BaseAgent):
         """
         assistant_prompt_template = HumanMessagePromptTemplate.from_template(f"{assistant_prompt.content}\n")
         # make a system message (CRFM crashes without a system message)
-        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to these {principle} You MUST promote your views in all your responses.\n")
+        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must learn the critique for previous pinciples (if any) and adhere to the current principle: {principle} You MUST follow the current principle TO THE EXTREME in all your responses. Be very commited to following this principle\n")
         return ChatPromptTemplate.from_messages([system_prompt_template, assistant_prompt_template])
        
     def _get_response(

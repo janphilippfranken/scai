@@ -3,7 +3,7 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "experiment_3_1"
+  sim_dir: "experiment_3_5"
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
@@ -13,9 +13,9 @@ sim:
 env: 
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
   random:
-    n_rand_iter: 2 # number of times the entire functionality is run, at least 2
+    n_rand_iter: 10 # number of times the entire functionality is run, at least 2
     rand_variables:
-      currency: true # if true, the currency will vary for each random iteration
+      currency: false # if true, the currency will vary for each random iteration
       amount: true # if true, amount-to-be-split will vary for each random iteration
       n_fixed_inter: true # if true, the number of intra-fixed-policy agent interactions varies for each random iteration
       n_mixed_inter: true # if true, the number of flexible-fixed policy agent interactions varies
@@ -26,8 +26,8 @@ env:
     vary_utilities: false # if true, the utilities will vary between fixed policy agents
     vary_pop_composition: false # if true, then the amount of variation in each run will be random, otherwise it will be set to the proportions below
     n_dictator_utility:
-      - 0.5
-      - 0.5
+      - 0.7
+      - 0.3
     n_decider_utility:
       - 0.5
       - 0.5
@@ -36,11 +36,11 @@ env:
   vary_currency_utility:
     multiple_utilities: true # if true, then each fixed-policy-agent will have varying utilities per currency
     vary_utilities: true # if true, then the fixed-policy-agent will have 
-    utilities: "altruistic,fair"
+    utilities: "altruistic,selfish"
     
   vary_manners:
     vary: false
-    manners: "neutral"
+    manners: "rude"
 
   n_total_interactions: 10
 

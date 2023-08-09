@@ -8,9 +8,9 @@ sim:
 env:
   manual_run: false
   random:
-    n_rand_iter: 2
+    n_rand_iter: 10
     rand_variables:
-      currency: true
+      currency: false
       amount: true
       n_fixed_inter: true
       n_mixed_inter: true
@@ -33,26 +33,26 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 44
-  - 35
-  - 22
-  - 98
-  - 18
+  - 93
+  - 43
+  - 75
+  - 46
+  - 68
   currencies:
-  - apples
   - dollars
+  - apples
   task_prompt: task_prompt_1
   meta_prompt: meta_prompt_1
-  n_fixed_inter: 7
-  n_mixed_inter: 3
+  n_fixed_inter: 3
+  n_mixed_inter: 7
   n_flex_inter: 0
 agents:
   fixed_agents:
   - name: fixed_agent_1
     manners: neutral
     utilities:
-      apples: altruistic
-      dollars: fair
+      dollars: altruistic
+      apples: fair
   flex_agents:
   - name: flex_agent_1
     manners: neutral
@@ -60,16 +60,16 @@ interactions:
   all_same: true
   runs:
     run_1:
-    - fixed_agent_1-fixed_agent_1-apples,dollars
-    - fixed_agent_1-fixed_agent_1-apples,dollars
-    - fixed_agent_1-fixed_agent_1-apples,dollars
-    - fixed_agent_1-fixed_agent_1-apples,dollars
-    - fixed_agent_1-fixed_agent_1-apples,dollars
-    - fixed_agent_1-fixed_agent_1-apples,dollars
-    - fixed_agent_1-fixed_agent_1-apples,dollars
-    - flex_agent_1-fixed_agent_1-apples,dollars
-    - fixed_agent_1-flex_agent_1-apples,dollars
-    - fixed_agent_1-flex_agent_1-apples,dollars
+    - fixed_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-fixed_agent_1-dollars,apples
+    - flex_agent_1-fixed_agent_1-dollars,apples
+    - flex_agent_1-fixed_agent_1-dollars,apples
+    - flex_agent_1-fixed_agent_1-dollars,apples
+    - fixed_agent_1-flex_agent_1-dollars,apples
+    - fixed_agent_1-flex_agent_1-dollars,apples
+    - fixed_agent_1-flex_agent_1-dollars,apples
+    - fixed_agent_1-flex_agent_1-dollars,apples
 api_crfm:
   assistant:
     model_name: openai/gpt-4-0314

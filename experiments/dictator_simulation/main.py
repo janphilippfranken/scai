@@ -364,7 +364,7 @@ def main(args: DictConfig) -> None:
     directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/final_graphs'
     os.makedirs(directory, exist_ok=True)
 
-    plot_all_averages(total_scores=total_scores, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
+    plot_all_averages(total_scores=total_scores, currencies=args.env.currencies, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
 
                          
 if __name__ == '__main__':

@@ -98,6 +98,7 @@ def get_fancy_bbox(
 
 def plot_all_averages(
                    total_scores: list,
+                   currencies: List,
                    n_runs: int, 
                    directory: str,
                    sim_dir: str,
@@ -105,58 +106,104 @@ def plot_all_averages(
                    linewidth: int = 2,
                    zorder: int = 1,
                    scatter_color: str = 'black',
+                    font_family: str = 'Avenir',
+                    font_size: int = 24,
+                    y_label_coords: Tuple[float, float] = (-0.07, 0.5),
+                    y_ticks: List[int] = [0, 0.2, 0.4, 0.6, 0.8, 1],
+                    y_ticklabels: List[int] = [0, 20, 40, 60, 80, 100],
+                    y_lim: Tuple[float, float] = (-0.1, 1.1),
+                    legend: bool = True,
+                    legend_title: str = 'Agent',
+                    legend_loc: str = 'center left',
+                    bbox_to_anchor: Tuple[float, float] = (1.0, 0.6),
+                    xlabel='Meta-Prompt Iteration',
+                    ylabel='Average Proportion of Total Proposed',
                    ):
     
     # unzip the list of lists of lists
     total_scores = np.array(total_scores)
     
     mean_matrix = np.nanmean(total_scores, axis=0)
-    mean_matrix = mean_matrix.reshape(1, total_scores.shape[1], total_scores.shape[2])
+    mean_matrix = mean_matrix.reshape(1, total_scores.shape[1], total_scores.shape[2], total_scores.shape[3])
     sem_matrix = sem(total_scores, nan_policy='omit', axis=0)
-    sem_matrix = sem_matrix.reshape(1, total_scores.shape[1], total_scores.shape[2])
+    sem_matrix = sem_matrix.reshape(1, total_scores.shape[1], total_scores.shape[2], total_scores.shape[3])
     flattened_scores = np.concatenate([mean_matrix, sem_matrix], axis=0)
 
-    list_fixed_plots = flattened_scores[:, 0, :]
-    list_flex_plots = flattened_scores[:, 1, :]
-    list_fixed_bars = flattened_scores[:, 2, :]
-    list_flex_bars = flattened_scores[:, 3, :]
+    list_fixed_plots = flattened_scores[:, 0, :, :]
+    list_flex_plots = flattened_scores[:, 1, :, :]
+    list_fixed_bars = flattened_scores[:, 2, :, :]
+    list_flex_bars = flattened_scores[:, 3, :, :]
 
     # Plot Plots
     lines = []
-    _, ax = plt.subplots(figsize=(20, 10))
+    
     palette = sns.color_palette("mako", 2)
 
     x = [f"Iteration: {i+1}" for i in range(n_runs)]
 
-    for i, item in enumerate([list_fixed_plots, list_flex_plots]):
-        label = "Fixed Agent" if not i else "Flexible Agent"
-        y = [z for z in item[0] if z is not None]
 
-        errors = item[1]
+    for j in range(len(currencies)):
+        fig, ax = plt.subplots(figsize=(20, 10))
+        for i, item in enumerate([list_fixed_plots, list_flex_plots]):
+            label = "Fixed Agent" if not i else "Flexible Agent"
+            #y = [z[j] for z in item[0] if z[j] is not np.nan]
+            y = item[0][j]
 
-        if not y: continue
-        while len(y) < len(x): y.append(None)
-        while len(errors) < len(x): errors.append(0)
+            errors = item[1][j]
 
-        line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
-        lines.append(line[0])
-        ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
-        ax.fill_between(x, [y_val - 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
-        
-    plot_proposal_line_graph(ax=ax,
-                             x=x,
-                             graph_title="Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations",
-                             xlabel='Meta-Prompt Iteration',
-                             ylabel='Average Proportion of Total Proposed',
-                             directory=f'{directory}/{sim_dir}_id_{sim_id}'
-                             )
+            while len(y) < len(x): y.append(np.nan)
+            while len(errors) < len(x): errors.append(0)
+
+            line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
+            lines.append(line[0])
+            ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
+            ax.fill_between(x, [y_val - 1.95 * err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
+            
+        plt.xlabel(xlabel, family=font_family, size=font_size)
+        sns.despine(left=True, bottom=False)
+        ax.set_xticks(range(len(x)))
+        ax.set_xticklabels(x, fontsize=font_size)
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True)) 
+
+        ax.set_ylabel(ylabel, family=font_family, size=font_size)
+        ax.yaxis.set_label_coords(*y_label_coords)
+        ax.set_yticks(y_ticks)
+        ax.set_yticklabels(y_ticklabels, size=font_size)
+        ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
+        plt.ylim(y_lim)
+        plt.subplots_adjust(left=0.1, right=0.8)
+
+        graph_title = f"Average_Proportion_of_{currencies[j]}_Offered_to_the_Decider_Across_all_Iterations"
+
+        #graph_title = f"Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations"
+        plt.title(" ".join(graph_title.split('_')), family=font_family, size=font_size + 5)
+        if legend:
+            ax.legend(title=legend_title, 
+                    frameon=False,
+                    ncol=1, 
+                    bbox_to_anchor=bbox_to_anchor,
+                    loc=legend_loc,
+                    fontsize=font_size,  # Change the font size of legend items
+                    title_fontsize=font_size
+                    )
+
+        fig.savefig(f'{directory}/Average_Proportion_of_{currencies[j]}.png', format='png')
+        plt.close(fig)
+
+            # plot_proposal_line_graph(ax=ax,
+            #                         x=x,
+            #                         graph_title=f"Average_Proportion_of_Currency_{j+1}_Offered_to_the_Decider_Across_all_Iterations",
+            #                         xlabel='Meta-Prompt Iteration',
+            #                         ylabel='Average Proportion of Total Proposed',
+            #                         directory=f'{directory}/{sim_dir}_id_{sim_id}'
+            #                         )
     # Fixed Bars
-    y = list_fixed_bars[0]
-    errors = list_fixed_bars[1]
+    y = list_fixed_bars[0][0]
+    errors = list_fixed_bars[1][0]
     plot_bar_graph(directory=directory, 
                    sim_dir=sim_dir,
                    sim_id=sim_id,
-                   graph_title="Percentage of Proposal Acceptance for Fixed-Policy Agents",
+                   graph_title="Percentage of Proposal Acceptance for Fixed-Policy Agents in currency 1",
                    ylabel='Percentage of Proposals Accepted',
                    xlabel = 'Meta-Prompt-Iteration',
                    path_suffix="fix_bar",
@@ -164,12 +211,12 @@ def plot_all_averages(
                    y=y,
                    errors=errors)
     #Flex Bars
-    y = list_flex_bars[0]
-    errors = list_flex_bars[1]
+    y = list_flex_bars[0][0]
+    errors = list_flex_bars[1][0]
     plot_bar_graph(directory=directory, 
                    sim_id=sim_id,
                    sim_dir=sim_dir,
-                   graph_title="Percentage of Proposal Acceptance for Flexible-Policy Agents",
+                   graph_title="Percentage of Proposal Acceptance for Flexible-Policy Agents in currency 2",
                    ylabel='Percentage of Proposals Accepted',
                    xlabel = 'Meta-Prompt-Iteration',
                    path_suffix="flex_bar",
@@ -209,7 +256,7 @@ def plot_proposal_line_graph(ax: Axes,
     plt.ylim(y_lim)
     plt.subplots_adjust(left=0.1, right=0.8)
 
-    graph_title = f"Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations"
+    #graph_title = f"Average_Proportion_of_Currency_Offered_to_the_Decider_Across_all_Iterations"
     plt.title(" ".join(graph_title.split('_')), family=font_family, size=font_size + 5)
     if legend:
         ax.legend(title=legend_title, 
@@ -283,20 +330,17 @@ def plot_proposals(list_fixed: list,
 
     for i, item in enumerate([list_fixed, list_flex]):
         label = "Fixed Agent" if not i else "Flexible Agent"
-        item = [z for z in item if z is not None]
+        item = [z for z in item if z is not np.nan]
 
         y = [float(sum(item[k])) / (amounts_per_run[k] * len(item[k])) for k in range(len(item))]
 
-        if not y:
-            continue
-
         while len(y) < len(x):
-            y.append(None)
+            y.append(np.nan)
 
         errors = []
         
         for j, elem in enumerate(item):
-            elem = [float(elem[h]) / amounts_per_run[j] for h in range(len(elem)) if elem[h] is not None]
+            elem = [float(elem[h]) / amounts_per_run[j] for h in range(len(elem)) if elem[h] is not np.nan]
             errors.append(sem(elem))
 
         while len(errors) < len(x):
@@ -305,7 +349,7 @@ def plot_proposals(list_fixed: list,
         line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
         lines.append(line[0])
         ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
-        ax.fill_between(x, [y_val - 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not None else 0 for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
+        ax.fill_between(x, [y_val - 1.95 * err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
         if not i:
             y_fixed = y
         else:
@@ -358,7 +402,7 @@ def collect_proposals(scores: list,
     for score in scores:
         for currency in currencies:
             dict_offer = [amount_dict[currency][1] for amount_dict in score[agent_index] if currency in amount_dict]
-            agent_proposals.append({currency: dict_offer if dict_offer else None})
+            agent_proposals.append({currency: dict_offer if dict_offer else np.nan})
     return agent_proposals
 
 def plot_results(    
@@ -369,7 +413,7 @@ def plot_results(
     data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
-    ) -> None:
+    ):
     """
     Plot average user and assistant income when the assistant is a dictator and a decider
     """
@@ -404,15 +448,11 @@ def plot_results(
             y_fixed_bar = plot_scores(score_list[1], f"{data_directory}/{sim_name}_id_{sim_id}", titles[i], n_runs)
         else:
             y_flex_bar = plot_scores(score_list[1], f"{data_directory}/{sim_name}_id_{sim_id}", titles[i], n_runs)
-    if all_currency_plots.shape[1] <= 1:
-        y_fixed_plot = all_currency_plots[0, 0, :]
-        y_flex_plot = all_currency_plots[0, 1, :]
-
         
-    return y_fixed_plot, y_flex_plot, y_fixed_bar, y_flex_bar
-
-# def print_scores(scores):
-
+    y_fixed_plot = all_currency_plots[:, 0, :]
+    y_flex_plot = all_currency_plots[:, 1, :]
+        
+    return y_fixed_plot.tolist(), y_flex_plot.tolist(), [y_fixed_bar]*len(currencies), [y_flex_bar]*len(currencies)
     
 def plot_scores(scores: list, 
                 path: str, 
