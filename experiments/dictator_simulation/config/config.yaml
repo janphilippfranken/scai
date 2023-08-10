@@ -11,7 +11,7 @@ sim:
   system_message: " " # start developer constitution / social contract is empty
 
 env:
-  propose_decide_alignment: false # if true, then the propose-decide alignment is used
+  propose_decide_alignment: false # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 5
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
   random:
     n_rand_iter: 5 # number of times the entire functionality is run, at least 2
