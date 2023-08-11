@@ -243,8 +243,7 @@ def generate_random_params(args: dict,
     # If the currency is set to be random, include the appropriate number of currencies
     if random_dir.currency:
         # If the utilities are meant to vary per currency, include as many currencies as there are split utilities
-        if env_dir.vary_currency_utility.multiple_utilities:
-            #env_dir.currencies = [random.choice(args.env.currencies)]
+        if env_dir.vary_currency_utility.vary_utilities:
             env_dir.currencies = random.sample(args.env.currencies, k=len(env_dir.vary_currency_utility.utilities.split(',')))
         # Otherwise, pick one utility
         else:

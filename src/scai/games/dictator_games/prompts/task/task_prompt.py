@@ -18,8 +18,9 @@ DICTATOR_TASK_PROMPTS: Dict[str, TaskPrompt] = {
         role="user",
         preamble="You and a partner need to divide {amount_and_currency} between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain.",
         task="""You are the proposer. You will propose how to split the {amount_and_currency}, and the person will accept or reject your proposal. {stipulations} MOST IMPORTANTLY, follow your instructions to the very best of your ability. """,
-        task_structure="Please structure your proposal to be similar to this structure (Be sure to include all three numbers): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y",
-        #task_structure="Please structure your proposal to be similar to this structure, without ANY elaboration at all: For the \{given_currency\}, The proposer will get X, and the decider will get Y",
+        #task_structure="Please structure your proposal exactly according to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y",
+        #for experiments varying manners, use this:
+        task_structure="Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y",
         content="""{task}""",
     ),
 }

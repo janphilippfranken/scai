@@ -3,7 +3,7 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "experiment_222_alrtuistic"
+  sim_dir: "experiment_5_for_2" # this is the name of the directory where the results will be saved
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
@@ -11,10 +11,10 @@ sim:
   system_message: " " # start developer constitution / social contract is empty
 
 env:
-  propose_decide_alignment: false # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 5
+  propose_decide_alignment: true # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 5
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
   random:
-    n_rand_iter: 5 # number of times the entire functionality is run, at least 2
+    n_rand_iter: 10 # number of times the entire functionality is run, at least 2
     rand_variables:
       currency: true # if true, the currency will vary for each random iteration
       amount: true # if true, amount-to-be-split will vary for each random iteration
@@ -24,24 +24,23 @@ env:
   single_fixed_utility: "altruistic" # the default utility for the fixed users to adpot
 
   vary_population_utility: 
-    vary_utilities: false # if true, the utilities will vary between fixed policy agents
+    vary_utilities: true # if true, the utilities will vary between fixed policy agents
     vary_pop_composition: false # if true, then the amount of variation in each run will be random, otherwise it will be set to the proportions below
     n_dictator_utility:
-      - 0.8
-      - 0.2
+      - 0.5
+      - 0.5
     n_decider_utility:
       - 0.5
       - 0.5
     utilities: "altruistic,selfish" # utilities that vary between fixed agents
 
   vary_currency_utility:
-    multiple_utilities: false # if true, then each fixed-policy-agent will have varying utilities per currency
-    vary_utilities: false # if true, then the fixed-policy-agent will have 
-    utilities: "altruistic,selfish"
+    vary_utilities: false # if true, then each fixed-policy-agent will have varying utilities per currency
+    utilities: "altruistic,fair,selfish" # utilities that vary between fixed agents
     
   vary_manners:
     vary: false
-    manners: "neutral"
+    manners: "nuetral"
 
   n_total_interactions: 10
 
@@ -56,6 +55,7 @@ env:
   currencies: 
    - "dollars"
    - "apples"
+   - "blankets"
   task_prompt: "task_prompt_1"
   meta_prompt: "meta_prompt_1"
   n_fixed_inter: 7
