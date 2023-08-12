@@ -297,7 +297,7 @@ def plot_bar_graph(directory: str,
     ax = plt.gca()
     ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     # Specify the full file path where you want to save the figure
-    plt.savefig(f'{directory}/{sim_dir}_id_{sim_id}__{graph_title}_{path_suffix}.png', format='png')
+    plt.savefig(f'{directory}/id_{sim_id}__{graph_title}_{path_suffix}.png', format='png')
     plt.clf()
 
 def plot_proposals(list_fixed: list,
@@ -429,7 +429,7 @@ def plot_results(
     for currency in currencies:
         list_fixed_proportions = [elem[currency] for elem in fixed_agent_proposals if currency in elem]
         list_flex_proportions = [elem[currency] for elem in flexible_agent_proposals if currency in elem]
-        y_fixed_plot, y_flex_plot = plot_proposals(list_fixed_proportions, list_flex_proportions, currency, amounts_per_run, n_runs, f"{data_directory}/{sim_name}_id_{sim_id}")
+        y_fixed_plot, y_flex_plot = plot_proposals(list_fixed_proportions, list_flex_proportions, currency, amounts_per_run, n_runs, f"{data_directory}/id_{sim_id}")
         all_currency_plots.append([y_fixed_plot, y_flex_plot])
     all_currency_plots = np.array(all_currency_plots)
     all_currency_plots.transpose(1, 0, 2)
@@ -445,9 +445,9 @@ def plot_results(
     titles = ["Rate_of_Fixed-Policy_Agent_Acceptance_per_Iteration", "Rate_of_Flexible-Policy_Agent_Acceptance_per_Iteration"]
     for i, score_list in enumerate([(fixed_dictator_scores, fixed_decider_scores), (flex_dictator_scores, flex_decider_scores)]):
         if not i:
-            y_fixed_bar = plot_scores(score_list[1], f"{data_directory}/{sim_name}_id_{sim_id}", titles[i], n_runs)
+            y_fixed_bar = plot_scores(score_list[1], f"{data_directory}/id_{sim_id}", titles[i], n_runs)
         else:
-            y_flex_bar = plot_scores(score_list[1], f"{data_directory}/{sim_name}_id_{sim_id}", titles[i], n_runs)
+            y_flex_bar = plot_scores(score_list[1], f"{data_directory}/id_{sim_id}", titles[i], n_runs)
         
     y_fixed_plot = all_currency_plots[:, 0, :]
     y_flex_plot = all_currency_plots[:, 1, :]
@@ -518,7 +518,7 @@ def plot_cosine_similarity(
     model = SentenceTransformer(model_name)
     model.max_seq_length = max_seq_length
     # write system messages to json
-    with open(f'{data_directory}/{sim_name}_id_{sim_id}_system_messages.json', 'w') as f:
+    with open(f'{data_directory}/id_{sim_id}_system_messages.json', 'w') as f:
         json.dump(system_messages, f)
     # Make heatmap
     embeddings_0 = model.encode(system_messages, convert_to_tensor=True)
@@ -531,5 +531,5 @@ def plot_cosine_similarity(
     plt.ylabel('Cosine Similarity')
     ax = plt.gca()  # gca stands for 'get current axis'
     ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))    
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.pdf', bbox_inches='tight')
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.jpg', bbox_inches='tight')
+    plt.savefig(f'{data_directory}/id_{sim_id}_cosine_similarity.pdf', bbox_inches='tight')
+    plt.savefig(f'{data_directory}/id_{sim_id}_cosine_similarity.jpg', bbox_inches='tight')

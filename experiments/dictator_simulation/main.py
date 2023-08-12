@@ -136,9 +136,8 @@ def generate_percentages(n):
 
 
 #For fixed-mixed scenarios, generate the run lists containing interactions
-def generate_interactions_fixed_mixed(args):
+def generate_interactions(args):
 
-    
     dir = args.env.vary_population_utility
     n_utils = len(dir.utilities.split(','))
     currencies = ','.join(args.env.currencies)
@@ -181,19 +180,28 @@ def generate_interactions_fixed_mixed(args):
     for i in range(n_utils):
         dictator_list += [f"fixed_agent_{i + 1}-"] * num_dictator_utility[i]
         decider_list += [f"fixed_agent_{i + 1}-"] * num_decider_utility[i]
-    random.shuffle(dictator_list)
-    random.shuffle(decider_list)
 
-    #make mixed
+    #make mixed conversations
     dictator_list[args.env.n_fixed_inter:args.env.n_fixed_inter] = ["flex_agent_1-"] * (all_heads - fixed_dictator_heads)
     decider_list += ["flex_agent_1-"] * (all_heads - fixed_decider_heads)
-    dictator_list[:args.env.n_fixed_inter] + random.sample(dictator_list[args.env.n_fixed_inter:], args.env.n_mixed_inter)
-    decider_list[:args.env.n_fixed_inter] + random.sample(decider_list[args.env.n_fixed_inter:], args.env.n_mixed_inter)
+
+    #make flex
+    dictator_list += ["flex_agent_1-"] * args.env.n_flex_inter
+    decider_list += ["flex_agent_1-"] * args.env.n_flex_inter
 
     #reset and generate the run list
     args.interactions.runs.run_1 = []
+    unshuffled = []
     for dictator, decider in zip(dictator_list,decider_list):
-        args.interactions.runs.run_1.append(dictator + decider + currencies)
+        unshuffled.append(dictator + decider + currencies)
+
+    part_1 = unshuffled[:args.env.n_fixed_inter]
+    part_2 = unshuffled[args.env.n_fixed_inter:args.env.n_fixed_inter + args.env.n_mixed_inter]
+    part_3 = unshuffled[args.env.n_fixed_inter + args.env.n_mixed_inter:]
+    random.shuffle(part_1)
+    random.shuffle(part_2)
+    random.shuffle(part_3)
+    args.interactions.runs.run_1 = part_1 + part_2 + part_3
 
 def generate_agents(vary_pop_utility, vary_currency_utility, vary_manners, env, args):
     num_agents = 0
@@ -295,7 +303,7 @@ def main(args: DictConfig) -> None:
             
             generate_agents(env_dir.vary_population_utility, env_dir.vary_currency_utility, env_dir.vary_manners, env_dir, args)
 
-            generate_interactions_fixed_mixed(args)
+            generate_interactions(args)
 
         # sim_res directory
         DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
@@ -338,7 +346,7 @@ def main(args: DictConfig) -> None:
                         sim_id=args.sim.sim_id,
                         run=run)
             # save results json
-            with open(f'{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
+            with open(f'{DATA_DIR}/id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
                 json.dump(context.buffer._full_memory.messages, f)
             
             # update system message after each run
@@ -355,16 +363,20 @@ def main(args: DictConfig) -> None:
                                                                   )
         total_scores.append([fixed_plot, flex_plot, fixed_bar, flex_bar])
         
-        with open(f"{DATA_DIR}/{args.sim.sim_dir}_id_{args.sim.sim_id}_config", "w") as f:
+        with open(f"{DATA_DIR}/id_{args.sim.sim_id}_config", "w") as f:
             f.write(OmegaConf.to_yaml(args))
 
-        with open(f'{config_directory}/{args.sim.sim_dir}_id_{args.sim.sim_id}_config', "w") as f:
+        with open(f'{config_directory}/id_{args.sim.sim_id}_config', "w") as f:
             f.write(OmegaConf.to_yaml(args))
 
     directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/final_graphs'
     os.makedirs(directory, exist_ok=True)
 
     plot_all_averages(total_scores=total_scores, currencies=args.env.currencies, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
+
+    with open(f"{DATA_DIR}/../description", "w") as f:
+            f.write(args.sim.description)
+    
 
                          
 if __name__ == '__main__':

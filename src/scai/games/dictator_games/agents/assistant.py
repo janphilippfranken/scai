@@ -47,7 +47,7 @@ class AssistantAgent(BaseAgent):
         """
         assistant_prompt_template = HumanMessagePromptTemplate.from_template(f"{assistant_prompt.content}\n")
         # make a system message (CRFM crashes without a system message)
-        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must learn the critique for previous pinciples (if any) and adhere to the current principle: {principle} You MUST follow the current principle TO THE EXTREME in all your responses. Be very commited to following this principle\n")
+        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: {principle} You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle\n")
         return ChatPromptTemplate.from_messages([system_prompt_template, assistant_prompt_template])
        
     def _get_response(
@@ -97,8 +97,10 @@ class AssistantAgent(BaseAgent):
         """
         # Get the last social contract
         system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']
+        index = system_message.find("Principle:")
+        if index == -1: index = 0
         # Get the prompt template
-        chat_prompt_template =  self._get_prompt(agent_prompt, system_message)
+        chat_prompt_template =  self._get_prompt(agent_prompt, system_message[index:])
         # if the assistant is the dictator, set the label for output if verbose
         if is_dictator:
             # Set the proposed deal to be empty

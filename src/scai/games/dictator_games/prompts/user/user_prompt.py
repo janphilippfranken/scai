@@ -15,6 +15,6 @@ utilities_dict_for_all_2={
     "selfish": " Be selfish when dealing with {currency}, meaning that you want to pragmatically gather the maximum benefit for yourself. You will NEVER accept proposals that benefit you less as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals."}
 
 
-#content="""Here is your task: {task} When you formulate your response, adopt a {manners} manner.""",
+#content="""Here is your task: {task} When you formulate your response, be sure to adopt a {manners} manner.""",
 
 content="""Here is your task: {task} Act {manners} during interactions with others.""",

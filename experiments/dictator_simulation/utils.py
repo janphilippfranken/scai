@@ -23,6 +23,7 @@ def save_as_csv(
     sim_id: str = '0',
     run: int = 0
 ) -> None:
+
     """
     Save simulation data as a csv file
 
@@ -54,12 +55,12 @@ def save_as_csv(
     # Convert the list of dicts to a dataframe
     data_frame = pd.DataFrame(data_list)
     # Save the full dataframe as a csv
-    data_frame.to_csv(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}.csv', index=False)
+    data_frame.to_csv(f'{data_directory}/id_{sim_id}_run_{run}.csv', index=False)
 
     # Extract user data ratings for plotting 
     data_user = data_frame[data_frame['agent'].str.contains('user')]
     data_user = data_user.dropna(axis=1)
     # Save the user dataframe as a csv
-    data_user.to_csv(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_user.csv', index=False)
+    data_user.to_csv(f'{data_directory}/id_{sim_id}_run_{run}_user.csv', index=False)
 
     
