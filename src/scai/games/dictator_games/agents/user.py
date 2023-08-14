@@ -44,7 +44,7 @@ class UserModel(BaseAgent):
             user_prompt: (UserPrompt) The user prompt.
             task_prompt: (TaskPrompt) The task prompt.
         """
-        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. {user_prompt.utility} You MUST promote your views in all your responses.\n")
+        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. {user_prompt.utility} You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. \n")
         user_prompt_template = HumanMessagePromptTemplate.from_template(f"{user_prompt.content}\n")
         return ChatPromptTemplate.from_messages([system_prompt_template, user_prompt_template])
     

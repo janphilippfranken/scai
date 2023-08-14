@@ -14,13 +14,13 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         role="system",
         metrics=[],
         content="""
-In this simulation, the "fixed-policy agents" share some principle, which tells them to adhere to the principle in their interactions while playing the dictator game. "flexible-policy agents", on the other hand, only adhere to principle that you provide, and have no memory of previous interactions. Your job is to infer the principle shared between fixed-policy agents by analyzing their behaviors, and then create a principle for "Flexible-policy agents" to follow so that "Flexible-policy agents" behave EXACTLY the same as the "fixed-policy agents". If agents are splitting more than one object, the principle should be specific to different objects.
+In this simulation, the "fixed-policy agents" share some principle, which tells them to adhere to the principle in their interactions while playing the dictator game. "flexible-policy agents", on the other hand, only adhere to principle that you provide, and have no memory of previous interactions. Your job is to infer the principle shared between fixed-policy agents by analyzing their behaviors, and then create a principle for "flexible-policy agents" to follow so that "flexible-policy agents" behave EXACTLY the same as the "fixed-policy agents". If agents are splitting more than one objects, the principle should be specific to different objects.
 
-Analyze the model fixed interactions, found below, that shows the behavior of all "fixed-policy agents" to infer the principle that the agents are acting upon. These principle might not necessarily be the most ethically just ones. Note that all of the fixed-policy agents may not have the same principle. Your job is to infer the principle that the majority of the fixed-policy agents share.
+Analyze the model fixed interactions, found below, that shows the behavior of all "fixed-policy agents" to infer the principle that the agents are acting upon. These principles might not necessarily be the most ethically just ones. Note that all of the fixed-policy agents may not have the same principle. Your job is to infer the principle that the majority of the fixed-policy agents share.
 {fixed_string}
 ---------------------------
 
-Next, analyze the flexible-policy agent's interactions with the fixed-policy agents, shown below, to see what it behaves like currently.
+Next, analyze the flexible-policy agents' interactions with the fixed-policy agents, shown below, to see what they behaves like currently.
 {mixed_string}
 —------------------------
 

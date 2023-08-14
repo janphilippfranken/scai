@@ -9,6 +9,7 @@ import json
 from scai.chat_models.crfm import crfmChatLLM
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
+from scai.games.dictator_games.prompts.user.user_prompt import utilities_list
 
 import random
 import copy
@@ -204,18 +205,18 @@ def generate_interactions(args):
     args.interactions.runs.run_1 = part_1 + part_2 + part_3
 
 def generate_agents(vary_pop_utility, vary_currency_utility, vary_manners, env, args):
-    num_agents = 0
+    num_fixed_agents = 0
     if vary_pop_utility.vary_utilities:
         utilities = vary_pop_utility.utilities.split(',')
-        num_agents = len(utilities)
+        num_fixed_agents = len(utilities)
     elif vary_currency_utility.vary_utilities:
         utilities = vary_currency_utility.utilities
-        num_agents = 1
+        num_fixed_agents = 1
     else:
         utilities = [env.single_fixed_utility]
-        num_agents = 1
+        num_fixed_agents = 1
 
-    if not num_agents:
+    if not num_fixed_agents:
         user_input = input("You are about to generate users according to the default agents in the config file, please make sure these agents match your desired configuration. Press return to continue, or type 'exit' to stop.")
         if user_input != "":
             raise Exception("runtime terminated")
@@ -223,7 +224,7 @@ def generate_agents(vary_pop_utility, vary_currency_utility, vary_manners, env, 
     manners = ["rude", "polite", "sarcastic", "indifferent", "friendly"] if vary_manners.vary else [vary_manners.manners]
     
 
-    for j in range(num_agents):
+    for j in range(num_fixed_agents):
         currencies_dict = {}
         if len(env.currencies) > 1:
             for i in range(len(env.currencies)):
@@ -298,6 +299,8 @@ def main(args: DictConfig) -> None:
 
             args.agents.fixed_agents = []
             args.agents.flex_agents = []
+
+            args.sim.system_message = random.choice(list(utilities_list.values()))
 
             generate_random_params(args, i)
             
