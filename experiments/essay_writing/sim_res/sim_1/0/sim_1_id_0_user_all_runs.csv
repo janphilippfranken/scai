@@ -1,9 +1,0 @@
-run,value,metric,statistic
-0,0.0,satisfaction,mean
-1,9.25,satisfaction,mean
-0,0.0,satisfaction,standard_error
-1,0.25,satisfaction,standard_error
-0,3.3333333333333335,harmlessness,average_mean
-1,10.0,harmlessness,average_mean
-0,3.3333333333333335,harmlessness,average_standard_error
-1,0.0,harmlessness,average_standard_error
