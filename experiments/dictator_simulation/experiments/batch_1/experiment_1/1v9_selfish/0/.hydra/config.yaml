@@ -6,7 +6,7 @@ sim:
   model_name: openai/gpt-4-0314
   test_run: false
   verbose: true
-  system_message: be fair in resource distribution
+  system_message: ''
 env:
   propose_decide_alignment: false
   manual_run: false

@@ -1,0 +1,98 @@
+sim:
+  sim_dir: batch_1/experiment_1/5v5_altruistic
+  description: "\n\n Batch 1, Experiment 1 \n\n 5 flex 5 fixed \n\n 10 runs for altruistic,\
+    \ vary currency and amount"
+  sim_id: 2
+  model_name: openai/gpt-4-0314
+  test_run: false
+  verbose: true
+  system_message: be fair in resource distribution
+env:
+  propose_decide_alignment: false
+  manual_run: false
+  random:
+    n_rand_iter: 10
+    rand_variables:
+      currency: true
+      amount: true
+      n_fixed_inter: false
+      n_mixed_inter: false
+  single_fixed_utility: altruistic
+  vary_population_utility:
+    vary_utilities: false
+    vary_pop_composition: false
+    n_dictator_utility:
+    - 1
+    n_decider_utility:
+    - 1
+    utilities: altruistic,selfish
+  vary_currency_utility:
+    vary_utilities: false
+    utilities: altruistic,fair,selfish
+  vary_manners:
+    vary: false
+    manners: nuetral
+  n_total_interactions: 10
+  n_runs: 5
+  amounts_per_run:
+  - 37
+  - 73
+  - 67
+  - 77
+  - 77
+  currencies:
+  - apples
+  task_prompt: task_prompt_1
+  meta_prompt: meta_prompt_1
+  n_fixed_inter: 3
+  n_mixed_inter: 4
+  n_flex_inter: 3
+agents:
+  fixed_agents:
+  - name: fixed_agent_1
+    manners: nuetral
+    utilities:
+      apples: altruistic
+  flex_agents:
+  - name: flex_agent_1
+    manners: nuetral
+interactions:
+  all_same: true
+  runs:
+    run_1:
+    - fixed_agent_1-fixed_agent_1-apples
+    - fixed_agent_1-fixed_agent_1-apples
+    - fixed_agent_1-fixed_agent_1-apples
+    - fixed_agent_1-flex_agent_1-apples
+    - fixed_agent_1-flex_agent_1-apples
+    - flex_agent_1-fixed_agent_1-apples
+    - flex_agent_1-fixed_agent_1-apples
+    - flex_agent_1-flex_agent_1-apples
+    - flex_agent_1-flex_agent_1-apples
+    - flex_agent_1-flex_agent_1-apples
+api_crfm:
+  assistant:
+    model_name: openai/gpt-4-0314
+    max_tokens: 300
+    temperature: 0.0
+  user:
+    model_name: openai/gpt-4-0314
+    max_tokens: 150
+    temperature: 0.0
+  meta:
+    model_name: openai/gpt-4-0314
+    max_tokens: 400
+    temperature: 0.0
+api_openai:
+  assistant:
+    model_name: gpt-4
+    max_tokens: 250
+    temperature: 0.0
+  user:
+    model_name: gpt-4
+    max_tokens: 50
+    temperature: 0.0
+  meta:
+    model_name: gpt-4
+    max_tokens: 150
+    temperature: 0.0

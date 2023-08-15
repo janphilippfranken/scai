@@ -82,6 +82,7 @@ class UserModel(BaseAgent):
         agent_prompt: UserPrompt, 
         task_prompt: TaskPrompt,
         is_dictator: bool,
+        run_num: int,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the assistant

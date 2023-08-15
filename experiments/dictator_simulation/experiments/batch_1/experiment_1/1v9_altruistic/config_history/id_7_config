@@ -6,7 +6,8 @@ sim:
   model_name: openai/gpt-4-0314
   test_run: false
   verbose: true
-  system_message: be fair in resource distribution
+  system_message: ' Be fair in resource distribution, meaning you want equal and maximum
+    benefits for everyone, including yourself. '
 env:
   propose_decide_alignment: false
   manual_run: false
@@ -35,13 +36,13 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 45
-  - 79
-  - 89
-  - 98
-  - 11
+  - 46
+  - 60
+  - 93
+  - 54
+  - 20
   currencies:
-  - blankets
+  - dollars
   task_prompt: task_prompt_1
   meta_prompt: meta_prompt_1
   n_fixed_inter: 8
@@ -52,7 +53,7 @@ agents:
   - name: fixed_agent_1
     manners: nuetral
     utilities:
-      blankets: altruistic
+      dollars: altruistic
   flex_agents:
   - name: flex_agent_1
     manners: nuetral
@@ -60,16 +61,16 @@ interactions:
   all_same: true
   runs:
     run_1:
-    - fixed_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-flex_agent_1-blankets
-    - flex_agent_1-fixed_agent_1-blankets
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - flex_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-flex_agent_1-dollars
 api_crfm:
   assistant:
     model_name: openai/gpt-4-0314

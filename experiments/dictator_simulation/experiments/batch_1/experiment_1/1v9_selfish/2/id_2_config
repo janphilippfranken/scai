@@ -6,7 +6,9 @@ sim:
   model_name: openai/gpt-4-0314
   test_run: false
   verbose: true
-  system_message: be fair in resource distribution
+  system_message: ' Be altruistic in resource distribution, meaning your priority
+    is to give others others the maximum benefit possible without any consideration
+    of the benefit you receive. You don''t want equal benefits in most cases.'
 env:
   propose_decide_alignment: false
   manual_run: false
@@ -35,11 +37,11 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 58
-  - 36
-  - 22
-  - 25
+  - 85
   - 19
+  - 36
+  - 62
+  - 81
   currencies:
   - dollars
   task_prompt: task_prompt_1

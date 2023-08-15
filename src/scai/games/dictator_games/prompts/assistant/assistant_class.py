@@ -9,3 +9,4 @@ class AssistantPrompt(BaseModel):
     role: str = "system"
     manners: str = "manners description: polite, rude, or neutral"
     content: str
+    initial_principle: str

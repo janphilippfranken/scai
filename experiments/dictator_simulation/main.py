@@ -139,12 +139,12 @@ def generate_percentages(n):
 #For fixed-mixed scenarios, generate the run lists containing interactions
 def generate_interactions(args):
 
-    dir = args.env.vary_population_utility
+    dir = args.env.vary_fixed_population_utility
     n_utils = len(dir.utilities.split(','))
     currencies = ','.join(args.env.currencies)
 
     #If population is not split by 2 utilities, use single utility
-    if not args.env.vary_population_utility.vary_utilities:
+    if not args.env.vary_fixed_population_utility.vary_utilities:
         dir.n_dictator_utility = [1]
         dir.n_decider_utility = [1]
         n_utils = 1
@@ -182,13 +182,28 @@ def generate_interactions(args):
         dictator_list += [f"fixed_agent_{i + 1}-"] * num_dictator_utility[i]
         decider_list += [f"fixed_agent_{i + 1}-"] * num_decider_utility[i]
 
+    random.shuffle(dictator_list)
+    random.shuffle(decider_list)
+
     #make mixed conversations
     dictator_list[args.env.n_fixed_inter:args.env.n_fixed_inter] = ["flex_agent_1-"] * (all_heads - fixed_dictator_heads)
     decider_list += ["flex_agent_1-"] * (all_heads - fixed_decider_heads)
 
     #make flex
-    dictator_list += ["flex_agent_1-"] * args.env.n_flex_inter
-    decider_list += ["flex_agent_1-"] * args.env.n_flex_inter
+
+    if args.env.flex_agent_start_utility.multi_agent:
+        lst1 = []
+        lst2 = []
+        for i, percentage in enumerate(args.env.flex_agent_start_utility.utility_percentages):
+            lst1 += [f"flex_agent_{i + 1}-"] * round(percentage * args.env.n_flex_inter)
+            lst2 += [f"flex_agent_{i + 1}-"] * round(percentage * args.env.n_flex_inter)
+        random.shuffle(lst1)
+        random.shuffle(lst2)
+        dictator_list += lst1
+        decider_list += lst2
+    else:
+        dictator_list += ["flex_agent_1-"] * args.env.n_flex_inter
+        decider_list += ["flex_agent_1-"] * args.env.n_flex_inter
 
     #reset and generate the run list
     args.interactions.runs.run_1 = []
@@ -236,10 +251,18 @@ def generate_agents(vary_pop_utility, vary_currency_utility, vary_manners, env, 
                       'utilities': currencies_dict
                       }
         args.agents.fixed_agents.append(fixed_agent_dict)
-            
-    flex_agent_dict = {'name': 'flex_agent_1',
-                       'manners': f"{random.choice(manners)}"}
-    args.agents.flex_agents.append(flex_agent_dict)
+
+
+    
+    initial_utils = env.flex_agent_start_utility.utilities
+    initial_utils_list = initial_utils.split(',') if initial_utils.count(',') else [initial_utils]
+    num_flex = len(initial_utils_list) if env.flex_agent_start_utility.multi_agent else 1
+
+    for j in range(num_flex):
+        flex_agent_dict = {'name': f'flex_agent_{j + 1}',
+                        'manners': f"{random.choice(manners)}",
+                        'initial_util': initial_utils_list[j]}
+        args.agents.flex_agents.append(flex_agent_dict)
 
 def generate_random_params(args: dict, 
                            iter: int):
@@ -263,13 +286,17 @@ def generate_random_params(args: dict,
         env_dir.amounts_per_run = [random.randint(10, 100) for _ in range(args.env.n_runs)]
         
     # If the number of fixed-fixed interactions is random and the population composition is varied, generate any number of fixed and mixed interactions
-    if random_dir.n_fixed_inter and env_dir.vary_population_utility.vary_pop_composition:
+    if random_dir.n_fixed_inter and env_dir.vary_fixed_population_utility.vary_pop_composition:
         env_dir.n_fixed_inter = random.randint(2, 8)
         env_dir.n_mixed_inter = env_dir.n_total_interactions - env_dir.n_fixed_inter
     # Otherwise, if the number of fixed interactions is random and the population composition is set, generate a higher number of fixed interactions to account for proportions
-    if random_dir.n_fixed_inter and not env_dir.vary_population_utility.vary_pop_composition:
+    if random_dir.n_fixed_inter and not env_dir.vary_fixed_population_utility.vary_pop_composition:
         env_dir.n_fixed_inter = random.randint(3, 7)
         env_dir.n_mixed_inter = env_dir.n_total_interactions - env_dir.n_fixed_inter
+
+def generate_starting_message(args):
+    if args.env.flex_agent_start_utility.randomized:
+        args.env.flex_agent_start_utility.utilities=random.choice(["fair", "altruistic", "selfish"])
 
 # run simulator
 @hydra.main(config_path="config", config_name="config")
@@ -300,18 +327,18 @@ def main(args: DictConfig) -> None:
             args.agents.fixed_agents = []
             args.agents.flex_agents = []
 
-            args.sim.system_message = random.choice(list(utilities_list.values()))
+            generate_starting_message(args)
 
             generate_random_params(args, i)
             
-            generate_agents(env_dir.vary_population_utility, env_dir.vary_currency_utility, env_dir.vary_manners, env_dir, args)
+            generate_agents(env_dir.vary_fixed_population_utility, env_dir.vary_currency_utility, env_dir.vary_manners, env_dir, args)
 
             generate_interactions(args)
 
         # sim_res directory
         DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
         os.makedirs(DATA_DIR, exist_ok=True)
-        system_message = args.sim.system_message
+        system_message = args.sim.system_message if args.env.flex_agent_start_utility.multi_agent else args.sim.system_message
         system_messages = []
         scores = []
         # run meta-prompt
@@ -334,8 +361,9 @@ def main(args: DictConfig) -> None:
             context = create_context(args, assistant_llm, user_llm, meta_llm, Context,     
                                     DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS)
 
+
             context.buffer.save_system_context(model_id='system', **{
-                'response': system_message, 
+                'response': system_message,
             })
             system_messages.append(system_message)
             # run context

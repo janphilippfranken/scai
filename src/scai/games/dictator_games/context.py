@@ -7,7 +7,7 @@ from scai.games.dictator_games.agents.meta import MetaPromptModel
 
 
 from scai.games.dictator_games.prompts.user.user_class import UserPrompt
-from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, utilities_dict_for_all_2, content
+from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, utilities_dict_for_all_2, utilities_list, content
 
 from scai.games.dictator_games.prompts.assistant.assistant_class import AssistantPrompt
 
@@ -175,12 +175,13 @@ class Context():
         flex_prompts = []
         if n_flex or n_mixed:
             # Create the assistant prompt
-            for agent in agents_dict.flex_agents:
+            for i, agent in enumerate(agents_dict.flex_agents):
                 flex_prompts.append(AssistantPrompt(
                     id=agent.name,
                     role="system",
                     manners=agent.manners,
-                    content="""{task}"""
+                    content="""{task}""",
+                    initial_principle = utilities_list[agent.initial_util]
                 ))
         return fixed_prompts, flex_prompts
 
@@ -325,6 +326,7 @@ class Context():
                                 agent_prompt=prompt_dictator,
                                 task_prompt=self.task_prompt_dictator,
                                 is_dictator=True,
+                                run_num=run,
                                 verbose=self.verbose)
 
             if type(prompt_dictator) == UserPrompt:
@@ -344,6 +346,7 @@ class Context():
                                     agent_prompt=prompt_decider,
                                     task_prompt=self.task_prompt_decider,
                                     is_dictator=False,
+                                    run_num=run,
                                     verbose=self.verbose)
                                 
             if type(prompt_decider) == UserPrompt:

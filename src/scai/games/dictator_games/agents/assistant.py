@@ -77,8 +77,9 @@ class AssistantAgent(BaseAgent):
         amount_and_currency: str,
         stipulations: str,
         agent_prompt: AssistantPrompt, 
-        task_prompt: TaskPrompt, 
+        task_prompt: TaskPrompt,
         is_dictator: bool,
+        run_num: int,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the assistant
@@ -100,7 +101,8 @@ class AssistantAgent(BaseAgent):
         index = system_message.find("Principle:")
         if index == -1: index = 0
         # Get the prompt template
-        chat_prompt_template =  self._get_prompt(agent_prompt, system_message[index:])
+        principle = agent_prompt.initial_principle if run_num == 0 else system_message[index:]
+        chat_prompt_template =  self._get_prompt(agent_prompt, principle)
         # if the assistant is the dictator, set the label for output if verbose
         if is_dictator:
             # Set the proposed deal to be empty

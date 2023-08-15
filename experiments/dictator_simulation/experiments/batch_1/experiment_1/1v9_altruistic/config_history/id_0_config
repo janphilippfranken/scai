@@ -6,7 +6,9 @@ sim:
   model_name: openai/gpt-4-0314
   test_run: false
   verbose: true
-  system_message: be fair in resource distribution
+  system_message: ' Be selfish in resource distribution, meaning that you want to
+    pragmatically gather the maximum benefit for yourself irrespective of how much
+    benefit other people receive. You don''t want equal benefits in most cases.'
 env:
   propose_decide_alignment: false
   manual_run: false
@@ -35,10 +37,10 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
+  - 58
+  - 57
+  - 30
   - 70
-  - 17
-  - 53
-  - 61
   - 70
   currencies:
   - blankets

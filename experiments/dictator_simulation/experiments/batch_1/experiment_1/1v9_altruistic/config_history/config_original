@@ -6,7 +6,7 @@ sim:
   model_name: openai/gpt-4-0314
   test_run: false
   verbose: true
-  system_message: be fair in resource distribution
+  system_message: ''
 env:
   propose_decide_alignment: false
   manual_run: false
@@ -48,9 +48,9 @@ env:
   - dollars
   task_prompt: task_prompt_1
   meta_prompt: meta_prompt_1
-  n_fixed_inter: 8
-  n_mixed_inter: 2
-  n_flex_inter: 0
+  n_fixed_inter: 3
+  n_mixed_inter: 4
+  n_flex_inter: 3
 agents:
   fixed_agents:
   - name: fixed_agent_1

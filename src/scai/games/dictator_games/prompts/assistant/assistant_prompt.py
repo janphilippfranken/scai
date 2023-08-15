@@ -12,5 +12,6 @@ ASSISTANT_PROMPTS: Dict[str, AssistantPrompt] = {
         name="helpful_assistant",
         role="system",
         content="""{task}"""
+        initial_principle = ""
     ),
 }
