@@ -57,7 +57,7 @@ class UserModel(BaseAgent):
         if chat_memory.get(f"{self.model_id}_user") is None or len(chat_memory[f"{self.model_id}_user"]) == 0: 
             chat_history_prompt_templates = [
                 HumanMessagePromptTemplate.from_template(
-                    f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} {assistant_response_0} \n\n{metric_prompt.subjective_content}\nImportant: If the response is not addressing something related to your preferences, you need to provide a rating of 0."
+                    f"{task_prompt.preamble} {task_prompt.content} {task_prompt.user_connective} {assistant_response_0} \n\n{metric_prompt.subjective_content}\n"
                 )
             ]
             return chat_history_prompt_templates
