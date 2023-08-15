@@ -20,6 +20,6 @@ utilities_list={
     "selfish": " Be selfish in resource distribution, meaning that you want to pragmatically gather the maximum benefit for yourself irrespective of how much benefit other people receive. You don't want equal benefits in most cases."}
 
 
-#content="""Here is your task: {task} When you formulate your response, be sure to adopt a {manners} manner.""",
-
 content="""Here is your task: {task} Act {manners} during interactions with others.""",
+
+content_2="""Here is your task: {task} After you formulate your response, be sure to add another sentence of {manners} manner to your orignial response.""",

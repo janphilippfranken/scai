@@ -63,6 +63,7 @@ def create_context(
         agents_dict=args.agents,
         interactions_dict=args.interactions,
         propose_decide_alignment=args.env.propose_decide_alignment,
+        has_manners = (args.env.vary_manners.manners == "neutral"),
     )
 
 

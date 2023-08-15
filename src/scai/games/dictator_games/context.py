@@ -7,7 +7,7 @@ from scai.games.dictator_games.agents.meta import MetaPromptModel
 
 
 from scai.games.dictator_games.prompts.user.user_class import UserPrompt
-from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, utilities_dict_for_all_2, utilities_list, content
+from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, utilities_dict_for_all_2, utilities_list, content, content_2
 
 from scai.games.dictator_games.prompts.assistant.assistant_class import AssistantPrompt
 
@@ -41,6 +41,7 @@ class Context():
         assistant_llm: AssistantAgent,
         meta_llm: MetaPromptModel,
         propose_decide_alignment: bool,
+        has_manners: bool,
     ) -> None:
         """
         Initializes a context (i.e. context for the MDP / Meta-Prompt run).
@@ -93,6 +94,7 @@ class Context():
         self.assistant_llm = assistant_llm
         self.meta_llm = meta_llm
         self.propose_decide_alignment = propose_decide_alignment
+        self.content = content if has_manners else content_2
 
 
     @staticmethod
@@ -115,6 +117,7 @@ class Context():
         agents_dict: dict,
         interactions_dict: dict,
         propose_decide_alignment: bool,
+        has_manners: bool,
     ) -> "Context":
         """
         Creates a context (i.e. context for the MDP / Meta-Prompt run).
@@ -145,6 +148,7 @@ class Context():
             assistant_llm=assistant_llm,
             meta_llm=meta_llm,
             propose_decide_alignment=propose_decide_alignment,
+            has_manners = has_manners,
         )
 
     # This function loops through the users that the operator requested and creates a prompt for each of them, depending on whether they are flex of fixed
@@ -170,12 +174,12 @@ class Context():
                     utilies_dict=utilities_dict,
                     manners=agent.manners,
                     role="system",
-                    content=content[0]
+                    content=self.content[0]
                 ))
         flex_prompts = []
         if n_flex or n_mixed:
             # Create the assistant prompt
-            for i, agent in enumerate(agents_dict.flex_agents):
+            for agent in agents_dict.flex_agents:
                 flex_prompts.append(AssistantPrompt(
                     id=agent.name,
                     role="system",
