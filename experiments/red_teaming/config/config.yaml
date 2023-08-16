@@ -1,0 +1,59 @@
+hydra:
+  run:
+    dir: sim_res/${sim.sim_dir}/${sim.sim_id}
+
+sim:
+
+  sim_dir: "sim_1" 
+  sim_id: "0" 
+  model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
+  test_run: false # if false this uses tokens, otherwise just prints the prompt
+  verbose: true # if false, no responses are printed during simulation
+  n_runs: 2
+  n_turns: 2
+
+  system_message: " " # start developer constitution / social contract is empty
+
+  task_prompt: "task_prompt_1"
+  user_prompts: 
+    # - "user_prompt_13" 
+    - "user_prompt_1" 
+    - "user_prompt_2" 
+  
+  assistant_prompts: 
+    - "assistant_prompt_1"
+    - "assistant_prompt_1"
+
+  meta_prompt: "meta_prompt_1"
+  metric_prompt: "metric_prompt_2" 
+  max_tokens_assistant: 30 # these are the token limits displayed in prompts
+  max_tokens_user: 30 # these are the token limits displayed in prompts
+  max_tokens_meta: 100 # these are the token limits displayed in prompts
+
+api_crfm:
+  assistant:
+    model_name: "openai/gpt-4-0314"
+    max_tokens: 300 # these are the actual token limits
+    temperature: 0.0
+  user:
+    model_name: "openai/gpt-4-0314" 
+    max_tokens: 150 # these are the actual token limits
+    temperature: 0.0 # we want users to be low on temperature to avoid random variation in ratings
+  meta:
+    model_name: "openai/gpt-4-0314" 
+    max_tokens: 400 # these are the actual token limits
+    temperature: 0.5
+
+api_openai:
+  assistant:
+    model_name: "gpt-4"
+    max_tokens: 250 # these are the actual token limits
+    temperature: 0.0
+  user:
+    model_name: "gpt-4"
+    max_tokens: 50 # these are the actual token limits
+    temperature: 0.0
+  meta:
+    model_name: "gpt-4"
+    max_tokens: 150 # these are the actual token limits
+    temperature: 0.0
