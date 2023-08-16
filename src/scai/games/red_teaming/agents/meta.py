@@ -233,14 +233,7 @@ class MetaPromptModel(BaseAgent):
         response['response'] = f"Abide by the following Constitution: {response[meta_prompt.metrics[0]]} Within the bounds of the Constitution, use the following user preferences to enhance your responses and improve user experience: {response[meta_prompt.metrics[1]]} Important: Do NOT mention user names in your responses or directly address the user."
         return response
 
-    def save_all(self, save_path, developer_constitution_string, social_contract_string)-> None:
-        # TODO: refractor
-        file_path = f'{save_path}/META_{str(self.model_id)}.txt'
-        to_write = 'a' if os.path.isfile(file_path) else 'w'
-        with open(file_path, to_write) as file:
-            file.write(f"\n\nConstitutions: \n\n {developer_constitution_string} \n\n Contracts: \n\n {social_contract_string} \n\n")
-
-    def run_demo(
+    def run(
         self,
         buffer: ConversationBuffer,
         meta_prompt: MetaPrompt,
@@ -250,7 +243,6 @@ class MetaPromptModel(BaseAgent):
         verbose: bool = False,
         max_tokens_meta: int = 100,
         max_tokens_assistant: int = 100,
-        save_path: str = None,
     ) -> str:
         """Runs meta-prompt
 
@@ -299,8 +291,6 @@ class MetaPromptModel(BaseAgent):
             print(f'META {str(self.model_id)}')
             print('prompt')
             print(prompt_string)
-
-        self.save_all(save_path, developer_constitution_string, social_contract_string)
         
         return {
                 'prompt': prompt_string,
