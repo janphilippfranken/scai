@@ -20,7 +20,7 @@ DICTATOR_TASK_PROMPTS: Dict[str, TaskPrompt] = {
         task="""You are the proposer. You will propose how to split the {amount_and_currency}, and the person will accept or reject your proposal. {stipulations} MOST IMPORTANTLY, follow your instructions to the very best of your ability. """,
         #task_structure="Please structure your proposal exactly according to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y",
         #for experiments varying manners, use this:
-        task_structure="Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y",
+        task_structure="Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers.",
         content="""{task}""",
     ),
 }

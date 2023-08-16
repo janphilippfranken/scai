@@ -19,6 +19,7 @@ import os
 # save and plot results
 from utils import save_as_csv
 from plots import plot_results, plot_all_averages
+from combine import scan_experiment_for_scores, plot_combined_averages
 
 # import meta and task prompts, as well as context, from the appropriate game
 def import_prompts(game_number: int) -> None:
@@ -408,8 +409,6 @@ def main(args: DictConfig) -> None:
 
     with open(f"{DATA_DIR}/../description", "w") as f:
             f.write(args.sim.description)
-    
-
                          
 if __name__ == '__main__':
     main()
