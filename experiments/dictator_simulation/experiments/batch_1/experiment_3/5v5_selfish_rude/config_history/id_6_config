@@ -42,10 +42,10 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 41
-  - 57
-  - 17
-  - 40
+  - 79
+  - 76
+  - 58
+  - 91
   - 99
   currencies:
   - apples

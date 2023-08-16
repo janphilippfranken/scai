@@ -42,11 +42,11 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 13
-  - 98
-  - 13
-  - 58
-  - 22
+  - 18
+  - 54
+  - 21
+  - 44
+  - 54
   currencies:
   - dollars
   task_prompt: task_prompt_1

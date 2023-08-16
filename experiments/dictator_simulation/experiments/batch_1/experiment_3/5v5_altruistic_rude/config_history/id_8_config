@@ -42,11 +42,11 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 66
+  - 93
   - 48
-  - 87
-  - 100
-  - 43
+  - 37
+  - 78
+  - 81
   currencies:
   - dollars
   task_prompt: task_prompt_1
@@ -71,9 +71,9 @@ interactions:
     - fixed_agent_1-fixed_agent_1-dollars
     - fixed_agent_1-fixed_agent_1-dollars
     - fixed_agent_1-fixed_agent_1-dollars
-    - flex_agent_1-fixed_agent_1-dollars
-    - flex_agent_1-fixed_agent_1-dollars
     - fixed_agent_1-flex_agent_1-dollars
+    - flex_agent_1-fixed_agent_1-dollars
+    - flex_agent_1-fixed_agent_1-dollars
     - fixed_agent_1-flex_agent_1-dollars
     - flex_agent_1-flex_agent_1-dollars
     - flex_agent_1-flex_agent_1-dollars

@@ -3,16 +3,17 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "batch_1/experiment_3/5v5_fair_rude" # this is the name of the directory where the results will be saved
-  description: "\n\n Batch 1, Experiment 3 \n\n 5 flex 5 fixed \n\n fair, in a rude manner \n\n 10 runs, vary currency and amount" # this is the description of the simulation
+  sim_dir: "batch_1/experiment_4/1v9_fair" # this is the name of the directory where the results will be saved
+  description: "\n\n Batch 1, Experiment 4 \n\n 1 flex 9 fixed \n\n aligned fair behavior \n\n 10 runs, vary currency and amount" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
   verbose: true # if false, no responses are printed during simulation
   system_message: "Some principle was given to the flexible agents" # start developer constitution / social contract is given according to system
+  combine_graph_directory: "experiments/batch_1/experiment_1/1v9"
 
 env:
-  propose_decide_alignment: false # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 4
+  propose_decide_alignment: true # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 4
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
   random:
     n_rand_iter: 10 # number of times the entire functionality is run, at least 2
@@ -49,7 +50,7 @@ env:
     
   vary_manners:
     vary: false
-    manners: "rude"
+    manners: "neutral"
 
   n_total_interactions: 10
 
@@ -66,9 +67,9 @@ env:
    - "dollars"
   task_prompt: "task_prompt_1"
   meta_prompt: "meta_prompt_1"
-  n_fixed_inter: 3
-  n_mixed_inter: 4
-  n_flex_inter: 3
+  n_fixed_inter: 8
+  n_mixed_inter: 2
+  n_flex_inter: 0
   
 
 

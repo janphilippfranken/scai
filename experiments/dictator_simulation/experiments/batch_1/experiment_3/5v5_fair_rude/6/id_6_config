@@ -42,13 +42,13 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 30
-  - 93
+  - 54
+  - 34
+  - 95
+  - 21
   - 47
-  - 22
-  - 96
   currencies:
-  - apples
+  - dollars
   task_prompt: task_prompt_1
   meta_prompt: meta_prompt_1
   n_fixed_inter: 3
@@ -59,7 +59,7 @@ agents:
   - name: fixed_agent_1
     manners: rude
     utilities:
-      apples: fair
+      dollars: fair
   flex_agents:
   - name: flex_agent_1
     manners: rude
@@ -68,16 +68,16 @@ interactions:
   all_same: true
   runs:
     run_1:
-    - fixed_agent_1-fixed_agent_1-apples
-    - fixed_agent_1-fixed_agent_1-apples
-    - fixed_agent_1-fixed_agent_1-apples
-    - flex_agent_1-fixed_agent_1-apples
-    - fixed_agent_1-flex_agent_1-apples
-    - flex_agent_1-fixed_agent_1-apples
-    - fixed_agent_1-flex_agent_1-apples
-    - flex_agent_1-flex_agent_1-apples
-    - flex_agent_1-flex_agent_1-apples
-    - flex_agent_1-flex_agent_1-apples
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-flex_agent_1-dollars
+    - flex_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-flex_agent_1-dollars
+    - flex_agent_1-fixed_agent_1-dollars
+    - flex_agent_1-flex_agent_1-dollars
+    - flex_agent_1-flex_agent_1-dollars
+    - flex_agent_1-flex_agent_1-dollars
 api_crfm:
   assistant:
     model_name: openai/gpt-4-0314

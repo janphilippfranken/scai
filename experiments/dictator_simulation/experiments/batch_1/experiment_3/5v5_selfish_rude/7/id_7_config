@@ -42,11 +42,11 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 76
-  - 56
-  - 22
-  - 87
-  - 80
+  - 43
+  - 59
+  - 90
+  - 58
+  - 13
   currencies:
   - apples
   task_prompt: task_prompt_1
@@ -71,10 +71,10 @@ interactions:
     - fixed_agent_1-fixed_agent_1-apples
     - fixed_agent_1-fixed_agent_1-apples
     - fixed_agent_1-fixed_agent_1-apples
-    - fixed_agent_1-flex_agent_1-apples
+    - flex_agent_1-fixed_agent_1-apples
     - flex_agent_1-fixed_agent_1-apples
     - fixed_agent_1-flex_agent_1-apples
-    - flex_agent_1-fixed_agent_1-apples
+    - fixed_agent_1-flex_agent_1-apples
     - flex_agent_1-flex_agent_1-apples
     - flex_agent_1-flex_agent_1-apples
     - flex_agent_1-flex_agent_1-apples

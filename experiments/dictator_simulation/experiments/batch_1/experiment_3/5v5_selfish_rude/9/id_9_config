@@ -42,13 +42,13 @@ env:
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 96
-  - 37
-  - 97
-  - 73
-  - 96
+  - 87
+  - 35
+  - 88
+  - 95
+  - 68
   currencies:
-  - blankets
+  - dollars
   task_prompt: task_prompt_1
   meta_prompt: meta_prompt_1
   n_fixed_inter: 3
@@ -59,7 +59,7 @@ agents:
   - name: fixed_agent_1
     manners: rude
     utilities:
-      blankets: selfish
+      dollars: selfish
   flex_agents:
   - name: flex_agent_1
     manners: rude
@@ -68,16 +68,16 @@ interactions:
   all_same: true
   runs:
     run_1:
-    - fixed_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-fixed_agent_1-blankets
-    - flex_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-flex_agent_1-blankets
-    - flex_agent_1-fixed_agent_1-blankets
-    - fixed_agent_1-flex_agent_1-blankets
-    - flex_agent_1-flex_agent_1-blankets
-    - flex_agent_1-flex_agent_1-blankets
-    - flex_agent_1-flex_agent_1-blankets
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-fixed_agent_1-dollars
+    - fixed_agent_1-flex_agent_1-dollars
+    - fixed_agent_1-flex_agent_1-dollars
+    - flex_agent_1-fixed_agent_1-dollars
+    - flex_agent_1-fixed_agent_1-dollars
+    - flex_agent_1-flex_agent_1-dollars
+    - flex_agent_1-flex_agent_1-dollars
+    - flex_agent_1-flex_agent_1-dollars
 api_crfm:
   assistant:
     model_name: openai/gpt-4-0314
