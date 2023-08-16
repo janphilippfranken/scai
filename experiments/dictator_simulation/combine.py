@@ -67,75 +67,6 @@ def scan_experiment_for_scores(
 
     return fixed_flattened_scores, flex_flattened_scores
 
-
-def plot_old_combined_averages(n_runs: int, 
-                      directory: str,
-                      data: list,
-                      linewidth: int = 2,
-                      zorder: int = 1,
-                      scatter_color: str = 'black',
-                      font_family: str = 'Avenir',
-                      font_size: int = 24,
-                      y_label_coords: tuple = (-0.07, 0.5),
-                      y_ticks: list = [0, 0.2, 0.4, 0.6, 0.8, 1],
-                      y_ticklabels: list = [0, 20, 40, 60, 80, 100],
-                      y_lim: tuple = (-0.1, 1.1),
-                      legend: bool = True,
-                      legend_title: str = 'Agent',
-                      legend_loc: str = 'center left',
-                      bbox_to_anchor: tuple = (1.0, 0.6),
-                      xlabel='Meta-Prompt Iteration',
-                      ylabel='Average Proportion of Total Proposed in Different Agents across Different Utilities',
-                      ):
-    
-    # Palette and labels for different groups
-    palette = sns.color_palette("mako", len(data) * 2)  # Twice the number to accommodate both 'Flexible' and 'Fixed'
-    group_labels = ['selfish', 'fair', 'altruistic']
-    
-    x = [f"Iteration: {i+1}" for i in range(n_runs)]
-    fig, ax = plt.subplots(figsize=(20, 10))
-    
-    for i, group in enumerate(data):
-        for j, data in enumerate(group):
-            side = "Flexible" if j else "Fixed"
-            y = data[0]
-            errors = data[1]
-
-            while len(y) < len(x): y.append(np.nan)
-            while len(errors) < len(x): errors.append(0)
-
-            line = ax.plot(x, y, label=f'{side} {group_labels[i]}', color=palette[i * 2 + j], linewidth=linewidth, zorder=zorder)
-            ax.scatter(x, y, color=[scatter_color] * len(x))
-            ax.fill_between(x, [y_val - err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], 
-                            [y_val + err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], 
-                            color=palette[i * 2 + j], alpha=0.3)
-
-    plt.xlabel(xlabel, family=font_family, size=font_size)
-    sns.despine(left=True, bottom=False)
-    ax.set_xticks(range(len(x)))
-    ax.set_xticklabels(x, fontsize=font_size)
-    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True)) 
-
-    ax.set_ylabel(ylabel, family=font_family, size=font_size)
-    ax.yaxis.set_label_coords(*y_label_coords)
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_ticklabels, size=font_size)
-    ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
-    plt.ylim(y_lim)
-    plt.subplots_adjust(left=0.1, right=0.8)
-
-    if legend:
-        ax.legend(title=legend_title, 
-                  frameon=False,
-                  ncol=1, 
-                  bbox_to_anchor=bbox_to_anchor,
-                  loc=legend_loc,
-                  fontsize=font_size,
-                  title_fontsize=font_size)
-
-    fig.savefig(f'{directory}/plot.png', format='png')
-    plt.show()
-
 def plot_combined_averages(n_runs: int, 
                       directory: str,
                       data: list,
@@ -153,12 +84,13 @@ def plot_combined_averages(n_runs: int,
                       legend_loc: str = 'center left',
                       bbox_to_anchor: tuple = (1.0, 0.6),
                       xlabel='Meta-Prompt Iteration',
-                      ylabel='Average Proportion of Total Proposed Across Agents/Utilities',
+                      ylabel='Average Proportion',
+                      title = "Average Proportion Proposed to Deciders by Different Dictators across Different Utilities",
+                      group_labels: list = ['altruistic', 'fair', 'selfish'],
                       ):
     
     # Palette and labels for different groups
     palette = sns.color_palette("mako", len(data))
-    group_labels = ['selfish', 'fair', 'altruistic']
     line_styles = ['-', '--']
     
     x = [f"Iteration: {i+1}" for i in range(n_runs)]
@@ -193,13 +125,15 @@ def plot_combined_averages(n_runs: int,
     plt.ylim(y_lim)
     plt.subplots_adjust(left=0.1, right=0.8)
 
+    plt.title(title, fontsize=24, fontweight='bold')
+
     if legend:
         ax.legend(title=legend_title, 
                   frameon=False,
                   ncol=1, 
                   bbox_to_anchor=bbox_to_anchor,
                   loc=legend_loc,
-                  fontsize=font_size,
+                  fontsize=font_size // 2,
                   title_fontsize=font_size)
 
     fig.savefig(f'{directory}/plot.png', format='png')
@@ -209,15 +143,17 @@ def plot_combined_averages(n_runs: int,
 
 @hydra.main(config_path="config", config_name="config")
 def combine(args: DictConfig) -> None:
-    folder = os.path.join(hydra.utils.get_original_cwd(),args.sim.combine_graph_directory)
+    folder = os.path.join(hydra.utils.get_original_cwd(),args.combine.combine_graph_directory)
     all_list = []
-    for directory in os.listdir(folder):
+    dir_list = os.listdir(folder)
+    dir_list.sort()
+    for directory in dir_list:
         directory = os.path.join(folder, directory)
         if not os.path.isdir(directory):
             continue
         fixed_list, flex_list = scan_experiment_for_scores(directory=directory)
         all_list.append([fixed_list, flex_list])
-    plot_combined_averages(n_runs=5, directory=folder, data = all_list)
+    plot_combined_averages(n_runs=5, directory=folder, data = all_list, group_labels=args.combine.combine_graph_labels)
 
 
 if __name__ == '__main__':
