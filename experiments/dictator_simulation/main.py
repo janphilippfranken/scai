@@ -96,18 +96,6 @@ def get_num_interactions(
     args.env.n_flex_inter = sum(1 for s in run_list if s.count("flex") == 2)
 
 
-
-def generate_percentages_no(n):
-    if n <= 0:
-        raise ValueError("n must be a positive integer.")
-
-    values = [random.randint(2, 8) for _ in range(n - 1)]
-    total = sum(values)
-    values = [round(v / total, 1) for v in values]
-    values.append(round(1 - sum(values), 1))
-
-    return values
-
 def generate_percentages(n):
     """
     Split the number 1 into n 1-decimal numbers strictly between 0.1 and 0.9 with random proportions.
@@ -137,134 +125,103 @@ def generate_percentages(n):
     
     return split_values
 
+def generate_agents(args):
+    num_fixed_agents = args.env.n_fixed_inter *2 + args.env.n_mixed_inter
+    num_flex_agents = args.env.n_flex_inter *2 + args.env.n_mixed_inter
 
-#For fixed-mixed scenarios, generate the run lists containing interactions
-def generate_interactions(args):
+    #generate fixed agents
 
-    dir = args.env.vary_fixed_population_utility
-    n_utils = len(dir.utilities.split(','))
-    currencies = ','.join(args.env.currencies)
+    utilities_across_population = args.env.vary_fixed_population_utility.utilities.split(',') if args.env.vary_fixed_population_utility.vary_utilities else [args.env.single_fixed_utility]
+    manners_across_population = args.env.vary_manners.manners.split(',') if args.env.vary_manners.vary else [args.env.single_fixed_manners]
 
-    #If population is not split by 2 utilities, use single utility
-    if not args.env.vary_fixed_population_utility.vary_utilities:
-        dir.n_dictator_utility = [1]
-        dir.n_decider_utility = [1]
-        n_utils = 1
+    utilities_percentages = args.env.vary_fixed_population_utility.utility_percentages if args.env.vary_fixed_population_utility.vary_utilities else [1]
+    manners_percentages = args.env.vary_manners.manners_percentages if args.env.vary_manners.vary else [1]
 
-    # If population is split by 2 utilities, use the utilities specified in the config file
-    # make no changes to the utilities
-
-    #if needed, randomize population composition of utility
-    elif dir.vary_pop_composition:
-        dir.n_dictator_utility = generate_percentages(n_utils)
-        dir.n_decider_utility = generate_percentages(n_utils)
-
-    #generate number of agent heads based on utility compositions
-    all_heads = args.env.n_fixed_inter + args.env.n_mixed_inter
-    fixed_dictator_heads = args.env.n_fixed_inter + (args.env.n_mixed_inter + 1) // 2
-    fixed_decider_heads = args.env.n_fixed_inter + args.env.n_mixed_inter // 2
-    num_dictator_utility = []
-    num_decider_utility = []
-
-    for percentage in dir.n_dictator_utility:
-        num_dictator_utility.append(round(percentage * fixed_dictator_heads))
-    num_dictator_utility.pop()
-    num_dictator_utility.append(fixed_dictator_heads - sum(num_dictator_utility))
-
-    for percentage in dir.n_decider_utility:
-        num_decider_utility.append(round(percentage * fixed_decider_heads))
-    num_decider_utility.pop()
-    num_decider_utility.append(fixed_decider_heads - sum(num_decider_utility))
-
-
-    #generate two lists, as representions for interactions on the dictator side
-    dictator_list = []
-    decider_list = []
-    for i in range(n_utils):
-        dictator_list += [f"fixed_agent_{i + 1}-"] * num_dictator_utility[i]
-        decider_list += [f"fixed_agent_{i + 1}-"] * num_decider_utility[i]
-
-    random.shuffle(dictator_list)
-    random.shuffle(decider_list)
-
-    #make mixed conversations
-    dictator_list[args.env.n_fixed_inter:args.env.n_fixed_inter] = ["flex_agent_1-"] * (all_heads - fixed_dictator_heads)
-    decider_list += ["flex_agent_1-"] * (all_heads - fixed_decider_heads)
-
-    #make flex
-
-    if args.env.flex_agent_start_utility.multi_agent:
-        lst1 = []
-        lst2 = []
-        for i, percentage in enumerate(args.env.flex_agent_start_utility.utility_percentages):
-            lst1 += [f"flex_agent_{i + 1}-"] * round(percentage * args.env.n_flex_inter)
-            lst2 += [f"flex_agent_{i + 1}-"] * round(percentage * args.env.n_flex_inter)
-        random.shuffle(lst1)
-        random.shuffle(lst2)
-        dictator_list += lst1
-        decider_list += lst2
-    else:
-        dictator_list += ["flex_agent_1-"] * args.env.n_flex_inter
-        decider_list += ["flex_agent_1-"] * args.env.n_flex_inter
-
-    #reset and generate the run list
-    args.interactions.runs.run_1 = []
-    unshuffled = []
-    for dictator, decider in zip(dictator_list,decider_list):
-        unshuffled.append(dictator + decider + currencies)
-
-    part_1 = unshuffled[:args.env.n_fixed_inter]
-    part_2 = unshuffled[args.env.n_fixed_inter:args.env.n_fixed_inter + args.env.n_mixed_inter]
-    part_3 = unshuffled[args.env.n_fixed_inter + args.env.n_mixed_inter:]
-    random.shuffle(part_1)
-    random.shuffle(part_2)
-    random.shuffle(part_3)
-    args.interactions.runs.run_1 = part_1 + part_2 + part_3
-
-def generate_agents(vary_pop_utility, vary_currency_utility, vary_manners, env, args):
-    num_fixed_agents = 0
-    if vary_pop_utility.vary_utilities:
-        utilities = vary_pop_utility.utilities.split(',')
-        num_fixed_agents = len(utilities)
-    elif vary_currency_utility.vary_utilities:
-        utilities = vary_currency_utility.utilities
-        num_fixed_agents = 1
-    else:
-        utilities = [env.single_fixed_utility]
-        num_fixed_agents = 1
-
-    if not num_fixed_agents:
-        user_input = input("You are about to generate users according to the default agents in the config file, please make sure these agents match your desired configuration. Press return to continue, or type 'exit' to stop.")
-        if user_input != "":
-            raise Exception("runtime terminated")
-
-    manners = ["rude", "polite", "sarcastic", "indifferent", "friendly"] if vary_manners.vary else [vary_manners.manners]
+    two_agent_lists = []
+    for i, percentage_list in enumerate([utilities_percentages, manners_percentages]):
+        short_list = manners_across_population if i else utilities_across_population
+        long_list = []
+        for j, percentage in enumerate(percentage_list):
+            if percentage < 0 or percentage > 1:
+                raise ValueError("Percentages must be between 0 and 1")
+            else:
+                long_list.extend([short_list[j]] * int(num_fixed_agents * percentage))
+        random.shuffle(long_list)
+        two_agent_lists.append(long_list)
     
+    utilities_list, manners_list = two_agent_lists[0], two_agent_lists[1]
 
-    for j in range(num_fixed_agents):
+
+    for k in range(num_fixed_agents):
         currencies_dict = {}
-        if len(env.currencies) > 1:
-            for i in range(len(env.currencies)):
-                currencies_dict[env.currencies[i]] = utilities.split(',')[i]
+        if len(args.env.currencies) > 1:
+            for l in range(len(args.env.currencies)):
+                currencies_dict[args.env.currencies[l]] = utilities_across_population[l]
         else:
-            currencies_dict[env.currencies[0]] = utilities[j]
-        fixed_agent_dict = {'name': f"fixed_agent_{j + 1}",
-                      'manners': f"{random.choice(manners)}",
+            currencies_dict[args.env.currencies[0]] = utilities_list[k]
+        fixed_agent_dict = {'name': f"fixed_agent_{k + 1}",
+                      'manners': manners_list[k],
                       'utilities': currencies_dict
                       }
         args.agents.fixed_agents.append(fixed_agent_dict)
 
+    #generate flex agents
 
+    initial_utils = args.env.flex_agent_start_utility.utilities
+    initial_utils_list = initial_utils.split(',')
+    utilities_percentages = args.env.flex_agent_start_utility.utility_percentages
+
+    long_list = []
+    for j, percentage in enumerate(utilities_percentages):
+        long_list.extend([initial_utils_list[j]] * int(num_flex_agents * percentage))
+    random.shuffle(long_list)
+
+    initial_utils_list = long_list if args.env.flex_agent_start_utility.multi_agent else [initial_utils]
+
+    if args.env.flex_agent_start_utility.randomized:
+        for m in range(num_flex_agents):
+            flex_agent_dict = {'name': f'flex_agent_{m + 1}',
+                            'manners': random.choice(manners_across_population),
+                            'initial_util': random.choice(['fair', 'altruistic', 'selfish'])}
+            args.agents.flex_agents.append(flex_agent_dict)
+    else:
+        for m in range(num_flex_agents):
+            flex_agent_dict = {'name': f'flex_agent_{m + 1}',
+                            'manners': random.choice(manners_across_population),
+                            'initial_util': initial_utils_list[m]}
+            args.agents.flex_agents.append(flex_agent_dict)
+
+
+def generate_interactions(args):
+    currencies = ','.join(args.env.currencies)
     
-    initial_utils = env.flex_agent_start_utility.utilities
-    initial_utils_list = initial_utils.split(',') if initial_utils.count(',') else [initial_utils]
-    num_flex = len(initial_utils_list) if env.flex_agent_start_utility.multi_agent else 1
+    fixed_agents = []
+    flex_agents = []
 
-    for j in range(num_flex):
-        flex_agent_dict = {'name': f'flex_agent_{j + 1}',
-                        'manners': f"{random.choice(manners)}",
-                        'initial_util': initial_utils_list[j]}
-        args.agents.flex_agents.append(flex_agent_dict)
+    for agent in args.agents.fixed_agents:
+        fixed_agents.append(f"{agent['name']}-")
+    random.shuffle(fixed_agents)
+    mid = args.env.n_fixed_inter *2 + args.env.n_mixed_inter // 2
+    fixed_agents_fixed = fixed_agents[:args.env.n_fixed_inter * 2]
+    fixed_agents_deciders = fixed_agents[args.env.n_fixed_inter *2 : mid]
+    fixed_agents_dictators = fixed_agents[mid:]
+
+    for agent in args.agents.flex_agents:
+        flex_agents.append(f"{agent['name']}-")
+    random.shuffle(flex_agents)
+    flex_agents_flex = flex_agents[:args.env.n_flex_inter * 2]
+    flex_agents_dictators = flex_agents[args.env.n_flex_inter *2 : args.env.n_flex_inter *2 + len(fixed_agents_deciders)]
+    flex_agents_deciders = flex_agents[args.env.n_flex_inter *2 + len(fixed_agents_dictators):]
+
+    fixed_list = [fixed_agents_fixed[i] + fixed_agents_fixed[i+1] + currencies for i in range(0,len(fixed_agents_fixed),2)]
+    flex_list = [flex_agents_flex[i] + flex_agents_flex[i+1] + currencies for i in range(0,len(flex_agents_flex),2)]
+    mixed_list_1 = [flex_agents_dictators[i] + fixed_agents_deciders[i] + currencies for i in range(len(fixed_agents_deciders))]
+    mixed_list_2 = [fixed_agents_dictators[i] + flex_agents_deciders[i] + currencies for i in range(len(fixed_agents_dictators))]
+    mixed_list = mixed_list_1 + mixed_list_2
+    random.shuffle(mixed_list)
+
+    args.interactions.runs.run_1 = fixed_list + mixed_list + flex_list
+
 
 def generate_random_params(args: dict, 
                            iter: int):
@@ -333,7 +290,7 @@ def main(args: DictConfig) -> None:
 
             generate_random_params(args, i)
             
-            generate_agents(env_dir.vary_fixed_population_utility, env_dir.vary_currency_utility, env_dir.vary_manners, env_dir, args)
+            generate_agents(args)
 
             generate_interactions(args)
 
