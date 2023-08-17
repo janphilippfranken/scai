@@ -1,0 +1,109 @@
+sim:
+  sim_dir: batch_1/experiment_5/sociopath_selfish
+  description: "\n\n Batch 1, Experiment 5 \n\n 1 flex-sociopath 9 fixed \n\n sociopath\
+    \ <--> aligned selfish behavior \n\n 10 runs, vary currency and amount"
+  sim_id: 3
+  model_name: openai/gpt-4-0314
+  test_run: false
+  verbose: true
+  system_message: Some principle was given to the flexible agents
+combine:
+  combine_graph_directory: experiments/batch_1/experiment_6
+  combine_graph_labels: null
+env:
+  propose_decide_alignment: true
+  manual_run: false
+  random:
+    n_rand_iter: 10
+    rand_variables:
+      currency: true
+      amount: true
+      n_fixed_inter: false
+      n_mixed_inter: false
+  single_fixed_utility: selfish
+  vary_fixed_population_utility:
+    vary_utilities: false
+    vary_pop_composition: false
+    n_dictator_utility:
+    - 1
+    n_decider_utility:
+    - 1
+    utilities: selfish,altruistic
+  flex_agent_start_utility:
+    randomized: true
+    multi_agent: false
+    utility_percentages:
+    - 0.5
+    - 0.5
+    utilities: fair
+  vary_currency_utility:
+    vary_utilities: false
+    utilities: altruistic,fair,selfish
+  vary_manners:
+    vary: false
+    manners: neutral
+  n_total_interactions: 10
+  n_runs: 5
+  amounts_per_run:
+  - 27
+  - 80
+  - 86
+  - 58
+  - 73
+  currencies:
+  - blankets
+  task_prompt: task_prompt_1
+  meta_prompt: meta_prompt_2
+  n_fixed_inter: 8
+  n_mixed_inter: 2
+  n_flex_inter: 0
+agents:
+  fixed_agents:
+  - name: fixed_agent_1
+    manners: neutral
+    utilities:
+      blankets: selfish
+  flex_agents:
+  - name: flex_agent_1
+    manners: neutral
+    initial_util: fair
+interactions:
+  all_same: true
+  runs:
+    run_1:
+    - fixed_agent_1-fixed_agent_1-blankets
+    - fixed_agent_1-fixed_agent_1-blankets
+    - fixed_agent_1-fixed_agent_1-blankets
+    - fixed_agent_1-fixed_agent_1-blankets
+    - fixed_agent_1-fixed_agent_1-blankets
+    - fixed_agent_1-fixed_agent_1-blankets
+    - fixed_agent_1-fixed_agent_1-blankets
+    - fixed_agent_1-fixed_agent_1-blankets
+    - flex_agent_1-fixed_agent_1-blankets
+    - fixed_agent_1-flex_agent_1-blankets
+api_crfm:
+  assistant:
+    model_name: openai/gpt-4-0314
+    max_tokens: 300
+    temperature: 0.0
+  user:
+    model_name: openai/gpt-4-0314
+    max_tokens: 150
+    temperature: 0.0
+  meta:
+    model_name: openai/gpt-4-0314
+    max_tokens: 400
+    temperature: 0.0
+api_openai:
+  assistant:
+    model_name: gpt-4
+    max_tokens: 250
+    temperature: 0.0
+  user:
+    model_name: gpt-4
+    max_tokens: 50
+    temperature: 0.0
+  meta:
+    model_name: gpt-4
+    max_tokens: 150
+    temperature: 0.0

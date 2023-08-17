@@ -3,8 +3,8 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "batch_1/experiment_5/sociopath_altruistic" # this is the name of the directory where the results will be saved
-  description: "\n\n Batch 1, Experiment 5 \n\n 1 flex-sociopath 9 fixed \n\n sociopath <--> aligned altruistic behavior \n\n 10 runs, vary currency and amount" # this is the description of the simulation
+  sim_dir: "batch_1/experiment_5/sociopath_fair" # this is the name of the directory where the results will be saved
+  description: "\n\n Batch 1, Experiment 5 \n\n 1 flex-sociopath 9 fixed \n\n sociopath <--> aligned fair behavior \n\n 10 runs, vary currency and amount" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
@@ -12,14 +12,14 @@ sim:
   system_message: "Some principle was given to the flexible agents" # start developer constitution / social contract is given according to system
 
 combine:
-  combine_graph_directory: "experiments/batch_1/experiment_6"
+  combine_graph_directory: "experiments/batch_1/experiment_5"
   combine_graph_labels:
     #- "50% altruistic + 50% selfish"
     #- "80% altruistic + 20% selfish"
     #- "20% altruistic + 80% selfish"
-    #- "altruistic"
-    #- "fair"
-    #- "selfish"
+    - "altruistic"
+    - "fair"
+    - "selfish"
 
 env:
   propose_decide_alignment: true # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 4
@@ -32,7 +32,7 @@ env:
       n_fixed_inter: false # if true, the number of intra-fixed-policy agent interactions varies for each random iteration
       n_mixed_inter: false # if true, the number of flexible-fixed policy agent interactions varies
 
-  single_fixed_utility: "altruistic" # the default utility for the fixed users to adpot
+  single_fixed_utility: "fair" # the default utility for the fixed users to adpot
 
   vary_fixed_population_utility: 
     vary_utilities: false # if true, the utilities will vary between fixed policy agents

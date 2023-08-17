@@ -1,5 +1,5 @@
 sim:
-  sim_dir: batch_1/experiment5/sociopath_altruistic
+  sim_dir: batch_1/experiment_5/sociopath_altruistic
   description: "\n\n Batch 1, Experiment 5 \n\n 1 flex-sociopath 9 fixed \n\n sociopath\
     \ <--> aligned altruistic behavior \n\n 10 runs, vary currency and amount"
   sim_id: '0'
@@ -8,8 +8,11 @@ sim:
   verbose: true
   system_message: Some principle was given to the flexible agents
 combine:
-  combine_graph_directory: experiments/batch_1/experiment_6
-  combine_graph_labels: null
+  combine_graph_directory: experiments/batch_1/experiment_3/1v9_rude
+  combine_graph_labels:
+  - altruistic
+  - fair
+  - selfish
 env:
   propose_decide_alignment: true
   manual_run: false
