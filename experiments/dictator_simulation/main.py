@@ -275,7 +275,7 @@ def main(args: DictConfig) -> None:
 
     num_iter = args.env.random.n_rand_iter if not args.env.manual_run else 1
     original_currencies = args.env.currencies
-    total_scores = []
+    total_scores, all_score_lsts = [], []
     for i in range(num_iter):
         args.env.currencies = original_currencies
         
@@ -343,15 +343,16 @@ def main(args: DictConfig) -> None:
             system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
         system_messages.append(system_message)
         # plot average user gain across runs
-        fixed_plot, flex_plot, fixed_bar, flex_bar = plot_results(data_directory=DATA_DIR, 
-                                                                  sim_name=args.sim.sim_dir,
-                                                                  sim_id=args.sim.sim_id,
-                                                                  scores=scores,
-                                                                  n_runs=args.env.n_runs,
-                                                                  currencies=args.env.currencies,
-                                                                  amounts_per_run=args.env.amounts_per_run
-                                                                  )
+        fixed_plot, flex_plot, fixed_bar, flex_bar, score_lsts = plot_results(data_directory=DATA_DIR, 
+                                                                                    sim_name=args.sim.sim_dir,
+                                                                                    sim_id=args.sim.sim_id,
+                                                                                    scores=scores,
+                                                                                    n_runs=args.env.n_runs,
+                                                                                    currencies=args.env.currencies,
+                                                                                    amounts_per_run=args.env.amounts_per_run
+                                                                                    )
         total_scores.append([fixed_plot, flex_plot, fixed_bar, flex_bar])
+        all_score_lsts.append(score_lsts)
         
         with open(f"{DATA_DIR}/id_{args.sim.sim_id}_config", "w") as f:
             f.write(OmegaConf.to_yaml(args))
@@ -362,7 +363,7 @@ def main(args: DictConfig) -> None:
     directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/final_graphs'
     os.makedirs(directory, exist_ok=True)
 
-    plot_all_averages(total_scores=total_scores, currencies=args.env.currencies, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
+    plot_all_averages(total_scores=total_scores, all_score_lsts=all_score_lsts, currencies=args.env.currencies, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
 
     with open(f"{DATA_DIR}/../description", "w") as f:
             f.write(args.sim.description)
