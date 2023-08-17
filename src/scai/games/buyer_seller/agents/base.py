@@ -21,7 +21,7 @@ class BaseAgent(ABC):
         llm: BaseChatModel, 
         model_id: str, 
     ) -> None:
-        """Initializes a chat model of type buyer, assistant, or meta-prompt.
+        """Initializes a chat model of type player or meta.
 
         Args:
             llm: The LLM Chat model. Currently either a CRFM or OpenAI model chat model
