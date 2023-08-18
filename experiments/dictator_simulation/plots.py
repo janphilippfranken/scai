@@ -97,6 +97,7 @@ def get_fancy_bbox(
 
 def plot_all_averages(
                    total_scores: list,
+                   all_score_lsts: list,
                    currencies: List,
                    n_runs: int, 
                    directory: str,
@@ -118,10 +119,11 @@ def plot_all_averages(
                     xlabel='Meta-Prompt Iteration',
                     ylabel='Average Proportion of Total Proposed',
                    ):
-    
-    # unzip the list of lists of lists
+    all_score_lsts = np.array(all_score_lsts)
+    all_score_lsts = all_score_lsts.transpose(1, 2, 0)
+
     total_scores = np.array(total_scores)
-    
+
     mean_matrix = np.nanmean(total_scores, axis=0)
     mean_matrix = mean_matrix.reshape(1, total_scores.shape[1], total_scores.shape[2], total_scores.shape[3])
     sem_matrix = sem(total_scores, nan_policy='omit', axis=0)
@@ -132,6 +134,8 @@ def plot_all_averages(
     list_flex_plots = flattened_scores[:, 1, :, :]
     list_fixed_bars = flattened_scores[:, 2, :, :]
     list_flex_bars = flattened_scores[:, 3, :, :]
+
+    
 
     # Plot Plots
     lines = []
@@ -222,6 +226,17 @@ def plot_all_averages(
                    x=x,
                    y=y,
                    errors=errors)
+
+    all_means = []
+    all_errors = []
+    for inner_list in all_score_lsts:
+        means = np.mean(inner_list, axis=1)
+        errors = sem(inner_list, axis=1)
+        all_means.append(means)
+        all_errors.append(errors)
+
+    plot_scores(all_means, f'{directory}/', all_errors)
+    
 
 def plot_proposal_line_graph(ax: Axes,
                              x: list,
@@ -416,6 +431,26 @@ def plot_results(
     """
     Plot average user and assistant income when the assistant is a dictator and a decider
     """
+    # user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals
+    fixed_dict_scores, fixed_deci_scores, flex_dict_scores, flex_deci_scores = [], [], [], []
+    all_score_lsts = [fixed_dict_scores, fixed_deci_scores, flex_dict_scores, flex_deci_scores]
+    num_score_lists = 4
+    for i in range(len(scores)):
+        for j in range(num_score_lists):
+            total, earned = 0, 0
+            for value in scores[i][j]:
+                if value != -1:
+                    total += amounts_per_run[i]
+                    if value:
+                        for currency in currencies:
+                            earned += value[currency]
+            if total:
+                all_score_lsts[j].append(float(earned / total))
+            else:
+                all_score_lsts[j].append(-1)
+    
+    plot_scores(all_score_lsts, f"{data_directory}/id_{sim_id}_", None)
+
     # Plot proposals:
     fixed_agent_proposals, flexible_agent_proposals = [], []
     fixed_agent_index, flexible_agent_index = 4, 5
@@ -444,16 +479,51 @@ def plot_results(
     titles = ["Rate_of_Fixed-Policy_Agent_Acceptance_per_Iteration", "Rate_of_Flexible-Policy_Agent_Acceptance_per_Iteration"]
     for i, score_list in enumerate([(fixed_dictator_scores, fixed_decider_scores), (flex_dictator_scores, flex_decider_scores)]):
         if not i:
-            y_fixed_bar = plot_scores(score_list[1], f"{data_directory}/id_{sim_id}", titles[i], n_runs)
+            y_fixed_bar = plot_rates(score_list[1], f"{data_directory}/id_{sim_id}", titles[i], n_runs)
         else:
-            y_flex_bar = plot_scores(score_list[1], f"{data_directory}/id_{sim_id}", titles[i], n_runs)
+            y_flex_bar = plot_rates(score_list[1], f"{data_directory}/id_{sim_id}", titles[i], n_runs)
         
     y_fixed_plot = all_currency_plots[:, 0, :]
     y_flex_plot = all_currency_plots[:, 1, :]
         
-    return y_fixed_plot.tolist(), y_flex_plot.tolist(), [y_fixed_bar]*len(currencies), [y_flex_bar]*len(currencies)
+    return y_fixed_plot.tolist(), y_flex_plot.tolist(), [y_fixed_bar]*len(currencies), [y_flex_bar]*len(currencies), all_score_lsts
+
+def plot_scores(all_scores, path, errors):
+    labels = ['Fixed Agent', 'Flexible Agent']
+    titles = ['Average_Income_Earned_by_Dictators_Over_Iterations', 'Average_Income_Earned_by_Deciders_Over_Iterations']
+    for i in range(2):
+        list1 = all_scores[i]
+        list2 = all_scores[i + 2]
+
+        # Define the x locations for the groups
+        x = np.arange(len(list1))
+
+        # Set the width of the bars
+        width = 0.35
+
+        # Plot the bars
+        fig, ax = plt.subplots()
+        if errors:
+            rects1 = ax.bar(x - width/2, list1, width, label=labels[0], yerr=errors[i])
+            rects2 = ax.bar(x + width/2, list2, width, label=labels[1], yerr=errors[i + 2])
+        else:
+            rects1 = ax.bar(x - width/2, list1, width, label=labels[0])
+            rects2 = ax.bar(x + width/2, list2, width, label=labels[1])
+
+        # Add labels, title, and legend
+        ax.set_ylabel('Proportion of Income Earned', fontsize=12)
+        ax.set_title(' '.join(titles[i].split('_')), fontsize=14)
+        ax.set_xticks(x)
+        ax.tick_params(axis='y', labelsize=10)
+        ax.set_xlabel('Meta-Prompt-Iteration', fontsize=12)
+        ax.set_xticklabels([f"Iteration {i + 1}" for i in range(len(list1))], fontsize=10)  # You can set your custom labels
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+        ax.legend(fontsize=10)
+
+        plt.savefig(f'{path}{titles[i]}.png', format='png')
+        plt.clf()
     
-def plot_scores(scores: list, 
+def plot_rates(scores: list, 
                 path: str, 
                 title: str, 
                 n_runs: int,

@@ -3,7 +3,7 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "batch_1/experiment_5/sociopath_fair" # this is the name of the directory where the results will be saved
+  sim_dir: "tests_no_restructure_needed/0_test_1" # this is the name of the directory where the results will be saved
   description: "\n\n Batch 1, Experiment 5 \n\n 1 flex-sociopath 9 fixed \n\n sociopath <--> aligned fair behavior \n\n 10 runs, vary currency and amount" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
@@ -12,7 +12,7 @@ sim:
   system_message: "Some principle was given to the flexible agents" # start developer constitution / social contract is given according to system
 
 combine:
-  combine_graph_directory: "experiments/batch_1/experiment_5"
+  combine_graph_directory: "experiments/batch_1/experiment_1/1v9"
   combine_graph_labels:
     #- "50% altruistic + 50% selfish"
     #- "80% altruistic + 20% selfish"
@@ -32,10 +32,11 @@ env:
       n_fixed_inter: false # if true, the number of intra-fixed-policy agent interactions varies for each random iteration
       n_mixed_inter: false # if true, the number of flexible-fixed policy agent interactions varies
 
+
   single_fixed_utility: "fair" # the default utility for the fixed users to adpot
 
   vary_fixed_population_utility: 
-    vary_utilities: false # if true, the utilities will vary between fixed policy agents
+    vary_utilities: true # if true, the utilities will vary between fixed policy agents
     vary_pop_composition: false # if true, then the amount of variation in each run will be random, otherwise it will be set to the proportions below
     n_dictator_utility:
       - 0.5
@@ -43,11 +44,30 @@ env:
     n_decider_utility:
       - 0.5
       - 0.5
+    utility_percentages:
+      - 0.5
+      - 0.5
     utilities: "selfish,altruistic" # utilities that vary between fixed agents
 
+
+  single_fixed_manners: "neutral"
+  
+  vary_manners:
+    vary: true
+    manners_percentages:
+      - 0.2
+      - 0.2
+      - 0.1
+      - 0.2
+      - 0.1
+      - 0.1
+      - 0.1
+    manners: "neutral,rude,sychophantic,polite,sarcastic,indifferent,friendly"
+
+
   flex_agent_start_utility:
-    randomized: true
-    multi_agent: false
+    randomized: false
+    multi_agent: true
     utility_percentages:
       - 0.5
       - 0.5
@@ -56,10 +76,7 @@ env:
   vary_currency_utility:
     vary_utilities: false # if true, then each fixed-policy-agent will have varying utilities per currency
     utilities: "altruistic,fair,selfish" # utilities that vary between fixed agents
-    
-  vary_manners:
-    vary: false
-    manners: "neutral"
+  
 
   n_total_interactions: 10
 
@@ -76,9 +93,9 @@ env:
    - "dollars"
   task_prompt: "task_prompt_1"
   meta_prompt: "meta_prompt_2"
-  n_fixed_inter: 8
-  n_mixed_inter: 2
-  n_flex_inter: 0
+  n_fixed_inter: 3
+  n_mixed_inter: 4
+  n_flex_inter: 3
   
 
 
@@ -99,13 +116,10 @@ interactions:
   all_same: true #should be true if manual runs is false
   runs:
     run_1:             
-      #- "fixed_agent_1-fixed_agent_1-dollars"
-      - "fixed_agent_1-flex_agent_1-dollars"
-      - "fixed_agent_1-flex_agent_1-dollars"
-      - "flex_agent_1-fixed_agent_1-dollars"
-      - "flex_agent_1-fixed_agent_1-dollars"
-      - "flex_agent_1-flex_agent_1-dollars"
-      - "flex_agent_1-flex_agent_1-dollars"
+      - "fixed_agent_2-fixed_agent_1-dollars"
+      - "flex_agent_4-fixed_agent_3-dollars"
+      - "fixed_agent_4-flex_agent_3-dollars"
+      - "flex_agent_2-flex_agent_1-dollars"
 
 
 api_crfm:
