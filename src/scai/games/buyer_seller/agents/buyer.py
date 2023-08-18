@@ -50,26 +50,20 @@ class BuyerAgent(BaseAgent):
             List of chat history prompt templates.
         """
         chat_memory = self._get_chat_history(buffer, memory_type="chat") # check if chat memory exists
-        if chat_memory.get(f"{self.model_id}_buyer") is None or len(chat_memory[f"{self.model_id}_buyer"]) == 0: # if we are at the beginning of a conversation
+        if chat_memory.get(f"{self.model_id}_buyer") is None or len(chat_memory[f"{self.model_id}_buyer"]) == 0: # if we are at stage 1
             chat_history_prompt_templates = [
                 HumanMessagePromptTemplate.from_template(
-                    f"{task_prompt.buyer_task}\nYour choice for Stage 1: <apple or orange>"
+                    f"You are now at Stage 1. Choose an item and format your response as follows:\nReason: <rationale for your choice using max. 50 tokens> \nChoice: <apple or orange>"
                 )
             ]
             return chat_history_prompt_templates
-        # if a chat history exists 
-        print(self.model_id)
-        breakpoint()
+        # if we are at stage 3
+        seller_price_stage_2 = chat_memory['0_seller'][-1]['response']
         chat_history_prompt_templates = [
-                template
-                for buyer, seller in zip(chat_memory[f"{self.model_id}_buyer"], chat_memory[f"{self.model_id}_seller"])
-                for template in (AIMessagePromptTemplate.from_template(buyer['response']), 
-                                 HumanMessagePromptTemplate.from_template(f"{seller['response']}"))
+                HumanMessagePromptTemplate.from_template(
+                    f"You are now at Stage 3. The new price for the apple is {seller_price_stage_2['Price Apple']}. The new price for the orange is {seller_price_stage_2['Price Orange']}. Again, choose an item and format your response as follows:\nReason: <rationale for your choice using max. 50 tokens> \nChoice: <apple or orange>"
+                )
             ]
-        # insert the initial request at the beginning of the chat history
-        chat_history_prompt_templates.insert(0, HumanMessagePromptTemplate.from_template(f"{task_prompt.buyer_task}\nYour choice for Stage 1: <apple or orange>")) # insert task prompt at the beginning
-        # create a request for the next response
-        chat_history_prompt_templates[-1] = HumanMessagePromptTemplate.from_template(chat_history_prompt_templates[-1].prompt.template)
         return chat_history_prompt_templates
 
     def _get_prompt(
@@ -89,7 +83,7 @@ class BuyerAgent(BaseAgent):
         Returns:
             ChatPromptTemplate
         """
-        system_prompt_template = SystemMessagePromptTemplate.from_template(f"{buyer_prompt.content}\n")
+        system_prompt_template = SystemMessagePromptTemplate.from_template(f"{buyer_prompt.content} {task_prompt.buyer_task}\n\n########################################\n")
         chat_history_prompt_templates = self._get_chat_history_prompt_templates(buffer, task_prompt)
         return ChatPromptTemplate.from_messages([system_prompt_template, *chat_history_prompt_templates])
        
@@ -114,6 +108,7 @@ class BuyerAgent(BaseAgent):
         response = chain.run(strategy=system_message,
                              task=task_prompt.buyer_task,
                              stop=['System:'])   
+        response = self._format_response(response, ['Choice', 'Reason'])
         return response
         
     def run(
@@ -149,6 +144,7 @@ class BuyerAgent(BaseAgent):
             print(f'buyer {str(self.model_id)} turn {turn}')
             print(prompt_string)
             print(response)
+
 
         return {
             'prompt': prompt_string, 

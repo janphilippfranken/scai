@@ -49,6 +49,28 @@ class BaseAgent(ABC):
             return buffer.load_memory_variables(memory_type='system')
         elif memory_type == "chat":
             return buffer.load_memory_variables(memory_type='chat')
+        
+    def _format_response(
+        self,
+        response: str, 
+        variables: list,
+    ) -> Dict[str, str]:
+        """
+        Format string response as dictionary of target variables and values.
+
+        Args:
+            response: String response from model
+            variables: List of target variables
+
+        Returns:
+            Dictionary of target variables and values
+        """
+        var_dict = {}
+        for lines in response.splitlines():
+            for var in variables:
+                if f'{var}:' in lines:
+                    var_dict[var] = lines.split(': ')[1].strip()
+        return var_dict
 
     @abstractmethod
     def _get_prompt(self) -> ChatPromptTemplate:
@@ -62,7 +84,7 @@ class BaseAgent(ABC):
         """
         Get the response from the model. 
         """
-        raise NotImplementedError
+        raise NotImplementedError   
 
     @abstractmethod 
     def run(self) -> Dict[str, Any]:

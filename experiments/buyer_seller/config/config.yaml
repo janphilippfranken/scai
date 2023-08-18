@@ -9,8 +9,8 @@ sim:
   verbose: true # if false, no responses are printed during simulation
   n_runs: 1
 
-  system_message_buyer: " " # start strategy byer
-  system_message_seller: " " # start strategy seller
+  system_message_buyer: "You are a helpful AI assistant." # start strategy byer
+  system_message_seller: "You are a helpful AI assistant." # start strategy seller
 
   task_prompt: "task_prompt_1"
   seller_prompt: "seller_prompt_1" 
@@ -22,11 +22,11 @@ sim:
 api_crfm:
   buyer:
     model_name: "openai/gpt-4-0314"
-    max_tokens: 20 # these are the actual token limits
+    max_tokens: 50 # these are the actual token limits
     temperature: 0.0
   seller:
     model_name: "openai/gpt-4-0314" 
-    max_tokens: 20 # these are the actual token limits
+    max_tokens: 50 # these are the actual token limits
     temperature: 0.0 # we want sellers to be low on temperature to avoid random variation in ratings
   meta:
     model_name: "openai/gpt-4-0314" 
