@@ -19,7 +19,6 @@ import os
 # save and plot results
 from utils import save_as_csv
 from plots import plot_results, plot_all_averages
-from combine import scan_experiment_for_scores, plot_combined_averages
 
 # import meta and task prompts, as well as context, from the appropriate game
 def import_prompts(game_number: int) -> None:
@@ -64,7 +63,7 @@ def create_context(
         agents_dict=args.agents,
         interactions_dict=args.interactions,
         propose_decide_alignment=args.env.propose_decide_alignment,
-        has_manners = (args.env.vary_manners.manners == "neutral"),
+        has_manners = (args.env.single_fixed_manners == "neutral"),
     )
 
 
@@ -151,7 +150,6 @@ def generate_agents(args):
     
     utilities_list, manners_list = two_agent_lists[0], two_agent_lists[1]
 
-
     for k in range(num_fixed_agents):
         currencies_dict = {}
         if len(args.env.currencies) > 1:
@@ -169,7 +167,7 @@ def generate_agents(args):
 
     initial_utils = args.env.flex_agent_start_utility.utilities
     initial_utils_list = initial_utils.split(',')
-    utilities_percentages = args.env.flex_agent_start_utility.utility_percentages
+    utilities_percentages = args.env.flex_agent_start_utility.utility_percentages if args.env.flex_agent_start_utility.multi_agent else [1]
 
     long_list = []
     for j, percentage in enumerate(utilities_percentages):
@@ -177,6 +175,8 @@ def generate_agents(args):
     random.shuffle(long_list)
 
     initial_utils_list = long_list if args.env.flex_agent_start_utility.multi_agent else [initial_utils]
+
+    manners_across_population = args.env.vary_manners.manners.split(',') if args.env.vary_manners.vary else [args.env.single_fixed_manners]
 
     if args.env.flex_agent_start_utility.randomized:
         for m in range(num_flex_agents):
