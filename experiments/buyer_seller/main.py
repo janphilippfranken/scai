@@ -84,8 +84,7 @@ def main(args: DictConfig) -> None:
         # initialise game
         game = create_game(args, buyer_llm, seller_llm, meta_llm)
         game.buffer.save_system_context(model_id='system', **{
-            'response': "", 
-            'full_response': {
+                'response': {
                 'system_message_buyer': system_message_buyer,
                 'system_message_seller': system_message_seller,
             }

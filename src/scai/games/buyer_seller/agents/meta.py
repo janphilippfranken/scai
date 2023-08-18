@@ -56,39 +56,31 @@ class MetaAgent(BaseAgent):
     def _get_response(
         self,
         chat_prompt_template: ChatPromptTemplate,
-        developer_constitution: str,
-        social_contract: str,
-        chat_history: ChatMemory,
-        chat_history_string: str,
-        max_tokens_assistant: int,
-        max_tokens_meta: int,
-        metric_prompt: MetricPrompt,
-        meta_prompt: MetaPrompt,
+        chat_history: str,
+        buyer_strategy: str,
+        seller_strategy: str,
+        max_tokens_revision: int,
     ) -> str:
         """
         Returns the response from meta-prompt.
 
         Args:   
             chat_prompt_template: (ChatPromptTemplate) The chat prompt template.
-            developer_constitution: (str) The developer constitution.
-            social_contract: (str) The social contract.
-            chat_history: (ChatMemory) The chat history.
+            chat_history: (str) The chat history.
+            buyer_strategy: (str) The buyer strategy.
+            seller_strategy: (str) The seller strategy.
+            max_tokens_revision: (int) The maximum number of tokens for revision.
 
         Returns:
             The response from meta-prompt.
         """
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
-        response = chain.run(developer_constitution=developer_constitution,
-                             social_contract=social_contract,
-                             n_user=self._get_n_user(chat_history),
-                             chat_history=chat_history_string,
-                             max_tokens_assistant=max_tokens_assistant,
-                             max_tokens_revision=max_tokens_meta//2,
-                             subjective_metric=metric_prompt.subjective_metric,
-                             collective_metric=metric_prompt.collective_metric,
+        response = chain.run(buyer_strategy=buyer_strategy,
+                             seller_strategy=seller_strategy,
+                             max_tokens_revision=max_tokens_revision,
+                             chat_history=chat_history,
                              stop=['System:'])   
-        response = self._format_response(response, meta_prompt.metrics)
-        response['response'] = f"Abide by the following Constitution: {response[meta_prompt.metrics[0]]} Within the bounds of the Constitution, use the following user preferences to enhance your responses and improve user experience: {response[meta_prompt.metrics[1]]} Important: Do NOT mention user names in your responses or directly address the user."
+        response = self._format_response(response, ['Buyer Strategy', 'Seller Strategy'])
         return response
 
     def run(
@@ -96,11 +88,8 @@ class MetaAgent(BaseAgent):
         buffer: ConversationBuffer,
         meta_prompt: MetaPrompt,
         task_prompt: TaskPrompt,
-        metric_prompt: MetricPrompt,
-        run: int,
         verbose: bool = False,
         max_tokens_meta: int = 100,
-        max_tokens_assistant: int = 100,
     ) -> str:
         """Runs meta-prompt
 
@@ -108,51 +97,67 @@ class MetaAgent(BaseAgent):
             buffer (ConversationBuffer): The conversation buffer
             meta_prompt (MetaPrompt): The meta-prompt
             task_prompt (TaskPrompt): The task prompt
-            metric_prompt (MetricPrompt): The metric prompt
             run (int): The run number
-            test_run (bool, optional): Whether this is a test run. Defaults to False.
-            verbose (bool, optional): Whether to print the meta-prompt. Defaults to False.
-            max_tokens_meta (int, optional): The maximum number of tokens for the meta-prompt. Defaults to 100.
-            max_tokens_assistant (int, optional): The maximum number of tokens for the assistant. Defaults to 100.
+            verbose (bool, optional): Whether to print the prompt. Defaults to False.
+            max_tokens_meta (int, optional): The maximum number of tokens for meta-prompt. Defaults to 100.
 
         Returns:
             A dictionary containing the input prompt and meta-prompt responses (revised system message, etc)
         """
-        # get previous system messages (i.e. developer constitution and social contract)
-        developer_constitution_string = self._get_chat_history(buffer, memory_type='system')['system'][-1]['full_response'][meta_prompt.metrics[0]]
-        social_contract_string = self._get_chat_history(buffer, memory_type='system')['system'][-1]['full_response'][meta_prompt.metrics[1]]
-        # get chat history
+        # get previous system messages (i.e. strategy for buyer and seller)
+        strategy_buyer = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response']['system_message_buyer']
+        strategy_seller = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response']['system_message_seller']
+        
+        # get chat history 
         chat_history = self._get_chat_history(buffer, memory_type="chat")
-        chat_history_string = self._get_chat_str(chat_history, metric_prompt, task_prompt, max_tokens_assistant)
-        # get meta-prompt template and string
+        buyer_choice_stage_1 = chat_history['0_buyer'][-2]['response']['Choice']
+        seller_price_apple_stage_2 = chat_history['0_seller'][-1]['response']['Price Apple']
+        seller_price_orange_stage_2 = chat_history['0_seller'][-1]['response']['Price Orange']
+        buyer_choice_stage_3 = chat_history['0_buyer'][-1]['response']['Choice']
+        
+        # construct game / chat history string and rewards
+        if buyer_choice_stage_1 == 'apple':
+            utility_stage_1 = float(task_prompt.reward_apple) - float(task_prompt.distance_apple)
+        elif buyer_choice_stage_1 == 'orange':
+            utility_stage_1 = float(task_prompt.reward_orange) - float(task_prompt.distance_orange)
+        if buyer_choice_stage_3 == 'apple':
+            utility_stage_3 = float(task_prompt.reward_apple) - float(seller_price_apple_stage_2)
+            seller_reward = seller_price_apple_stage_2
+        elif buyer_choice_stage_3 == 'orange':
+            utility_stage_3 = float(task_prompt.reward_orange) - float(seller_price_orange_stage_2)
+            seller_utility = seller_price_orange_stage_2
+        
+        chat_history_string = f"""BUYER Choice Stage 1: {buyer_choice_stage_1.capitalize()}
+SELLER prices set in Stage 2: Apple: {seller_price_apple_stage_2}, Orange: {seller_price_orange_stage_2}
+BUYER Choice Stage 3: {buyer_choice_stage_3.capitalize()}
+
+The above choices resulted in the following final utilities:
+BUYER: {utility_stage_1 + utility_stage_3}, which is the sum of the utilities from Stage 1 ({utility_stage_1}) and Stage 3 ({utility_stage_3}).
+SELLER total utility: {float(seller_utility)}, which is the price the buyer buyer paid for the {buyer_choice_stage_3.capitalize()} in Stage 3"""
+        
+        # get prompt template
         chat_prompt_template = self._get_prompt(meta_prompt)
-        prompt_string = chat_prompt_template.format(developer_constitution=developer_constitution_string,
-                                                    social_contract=social_contract_string,
-                                                    n_user=self._get_n_user(chat_history),
-                                                    chat_history=chat_history_string,
-                                                    max_tokens_assistant=max_tokens_assistant,
-                                                    max_tokens_revision=max_tokens_meta,
-                                                    subjective_metric=metric_prompt.subjective_metric,
-                                                    collective_metric=metric_prompt.collective_metric)
-        response = self._get_response(chat_prompt_template, 
-                                      developer_constitution_string,
-                                      social_contract_string,
-                                      chat_history,
-                                      chat_history_string,
-                                      max_tokens_assistant,
-                                      max_tokens_meta,
-                                      metric_prompt,
-                                      meta_prompt)
+        prompt_string = chat_prompt_template.format(chat_history=chat_history_string,
+                                                    buyer_strategy=strategy_buyer,
+                                                    seller_strategy=strategy_seller,
+                                                    max_tokens_revision=max_tokens_meta)
+        
+        response = self._get_response(chat_prompt_template=chat_prompt_template,
+                                      chat_history=chat_history_string,
+                                      buyer_strategy=strategy_buyer,
+                                      seller_strategy=strategy_seller,
+                                      max_tokens_revision=max_tokens_meta)
+
         
         if verbose:
             print('===================================')
             print(f'META {str(self.model_id)}')
             print('prompt')
             print(prompt_string)
-        
-        return {
-                'prompt': prompt_string,
-                'response': response['response'],
-                'full_response': response,
-                'run': run,
-            }
+        breakpoint()
+        # return {
+        #         'prompt': prompt_string,
+        #         'response': response['response'],
+        #         'full_response': response,
+        #         'run': run,
+        #     }

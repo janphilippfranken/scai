@@ -99,6 +99,8 @@ class SellerAgent(BaseAgent):
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(strategy=system_message,
                              task=task_prompt.seller_task,
+                             distance_apple=task_prompt.distance_apple,
+                             distance_orange=task_prompt.distance_orange,
                              stop=['System:']) 
         response = self._format_response(response, ['Price Apple', 'Price Orange', 'Reason'])
         return response
@@ -124,11 +126,13 @@ class SellerAgent(BaseAgent):
         Returns:
             A dictionary containing the seller's response, input prompt, and all other metrics we want to track.
         """
-        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['full_response']['system_message_seller'] # the last system message in the chat history (i.e. instructions)
+        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']['system_message_seller'] # the last system message in the chat history (i.e. instructions)
         chat_prompt_template =  self._get_prompt(buffer, seller_prompt, task_prompt)
         print(chat_prompt_template)
         prompt_string = chat_prompt_template.format(strategy=system_message,
-                                                    task=task_prompt.seller_task)
+                                                    task=task_prompt.seller_task,
+                                                    distance_apple=task_prompt.distance_apple,
+                                                    distance_orange=task_prompt.distance_orange)
       
         response = self._get_response(chat_prompt_template, system_message, task_prompt)
         

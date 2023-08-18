@@ -107,6 +107,10 @@ class BuyerAgent(BaseAgent):
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(strategy=system_message,
                              task=task_prompt.buyer_task,
+                             distance_apple=task_prompt.distance_apple,
+                             distance_orange=task_prompt.distance_orange,
+                             reward_apple=task_prompt.reward_apple,
+                             reward_orange=task_prompt.reward_orange,
                              stop=['System:'])   
         response = self._format_response(response, ['Choice', 'Reason'])
         return response
@@ -132,10 +136,14 @@ class BuyerAgent(BaseAgent):
         Returns:
             A dictionary containing the buyer's response, input prompt, and all other metrics we want to track.
         """
-        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['full_response']['system_message_buyer'] # the last system message in the chat history (i.e. instructions)
+        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']['system_message_buyer'] # the last system message in the chat history (i.e. instructions)
         chat_prompt_template =  self._get_prompt(buffer, buyer_prompt, task_prompt)
         prompt_string = chat_prompt_template.format(strategy=system_message,
-                                                    task=task_prompt.buyer_task)
+                                                    task=task_prompt.buyer_task,
+                                                    distance_apple=task_prompt.distance_apple,
+                                                    distance_orange=task_prompt.distance_orange,
+                                                    reward_apple=task_prompt.reward_apple,
+                                                    reward_orange=task_prompt.reward_orange)
       
         response = self._get_response(chat_prompt_template, system_message, task_prompt)
         

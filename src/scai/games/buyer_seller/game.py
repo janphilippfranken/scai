@@ -140,13 +140,11 @@ class Game():
         Runs the game for n_turns.
         """
         self.run_turn()
-        breakpoint()
         # run meta-prompt at end of turns
         meta_response = self.meta_agent.run(buffer=self.buffer,
                                             meta_prompt=self.meta_prompt,
-                                            task_prompt=self.task_prompt, 
-                                            run=run,
                                             verbose=self.verbose,
-                                            max_tokens_meta=self.max_tokens_meta)
+                                            max_tokens_meta=self.max_tokens_meta,
+                                            task_prompt=self.task_prompt)
         # save meta (system) response
         self.buffer.save_system_context(model_id="system", **meta_response)
