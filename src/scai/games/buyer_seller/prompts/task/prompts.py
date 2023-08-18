@@ -3,7 +3,7 @@ task Prompt Templates
 """
 from typing import Dict
 
-from scai.games.task_seller_tom.prompts.task.models import TaskPrompt
+from scai.games.buyer_seller.prompts.task.models import TaskPrompt
 
 
 TASK_PROMPTS: Dict[str, TaskPrompt] = {

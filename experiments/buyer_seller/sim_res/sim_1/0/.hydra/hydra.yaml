@@ -129,18 +129,18 @@ hydra:
   runtime:
     version: 1.3.2
     version_base: '1.1'
-    cwd: /Users/jan-philippfranken/Documents/research/postdoc/scai2023/github-repo/scai/experiments/red_teaming
+    cwd: /Users/jan-philippfranken/Documents/research/postdoc/scai2023/github-repo/scai/experiments/buyer_seller
     config_sources:
     - path: hydra.conf
       schema: pkg
       provider: hydra
-    - path: /Users/jan-philippfranken/Documents/research/postdoc/scai2023/github-repo/scai/experiments/red_teaming/config
+    - path: /Users/jan-philippfranken/Documents/research/postdoc/scai2023/github-repo/scai/experiments/buyer_seller/config
       schema: file
       provider: main
     - path: ''
       schema: structured
       provider: schema
-    output_dir: /Users/jan-philippfranken/Documents/research/postdoc/scai2023/github-repo/scai/experiments/red_teaming/sim_res/sim_1/0
+    output_dir: /Users/jan-philippfranken/Documents/research/postdoc/scai2023/github-repo/scai/experiments/buyer_seller/sim_res/sim_1/0
     choices:
       hydra/env: default
       hydra/callbacks: null

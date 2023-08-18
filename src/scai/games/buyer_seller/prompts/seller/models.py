@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class PlayerPompt(BaseModel):
+class SellerPrompt(BaseModel):
     """
     Seller Prompt
     """
