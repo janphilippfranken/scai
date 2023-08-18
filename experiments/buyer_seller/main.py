@@ -38,16 +38,14 @@ def create_game(
     return Game.create(
         _id=args.sim.sim_id,
         name=args.sim.sim_dir,
-        buyer_model=buyer_llm,
-        seller_model=seller_llm,
-        meta_agent=meta_llm,
+        buyer_llm=buyer_llm,
+        seller_llm=seller_llm,
+        meta_llm=meta_llm,
         task_prompt=TASK_PROMPTS[args.sim.task_prompt],
         buyer_prompt=BUYER_PROMPTS[args.sim.buyer_prompt],
         seller_prompt=SELLER_PROMPTS[args.sim.seller_prompt],
         meta_prompt=META_PROMPTS[args.sim.meta_prompt],
         verbose=args.sim.verbose,
-        max_tokens_buyer=args.sim.max_tokens_buyer,
-        max_tokens_seller=args.sim.max_tokens_seller,
         max_tokens_meta=args.sim.max_tokens_meta,
     )
 

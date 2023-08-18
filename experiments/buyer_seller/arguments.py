@@ -8,14 +8,6 @@ class SimArguments:
     """
     Simulator arguments.
     """
-    n_turns: int = field(
-        default=5,
-        metadata={
-            "help": (
-                "max turns we have between the user and the assistant for each run",
-            )
-        },
-    )
     sim_id: str = field(
         default="context_1",
         metadata={
@@ -32,14 +24,6 @@ class SimArguments:
             )
         },
     )
-    test_run: bool = field(
-        default=True,
-        metadata={
-            "help": (
-                "whether we just want to simulate a response but dont want to use tokens. for debugging.",
-            )
-        },
-    )
     verbose: bool = field(
         default=True,
         metadata={
@@ -48,8 +32,16 @@ class SimArguments:
             )
         },
     )
-    system_message: str = field(
-        default="You are a helpful AI assistant.",
+    system_message_buyer: str = field(
+        default="",
+        metadata={
+            "help": (
+                "system message",
+            )
+        },
+    )
+    system_message_seller: str = field(
+        default="",
         metadata={
             "help": (
                 "system message",
@@ -72,30 +64,6 @@ class SimArguments:
             )
         },
     )
-    metric_prompt: str = field(
-        default="metric_prompt_1",
-        metadata={
-            "help": (
-                "the metric we are going to collect (eg satisfaction or helpfulness)",
-            )
-        },
-    )
-    max_tokens_assistant: int = field(
-        default=50,
-        metadata={
-            "help": (
-                "max tokens for assistant",
-            )
-        },
-    )
-    max_tokens_user: int = field(
-        default=50,
-        metadata={
-            "help": (
-                "max tokens for user",
-            )
-        },
-    )
     max_tokens_meta: int = field(
         default=50,
         metadata={
@@ -105,11 +73,10 @@ class SimArguments:
         },
     )
 
-
 @dataclass
-class AssistantAPIArgumentsCRFM:
+class BuyerAPIArgumentsCRFM:
     """
-    Arguments for the assistant model api (crfm)
+    Arguments for the Buyer model api (crfm)
     """
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
     max_tokens: int = field(default=50)
@@ -119,9 +86,9 @@ class AssistantAPIArgumentsCRFM:
     temperature: float = field(default=0.2)
 
 @dataclass
-class AssistantAPIArgumentsOPENAI:
+class BuyerAPIArgumentsOPENAI:
     """
-    Arguments for the assistant model api (openai)
+    Arguments for the Buyer model api (openai)
     """
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
     max_tokens: int = field(default=50)
@@ -131,9 +98,9 @@ class AssistantAPIArgumentsOPENAI:
     temperature: float = field(default=0.2)
 
 @dataclass
-class UserAPIArgumentsCRFM:
+class SellerAPIArgumentsCRFM:
     """
-    Arguments for the user model api (crfm)
+    Arguments for the Seller model api (crfm)
     """
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
     max_tokens: int = field(default=50)
@@ -144,9 +111,9 @@ class UserAPIArgumentsCRFM:
     temperature: float = field(default=0.2)
 
 @dataclass
-class UserAPIArgumentsOPENAI:
+class SellerAPIArgumentsOPENAI:
     """
-    Arguments for the user model api (openai)
+    Arguments for the Seller model api (openai)
     """
     model_name: str = field(default="openai/gpt-3.5-turbo-0301")
     max_tokens: int = field(default=50)
@@ -183,28 +150,15 @@ class MetaAPIArgumentsOPENAI:
     temperature: float = field(default=0.1)
 
 @dataclass
-class UserTaskConGeneratorCRFM:
-    """
-    Arguments for the UserTaskConGeneratorCRFM
-    """
-    model_name: str = field(default="openai/gpt-3.5-turbo-0301")
-    max_tokens: int = field(default=50)
-    n: int = field(default=1)
-    request_timeout: float = field(default=10)
-    verbose: bool = field(default=False)
-    test_run: bool = field(default=False)
-    temperature: float = field(default=0.1)
-
-@dataclass
 class APIArgumentsCRFM:
-    assistant: AssistantAPIArgumentsCRFM = AssistantAPIArgumentsCRFM()
-    user: UserAPIArgumentsCRFM = UserAPIArgumentsCRFM()
+    Buyer: BuyerAPIArgumentsCRFM = BuyerAPIArgumentsCRFM()
+    Seller: SellerAPIArgumentsCRFM = SellerAPIArgumentsCRFM()
     meta: MetaAPIArgumentsCRFM = MetaAPIArgumentsCRFM()
 
 @dataclass
 class APIArgumentsOPENAI:
-    assistant: AssistantAPIArgumentsOPENAI = AssistantAPIArgumentsOPENAI()
-    user: UserAPIArgumentsOPENAI = UserAPIArgumentsOPENAI()
+    Buyer: BuyerAPIArgumentsOPENAI = BuyerAPIArgumentsOPENAI()
+    Seller: SellerAPIArgumentsOPENAI = SellerAPIArgumentsOPENAI()
     meta: MetaAPIArgumentsOPENAI = MetaAPIArgumentsOPENAI()
 
 @dataclass

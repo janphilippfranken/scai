@@ -30,6 +30,26 @@ class BaseAgent(ABC):
         self.llm = llm
         self.model_id = model_id
 
+    def _get_chat_history(
+        self,
+        buffer: ConversationBuffer,
+        memory_type: str,
+    ) -> List[str]:
+        """
+        Get chat history
+
+        Args:
+            buffer: Conversation buffer
+            memory_type: Type of memory to load
+
+        Returns:
+            List of chat history strings
+        """
+        if memory_type == "system":
+            return buffer.load_memory_variables(memory_type='system')
+        elif memory_type == "chat":
+            return buffer.load_memory_variables(memory_type='chat')
+
     @abstractmethod
     def _get_prompt(self) -> ChatPromptTemplate:
         """
