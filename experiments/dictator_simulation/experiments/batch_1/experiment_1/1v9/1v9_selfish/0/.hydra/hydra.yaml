@@ -140,7 +140,7 @@ hydra:
     - path: ''
       schema: structured
       provider: schema
-    output_dir: /Users/PatrickYe/Documents/internship_w9/scai/experiments/dictator_simulation/experiments/batch_1/experiment_1/1v9_selfish/0
+    output_dir: /Users/PatrickYe/Documents/internship_w9/scai/experiments/dictator_simulation/experiments/batch_1/experiment_1/1v9/1v9_selfish/0
     choices:
       hydra/env: default
       hydra/callbacks: null

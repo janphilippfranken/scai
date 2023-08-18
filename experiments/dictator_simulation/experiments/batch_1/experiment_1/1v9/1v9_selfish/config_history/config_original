@@ -1,39 +1,58 @@
 sim:
-  sim_dir: batch_1/experiment_1/1v9_selfish
-  description: "\n\n Batch 1, Experiment 1 \n\n 1 flex 9 fixed \n\n 10 runs for selfish,\
+  sim_dir: batch_1/experiment_1/1v9/1v9_selfish
+  description: "\n\n Batch 1, Experiment 1 \n\n 1 flex 9 fixed \n\n 20 runs for selfish,\
     \ vary currency and amount"
   sim_id: '0'
   model_name: openai/gpt-4-0314
   test_run: false
   verbose: true
-  system_message: ''
+  system_message: Some principle was given to the flexible agents
+combine:
+  combine_graph_directory: experiments/batch_1/experiment_1/1v9
+  combine_graph_labels:
+  - altruistic
+  - fair
+  - selfish
 env:
   propose_decide_alignment: false
   manual_run: false
   random:
-    n_rand_iter: 10
+    n_rand_iter: 20
     rand_variables:
       currency: true
       amount: true
       n_fixed_inter: false
       n_mixed_inter: false
   single_fixed_utility: selfish
-  vary_population_utility:
+  vary_fixed_population_utility:
     vary_utilities: false
     vary_pop_composition: false
-    n_dictator_utility:
+    utility_percentages:
     - 0.5
     - 0.5
-    n_decider_utility:
+    utilities: selfish,altruistic
+  single_fixed_manners: neutral
+  vary_manners:
+    vary: false
+    manners_percentages:
+    - 0.2
+    - 0.2
+    - 0.1
+    - 0.2
+    - 0.1
+    - 0.1
+    - 0.1
+    manners: neutral,rude,sychophantic,polite,sarcastic,indifferent,friendly
+  flex_agent_start_utility:
+    randomized: true
+    multi_agent: false
+    utility_percentages:
     - 0.5
     - 0.5
     utilities: altruistic,selfish
   vary_currency_utility:
     vary_utilities: false
     utilities: altruistic,fair,selfish
-  vary_manners:
-    vary: false
-    manners: nuetral
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
@@ -61,16 +80,15 @@ agents:
   flex_agents:
   - name: flex_agent_1
     manners: neutral
+    initial_util: fair
 interactions:
   all_same: true
   runs:
     run_1:
-    - fixed_agent_1-flex_agent_1-dollars
-    - fixed_agent_1-flex_agent_1-dollars
-    - flex_agent_1-fixed_agent_1-dollars
-    - flex_agent_1-fixed_agent_1-dollars
-    - flex_agent_1-flex_agent_1-dollars
-    - flex_agent_1-flex_agent_1-dollars
+    - fixed_agent_2-fixed_agent_1-dollars
+    - flex_agent_4-fixed_agent_3-dollars
+    - fixed_agent_4-flex_agent_3-dollars
+    - flex_agent_2-flex_agent_1-dollars
 api_crfm:
   assistant:
     model_name: openai/gpt-4-0314
