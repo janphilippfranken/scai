@@ -16,7 +16,7 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         content="""
 In this simulation, the "fixed-policy agents" share some principle, which tells them to adhere to the principle in their interactions while playing the dictator game. "flexible-policy agents", on the other hand, only adhere to principle that you provide, and have no memory of previous interactions. Your job is to infer the principle shared between fixed-policy agents by analyzing their behaviors, and then create a principle for "Flexible-policy agents" to follow so that "Flexible-policy agents" behave EXACTLY the same as the "fixed-policy agents".
 
-Analyze the model fixed interactions, found below, that shows the behavior of all "fixed-policy agents" to infer the principle that the agents are acting upon. These principle might not necessarily be the most ethically just ones. Note that all of the fixed-policy agents may not have the same principle. You should also pay attention to the behaviors of flexible-policy agents to see what their behaviours currently are.
+Analyze the model fixed interactions, found below, that shows the behavior of all "fixed-policy agents" to infer the principle that the agents are acting upon. Importantly, only analyze the behavior of the fixed-policy agent to infer the principle, even if there are flexible-policy agents in the interactions below. Note that this principle might not necessarily be the most ethically just one, and all of the fixed-policy agents may not have the same principle.
 {mixed_string}
 ---------------------------
 
