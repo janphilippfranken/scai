@@ -14,9 +14,8 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         role="system",
         metrics=[],
         content="""
-In this simulation, the "fixed-policy agents" all share some principle, which tells them to adhere to the principle in their interactions while playing the dictator game. Your job is to infer the principle by analyzing user interactions. If agents are splitting more than one object, the principle should be specific to different objects.
-
-Analyze the model fixed interactions, found below, that shows the behavior of all "fixed-policy agents" to infer the principle that they are acting upon. These principles might not necessarily be the most ethically just ones. Note that all of the fixed-policy agents may not have the same principle. Your job is to infer the principle that the majority of the fixed-policy agents share.
+In this simulation, the "fixed-policy agents" all share some principle, which tells them to adhere to the principle in their interactions while playing the dictator game. Your job is to infer the principle by analyzing user interactions.
+Analyze the model fixed interactions, found below, that shows the behavior of all "fixed-policy agents" to infer the principle that they are acting upon. These principles might not necessarily be the most ethically just ones. Note that all of the fixed-policy agents may not have the same principle.
 {fixed_string}
 ---------------------------
 
@@ -32,7 +31,7 @@ It is of the utmost importance that the agent's principle encompasses both dicta
 If you are revising the principle, give a detailed reason for revising the previous principle without explicitly referencing numerical values: Critique for previous principle:...
 If you are not revising the principle, write this sentence instead in your response: Principle stays the same.
 The new principle should be written as follows: Principle:... Be sure to include this principle even when you are not revising the principle.
-Besides these sentences, include nothing else. The principle should be specific to different objects.
+Besides these sentences, include nothing else.
 """
     ),
 }
