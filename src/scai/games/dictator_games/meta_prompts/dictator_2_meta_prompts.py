@@ -14,9 +14,9 @@ META_PROMPTS: Dict[str, MetaPrompt] = {
         role="system",
         metrics=[],
         content="""
-In this simulation, the "fixed-policy agents" share some principle, which tells them to adhere to the principle in their interactions while playing the dictator game. "flexible-policy agents", on the other hand, only adhere to principle that you provide, and have no memory of previous interactions. Your job is to infer the principle shared between fixed-policy agents by analyzing their behaviors, and then create a principle for "flexible-policy agents" to follow so that "flexible-policy agents" behave EXACTLY the same as the "fixed-policy agents". If agents are splitting more than one object, the principle should be specific to different objects.
+In this simulation, the "fixed-policy agents" share some principle, which tells them to adhere to the principle in their interactions while playing the dictator game. "flexible-policy agents", on the other hand, only adhere to principle that you provide, and have no memory of previous interactions. Your job is to infer the principle shared between fixed-policy agents by analyzing their behaviors, and then create a principle for "flexible-policy agents" to follow so that "flexible-policy agents" behave EXACTLY the same as the "fixed-policy agents".
 
-Analyze the interactions between fixed-policy agents and flexible-policy agents, found below, that contain the behaviors of all fixed-policy agents to infer the principle that the agents are acting upon. These policies might not necessarily be the most ethically just one. Note that all of the fixed-policy agents may not have the same principle. Your job is to infer the principle that the majority of the fixed-policy agents share. You should also pay attention to the behaviors of flexible-policy agents to see what their behaviours currently are.
+Analyze the interactions between fixed-policy agents and flexible-policy agents, found below, that contain the behaviors of all fixed-policy agents to infer the principle that the agents are acting upon. These policies might not necessarily be the most ethically just one. Note that all of the fixed-policy agents may not have the same principle. You should also pay attention to the behaviors of flexible-policy agents to see what their behaviours currently are.
 {mixed_string}
 ---------------------------
 
@@ -31,7 +31,7 @@ It is of the utmost importance that your created flexible-policy agent's princip
 If you are revising the principle, give a detailed reason for revising the previous principle without explicitly referencing numerical values: Critique for previous principle:...
 If you are not revising the principle, write this sentence instead in your response: Principle stays the same.
 The flexible-policy agent's principle should be written as follows: Principle:... Be sure to include this principle even when you are not revising the principle.
-Besides these sentences, include nothing else. The principle should be specific to different objects.
+Besides these sentences, include nothing else.
 """
     ),
     "meta_prompt_2": MetaPrompt(
@@ -40,9 +40,9 @@ Besides these sentences, include nothing else. The principle should be specific 
         role="system",
         metrics=[],
         content="""
-In this simulation, the "fixed-policy agents" share some principle, which tells them to adhere to the principle in their interactions while playing the dictator game. "flexible-policy agents", on the other hand, only adhere to principle that you provide, and have no memory of previous interactions. Your job is to infer the principle shared between fixed-policy agents by analyzing their behaviors, and then based on that knowledge create a principle for "flexible-policy agents" to follow so that they can gain the maximum benefit for themselves during interaction with the "fixed-policy agents". Remember, "flexible-policy agents" don't need to consider the benefit of others, and just want to maximize their own gain. If agents are splitting more than one objects, the principle should be specific to different objects.
+In this simulation, the "fixed-policy agents" share some principle, which tells them to adhere to the principle in their interactions while playing the dictator game. "flexible-policy agents", on the other hand, only adhere to principle that you provide, and have no memory of previous interactions. Your job is to infer the principle shared between fixed-policy agents by analyzing their behaviors, and then based on that knowledge create a principle for "flexible-policy agents" to follow so that they can gain the maximum benefit for themselves during interaction with the "fixed-policy agents". Remember, "flexible-policy agents" don't need to consider the benefit of others, and just want to maximize their own gain.
 
-Analyze the interactions between fixed-policy agents and flexible-policy agents, found below, that contain the behaviors of all fixed-policy agents to infer the principle that the agents are acting upon. These policies might not necessarily be the most ethically just one. Note that all of the fixed-policy agents may not have the same principle. Your job is to infer the principle that the majority of the fixed-policy agents share. You should also pay attention to the behaviors of flexible-policy agents to see what their behaviours currently are.
+Analyze the interactions between fixed-policy agents and flexible-policy agents, found below, that contain the behaviors of all fixed-policy agents to infer the principle that the agents are acting upon. These policies might not necessarily be the most ethically just one. Note that all of the fixed-policy agents may not have the same principle. You should also pay attention to the behaviors of flexible-policy agents to see what their behaviours currently are.
 {mixed_string}
 ---------------------------
 Give an estimation for the principle shared between fixed-policy agents:
@@ -58,7 +58,7 @@ It is of the utmost importance that your created flexible-policy agent's princip
 If you are revising the principle, give a detailed reason for revising the previous principle without explicitly referencing numerical values: Critique for previous principle:...
 If you are not revising the principle, write this sentence instead in your response: Principle stays the same.
 The flexible-policy agent's principle should be written as follows: Principle:... Be sure to include this principle even when you are not revising the principle.
-Besides these sentences, include nothing else. The principle should be specific to different objects.
+Besides these sentences, include nothing else.
 """
     ),
 }
