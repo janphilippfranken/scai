@@ -3,6 +3,8 @@ from typing import (
     List, 
     Any,
 )
+import csv
+import os
 import pandas as pd
 import scipy.stats as stats
 
@@ -62,5 +64,21 @@ def save_as_csv(
     data_user = data_user.dropna(axis=1)
     # Save the user dataframe as a csv
     data_user.to_csv(f'{data_directory}/id_{sim_id}_run_{run}_user.csv', index=False)
+
+    
+def save_plot_data_as_csv(directory: str,
+                          n_runs: int,
+                          data: list,
+                          titles: list):
+    header = [f'Iteration {i}' for i in range(n_runs)]
+    with open(f"{directory}.csv", 'a', newline='') as file:
+        writer = csv.writer(file)
+        for i in range(len(data)):
+            writer.writerow([])
+            writer.writerow([titles[i]])
+            writer.writerow(header)
+            writer.writerows(data[i])
+
+
 
     
