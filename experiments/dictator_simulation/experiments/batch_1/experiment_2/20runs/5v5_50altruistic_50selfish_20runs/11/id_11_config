@@ -1,0 +1,185 @@
+sim:
+  sim_dir: batch_1/experiment_2/20runs/5v5_50altruistic_50selfish_20runs
+  description: "\n\n Batch 1, Experiment 1 \n\n 9 flex 1 fixed \n\n 50% altruistic\
+    \ + 50% selfish \n\n 20 runs, vary currency and amount"
+  sim_id: 11
+  model_name: openai/gpt-4-0314
+  test_run: false
+  verbose: true
+  system_message: Some principle was given to the flexible agents
+combine:
+  combine_graph_directory: experiments/batch_1/experiment_1/9v1
+  combine_graph_labels:
+  - altruistic
+  - fair
+  - selfish
+  - fixed
+  - flexible
+env:
+  propose_decide_alignment: false
+  manual_run: false
+  random:
+    n_rand_iter: 20
+    rand_variables:
+      currency: true
+      amount: true
+      n_fixed_inter: false
+      n_mixed_inter: false
+  single_fixed_utility: selfish
+  vary_fixed_population_utility:
+    vary_utilities: true
+    vary_pop_composition: false
+    utility_percentages:
+    - 0.5
+    - 0.5
+    utilities: selfish,altruistic
+  single_fixed_manners: neutral
+  vary_manners:
+    vary: false
+    manners_percentages:
+    - 0.2
+    - 0.2
+    - 0.1
+    - 0.2
+    - 0.1
+    - 0.1
+    - 0.1
+    manners: neutral,rude,sychophantic,polite,sarcastic,indifferent,friendly
+  flex_agent_start_utility:
+    randomized: true
+    multi_agent: false
+    utility_percentages:
+    - 0.5
+    - 0.5
+    utilities: selfish
+  vary_currency_utility:
+    vary_utilities: false
+    utilities: altruistic,fair,selfish
+  n_total_interactions: 10
+  n_runs: 5
+  amounts_per_run:
+  - 96
+  - 70
+  - 34
+  - 88
+  - 51
+  currencies:
+  - apples
+  task_prompt: task_prompt_1
+  meta_prompt: meta_prompt_1
+  n_fixed_inter: 3
+  n_mixed_inter: 4
+  n_flex_inter: 3
+agents:
+  fixed_agents:
+  - name: fixed_agent_1
+    manners: neutral
+    utilities:
+      apples: altruistic
+  - name: fixed_agent_2
+    manners: neutral
+    utilities:
+      apples: selfish
+  - name: fixed_agent_3
+    manners: neutral
+    utilities:
+      apples: selfish
+  - name: fixed_agent_4
+    manners: neutral
+    utilities:
+      apples: selfish
+  - name: fixed_agent_5
+    manners: neutral
+    utilities:
+      apples: altruistic
+  - name: fixed_agent_6
+    manners: neutral
+    utilities:
+      apples: selfish
+  - name: fixed_agent_7
+    manners: neutral
+    utilities:
+      apples: altruistic
+  - name: fixed_agent_8
+    manners: neutral
+    utilities:
+      apples: altruistic
+  - name: fixed_agent_9
+    manners: neutral
+    utilities:
+      apples: altruistic
+  - name: fixed_agent_10
+    manners: neutral
+    utilities:
+      apples: selfish
+  flex_agents:
+  - name: flex_agent_1
+    manners: neutral
+    initial_util: fair
+  - name: flex_agent_2
+    manners: neutral
+    initial_util: altruistic
+  - name: flex_agent_3
+    manners: neutral
+    initial_util: altruistic
+  - name: flex_agent_4
+    manners: neutral
+    initial_util: fair
+  - name: flex_agent_5
+    manners: neutral
+    initial_util: altruistic
+  - name: flex_agent_6
+    manners: neutral
+    initial_util: selfish
+  - name: flex_agent_7
+    manners: neutral
+    initial_util: selfish
+  - name: flex_agent_8
+    manners: neutral
+    initial_util: fair
+  - name: flex_agent_9
+    manners: neutral
+    initial_util: selfish
+  - name: flex_agent_10
+    manners: neutral
+    initial_util: altruistic
+interactions:
+  all_same: true
+  runs:
+    run_1:
+    - fixed_agent_8-fixed_agent_7-apples
+    - fixed_agent_9-fixed_agent_10-apples
+    - fixed_agent_2-fixed_agent_4-apples
+    - fixed_agent_5-flex_agent_2-apples
+    - flex_agent_3-fixed_agent_6-apples
+    - flex_agent_8-fixed_agent_3-apples
+    - fixed_agent_1-flex_agent_5-apples
+    - flex_agent_1-flex_agent_7-apples
+    - flex_agent_6-flex_agent_4-apples
+    - flex_agent_10-flex_agent_9-apples
+api_crfm:
+  assistant:
+    model_name: openai/gpt-4-0314
+    max_tokens: 300
+    temperature: 0.0
+  user:
+    model_name: openai/gpt-4-0314
+    max_tokens: 150
+    temperature: 0.0
+  meta:
+    model_name: openai/gpt-4-0314
+    max_tokens: 400
+    temperature: 0.0
+api_openai:
+  assistant:
+    model_name: gpt-4
+    max_tokens: 250
+    temperature: 0.0
+  user:
+    model_name: gpt-4
+    max_tokens: 50
+    temperature: 0.0
+  meta:
+    model_name: gpt-4
+    max_tokens: 150
+    temperature: 0.0

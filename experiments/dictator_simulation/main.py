@@ -128,6 +128,14 @@ def generate_agents(args):
     num_fixed_agents = args.env.n_fixed_inter *2 + args.env.n_mixed_inter
     num_flex_agents = args.env.n_flex_inter *2 + args.env.n_mixed_inter
 
+
+    # the special game case where we have different types of utility fixed agents,
+    # and we want them to be distributed equally across both the dictator side and the decider side
+    # we generate half as many agents and will double them by flopping every conversation
+    if args.env.vary_fixed_population_utility.dictator_decider_equal and args.env.vary_fixed_population_utility.vary_utilities:
+        num_fixed_agents = (num_fixed_agents + 1) // 2
+        num_flex_agents = (num_flex_agents + 1) // 2
+
     #generate fixed agents
 
     utilities_across_population = args.env.vary_fixed_population_utility.utilities.split(',') if args.env.vary_fixed_population_utility.vary_utilities else [args.env.single_fixed_utility]
@@ -149,6 +157,10 @@ def generate_agents(args):
         two_agent_lists.append(long_list)
     
     utilities_list, manners_list = two_agent_lists[0], two_agent_lists[1]
+
+    if len(utilities_list) != num_fixed_agents:
+        utilities_list.append(utilities_list[-1])
+        manners_list.append(manners_list[-1])
 
     for k in range(num_fixed_agents):
         currencies_dict = {}
@@ -198,20 +210,25 @@ def generate_interactions(args):
     fixed_agents = []
     flex_agents = []
 
+    n_fixed_inter = (args.env.n_fixed_inter+1) // 2 if args.env.vary_fixed_population_utility.dictator_decider_equal and args.env.vary_fixed_population_utility.vary_utilities else args.env.n_fixed_inter
+    n_mixed_inter = (args.env.n_mixed_inter+1) // 2 if args.env.vary_fixed_population_utility.dictator_decider_equal and args.env.vary_fixed_population_utility.vary_utilities else args.env.n_mixed_inter
+    n_flex_inter = (args.env.n_flex_inter+1) // 2 if args.env.vary_fixed_population_utility.dictator_decider_equal and args.env.vary_fixed_population_utility.vary_utilities else args.env.n_flex_inter
+
     for agent in args.agents.fixed_agents:
         fixed_agents.append(f"{agent['name']}-")
+        print(agent['name'])
     random.shuffle(fixed_agents)
-    mid = args.env.n_fixed_inter *2 + args.env.n_mixed_inter // 2
-    fixed_agents_fixed = fixed_agents[:args.env.n_fixed_inter * 2]
-    fixed_agents_deciders = fixed_agents[args.env.n_fixed_inter *2 : mid]
+    mid = n_fixed_inter *2 + (n_mixed_inter+1) // 2
+    fixed_agents_fixed = fixed_agents[:n_fixed_inter * 2]
+    fixed_agents_deciders = fixed_agents[n_fixed_inter * 2 : mid]
     fixed_agents_dictators = fixed_agents[mid:]
 
     for agent in args.agents.flex_agents:
         flex_agents.append(f"{agent['name']}-")
     random.shuffle(flex_agents)
-    flex_agents_flex = flex_agents[:args.env.n_flex_inter * 2]
-    flex_agents_dictators = flex_agents[args.env.n_flex_inter *2 : args.env.n_flex_inter *2 + len(fixed_agents_deciders)]
-    flex_agents_deciders = flex_agents[args.env.n_flex_inter *2 + len(fixed_agents_dictators):]
+    flex_agents_flex = flex_agents[:n_flex_inter * 2]
+    flex_agents_dictators = flex_agents[n_flex_inter *2 : n_flex_inter *2 + len(fixed_agents_deciders)]
+    flex_agents_deciders = flex_agents[n_flex_inter *2 + len(fixed_agents_dictators):]
 
     fixed_list = [fixed_agents_fixed[i] + fixed_agents_fixed[i+1] + currencies for i in range(0,len(fixed_agents_fixed),2)]
     flex_list = [flex_agents_flex[i] + flex_agents_flex[i+1] + currencies for i in range(0,len(flex_agents_flex),2)]
@@ -219,6 +236,17 @@ def generate_interactions(args):
     mixed_list_2 = [fixed_agents_dictators[i] + flex_agents_deciders[i] + currencies for i in range(len(fixed_agents_dictators))]
     mixed_list = mixed_list_1 + mixed_list_2
     random.shuffle(mixed_list)
+
+    if args.env.vary_fixed_population_utility.dictator_decider_equal and args.env.vary_fixed_population_utility.vary_utilities:
+        flipped_fixed_list = [fixed_agents_fixed[i+1] + fixed_agents_fixed[i] + currencies for i in range(0,len(fixed_agents_fixed),2)]
+        flipped_flex_list = [flex_agents_flex[i+1] + flex_agents_flex[i] + currencies for i in range(0,len(flex_agents_flex),2)]
+        flipped_mixed_list_1 = [fixed_agents_deciders[i] + flex_agents_dictators[i] + currencies for i in range(len(fixed_agents_deciders))]
+        flipped_mixed_list_2 = [flex_agents_deciders[i] + fixed_agents_dictators[i] + currencies for i in range(len(fixed_agents_dictators))]
+        flipped_mixed_list = flipped_mixed_list_1 + flipped_mixed_list_2
+        random.shuffle(flipped_mixed_list)
+        fixed_list += flipped_fixed_list
+        flex_list += flipped_flex_list
+        mixed_list += flipped_mixed_list
 
     args.interactions.runs.run_1 = fixed_list + mixed_list + flex_list
 

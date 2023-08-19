@@ -3,8 +3,8 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "tests_no_restructure_needed/0_test_1" # this is the name of the directory where the results will be saved
-  description: "\n\n Batch 1, Experiment 5 \n\n 1 flex-sociopath 9 fixed \n\n sociopath <--> aligned fair behavior \n\n 10 runs, vary currency and amount" # this is the description of the simulation
+  sim_dir: "batch_1/experiment_2/20runs_new/5v5_50altruistic_50selfish" # this is the name of the directory where the results will be saved
+  description: "\n\n Batch 1, Experiment 1 \n\n 9 flex 1 fixed \n\n 50% altruistic + 50% selfish \n\n 20 runs, vary currency and amount" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
@@ -12,7 +12,7 @@ sim:
   system_message: "Some principle was given to the flexible agents" # start developer constitution / social contract is given according to system
 
 combine:
-  combine_graph_directory: "experiments/batch_1/experiment_1/1v9"
+  combine_graph_directory: "experiments/batch_1/experiment_1/9v1"
   combine_graph_labels:
     #- "50% altruistic + 50% selfish"
     #- "80% altruistic + 20% selfish"
@@ -20,12 +20,14 @@ combine:
     - "altruistic"
     - "fair"
     - "selfish"
+    - "fixed"
+    - "flexible"
 
 env:
-  propose_decide_alignment: true # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 4
+  propose_decide_alignment: false # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 4
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
   random:
-    n_rand_iter: 10 # number of times the entire functionality is run, at least 2
+    n_rand_iter: 20 # number of times the entire functionality is run, at least 2
     rand_variables:
       currency: true # if true, the currency will vary for each random iteration
       amount: true # if true, amount-to-be-split will vary for each random iteration
@@ -33,17 +35,11 @@ env:
       n_mixed_inter: false # if true, the number of flexible-fixed policy agent interactions varies
 
 
-  single_fixed_utility: "fair" # the default utility for the fixed users to adpot
+  single_fixed_utility: "selfish" # the default utility for the fixed users to adpot
 
   vary_fixed_population_utility: 
     vary_utilities: true # if true, the utilities will vary between fixed policy agents
-    vary_pop_composition: false # if true, then the amount of variation in each run will be random, otherwise it will be set to the proportions below
-    n_dictator_utility:
-      - 0.5
-      - 0.5
-    n_decider_utility:
-      - 0.5
-      - 0.5
+    dictator_decider_equal: true # if true, numbers of dictators and deciders are equal
     utility_percentages:
       - 0.5
       - 0.5
@@ -53,7 +49,7 @@ env:
   single_fixed_manners: "neutral"
   
   vary_manners:
-    vary: true
+    vary: false
     manners_percentages:
       - 0.2
       - 0.2
@@ -66,8 +62,8 @@ env:
 
 
   flex_agent_start_utility:
-    randomized: false
-    multi_agent: true
+    randomized: true
+    multi_agent: false
     utility_percentages:
       - 0.5
       - 0.5
@@ -92,10 +88,10 @@ env:
    - "blankets"
    - "dollars"
   task_prompt: "task_prompt_1"
-  meta_prompt: "meta_prompt_2"
-  n_fixed_inter: 3
+  meta_prompt: "meta_prompt_1"
+  n_fixed_inter: 4
   n_mixed_inter: 4
-  n_flex_inter: 3
+  n_flex_inter: 4
   
 
 
