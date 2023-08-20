@@ -216,7 +216,6 @@ def generate_interactions(args):
 
     for agent in args.agents.fixed_agents:
         fixed_agents.append(f"{agent['name']}-")
-        print(agent['name'])
     random.shuffle(fixed_agents)
     mid = n_fixed_inter *2 + (n_mixed_inter+1) // 2
     fixed_agents_fixed = fixed_agents[:n_fixed_inter * 2]

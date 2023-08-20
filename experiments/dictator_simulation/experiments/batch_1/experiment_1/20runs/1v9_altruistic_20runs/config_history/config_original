@@ -69,9 +69,9 @@ env:
   - dollars
   task_prompt: task_prompt_1
   meta_prompt: meta_prompt_1
-  n_fixed_inter: 0
+  n_fixed_inter: 8
   n_mixed_inter: 2
-  n_flex_inter: 8
+  n_flex_inter: 0
 agents:
   fixed_agents:
   - name: fixed_agent_1
