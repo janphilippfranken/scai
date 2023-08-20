@@ -22,8 +22,7 @@ from scai.games.buyer_seller.prompts.seller.prompts import SELLER_PROMPTS
 from scai.games.buyer_seller.prompts.meta.prompts import META_PROMPTS
 
 # save and plot results
-from utils import save_as_csv, plot_results, plot_average_results
-from plots import plot_cosine_similarity
+from utils import save_as_csv, plot_results
 
 # create game
 def create_game(

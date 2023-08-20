@@ -18,7 +18,7 @@ sim:
 
   meta_prompt: "meta_prompt_1"
   max_tokens_meta: 100 # these are the word limits displayed in prompts
-git 
+
 api_crfm:
   buyer:
     model_name: "openai/gpt-4-0314"

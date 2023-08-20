@@ -93,92 +93,104 @@ def get_fancy_bbox(
         mutation_aspect=mutation_aspect, # change depending on ylim
         zorder=2)
    
+from plots import get_palette, lighten_color, get_fancy_bbox
+import pandas as pd 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 def plot_metrics(
-    data: pd.DataFrame,
-    metric: str = 'satisfaction',
-    error_metric: str = 'rating_id',
-    z_column: str = 'agent_id',  
-    data_directory: str = 'sim_res/sim_1/0', 
+    data: dict,
+    data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
     run : int = 0,
     palette_name: str = 'colorblind',
+    n_colors: int = 2,
     saturation: float = 0.6,
     font_family: str = 'Avenir',
     font_size: int = 24,
-    width: int = 10,
+    width: int = 15,
     height: int = 5,
-    linewidth: int = 2,
-    zorder: int = 1,
-    scatter_color: str = 'black',
-    y_label: str = 'Satisfaction',
-    y_label_coords: Tuple[float, float] = (-0.07, 0.5),
-    y_ticks: List[int] = [0, 2, 4, 6, 8, 10],
-    y_ticklabels: List[int] = [0, 2, 4, 6, 8, 10],
-    y_lim: Tuple[float, float] = (-1, 11),
-    legend: bool = True,
-    legend_title: str = 'User',
-    legend_loc: str = 'center left',
-    bbox_to_anchor: Tuple[float, float] = (1.0, 0.6),
-    plot_error: bool = False,
 ) -> None:
     """
     Plot user data
     """
     # Get color palette
-    palette = get_palette(n=len(set(data[z_column])), palette_name=palette_name, saturation=saturation)
+    palette = get_palette(n=n_colors, palette_name=palette_name, saturation=saturation)
     
     # Set font family and size
     plt.rcParams['font.family'] = font_family
     plt.rcParams['font.size'] = font_size
+    
+    metrics = {'setup': ['reward', 'distance'],
+               'strategic_choices': ['buyer stage 1', 'seller stage 2'], 
+               'results': ['buyer stage 3', 'utility']}
+    
+    x_labels = ['apple', 'orange']
 
-    # Create figure 
-    fig, ax = plt.subplots(figsize=(width, height)) 
-    # Store lines for legend
-    lines = []  
-    # Plot data
-    for i, user in enumerate(set(data[z_column])):
-        color = palette[i]
-        if not plot_error:
-            x = data[data[z_column] == user]['epoch']
-            y = np.array(data[data[z_column] == user][metric])
-            line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
-            lines.append(line[0])  # Append the Line2D object, not the list
-            ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
-        else:
-            data['average_ratings'] = data['average_ratings'].apply(lambda x: x if isinstance(x, float) else 0.0) # wont work for cases with one data point so need to reset
-            x = data[data[z_column] == user]['epoch']
-            x = x[:len(x)//2]
-            y = np.array(data[(data[z_column] == user) & (data[error_metric] == 'mean')][metric])
-            error = np.array(data[(data[z_column] == user) & (data[error_metric] == 'sem')][metric])
-            line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
-            lines.append(line[0])  # Append the Line2D object, not the list
-            ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
-            ax.fill_between(x, y - 1.95 * error, y + 1.95 * error, color=color, alpha=0.3)
-    sns.despine(left=True, bottom=False)
-    # x-axis
-    plt.xlabel('Turns')
-    ax.set_xticks(x)
-    ax.set_xticklabels(x + 1)
-    # y-axis
-    ax.set_ylabel(y_label.capitalize())
-    ax.yaxis.set_label_coords(*y_label_coords)
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_ticklabels)
-    ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
-    plt.ylim(y_lim)
-    # legend 
-    if legend:
-        ax.legend(lines,
-                  set(data[z_column]),
-                  title=legend_title, 
-                  frameon=False,
-                  ncol=1, 
-                  bbox_to_anchor=bbox_to_anchor,
-                  loc=legend_loc)
-    # save plots 
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_{metric.replace(" ", "_").lower()}.pdf', bbox_inches='tight')
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_{metric.replace(" ", "_").lower()}.jpg', bbox_inches='tight') # for demo in browser
+    for key, metric in metrics.items():
+         # Create figure 
+        fig, ax = plt.subplots(1, 2, figsize=(width, height)) 
+        # loop over rows and columns
+        for i in range(2):
+            # set x labels
+            if key == 'results' and i == 1:
+                x_labels = ['buyer', 'seller']
+            # get data
+            if key == 'setup':
+                if i == 0:
+                    bar_1 = data['reward_apple']
+                    bar_2 = data['reward_orange']
+                if i == 1:
+                    bar_1 = data['distance_apple']
+                    bar_2 = data['distance_orange']
+            if key == 'strategic_choices':
+                if i == 0:
+                    if data['buyer_choice_stage_1'] == 'apple':
+                        bar_1 = 10
+                        bar_2 = 0
+                    else:
+                        bar_1 = 0
+                        bar_2 = 10
+                if i == 1:
+                    bar_1 = data['price_apple_stage_2']
+                    bar_2 = data['price_orange_stage_2']
+            if key == 'results':
+                if i == 0:
+                    if data['buyer_choice_stage_3'] == 'apple':
+                        bar_1 = 10
+                        bar_2 = 0
+                    else:
+                        bar_1 = 0
+                        bar_2 = 10
+                if i == 1:
+                    bar_1 = data['buyer_overall_utility']
+                    bar_2 = data['seller_utility']
+            ax[i].bar(x_labels, [float(bar_1), float(bar_2)], color=palette,  zorder=1)
+            ax[i].set_ylabel(metric[i])
+            ax[i].yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
+            ax[i].set_ylim(-0.5, 11)
+            if key == 'strategic_choices' and i == 0:
+                ax[i].set_yticks([0, 10])
+                ax[i].set_yticklabels([0, 1])
+            if key == 'results' and i == 0:
+                ax[i].set_yticks([0, 10])
+                ax[i].set_yticklabels([0, 1])
+            # customize patches
+            for patch in ax[i].patches:
+                bb = patch.get_bbox()
+                color = patch.get_facecolor()
+                p_bbox = get_fancy_bbox(bb, "round,pad=-0.0025,rounding_size=0.02", color, mutation_aspect=5)
+                # remove the original patch and add the new one
+                patch.remove()
+                ax[i].add_patch(p_bbox)
+        fig.tight_layout()
+        # ax.set_xticklabels(x + 1)
+        sns.despine(left=True, bottom=False)
+        
+        # save plots 
+        plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_{key}.pdf', bbox_inches='tight')
+        plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}_{key}.jpg', bbox_inches='tight')
 
 def plot_average_metrics(
     data: pd.DataFrame,
@@ -256,59 +268,3 @@ def plot_average_metrics(
     # save plots 
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.pdf', bbox_inches='tight')
     plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.jpg', bbox_inches='tight') # for demo in browser
-
-def plot_cosine_similarity(
-    data_directory: str = 'sim_res/sim_1/0', 
-    sim_name: str = 'sim_1',
-    sim_id: str = '0',
-    n_runs: int = 5,
-    metrics: List[str] = ["Revised Developer Constitution", "Revised Social Contract"],
-    palette_name: str = 'colorblind',
-    saturation: float = 0.6,
-    font_family: str = 'Avenir',
-    font_size: int = 12,
-    model_name: str = 'all-MiniLM-L6-v2', 
-    max_seq_length:  int = 512,
-) -> None:
-    """
-    Plot cosine similarity between system responses over runs.
-    """
-    # plot params
-    plt.rcParams['font.family'] = font_family
-    plt.rcParams['font.size'] = font_size
-    # get model
-    model = SentenceTransformer(model_name)
-    model.max_seq_length = max_seq_length
-    # load data
-    system_messages = {k: [] for k in metrics}
-    for run in range(n_runs):
-        with open(f'{data_directory}/{sim_name}_id_{sim_id}_run_{run}.json', 'r') as f:
-            data = json.load(f)
-        for metric in metrics:
-            system_messages[metric].append(data['system'][-1]["full_response"][metric])
-    # write system messages to json
-    with open(f'{data_directory}/{sim_name}_id_{sim_id}_system_messages.json', 'w') as f:
-        json.dump(system_messages, f)
-    # Get color palette
-    palette = sns.color_palette("mako", as_cmap=True)
-    # Create a 1x2 subplot grid
-    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-    # First heatmap
-    embeddings_0 = model.encode(system_messages[metrics[0]], convert_to_tensor=True)
-    cosine_scores_0 = np.triu(util.cos_sim(embeddings_0, embeddings_0), k=0)
-    sns.heatmap(cosine_scores_0, linewidths=0.5, cmap=palette, annot=True, ax=axes[0])
-    axes[0].set_title(metrics[0].split()[-1])
-    axes[0].set_xlabel('Run')
-    axes[0].set_ylabel('Run')
-    # Second heatmap
-    embeddings_1 = model.encode(system_messages[metrics[1]], convert_to_tensor=True)
-    cosine_scores_1 = np.triu(util.cos_sim(embeddings_1, embeddings_1), k=0)
-    sns.heatmap(cosine_scores_1, linewidths=0.5, cmap=palette, annot=True, ax=axes[1])
-    axes[1].set_title(metrics[1].split()[-1])
-    axes[1].set_xlabel('Run')
-    axes[1].set_ylabel('Run')
-    # Adjust the layout and spacing
-    plt.tight_layout()
-    # Save the figure
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.pdf', bbox_inches='tight')
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_cosine_similarity.jpg', bbox_inches='tight')

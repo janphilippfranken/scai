@@ -219,5 +219,25 @@ BUYER Choice Stage 3: {buyer_choice_stage_3.capitalize()}"""
         return {
                 'prompt': prompt_string,
                 'response': {'system_message_buyer': response['Buyer Strategy'],
-                             'system_message_seller': 'Make strategic choices that maximize your utility.'}
+                             'system_message_seller': 'Make strategic choices that maximize your utility.',
+                             'buyer_overall_utility': utility_stage_1 + utility_stage_3,
+                             'buyer_utility_stage_1': utility_stage_1,
+                             'buyer_utility_stage_3': utility_stage_3,
+                             'seller_utility': seller_utility,
+                             'buyer_choice_stage_1': buyer_choice_stage_1.lower(),
+                             'buyer_choice_stage_3': buyer_choice_stage_3.lower(),
+                             'reward_stage_1': reward_stage_1,
+                             'reward_stage_3': reward_stage_3,
+                             'reward_apple': task_prompt.reward_apple,
+                             'reward_orange': task_prompt.reward_orange,
+                             'distance_apple': task_prompt.distance_apple,
+                             'distance_orange': task_prompt.distance_orange,
+                             'distance_stage_1': distance_stage_1,
+                             'distance_stage_3': distance_stage_3,  
+                             'chat_history': chat_history_string,
+                             'price_apple_stage_2': seller_price_apple_stage_2,
+                             'price_orange_stage_2': seller_price_orange_stage_2,
+                             'strategy_buyer': strategy_buyer,
+                             'strategy_seller': 'Make strategic choices that maximize your utility.',
+                            }
             }
