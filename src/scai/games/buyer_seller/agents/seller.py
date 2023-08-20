@@ -75,7 +75,7 @@ class SellerAgent(BaseAgent):
         Returns:
             ChatPromptTemplate
         """
-        system_prompt_template = SystemMessagePromptTemplate.from_template(f"{seller_prompt.content} {task_prompt.seller_task}\n\n########################################\n")
+        system_prompt_template = SystemMessagePromptTemplate.from_template(f"{task_prompt.seller_task}\n\n{seller_prompt.content}\n\n########################################\n")
         chat_history_prompt_templates = self._get_chat_history_prompt_templates(buffer, task_prompt)
         return ChatPromptTemplate.from_messages([system_prompt_template, *chat_history_prompt_templates])
        
