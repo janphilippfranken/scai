@@ -7,10 +7,10 @@ sim:
   sim_id: "0" 
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   verbose: true # if false, no responses are printed during simulation
-  n_runs: 1
+  n_runs: 2
 
-  system_message_buyer: "You are a helpful AI assistant." # start strategy byer
-  system_message_seller: "You are a helpful AI assistant." # start strategy seller
+  system_message_buyer: " " # start strategy byer
+  system_message_seller: " " # start strategy seller
 
   task_prompt: "task_prompt_1"
   seller_prompt: "seller_prompt_1" 
@@ -18,7 +18,7 @@ sim:
 
   meta_prompt: "meta_prompt_1"
   max_tokens_meta: 100 # these are the word limits displayed in prompts
-
+git 
 api_crfm:
   buyer:
     model_name: "openai/gpt-4-0314"
@@ -30,7 +30,7 @@ api_crfm:
     temperature: 0.0 # we want sellers to be low on temperature to avoid random variation in ratings
   meta:
     model_name: "openai/gpt-4-0314" 
-    max_tokens: 100 # these are the actual token limits
+    max_tokens: 200 # these are the actual token limits
     temperature: 0.5
 
 api_openai:

@@ -105,8 +105,8 @@ def main(args: DictConfig) -> None:
             json.dump(game.buffer._full_memory.messages, f)
         
         # update system message after each run
-        system_message_buyer = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['full_response']['system_message_buyer']) 
-        system_message_seller = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['full_response']['system_message_seller'])
+        system_message_buyer = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_buyer']) 
+        system_message_seller = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_seller'])
         
 if __name__ == '__main__':
     main()

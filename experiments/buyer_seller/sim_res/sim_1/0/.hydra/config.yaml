@@ -3,9 +3,9 @@ sim:
   sim_id: '0'
   model_name: openai/gpt-4-0314
   verbose: true
-  n_runs: 1
-  system_message_buyer: You are a helpful AI assistant.
-  system_message_seller: You are a helpful AI assistant.
+  n_runs: 2
+  system_message_buyer: ' '
+  system_message_seller: ' '
   task_prompt: task_prompt_1
   seller_prompt: seller_prompt_1
   buyer_prompt: buyer_prompt_1
@@ -22,7 +22,7 @@ api_crfm:
     temperature: 0.0
   meta:
     model_name: openai/gpt-4-0314
-    max_tokens: 100
+    max_tokens: 200
     temperature: 0.5
 api_openai:
   buyer:
