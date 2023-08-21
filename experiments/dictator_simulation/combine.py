@@ -36,7 +36,8 @@ def scan_experiment_for_scores(
                     file_path = os.path.join(item_path, file)
                     df = pd.read_csv(file_path)
                     fixed_sum, fixed_num, flex_sum, flex_num, total_to_split = 0, 0, 0, 0, 0
-                    for index, row in df.iterrows():
+                    for _, row in df.iterrows():
+                        if pd.isna(row['response']): continue
                         numbers = [int(num) for num in re.findall(r'\d+', row['response'])]
                         if len(numbers) >= 3:   #locate dictator row
                             if row['agent'] == 'fixed':

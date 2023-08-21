@@ -8,7 +8,7 @@ sim:
   verbose: false
   system_message: Some principle was given to the flexible agents
 combine:
-  combine_graph_directory: experiments/batch_1/experiment_1/9v1
+  combine_graph_directory: experiments/batch_1/experiment_1/20runs/5v5
   combine_graph_labels:
   - altruistic
   - fair
