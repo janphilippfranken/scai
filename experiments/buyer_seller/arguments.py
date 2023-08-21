@@ -72,6 +72,38 @@ class SimArguments:
             )
         },
     )
+    distance_apple: float = field(
+        default=1,
+        metadata={
+            "help": (
+                "distance to apple",
+            )
+        },
+    )
+    distance_orange: float = field(
+        default=9,
+        metadata={
+            "help": (
+                "distance to orange",
+            )
+        },
+    )
+    reward_apple: float = field(
+        default=0,
+        metadata={
+            "help": (
+                "reward for apple",
+            )
+        },
+    )
+    reward_orange: float = field(
+        default=10,
+        metadata={
+            "help": (
+                "reward for orange",
+            )
+        },
+    )
 
 @dataclass
 class BuyerAPIArgumentsCRFM:

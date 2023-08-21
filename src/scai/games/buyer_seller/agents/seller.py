@@ -84,6 +84,8 @@ class SellerAgent(BaseAgent):
         chat_prompt_template: ChatPromptTemplate,
         system_message: str,
         task_prompt: TaskPrompt,
+        distance_apple: float,
+        distance_orange: float,
     ) -> str:
         """
         Returns the response from the seller.
@@ -99,8 +101,8 @@ class SellerAgent(BaseAgent):
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(strategy=system_message,
                              task=task_prompt.seller_task,
-                             distance_apple=task_prompt.distance_apple,
-                             distance_orange=task_prompt.distance_orange,
+                             distance_apple=distance_apple,
+                             distance_orange=distance_orange,
                              stop=['System:']) 
         response = self._format_response(response, ['Price Apple', 'Price Orange', 'Reason'])
         return response
@@ -110,6 +112,10 @@ class SellerAgent(BaseAgent):
         buffer: ConversationBuffer, 
         seller_prompt: SellerPrompt, 
         task_prompt: TaskPrompt, 
+        distance_apple: float,
+        distance_orange: float,
+        reward_apple: float,
+        reward_orange: float,
         turn: int,
         verbose: bool = False,
     ) -> Dict[str, Any]:
@@ -131,10 +137,10 @@ class SellerAgent(BaseAgent):
         print(chat_prompt_template)
         prompt_string = chat_prompt_template.format(strategy=system_message,
                                                     task=task_prompt.seller_task,
-                                                    distance_apple=task_prompt.distance_apple,
-                                                    distance_orange=task_prompt.distance_orange)
+                                                    distance_apple=distance_apple,
+                                                    distance_orange=distance_orange)
       
-        response = self._get_response(chat_prompt_template, system_message, task_prompt)
+        response = self._get_response(chat_prompt_template, system_message, task_prompt, distance_apple=distance_apple, distance_orange=distance_orange)
         
         if verbose:
             print('===================================')

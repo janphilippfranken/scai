@@ -13,10 +13,6 @@ TASK_PROMPT: Dict[str, TaskPrompt] = {
         name="buyer_seller",   
         role="user",
         preamble="",
-        distance_orange=5,
-        distance_apple=5,
-        reward_orange=5,
-        reward_apple=5,
         buyer_task="""You can choose between an apple and an orange. Initially, the apple's reward is {reward_apple}, and the orange's is {reward_orange}. Their initial costs stand at {distance_apple} and {distance_orange}, respectively, always summing to 10.
 
 Stage 1: Choose an item and gain utility equal to reward minus cost.

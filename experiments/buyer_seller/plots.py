@@ -238,7 +238,6 @@ def plot_average_metrics(
 
     unique_agents = sorted(set(data['agent']))
     for i, agent in enumerate(unique_agents):
-        print(agent)
         color = palette[i]
         x = list(data['run'].unique())
         y = list(data[data['agent'] == agent]['utility'])
@@ -265,7 +264,6 @@ def plot_average_metrics(
                   ncol=1, 
                   bbox_to_anchor=bbox_to_anchor,
                   loc=legend_loc)
-    print(legends)
         
     plt.tight_layout()
     # save plots 

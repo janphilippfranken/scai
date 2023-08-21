@@ -92,6 +92,10 @@ class BuyerAgent(BaseAgent):
         chat_prompt_template: ChatPromptTemplate,
         system_message: str,
         task_prompt: TaskPrompt,
+        distance_apple: float,
+        distance_orange: float,
+        reward_apple: float,
+        reward_orange: float,
     ) -> str:
         """
         Returns the response from the buyer.
@@ -107,10 +111,10 @@ class BuyerAgent(BaseAgent):
         chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
         response = chain.run(strategy=system_message,
                              task=task_prompt.buyer_task,
-                             distance_apple=task_prompt.distance_apple,
-                             distance_orange=task_prompt.distance_orange,
-                             reward_apple=task_prompt.reward_apple,
-                             reward_orange=task_prompt.reward_orange,
+                             distance_apple=distance_apple,
+                             distance_orange=distance_orange,
+                             reward_apple=reward_apple,
+                             reward_orange=reward_orange,
                              stop=['System:'])   
         response = self._format_response(response, ['Choice', 'Reason'])
         return response
@@ -121,6 +125,10 @@ class BuyerAgent(BaseAgent):
         buyer_prompt: BuyerPrompt, 
         task_prompt: TaskPrompt, 
         turn: int,
+        distance_apple: float,
+        distance_orange: float,
+        reward_apple: float,
+        reward_orange: float,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the buyer
@@ -129,6 +137,10 @@ class BuyerAgent(BaseAgent):
             buffer (ConversationBuffer): The conversation buffer.
             buyer_prompt (buyerPrompt): The buyer prompt.
             task_prompt (TaskPrompt): The task prompt.
+            distance_apple (float): The distance of the apple.
+            distance_orange (float): The distance of the orange.
+            reward_apple (float): The reward of the apple.
+            reward_orange (float): The reward of the orange.
             turn (int): The turn number.
             test_run (bool, optional): Whether to run a test run. Defaults to False.
             verbose (bool, optional): Whether to print the buyer's response. Defaults to False.
@@ -140,12 +152,12 @@ class BuyerAgent(BaseAgent):
         chat_prompt_template =  self._get_prompt(buffer, buyer_prompt, task_prompt)
         prompt_string = chat_prompt_template.format(strategy=system_message,
                                                     task=task_prompt.buyer_task,
-                                                    distance_apple=task_prompt.distance_apple,
-                                                    distance_orange=task_prompt.distance_orange,
-                                                    reward_apple=task_prompt.reward_apple,
-                                                    reward_orange=task_prompt.reward_orange)
+                                                    distance_apple=distance_apple,
+                                                    distance_orange=distance_orange,
+                                                    reward_apple=reward_apple,
+                                                    reward_orange=reward_orange)
       
-        response = self._get_response(chat_prompt_template, system_message, task_prompt)
+        response = self._get_response(chat_prompt_template, system_message, task_prompt, distance_apple=distance_apple, distance_orange=distance_orange, reward_apple=reward_apple, reward_orange=reward_orange)
         
         if verbose:
             print('===================================')

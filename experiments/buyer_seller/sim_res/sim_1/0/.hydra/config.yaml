@@ -4,13 +4,17 @@ sim:
   model_name: openai/gpt-4-0314
   verbose: true
   n_runs: 2
-  system_message_buyer: ' '
-  system_message_seller: ' '
   task_prompt: task_prompt_1
   seller_prompt: seller_prompt_1
   buyer_prompt: buyer_prompt_1
   meta_prompt: meta_prompt_1
   max_tokens_meta: 100
+  system_message_buyer: ' '
+  system_message_seller: ' '
+  distance_apple: 3
+  distance_orange: 7
+  reward_apple: 4
+  reward_orange: 6
 api_crfm:
   buyer:
     model_name: openai/gpt-4-0314

@@ -36,6 +36,10 @@ def create_game(
     """
     return Game.create(
         _id=args.sim.sim_id,
+        distance_apple=args.sim.distance_apple,
+        distance_orange=args.sim.distance_orange,
+        reward_apple=args.sim.reward_apple,
+        reward_orange=args.sim.reward_orange,
         name=args.sim.sim_dir,
         buyer_llm=buyer_llm,
         seller_llm=seller_llm,

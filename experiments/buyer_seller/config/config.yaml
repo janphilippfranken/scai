@@ -9,15 +9,21 @@ sim:
   verbose: true # if false, no responses are printed during simulation
   n_runs: 2
 
-  system_message_buyer: " " # start strategy byer
-  system_message_seller: " " # start strategy seller
-
   task_prompt: "task_prompt_1"
   seller_prompt: "seller_prompt_1" 
   buyer_prompt: "buyer_prompt_1"
 
   meta_prompt: "meta_prompt_1"
   max_tokens_meta: 100 # these are the word limits displayed in prompts
+
+  # game specific args 
+  system_message_buyer: " " # start strategy buyer, to be updated with meta prompt 
+  system_message_seller: " " # start strategy seller, to be updated with meta prompt
+  distance_apple: 3 # initial distance of buyer from apple 
+  distance_orange: 7 # initial distance of buyer from orange
+  reward_apple: 4 # reward buyer gets from consuming apple, unknown to seller
+  reward_orange: 6 # reward buyer gets from consuming orange, unknown to seller 
+
 
 api_crfm:
   buyer:
