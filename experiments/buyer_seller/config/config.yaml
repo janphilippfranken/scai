@@ -7,7 +7,7 @@ sim:
   sim_id: "0" 
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   verbose: true # if false, no responses are printed during simulation
-  n_runs: 2
+  n_runs: 3
 
   task_prompt: "task_prompt_1"
   seller_prompt: "seller_prompt_1" 

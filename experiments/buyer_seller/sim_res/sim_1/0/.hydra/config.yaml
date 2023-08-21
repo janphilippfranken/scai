@@ -3,7 +3,7 @@ sim:
   sim_id: '0'
   model_name: openai/gpt-4-0314
   verbose: true
-  n_runs: 2
+  n_runs: 3
   task_prompt: task_prompt_1
   seller_prompt: seller_prompt_1
   buyer_prompt: buyer_prompt_1

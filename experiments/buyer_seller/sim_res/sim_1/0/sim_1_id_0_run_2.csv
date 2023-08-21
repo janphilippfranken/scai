@@ -1,6 +1,6 @@
 response,agent,prompt_buyer,prompt_seller,prompt,turn
-"{'system_message_buyer': ' ', 'system_message_seller': ' '}",system,,,,
-"{'system_message_buyer': ""In Stage 1, choose the Orange to gain a higher initial utility. Anticipate the Seller's price adjustments in Stage 2, and select the item with the highest net utility in Stage 3, considering the adjusted prices set by the Seller."", 'system_message_seller': ""Observe the buyer's choice in Stage 1 and infer their preference. In Stage 2, set the prices to encourage the buyer to choose the initially less preferred item by slightly lowering its price and raising the price of the initially preferred item. This will maximize your utility by capturing the highest possible price for the item the buyer chooses in Stage 3, while still making it a more attractive option than the alternative. In this case, you could have set the prices at Apple"", 'buyer_overall_utility': 5.0, 'buyer_utility_stage_1': -1, 'buyer_utility_stage_3': 6.0, 'seller_utility': 4.0, 'buyer_choice_stage_1': 'apple', 'buyer_choice_stage_3': 'orange', 'reward_stage_1': 0, 'reward_stage_3': 10, 'reward_apple': 0, 'reward_orange': 10, 'distance_apple': 1, 'distance_orange': 9, 'distance_stage_1': 1, 'distance_stage_3': 9, 'chat_history': 'BUYER Choice Stage 1: Apple\nSELLER prices set in Stage 2: Apple: 6, Orange: 4\nBUYER Choice Stage 3: Orange', 'price_apple_stage_2': '6', 'price_orange_stage_2': '4', 'strategy_buyer': ' ', 'strategy_seller': ' '}",system,"System: Always respond to the best of your ability.
+"{'system_message_buyer': ""In Stage 1, choose the Apple to signal lower utility. Expect the Seller to adjust prices in Stage 2, increasing the Apple's price and decreasing the Orange's price. In Stage 3, purchase the Orange at a lower cost, maximizing your overall utility."", 'system_message_seller': ""Observe the buyer's choice in Stage 1 and infer their preference. In Stage 2, set the prices to encourage the buyer to choose the initially less preferred item by significantly lowering its price and raising the price of the initially preferred item. This will maximize your utility by capturing the highest possible price for the item the buyer chooses in Stage 3, while still making it a more attractive option than the alternative. In this case, you could have set the prices at Apple""}",system,,,,
+"{'system_message_buyer': ""In Stage 1, choose the Apple to signal lower utility. Anticipate the Seller adjusting prices in Stage 2 by increasing the Apple's price and decreasing the Orange's price. In Stage 3, purchase the Orange at the reduced cost, maximizing your overall utility."", 'system_message_seller': ""Observe the buyer's choice in Stage 1 and infer their preference. In Stage 2, set the prices to encourage the buyer to choose the initially less preferred item by greatly lowering its price and increasing the price of the initially preferred item. In this case, you could have set the prices at Apple"", 'buyer_overall_utility': 5.0, 'buyer_utility_stage_1': -1, 'buyer_utility_stage_3': 6.0, 'seller_utility': 4.0, 'buyer_choice_stage_1': 'apple', 'buyer_choice_stage_3': 'orange', 'reward_stage_1': 0, 'reward_stage_3': 10, 'reward_apple': 0, 'reward_orange': 10, 'distance_apple': 1, 'distance_orange': 9, 'distance_stage_1': 1, 'distance_stage_3': 9, 'chat_history': 'BUYER Choice Stage 1: Apple\nSELLER prices set in Stage 2: Apple: 6, Orange: 4\nBUYER Choice Stage 3: Orange', 'price_apple_stage_2': '6', 'price_orange_stage_2': '4', 'strategy_buyer': ""In Stage 1, choose the Apple to signal lower utility. Expect the Seller to adjust prices in Stage 2, increasing the Apple's price and decreasing the Orange's price. In Stage 3, purchase the Orange at a lower cost, maximizing your overall utility."", 'strategy_seller': ""Observe the buyer's choice in Stage 1 and infer their preference. In Stage 2, set the prices to encourage the buyer to choose the initially less preferred item by significantly lowering its price and raising the price of the initially preferred item. This will maximize your utility by capturing the highest possible price for the item the buyer chooses in Stage 3, while still making it a more attractive option than the alternative. In this case, you could have set the prices at Apple""}",system,"System: Always respond to the best of your ability.
 
 Human: A BUYER has played the following game with a SELLER:
 
@@ -36,7 +36,7 @@ The Seller's total utility upon setting the prices Stage 2 is and receiving 4.0 
 
 To maximize its utility, the BUYER used the following strategy:
 ---------------------------
- 
+In Stage 1, choose the Apple to signal lower utility. Expect the Seller to adjust prices in Stage 2, increasing the Apple's price and decreasing the Orange's price. In Stage 3, purchase the Orange at a lower cost, maximizing your overall utility.
 ---------------------------
 
 Your job is to:
@@ -79,7 +79,7 @@ The Seller's total utility upon setting the prices Stage 2 is and receiving 4.0 
 
 To maximize its utility, the SELLER used the following strategy:
 ---------------------------
- 
+Observe the buyer's choice in Stage 1 and infer their preference. In Stage 2, set the prices to encourage the buyer to choose the initially less preferred item by significantly lowering its price and raising the price of the initially preferred item. This will maximize your utility by capturing the highest possible price for the item the buyer chooses in Stage 3, while still making it a more attractive option than the alternative. In this case, you could have set the prices at Apple
 ---------------------------
 
 Your job is to:
@@ -88,7 +88,7 @@ Your job is to:
 
 Format your response as follows:
 Seller Strategy: <SELLER's revised strategy (directly addressing the SELLER as 'you' in the prompt). No longer than 100 words.",,
-"{'Reason': 'Choosing the apple has a lower initial cost, potentially leading to a lower adjusted cost for the orange in Stage 3.', 'Choice': 'apple'}",0_buyer,,,"System: You can choose between an apple and an orange. The apple's reward is ALWAYS 0, and the orange's reward is ALWAYS 10. The initial costs of the apple is 1 and the initial cost of the orange is 9, respectively. Rewards and costs always sum to 10.
+"{'Reason': 'Choosing the apple signals lower utility, potentially leading to a lower cost for the orange in Stage 2.', 'Choice': 'Apple'}",0_buyer,,,"System: You can choose between an apple and an orange. The apple's reward is ALWAYS 0, and the orange's reward is ALWAYS 10. The initial costs of the apple is 1 and the initial cost of the orange is 9, respectively. Rewards and costs always sum to 10.
 
 Stage 1: Choose an item and gain utility equal to reward minus cost.
 Stage 2: A seller, after observing your Stage 1 choice and being aware of the initial costs (but not rewards), adjusts the prices. The combined price for both items remains 10.
@@ -96,14 +96,14 @@ Stage 3: Purchase one item at the adjusted price, receiving utility determined b
 
 Your goal is to maximize the total utility across both stages (reward - initial cost + reward - adjusted cost).
 
- 
+In Stage 1, choose the Apple to signal lower utility. Expect the Seller to adjust prices in Stage 2, increasing the Apple's price and decreasing the Orange's price. In Stage 3, purchase the Orange at a lower cost, maximizing your overall utility.
 
 ########################################
 
 Human: You are now at Stage 1. Choose an item and format your response as follows:
 Reason: <rationale for your choice using max. 50 tokens> 
 Choice: <apple or orange>",1.0
-"{'Reason': 'The orange has a higher reward of 10, and its new cost is 4, which results in a higher utility (10-4=6) compared to the apple (0-6=-6).', 'Choice': 'orange'}",0_buyer,,,"System: You can choose between an apple and an orange. The apple's reward is ALWAYS 0, and the orange's reward is ALWAYS 10. The initial costs of the apple is 1 and the initial cost of the orange is 9, respectively. Rewards and costs always sum to 10.
+"{'Reason': 'The orange has a higher reward of 10, and its new cost is 4, resulting in a higher utility compared to the apple.', 'Choice': 'orange'}",0_buyer,,,"System: You can choose between an apple and an orange. The apple's reward is ALWAYS 0, and the orange's reward is ALWAYS 10. The initial costs of the apple is 1 and the initial cost of the orange is 9, respectively. Rewards and costs always sum to 10.
 
 Stage 1: Choose an item and gain utility equal to reward minus cost.
 Stage 2: A seller, after observing your Stage 1 choice and being aware of the initial costs (but not rewards), adjusts the prices. The combined price for both items remains 10.
@@ -111,14 +111,14 @@ Stage 3: Purchase one item at the adjusted price, receiving utility determined b
 
 Your goal is to maximize the total utility across both stages (reward - initial cost + reward - adjusted cost).
 
- 
+In Stage 1, choose the Apple to signal lower utility. Expect the Seller to adjust prices in Stage 2, increasing the Apple's price and decreasing the Orange's price. In Stage 3, purchase the Orange at a lower cost, maximizing your overall utility.
 
 ########################################
 
 Human: You are now at Stage 3. The new price for the apple is 6. The new price for the orange is 4. Again, choose an item and format your response as follows:
 Reason: <rationale for your choice using max. 50 tokens> 
 Choice: <apple or orange>",3.0
-"{'Reason': 'Increase apple price to encourage orange purchase, maximizing utility.', 'Price Apple': '6', 'Price Orange': '4'}",0_seller,,,"System: You observe a buyer choosing between an apple and an orange. You're aware that the apple's initial cost is 1 and the orange's is 9, with costs always summing to 10. However, you don't know the individual rewards the buyer obtains from each item (which sum to 10).
+"{'Reason': ""Encourage buyer to choose orange by lowering its price and raising apple's price."", 'Price Apple': '6', 'Price Orange': '4'}",0_seller,,,"System: You observe a buyer choosing between an apple and an orange. You're aware that the apple's initial cost is 1 and the orange's is 9, with costs always summing to 10. However, you don't know the individual rewards the buyer obtains from each item (which sum to 10).
 
 Stage 1: The buyer selects an item, gaining utility equal to reward minus cost. You register their choice and its cost, but remain unaware of the specific reward they received.
 Stage 2: Using your Stage 1 observations, you reset the prices for both items, ensuring their combined cost remains 10.
@@ -126,7 +126,7 @@ Stage 3: The buyer purchases one item at the new price, deriving utility from it
 
 Your goal is to maximize utility you get from the buyer's purchase at Stage 3, which is simply equal to the new price of the item the buyer chooses.
 
- 
+Observe the buyer's choice in Stage 1 and infer their preference. In Stage 2, set the prices to encourage the buyer to choose the initially less preferred item by significantly lowering its price and raising the price of the initially preferred item. This will maximize your utility by capturing the highest possible price for the item the buyer chooses in Stage 3, while still making it a more attractive option than the alternative. In this case, you could have set the prices at Apple
 
 ########################################
 
