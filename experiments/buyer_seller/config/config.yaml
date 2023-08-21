@@ -19,10 +19,10 @@ sim:
   # game specific args 
   system_message_buyer: " " # start strategy buyer, to be updated with meta prompt 
   system_message_seller: " " # start strategy seller, to be updated with meta prompt
-  distance_apple: 3 # initial distance of buyer from apple 
-  distance_orange: 7 # initial distance of buyer from orange
-  reward_apple: 4 # reward buyer gets from consuming apple, unknown to seller
-  reward_orange: 6 # reward buyer gets from consuming orange, unknown to seller 
+  distance_apple: 1 # initial distance of buyer from apple 
+  distance_orange: 9 # initial distance of buyer from orange
+  reward_apple: 0 # reward buyer gets from consuming apple, unknown to seller
+  reward_orange: 10 # reward buyer gets from consuming orange, unknown to seller 
 
 
 api_crfm:

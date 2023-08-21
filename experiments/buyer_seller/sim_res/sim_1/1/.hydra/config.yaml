@@ -1,6 +1,6 @@
 sim:
   sim_dir: sim_1
-  sim_id: '0'
+  sim_id: '1'
   model_name: openai/gpt-4-0314
   verbose: true
   n_runs: 2
@@ -11,10 +11,10 @@ sim:
   max_tokens_meta: 100
   system_message_buyer: ' '
   system_message_seller: ' '
-  distance_apple: 1
-  distance_orange: 9
-  reward_apple: 0
-  reward_orange: 10
+  distance_apple: 3
+  distance_orange: 7
+  reward_apple: 4
+  reward_orange: 6
 api_crfm:
   buyer:
     model_name: openai/gpt-4-0314

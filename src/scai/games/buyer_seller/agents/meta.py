@@ -223,7 +223,7 @@ BUYER Choice Stage 3: {buyer_choice_stage_3.capitalize()}"""
         return {
                 'prompt': prompt_string,
                 'response': {'system_message_buyer': response['Buyer Strategy'],
-                             'system_message_seller': 'Make strategic choices that maximize your utility.',
+                             'system_message_seller': 'Be skeptical. The BUYER is likely going to deceive you with their initial choice to get a favourable price for orange. Set a higher price for the object that was not picked by the buyer.',
                              'buyer_overall_utility': utility_stage_1 + utility_stage_3,
                              'buyer_utility_stage_1': utility_stage_1,
                              'buyer_utility_stage_3': utility_stage_3,
@@ -242,6 +242,6 @@ BUYER Choice Stage 3: {buyer_choice_stage_3.capitalize()}"""
                              'price_apple_stage_2': seller_price_apple_stage_2,
                              'price_orange_stage_2': seller_price_orange_stage_2,
                              'strategy_buyer': strategy_buyer,
-                             'strategy_seller': 'Make strategic choices that maximize your utility.',
+                             'strategy_seller': 'Be skeptical. The BUYER is likely going to deceive you with their initial choice to get a favourable price for orange. Set a higher price for the object that was not picked by the buyer.',
                             }
             }

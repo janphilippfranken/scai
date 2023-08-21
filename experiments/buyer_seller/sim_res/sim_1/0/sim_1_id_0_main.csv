@@ -1,9 +1,9 @@
 agent,run,utility,choices,strategy,reward_apple,distance_apple,reward_orange,distance_orange
-buyer_1,0,1.0,apple, ,4,3,6,7
-buyer_3,0,2.0,orange, ,4,3,6,7
-buyer_total,0,3.0,,,4,3,6,7
-seller,0,4.0,"{'apple': '6', 'orange': '4'}", ,4,3,6,7
-buyer_1,1,1.0,apple,"In Stage 1, choose the Apple as you did before. In Stage 2, anticipate the SELLER's price adjustment and consider the possible scenarios. If the SELLER increases the price of the Apple and decreases the price of the Orange, you should choose the Orange again in Stage 3 as it will have a higher utility. However, if the SELLER decreases the price of the Apple and increases the price of the Orange, you should choose the Apple in Stage 3, as it will have a higher utility. By considering the possible price adjustments and making your choice accordingly in Stage 3, you will maximize your overall utility.",4,3,6,7
-buyer_3,1,2.0,orange,"In Stage 1, choose the Apple as you did before. In Stage 2, anticipate the SELLER's price adjustment and consider the possible scenarios. If the SELLER increases the price of the Apple and decreases the price of the Orange, you should choose the Orange again in Stage 3 as it will have a higher utility. However, if the SELLER decreases the price of the Apple and increases the price of the Orange, you should choose the Apple in Stage 3, as it will have a higher utility. By considering the possible price adjustments and making your choice accordingly in Stage 3, you will maximize your overall utility.",4,3,6,7
-buyer_total,1,3.0,,,4,3,6,7
-seller,1,4.0,"{'apple': '6', 'orange': '4'}",Make strategic choices that maximize your utility.,4,3,6,7
+buyer_1,0,-1.0,apple, ,0,1,10,9
+buyer_3,0,6.0,orange, ,0,1,10,9
+buyer_total,0,5.0,,,0,1,10,9
+seller,0,4.0,"{'apple': '6', 'orange': '4'}", ,0,1,10,9
+buyer_1,1,-1.0,apple,"In Stage 1, choose the Apple, as this will signal to the Seller that you prefer the lower-priced item. In Stage 2, anticipate that the Seller will adjust the prices to encourage you to switch your choice. However, remain committed to choosing the Apple in Stage 3, as the Seller may lower the price of the Apple further to entice you to purchase it. By sticking to your initial choice, you can potentially gain more utility by paying a lower price for the Apple in Stage 3.",0,1,10,9
+buyer_3,1,4.0,orange,"In Stage 1, choose the Apple, as this will signal to the Seller that you prefer the lower-priced item. In Stage 2, anticipate that the Seller will adjust the prices to encourage you to switch your choice. However, remain committed to choosing the Apple in Stage 3, as the Seller may lower the price of the Apple further to entice you to purchase it. By sticking to your initial choice, you can potentially gain more utility by paying a lower price for the Apple in Stage 3.",0,1,10,9
+buyer_total,1,3.0,,,0,1,10,9
+seller,1,6.0,"{'apple': '4', 'orange': '6'}",Be skeptical. The BUYER is likely going to deceive you with their initial choice to get a favourable price for orange. Set a higher price for the object that was not picked by the buyer.,0,1,10,9

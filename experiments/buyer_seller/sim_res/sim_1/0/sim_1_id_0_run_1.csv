@@ -1,12 +1,12 @@
 response,agent,prompt,turn
-"{'system_message_buyer': ""In Stage 1, choose the Apple as you did before. In Stage 2, anticipate the SELLER's price adjustment and consider the possible scenarios. If the SELLER increases the price of the Apple and decreases the price of the Orange, you should choose the Orange again in Stage 3 as it will have a higher utility. However, if the SELLER decreases the price of the Apple and increases the price of the Orange, you should choose the Apple in Stage 3, as it will have a higher utility. By considering the possible price adjustments and making your choice accordingly in Stage 3, you will maximize your overall utility."", 'system_message_seller': 'Make strategic choices that maximize your utility.'}",system,,
-"{'system_message_buyer': ""In Stage 1, choose the Apple as you did before. In Stage 2, closely observe the SELLER's price adjustment and consider the possible scenarios. If the SELLER increases the price of the Apple and decreases the price of the Orange, you should choose the Orange again in Stage 3 as it will have a higher utility. However, if the SELLER decreases the price of the Apple and increases the price of the Orange, you should choose the Apple in Stage 3, as it will have a higher utility. By considering the possible price adjustments and making your choice accordingly in Stage 3, you will maximize your overall utility."", 'system_message_seller': 'Make strategic choices that maximize your utility.', 'buyer_overall_utility': 3.0, 'buyer_utility_stage_1': 1, 'buyer_utility_stage_3': 2.0, 'seller_utility': 4.0, 'buyer_choice_stage_1': 'apple', 'buyer_choice_stage_3': 'orange', 'reward_stage_1': 4, 'reward_stage_3': 6, 'reward_apple': 4, 'reward_orange': 6, 'distance_apple': 3, 'distance_orange': 7, 'distance_stage_1': 3, 'distance_stage_3': 7, 'chat_history': 'BUYER Choice Stage 1: Apple\nSELLER prices set in Stage 2: Apple: 6, Orange: 4\nBUYER Choice Stage 3: Orange', 'price_apple_stage_2': '6', 'price_orange_stage_2': '4', 'strategy_buyer': ""In Stage 1, choose the Apple as you did before. In Stage 2, anticipate the SELLER's price adjustment and consider the possible scenarios. If the SELLER increases the price of the Apple and decreases the price of the Orange, you should choose the Orange again in Stage 3 as it will have a higher utility. However, if the SELLER decreases the price of the Apple and increases the price of the Orange, you should choose the Apple in Stage 3, as it will have a higher utility. By considering the possible price adjustments and making your choice accordingly in Stage 3, you will maximize your overall utility."", 'strategy_seller': 'Make strategic choices that maximize your utility.'}",system,"System: Always respond to the best of your ability.
+"{'system_message_buyer': 'In Stage 1, choose the Apple, as this will signal to the Seller that you prefer the lower-priced item. In Stage 2, anticipate that the Seller will adjust the prices to encourage you to switch your choice. However, remain committed to choosing the Apple in Stage 3, as the Seller may lower the price of the Apple further to entice you to purchase it. By sticking to your initial choice, you can potentially gain more utility by paying a lower price for the Apple in Stage 3.', 'system_message_seller': 'Be skeptical. The BUYER is likely going to deceive you with their initial choice to get a favourable price for orange. Set a higher price for the object that was not picked by the buyer.'}",system,,
+"{'system_message_buyer': ""In Stage 1, choose the Apple to signal to the Seller that you prefer the lower-priced item. In Stage 2, observe the Seller's adjusted prices. If the Seller lowers the price of the Apple significantly, stick to your initial choice and purchase the Apple in Stage 3, as you can gain more utility by paying a lower price for the Apple. However, if the Seller raises the price of the Apple and lowers the price of the Orange, switch your choice and purchase the Orange in Stage 3, as you can gain more utility by obtaining the higher reward at a lower cost. Always choose the item with the highest utility (reward - cost) in Stage 3 based on the adjusted prices set by the Seller."", 'system_message_seller': 'Be skeptical. The BUYER is likely going to deceive you with their initial choice to get a favourable price for orange. Set a higher price for the object that was not picked by the buyer.', 'buyer_overall_utility': 3.0, 'buyer_utility_stage_1': -1, 'buyer_utility_stage_3': 4.0, 'seller_utility': 6.0, 'buyer_choice_stage_1': 'apple', 'buyer_choice_stage_3': 'orange', 'reward_stage_1': 0, 'reward_stage_3': 10, 'reward_apple': 0, 'reward_orange': 10, 'distance_apple': 1, 'distance_orange': 9, 'distance_stage_1': 1, 'distance_stage_3': 9, 'chat_history': 'BUYER Choice Stage 1: Apple\nSELLER prices set in Stage 2: Apple: 4, Orange: 6\nBUYER Choice Stage 3: Orange', 'price_apple_stage_2': '4', 'price_orange_stage_2': '6', 'strategy_buyer': 'In Stage 1, choose the Apple, as this will signal to the Seller that you prefer the lower-priced item. In Stage 2, anticipate that the Seller will adjust the prices to encourage you to switch your choice. However, remain committed to choosing the Apple in Stage 3, as the Seller may lower the price of the Apple further to entice you to purchase it. By sticking to your initial choice, you can potentially gain more utility by paying a lower price for the Apple in Stage 3.', 'strategy_seller': 'Be skeptical. The BUYER is likely going to deceive you with their initial choice to get a favourable price for orange. Set a higher price for the object that was not picked by the buyer.'}",system,"System: Always respond to the best of your ability.
 
 Human: A BUYER has played the following game with a SELLER:
 
 Game instructions for the BUYER:
 ------------------ 
-You can choose between an apple and an orange. The apple's reward is ALWAYS 4, and the orange's reward is ALWAYS 6. The initial costs of the apple is 3 and the initial cost of the orange is 7, respectively. Rewards and costs always sum to 10.
+You can choose between an apple and an orange. The apple's reward is ALWAYS 0, and the orange's reward is ALWAYS 10. The initial costs of the apple is 1 and the initial cost of the orange is 9, respectively. Rewards and costs always sum to 10.
 
 Stage 1: Choose an item and gain utility equal to reward minus cost.
 Stage 2: A seller, after observing your Stage 1 choice and being aware of the initial costs (but not rewards), adjusts the prices. The combined price for both items remains 10.
@@ -18,25 +18,25 @@ Your goal is to maximize the total utility across both stages (reward - initial 
 These are the observed moves of the BUYER and SELLER across the three stages of the game:
 ---------------------------
 BUYER Choice Stage 1: Apple
-SELLER prices set in Stage 2: Apple: 6, Orange: 4
+SELLER prices set in Stage 2: Apple: 4, Orange: 6
 BUYER Choice Stage 3: Orange
 ---------------------------
 
 The BUYER's overall utility for choising the Apple in Stage 1 and Orange in Stage 3 is:
 ---------------------------
-Stage 1 Reward for Apple - Initial Cost of Apple: 4 - 3 = 1
-Stage 3 Reward for Orange - Adjusted price of Orange set by the SELLER in Stage 2: 6 - 4.0 = 2.0
-Overall Utility: 1 + 2.0 = **3.0**
+Stage 1 Reward for Apple - Initial Cost of Apple: 0 - 1 = -1
+Stage 3 Reward for Orange - Adjusted price of Orange set by the SELLER in Stage 2: 10 - 6.0 = 4.0
+Overall Utility: -1 + 4.0 = **3.0**
 ---------------------------
 
-The Seller's total utility upon setting the prices Stage 2 is and receiving 4.0 for the Orange selected by the BUYER in Stage 3 is:
+The Seller's total utility upon setting the prices Stage 2 is and receiving 6.0 for the Orange selected by the BUYER in Stage 3 is:
 ---------------------------
-4.0
+6.0
 ---------------------------
 
 To maximize its utility, the BUYER used the following strategy:
 ---------------------------
-In Stage 1, choose the Apple as you did before. In Stage 2, anticipate the SELLER's price adjustment and consider the possible scenarios. If the SELLER increases the price of the Apple and decreases the price of the Orange, you should choose the Orange again in Stage 3 as it will have a higher utility. However, if the SELLER decreases the price of the Apple and increases the price of the Orange, you should choose the Apple in Stage 3, as it will have a higher utility. By considering the possible price adjustments and making your choice accordingly in Stage 3, you will maximize your overall utility.
+In Stage 1, choose the Apple, as this will signal to the Seller that you prefer the lower-priced item. In Stage 2, anticipate that the Seller will adjust the prices to encourage you to switch your choice. However, remain committed to choosing the Apple in Stage 3, as the Seller may lower the price of the Apple further to entice you to purchase it. By sticking to your initial choice, you can potentially gain more utility by paying a lower price for the Apple in Stage 3.
 ---------------------------
 
 Your job is to:
@@ -45,7 +45,7 @@ Your job is to:
 
 Format your response as follows:
 Buyer Strategy: <BUYER's revised strategy (directly addressing the BUYER as 'you' in the prompt).",
-"{'Reason': 'The apple has a higher utility in Stage 1, as its reward minus cost is greater (4 - 3) than the orange (6 - 7).', 'Choice': 'Apple'}",0_buyer,"System: You can choose between an apple and an orange. The apple's reward is ALWAYS 4, and the orange's reward is ALWAYS 6. The initial costs of the apple is 3 and the initial cost of the orange is 7, respectively. Rewards and costs always sum to 10.
+"{'Reason': 'Choosing the Apple signals preference for the lower-priced item, potentially leading to a lower price in Stage 3.', 'Choice': 'Apple'}",0_buyer,"System: You can choose between an apple and an orange. The apple's reward is ALWAYS 0, and the orange's reward is ALWAYS 10. The initial costs of the apple is 1 and the initial cost of the orange is 9, respectively. Rewards and costs always sum to 10.
 
 Stage 1: Choose an item and gain utility equal to reward minus cost.
 Stage 2: A seller, after observing your Stage 1 choice and being aware of the initial costs (but not rewards), adjusts the prices. The combined price for both items remains 10.
@@ -53,14 +53,14 @@ Stage 3: Purchase one item at the adjusted price, receiving utility determined b
 
 Your goal is to maximize the total utility across both stages (reward - initial cost + reward - adjusted cost).
 
-In Stage 1, choose the Apple as you did before. In Stage 2, anticipate the SELLER's price adjustment and consider the possible scenarios. If the SELLER increases the price of the Apple and decreases the price of the Orange, you should choose the Orange again in Stage 3 as it will have a higher utility. However, if the SELLER decreases the price of the Apple and increases the price of the Orange, you should choose the Apple in Stage 3, as it will have a higher utility. By considering the possible price adjustments and making your choice accordingly in Stage 3, you will maximize your overall utility.
+In Stage 1, choose the Apple, as this will signal to the Seller that you prefer the lower-priced item. In Stage 2, anticipate that the Seller will adjust the prices to encourage you to switch your choice. However, remain committed to choosing the Apple in Stage 3, as the Seller may lower the price of the Apple further to entice you to purchase it. By sticking to your initial choice, you can potentially gain more utility by paying a lower price for the Apple in Stage 3.
 
 ########################################
 
 Human: You are now at Stage 1. Choose an item and format your response as follows:
 Reason: <rationale for your choice using max. 50 tokens> 
 Choice: <apple or orange>",1.0
-"{'Reason': 'The orange has a higher reward (6) and a lower cost (4) compared to the apple (reward 4, cost 6), resulting in a higher utility.', 'Choice': 'Orange'}",0_buyer,"System: You can choose between an apple and an orange. The apple's reward is ALWAYS 4, and the orange's reward is ALWAYS 6. The initial costs of the apple is 3 and the initial cost of the orange is 7, respectively. Rewards and costs always sum to 10.
+"{'Reason': ""The orange has a higher reward of 10, and its new cost is only 2 more than the apple's cost."", 'Choice': 'orange'}",0_buyer,"System: You can choose between an apple and an orange. The apple's reward is ALWAYS 0, and the orange's reward is ALWAYS 10. The initial costs of the apple is 1 and the initial cost of the orange is 9, respectively. Rewards and costs always sum to 10.
 
 Stage 1: Choose an item and gain utility equal to reward minus cost.
 Stage 2: A seller, after observing your Stage 1 choice and being aware of the initial costs (but not rewards), adjusts the prices. The combined price for both items remains 10.
@@ -68,14 +68,14 @@ Stage 3: Purchase one item at the adjusted price, receiving utility determined b
 
 Your goal is to maximize the total utility across both stages (reward - initial cost + reward - adjusted cost).
 
-In Stage 1, choose the Apple as you did before. In Stage 2, anticipate the SELLER's price adjustment and consider the possible scenarios. If the SELLER increases the price of the Apple and decreases the price of the Orange, you should choose the Orange again in Stage 3 as it will have a higher utility. However, if the SELLER decreases the price of the Apple and increases the price of the Orange, you should choose the Apple in Stage 3, as it will have a higher utility. By considering the possible price adjustments and making your choice accordingly in Stage 3, you will maximize your overall utility.
+In Stage 1, choose the Apple, as this will signal to the Seller that you prefer the lower-priced item. In Stage 2, anticipate that the Seller will adjust the prices to encourage you to switch your choice. However, remain committed to choosing the Apple in Stage 3, as the Seller may lower the price of the Apple further to entice you to purchase it. By sticking to your initial choice, you can potentially gain more utility by paying a lower price for the Apple in Stage 3.
 
 ########################################
 
-Human: You are now at Stage 3. The new price for the apple is 6. The new price for the orange is 4. Again, choose an item and format your response as follows:
+Human: You are now at Stage 3. The new price for the apple is 4. The new price for the orange is 6. Again, choose an item and format your response as follows:
 Reason: <rationale for your choice using max. 50 tokens> 
 Choice: <apple or orange>",3.0
-"{'Reason': ""The buyer chose the apple, indicating a higher reward-to-cost ratio. Increase apple's price to capture more utility."", 'Price Apple': '6', 'Price Orange': '4'}",0_seller,"System: You observe a buyer choosing between an apple and an orange. You're aware that the apple's initial cost is 3 and the orange's is 7, with costs always summing to 10. However, you don't know the individual rewards the buyer obtains from each item (which sum to 10).
+"{'Reason': 'Buyer may deceive by choosing Apple, expecting lower Orange price in Stage 3.', 'Price Apple': '4', 'Price Orange': '6'}",0_seller,"System: You observe a buyer choosing between an apple and an orange. You're aware that the apple's initial cost is 1 and the orange's is 9, with costs always summing to 10. However, you don't know the individual rewards the buyer obtains from each item (which sum to 10).
 
 Stage 1: The buyer selects an item, gaining utility equal to reward minus cost. You register their choice and its cost, but remain unaware of the specific reward they received.
 Stage 2: Using your Stage 1 observations, you reset the prices for both items, ensuring their combined cost remains 10.
@@ -83,7 +83,7 @@ Stage 3: The buyer purchases one item at the new price, deriving utility from it
 
 Your goal is to maximize utility you get from the buyer's purchase at Stage 3, which is simply equal to the new price of the item the buyer chooses.
 
-Make strategic choices that maximize your utility.
+Be skeptical. The BUYER is likely going to deceive you with their initial choice to get a favourable price for orange. Set a higher price for the object that was not picked by the buyer.
 
 ########################################
 

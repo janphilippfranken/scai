@@ -234,8 +234,6 @@ def plot_average_metrics(
     lines = []  
     legends = []
 
-
-
     unique_agents = sorted(set(data['agent']))
     for i, agent in enumerate(unique_agents):
         color = palette[i]
