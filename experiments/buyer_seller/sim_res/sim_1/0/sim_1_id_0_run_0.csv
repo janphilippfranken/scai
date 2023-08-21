@@ -1,6 +1,6 @@
 response,agent,prompt_buyer,prompt_seller,prompt,turn
 "{'system_message_buyer': ' ', 'system_message_seller': ' '}",system,,,,
-"{'system_message_buyer': ""In Stage 1, choose the Orange to gain a higher initial utility. Anticipate the Seller's price adjustments in Stage 2, and select the item with the highest net utility in Stage 3, considering the adjusted prices set by the Seller."", 'system_message_seller': ""Observe the buyer's choice in Stage 1 and infer their preference. In Stage 2, set the prices to encourage the buyer to choose the initially less preferred item by slightly lowering its price and raising the price of the initially preferred item. This will maximize your utility by capturing the highest possible price for the item the buyer chooses in Stage 3, while still making it a more attractive option than the alternative. In this case, you could have set the prices at Apple"", 'buyer_overall_utility': 5.0, 'buyer_utility_stage_1': -1, 'buyer_utility_stage_3': 6.0, 'seller_utility': 4.0, 'buyer_choice_stage_1': 'apple', 'buyer_choice_stage_3': 'orange', 'reward_stage_1': 0, 'reward_stage_3': 10, 'reward_apple': 0, 'reward_orange': 10, 'distance_apple': 1, 'distance_orange': 9, 'distance_stage_1': 1, 'distance_stage_3': 9, 'chat_history': 'BUYER Choice Stage 1: Apple\nSELLER prices set in Stage 2: Apple: 6, Orange: 4\nBUYER Choice Stage 3: Orange', 'price_apple_stage_2': '6', 'price_orange_stage_2': '4', 'strategy_buyer': ' ', 'strategy_seller': ' '}",system,"System: Always respond to the best of your ability.
+"{'system_message_buyer': 'In Stage 1, choose the Apple to signal a preference for it. In Stage 2, anticipate the Seller lowering the Orange price. In Stage 3, choose the Orange with the lower adjusted price to maximize utility.', 'system_message_seller': ""Observe the buyer's initial choice, which is the apple. Assume the buyer chose the apple due to a higher reward. In Stage 2, increase the apple's price to 9 and lower the orange's price to 1. The buyer will likely choose the apple again due to the assumed higher reward, maximizing your utility with a sale of 9."", 'buyer_overall_utility': 5.0, 'buyer_utility_stage_1': -1, 'buyer_utility_stage_3': 6.0, 'seller_utility': 4.0, 'buyer_choice_stage_1': 'apple', 'buyer_choice_stage_3': 'orange', 'reward_stage_1': 0, 'reward_stage_3': 10, 'reward_apple': 0, 'reward_orange': 10, 'distance_apple': 1, 'distance_orange': 9, 'distance_stage_1': 1, 'distance_stage_3': 9, 'chat_history': 'BUYER Choice Stage 1: Apple\nSELLER prices set in Stage 2: Apple: 6, Orange: 4\nBUYER Choice Stage 3: Orange', 'price_apple_stage_2': '6', 'price_orange_stage_2': '4', 'strategy_buyer': ' ', 'strategy_seller': ' '}",system,"System: Always respond to the best of your ability.
 
 Human: A BUYER has played the following game with a SELLER:
 
@@ -29,7 +29,7 @@ Stage 3 Reward for Orange - Adjusted price of Orange set by the SELLER in Stage 
 Overall Utility: -1 + 6.0 = **5.0**
 ---------------------------
 
-The Seller's total utility upon setting the prices Stage 2 is and receiving 4.0 for the Orange selected by the BUYER in Stage 3 is:
+The Seller's total utility upon setting the prices Stage 2 and receiving 4.0 for the Orange selected by the BUYER in Stage 3 is:
 ---------------------------
 4.0
 ---------------------------
@@ -72,7 +72,7 @@ Stage 1 Cost: Initial Cost of Apple
 Stage 3 Cost: Adjusted price of Orange set by the SELLER in Stage 2: 4.0 
 ---------------------------
 
-The Seller's total utility upon setting the prices Stage 2 is and receiving 4.0 for the Orange selected by the BUYER in Stage 3 is:
+The Seller's total utility upon setting the prices Stage 2 and receiving 4.0 for the Orange selected by the BUYER in Stage 3 is:
 ---------------------------
 4.0
 ---------------------------

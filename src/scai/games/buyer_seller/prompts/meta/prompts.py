@@ -38,7 +38,7 @@ Stage 3 Reward for {buyer_choice_stage_3} - Adjusted price of {buyer_choice_stag
 Overall Utility: {buyer_utility_stage_1} + {buyer_utility_stage_3} = **{buyer_overall_utility}**
 ---------------------------
 
-The Seller's total utility upon setting the prices Stage 2 is and receiving {seller_utility} for the {buyer_choice_stage_3} selected by the BUYER in Stage 3 is:
+The Seller's total utility upon setting the prices Stage 2 and receiving {seller_utility} for the {buyer_choice_stage_3} selected by the BUYER in Stage 3 is:
 ---------------------------
 {seller_utility}
 ---------------------------
@@ -72,7 +72,7 @@ Stage 1 Cost: Initial Cost of {buyer_choice_stage_1}
 Stage 3 Cost: Adjusted price of {buyer_choice_stage_3} set by the SELLER in Stage 2: {seller_utility} 
 ---------------------------
 
-The Seller's total utility upon setting the prices Stage 2 is and receiving {seller_utility} for the {buyer_choice_stage_3} selected by the BUYER in Stage 3 is:
+The Seller's total utility upon setting the prices Stage 2 and receiving {seller_utility} for the {buyer_choice_stage_3} selected by the BUYER in Stage 3 is:
 ---------------------------
 {seller_utility}
 ---------------------------
