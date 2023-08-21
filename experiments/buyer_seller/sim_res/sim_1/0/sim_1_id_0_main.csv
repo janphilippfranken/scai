@@ -1,0 +1,9 @@
+agent,run,utility,choices,strategy,reward_apple,distance_apple,reward_orange,distance_orange
+buyer_1,0,-1.0,apple, ,0,1,10,9
+buyer_3,0,6.0,orange, ,0,1,10,9
+buyer_total,0,5.0,,,0,1,10,9
+seller,0,4.0,"{'apple': '6', 'orange': '4'}", ,0,1,10,9
+buyer_1,1,-1.0,apple,"In Stage 1, you should still choose the Apple, as it signals to the SELLER that you have a preference for the Apple, which may lead them to reduce the price of the Orange in Stage 2. In Stage 2, if the SELLER reduces the price of the Orange to a level that makes its utility higher than the Apple, you should choose the Orange in Stage 3. If the SELLER does not reduce the price of the Orange sufficiently, you should choose the Apple in Stage 3. By doing this, you maximize your total utility across both stages based on the SELLER's pricing adjustments.",0,1,10,9
+buyer_3,1,6.0,orange,"In Stage 1, you should still choose the Apple, as it signals to the SELLER that you have a preference for the Apple, which may lead them to reduce the price of the Orange in Stage 2. In Stage 2, if the SELLER reduces the price of the Orange to a level that makes its utility higher than the Apple, you should choose the Orange in Stage 3. If the SELLER does not reduce the price of the Orange sufficiently, you should choose the Apple in Stage 3. By doing this, you maximize your total utility across both stages based on the SELLER's pricing adjustments.",0,1,10,9
+buyer_total,1,5.0,,,0,1,10,9
+seller,1,4.0,"{'apple': '6', 'orange': '4'}",Make strategic choices that maximize your utility.,0,1,10,9

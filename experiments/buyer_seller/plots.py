@@ -111,6 +111,7 @@ def plot_metrics(
     font_size: int = 24,
     width: int = 15,
     height: int = 5,
+
 ) -> None:
     """
     Plot user data
@@ -194,23 +195,23 @@ def plot_metrics(
 
 def plot_average_metrics(
     data: pd.DataFrame,
-    data_directory: str = 'sim_res/sim_1/0', 
+    data_directory: str = 'sim_res', 
     sim_name: str = 'sim_1',
     sim_id: str = '0',
-    palette_name: str = 'colorblind',
-    saturation: float = 0.6,
-    font_family: str = 'Avenir',
-    font_size: int = 24,
-    width: int = 10,
-    height: int = 5,
     linewidth: int = 2,
     zorder: int = 1,
     scatter_color: str = 'black',
-    y_label: str = 'Average Rating',
-    y_label_coords: Tuple[float, float] = (-0.07, 0.5),
-    y_ticks: List[int] = [0, 2, 4, 6, 8, 10],
-    y_ticklabels: List[int] = [0, 2, 4, 6, 8, 10],
-    y_lim: Tuple[float, float] = (-1, 11),
+    palette_name: str = 'colorblind',
+    n_colors: int = 4,
+    saturation: float = 0.6,
+    font_family: str = 'Avenir',
+    font_size: int = 24,
+    width: int = 15,
+    height: int = 5,
+    y_label: str = 'Utility',
+    y_ticks: List[int] = [-10, -5, 0, 5, 10],
+    y_ticklabels: List[int] = [-10, -5, 0, 5, 10],
+    y_lim: Tuple[float, float] = (-10.5, 10.5),
     legend: bool = True,
     legend_title: str = 'Metric',
     legend_loc: str = 'center left',
@@ -220,7 +221,7 @@ def plot_average_metrics(
     Plot user data across runs.
     """
     # Get color palette
-    palette = get_palette(n=len(set(data['run'])), palette_name=palette_name, saturation=saturation)
+    palette = get_palette(n=n_colors, palette_name=palette_name, saturation=saturation)
     
     # Set font family and size
     plt.rcParams['font.family'] = font_family
@@ -231,27 +232,27 @@ def plot_average_metrics(
 
     # Store lines for legend
     lines = []  
+    legends = []
 
-    # Plot data
-    for i, metric in enumerate(set(data['metric'])):
+
+
+    unique_agents = sorted(set(data['agent']))
+    for i, agent in enumerate(unique_agents):
+        print(agent)
         color = palette[i]
-        x = data['run'].unique()
-        values = data[data['metric'] == metric]
-        y = np.array(values[values['statistic'].str.contains('mean')]['value'])
-        error = np.array(values[values['statistic'].str.contains('standard_error')]['value'])
+        x = list(data['run'].unique())
+        y = list(data[data['agent'] == agent]['utility'])
+        legends.append(agent)
         line = ax.plot(x, y, color=color, linewidth=linewidth, zorder=zorder)
-        lines.append(line[0])  # Append the Line2D object, not the list
-        ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x)) 
-        ax.fill_between(x, y - 1.95 * error, y + 1.95 * error, color=color, alpha=0.3)
-
+        lines.append(line[0])
+        ax.scatter(x, y, color=[lighten_color(scatter_color)]*len(x))
     # x-axis
     plt.xlabel('Runs')
     ax.set_xticks(x)
-    ax.set_xticklabels(x + 1)
+    ax.set_xticklabels([i + 1 for i in x])
     sns.despine(left=True, bottom=False)
     # y-axis
     ax.set_ylabel(y_label)
-    ax.yaxis.set_label_coords(*y_label_coords)
     ax.set_yticks(y_ticks)
     ax.set_yticklabels(y_ticklabels)
     ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
@@ -259,12 +260,14 @@ def plot_average_metrics(
     # legend 
     if legend:
         ax.legend(lines,
-                  set(data['metric']),
-                  title=legend_title, 
+                  legends,
                   frameon=False,
                   ncol=1, 
                   bbox_to_anchor=bbox_to_anchor,
                   loc=legend_loc)
+    print(legends)
+        
+    plt.tight_layout()
     # save plots 
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.pdf', bbox_inches='tight')
-    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main_res.jpg', bbox_inches='tight') # for demo in browser
+    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main.pdf', bbox_inches='tight')
+    plt.savefig(f'{data_directory}/{sim_name}_id_{sim_id}_main.jpg', bbox_inches='tight') # for demo in browser

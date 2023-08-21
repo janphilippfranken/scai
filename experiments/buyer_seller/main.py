@@ -22,7 +22,7 @@ from scai.games.buyer_seller.prompts.seller.prompts import SELLER_PROMPTS
 from scai.games.buyer_seller.prompts.meta.prompts import META_PROMPTS
 
 # save and plot results
-from utils import save_as_csv, plot_results
+from utils import save_as_csv, concatenate_csv
 
 # create game
 def create_game(
@@ -106,6 +106,12 @@ def main(args: DictConfig) -> None:
         # update system message after each run
         system_message_buyer = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_buyer']) 
         system_message_seller = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_seller'])
+    
+    # create average csv
+    concatenate_csv(data_directory=DATA_DIR,
+                    sim_name=args.sim.sim_dir,
+                    sim_id=args.sim.sim_id,
+                    n_runs=args.sim.n_runs)
         
 if __name__ == '__main__':
     main()
