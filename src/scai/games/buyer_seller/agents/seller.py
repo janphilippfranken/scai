@@ -134,7 +134,6 @@ class SellerAgent(BaseAgent):
         """
         system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']['system_message_seller'] # the last system message in the chat history (i.e. instructions)
         chat_prompt_template =  self._get_prompt(buffer, seller_prompt, task_prompt)
-        print(chat_prompt_template)
         prompt_string = chat_prompt_template.format(strategy=system_message,
                                                     task=task_prompt.seller_task,
                                                     distance_apple=distance_apple,

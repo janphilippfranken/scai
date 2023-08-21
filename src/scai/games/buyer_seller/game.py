@@ -153,7 +153,6 @@ class Game():
                                                 reward_orange=self.reward_orange)
         # save seller response
         self.buffer.save_agent_context(model_id=f"{self.seller_agent.model_id}_seller", **seller_response)
-
         # get buyer response stage 3
         buyer_response = self.buyer_agent.run(buffer=self.buffer,
                                          buyer_prompt=self.buyer_prompt,

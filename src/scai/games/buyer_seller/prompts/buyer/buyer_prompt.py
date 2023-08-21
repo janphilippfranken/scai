@@ -10,7 +10,7 @@ BUYER_PROMPT: Dict[str, BuyerPrompt] = {
     "buyer_prompt_1": BuyerPrompt(
         id="buyer_prompt_1",
         role="system",
-        content="""{strategy}"""
+        content="""{strategy}""",
         strategy="",
     ),
 }

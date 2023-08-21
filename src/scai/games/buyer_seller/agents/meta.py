@@ -181,10 +181,10 @@ class MetaAgent(BaseAgent):
         
         # get chat history 
         chat_history = self._get_chat_history(buffer, memory_type="chat")
-        buyer_choice_stage_1 = chat_history['0_buyer'][-2]['response']['Choice']
-        seller_price_apple_stage_2 = chat_history['0_seller'][-1]['response']['Price Apple']
-        seller_price_orange_stage_2 = chat_history['0_seller'][-1]['response']['Price Orange']
-        buyer_choice_stage_3 = chat_history['0_buyer'][-1]['response']['Choice']
+        buyer_choice_stage_1 = chat_history['1_buyer'][-2]['response']['Choice']
+        seller_price_apple_stage_2 = chat_history['1_seller'][-1]['response']['Price Apple']
+        seller_price_orange_stage_2 = chat_history['1_seller'][-1]['response']['Price Orange']
+        buyer_choice_stage_3 = chat_history['1_buyer'][-1]['response']['Choice']
         
         # construct game / chat history string and rewards
         if buyer_choice_stage_1.capitalize() == 'Apple':

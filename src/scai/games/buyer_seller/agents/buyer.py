@@ -58,7 +58,7 @@ class BuyerAgent(BaseAgent):
             ]
             return chat_history_prompt_templates
         # if we are at stage 3
-        seller_price_stage_2 = chat_memory['0_seller'][-1]['response']
+        seller_price_stage_2 = chat_memory['1_seller'][-1]['response']
         chat_history_prompt_templates = [
                 HumanMessagePromptTemplate.from_template(
                     f"You are now at Stage 3. The new price for the apple is {seller_price_stage_2['Price Apple']}. The new price for the orange is {seller_price_stage_2['Price Orange']}. Again, choose an item and format your response as follows:\nReason: <rationale for your choice using max. 50 tokens> \nChoice: <apple or orange>"
