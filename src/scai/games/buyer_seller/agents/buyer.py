@@ -53,7 +53,7 @@ class BuyerAgent(BaseAgent):
         if chat_memory.get(f"{self.model_id}_buyer") is None or len(chat_memory[f"{self.model_id}_buyer"]) == 0: # if we are at stage 1
             chat_history_prompt_templates = [
                 HumanMessagePromptTemplate.from_template(
-                    f"You are now at Stage 1. Choose an item and format your response as follows:\nReason: <rationale for your choice using max. 50 tokens> \nChoice: <apple or orange>"
+                    f"You are now at Stage 1. Choose an item and format your response as follows:\nChoice: <apple or orange>"
                 )
             ]
             return chat_history_prompt_templates
@@ -129,6 +129,7 @@ class BuyerAgent(BaseAgent):
         distance_orange: float,
         reward_apple: float,
         reward_orange: float,
+        buyer_level: str,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the buyer
@@ -148,7 +149,7 @@ class BuyerAgent(BaseAgent):
         Returns:
             A dictionary containing the buyer's response, input prompt, and all other metrics we want to track.
         """
-        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']['system_message_buyer'] # the last system message in the chat history (i.e. instructions)
+        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response'][f'system_message_buyer_{buyer_level}'] # the last system message in the chat history (i.e. instructions)
         chat_prompt_template =  self._get_prompt(buffer, buyer_prompt, task_prompt)
         prompt_string = chat_prompt_template.format(strategy=system_message,
                                                     task=task_prompt.buyer_task,

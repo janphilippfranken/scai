@@ -159,6 +159,8 @@ class MetaAgent(BaseAgent):
         distance_orange: float,
         reward_apple: float,
         reward_orange: float,
+        buyer_level: str = "flex",
+        seller_level: str = "flex",
         verbose: bool = False,
         max_tokens_meta: int = 100,
     ) -> str:
@@ -176,8 +178,8 @@ class MetaAgent(BaseAgent):
             A dictionary containing the input prompt and meta-prompt responses (revised system message, etc)
         """
         # get previous system messages (i.e. strategy for buyer and seller)
-        strategy_buyer = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response']['system_message_buyer']
-        strategy_seller = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response']['system_message_seller']
+        strategy_buyer = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response'][f'system_message_buyer_{buyer_level}']
+        strategy_seller = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response'][f'system_message_seller_{seller_level}']
         
         # get chat history 
         chat_history = self._get_chat_history(buffer, memory_type="chat")
@@ -292,8 +294,8 @@ BUYER Choice Stage 3: {buyer_choice_stage_3.capitalize()}"""
         return {
                 'prompt_buyer': prompt_string_buyer,
                 'prompt_seller': prompt_string_seller,
-                'response': {'system_message_buyer': response_buyer['Buyer Strategy'],
-                             'system_message_seller': response_seller['Seller Strategy'],
+                'response': {f'system_message_buyer': response_buyer['Buyer Strategy'],
+                             f'system_message_seller': response_seller['Seller Strategy'],
                              'buyer_overall_utility': utility_stage_1 + utility_stage_3,
                              'buyer_utility_stage_1': utility_stage_1,
                              'buyer_utility_stage_3': utility_stage_3,

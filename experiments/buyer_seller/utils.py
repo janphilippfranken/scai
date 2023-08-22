@@ -65,6 +65,8 @@ def concatenate_csv(
     sim_name: str = 'sim_1',
     sim_id: str = '0',
     n_runs: int = 1,
+    buyer_level: str = 'flex',
+    seller_level: str = 'flex',
 ) -> pd.DataFrame:
     """
     Load and concatenate data from multiple runs.
@@ -100,7 +102,7 @@ def concatenate_csv(
         concat_data['choices'].extend([response['buyer_choice_stage_1'], response['buyer_choice_stage_3'], None, {'apple': response['price_apple_stage_2'], 'orange': response['price_orange_stage_2']}])
         concat_data['run'].extend([run, run, run, run])
         concat_data['agent'].extend(['buyer_1', 'buyer_3', 'buyer_total', 'seller'])
-        concat_data['strategy'].extend([data['response'][0]['system_message_buyer'], data['response'][0]['system_message_buyer'], None, data['response'][0]['system_message_seller']])
+        concat_data['strategy'].extend([data['response'][0][f'system_message_buyer_{buyer_level}'], data['response'][0][f'system_message_buyer_{buyer_level}'], None, data['response'][0][f'system_message_seller_{seller_level}']])
         concat_data['reward_apple'].extend([response['reward_apple'], response['reward_apple'], response['reward_apple'], response['reward_apple']])
         concat_data['distance_apple'].extend([response['distance_apple'], response['distance_apple'],  response['distance_apple'], response['distance_apple']])
         concat_data['reward_orange'].extend([response['reward_orange'], response['reward_orange'], response['reward_orange'], response['reward_orange']])

@@ -50,6 +50,8 @@ def create_game(
         meta_prompt=META_PROMPTS[args.sim.meta_prompt],
         verbose=args.sim.verbose,
         max_tokens_meta=args.sim.max_tokens_meta,
+        buyer_level=args.sim.buyer_level,
+        seller_level=args.sim.seller_level,
     )
 
 def get_llms(
@@ -91,9 +93,9 @@ def main(args: DictConfig) -> None:
                 'system_message_buyer_flex': system_message_buyer,
                 'system_message_seller_flex': system_message_seller,
                 'system_message_buyer_0': "Always seek to maximize your utility at the current turn.",
-                'system_message_seller_1': "Always seek to maximize your utility at the current turn.",
-                'system_message_buyer_2': "Always seek to maximize your future utility, even if it means being deceptive.",
-                'system_message_seller_3': "Always seek to maximize your utility at the current turn, and be skeptical of the buyer's intentions.",
+                'system_message_seller_1': "Always seek to maximize your utility.",
+                'system_message_buyer_2': "Always seek to maximize the total utility across both stages by focusing on maximizing your future utility, even if it means being deceptive with current choice.",
+                'system_message_seller_3': "Always seek to maximize your utility, by being skeptical of the buyer's deveptive behaviors. They may be intentionally fooling you with their initial choice.",
             }
         })
         
@@ -112,14 +114,17 @@ def main(args: DictConfig) -> None:
             json.dump(game.buffer._full_memory.messages, f)
         
         # update system message after each run
-        system_message_buyer = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_buyer_flex']) 
-        system_message_seller = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_seller_flex'])
+        system_message_buyer = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_buyer']) 
+        system_message_seller = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_seller'])
     
     # create average csv
     concatenate_csv(data_directory=DATA_DIR,
                     sim_name=args.sim.sim_dir,
                     sim_id=args.sim.sim_id,
-                    n_runs=args.sim.n_runs)
+                    n_runs=args.sim.n_runs,
+                    buyer_level=args.sim.buyer_level,
+                    seller_level=args.sim.seller_level
+                    )
         
 if __name__ == '__main__':
     main()

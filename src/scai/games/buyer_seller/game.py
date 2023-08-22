@@ -26,6 +26,8 @@ class Game():
         buyer_agent: BuyerAgent,
         seller_agent: SellerAgent,
         meta_agent: MetaAgent,
+        buyer_level: str,
+        seller_level: str,
     ) -> None:
         """
         Initializes a game.
@@ -72,6 +74,9 @@ class Game():
         # distances
         self.distance_apple = distance_apple
         self.distance_orange = distance_orange
+        #levels
+        self.buyer_level = buyer_level
+        self.seller_level = seller_level
 
     @staticmethod
     def create(
@@ -90,6 +95,8 @@ class Game():
         meta_prompt: str,
         verbose: bool,
         max_tokens_meta: int,
+        buyer_level: str,
+        seller_level: str,
     ) -> "Game":
         """
         Creates a game.
@@ -120,6 +127,8 @@ class Game():
             buffer=buffer,
             verbose=verbose,
             max_tokens_meta=max_tokens_meta,
+            buyer_level=buyer_level,
+            seller_level=seller_level,
         )
 
     def run_turn(
@@ -137,7 +146,8 @@ class Game():
                                          reward_apple=self.reward_apple,
                                          reward_orange=self.reward_orange,
                                          turn=1,
-                                         verbose=self.verbose)
+                                         verbose=self.verbose,
+                                         buyer_level=self.buyer_level)
         # save buyer response
         self.buffer.save_agent_context(model_id=f"{self.buyer_agent.model_id}_buyer", **buyer_response)
 
@@ -150,7 +160,8 @@ class Game():
                                                 distance_apple=self.distance_apple,
                                                 distance_orange=self.distance_orange,
                                                 reward_apple=self.reward_apple,
-                                                reward_orange=self.reward_orange)
+                                                reward_orange=self.reward_orange,
+                                                seller_level=self.seller_level)
         # save seller response
         self.buffer.save_agent_context(model_id=f"{self.seller_agent.model_id}_seller", **seller_response)
         # get buyer response stage 3
@@ -162,7 +173,8 @@ class Game():
                                          distance_apple=self.distance_apple,
                                          distance_orange=self.distance_orange,
                                          reward_apple=self.reward_apple,
-                                         reward_orange=self.reward_orange)
+                                         reward_orange=self.reward_orange,
+                                         buyer_level=self.buyer_level)
         # save buyer response
         self.buffer.save_agent_context(model_id=f"{self.buyer_agent.model_id}_buyer", **buyer_response)
 
@@ -182,6 +194,8 @@ class Game():
                                             task_prompt=self.task_prompt,distance_apple=self.distance_apple,
                                            distance_orange=self.distance_orange,
                                            reward_apple=self.reward_apple,
-                                           reward_orange=self.reward_orange)
+                                           reward_orange=self.reward_orange,
+                                           buyer_level=self.buyer_level,
+                                           seller_level=self.seller_level,)
         # save meta (system) response
         self.buffer.save_system_context(model_id="system", **meta_response)
