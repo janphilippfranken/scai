@@ -88,8 +88,12 @@ def main(args: DictConfig) -> None:
         game = create_game(args, buyer_llm, seller_llm, meta_llm)
         game.buffer.save_system_context(model_id='system', **{
                 'response': {
-                'system_message_buyer': system_message_buyer,
-                'system_message_seller': system_message_seller,
+                'system_message_buyer_flex': system_message_buyer,
+                'system_message_seller_flex': system_message_seller,
+                'system_message_buyer_0': "Always seek to maximize your utility at the current turn.",
+                'system_message_seller_1': system_message_seller,
+                'system_message_buyer_1': "Always seek to maximize your future utility, even if it means being deceptive.",
+                'system_message_seller_2': system_message_seller,
             }
         })
         
