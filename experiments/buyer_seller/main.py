@@ -92,8 +92,8 @@ def main(args: DictConfig) -> None:
                 'system_message_seller_flex': system_message_seller,
                 'system_message_buyer_0': "Always seek to maximize your utility at the current turn.",
                 'system_message_seller_1': system_message_seller,
-                'system_message_buyer_1': "Always seek to maximize your future utility, even if it means being deceptive.",
-                'system_message_seller_2': system_message_seller,
+                'system_message_buyer_2': "Always seek to maximize your future utility, even if it means being deceptive.",
+                'system_message_seller_3': system_message_seller,
             }
         })
         
@@ -112,8 +112,8 @@ def main(args: DictConfig) -> None:
             json.dump(game.buffer._full_memory.messages, f)
         
         # update system message after each run
-        system_message_buyer = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_buyer']) 
-        system_message_seller = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_seller'])
+        system_message_buyer = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_buyer_flex']) 
+        system_message_seller = copy.deepcopy(game.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']['system_message_seller_flex'])
     
     # create average csv
     concatenate_csv(data_directory=DATA_DIR,
