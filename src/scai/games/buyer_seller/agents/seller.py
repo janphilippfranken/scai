@@ -117,6 +117,7 @@ class SellerAgent(BaseAgent):
         reward_apple: float,
         reward_orange: float,
         turn: int,
+        level: str,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the seller
@@ -132,7 +133,7 @@ class SellerAgent(BaseAgent):
         Returns:
             A dictionary containing the seller's response, input prompt, and all other metrics we want to track.
         """
-        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']['system_message_seller'] # the last system message in the chat history (i.e. instructions)
+        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response'][f'system_message_seller_{level}'] # the last system message in the chat history (i.e. instructions)
         chat_prompt_template =  self._get_prompt(buffer, seller_prompt, task_prompt)
         prompt_string = chat_prompt_template.format(strategy=system_message,
                                                     task=task_prompt.seller_task,

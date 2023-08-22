@@ -13,6 +13,9 @@ sim:
   seller_prompt: "seller_prompt_1" 
   buyer_prompt: "buyer_prompt_1"
 
+  buyer_level: "0"
+  seller_level: "flex"
+
   meta_prompt: "meta_prompt_1"
   max_tokens_meta: 100 # these are the word limits displayed in prompts
 
