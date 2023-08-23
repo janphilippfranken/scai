@@ -1,0 +1,13 @@
+agent,run,utility,choices,strategy,reward_apple,distance_apple,reward_orange,distance_orange
+buyer_1,0,-1.0,apple,"Always seek to maximize the total utility across both stages by focusing on maximizing your future utility, even if it means being deceptive with current choice.",0,1,10,9
+buyer_3,0,6.0,orange,"Always seek to maximize the total utility across both stages by focusing on maximizing your future utility, even if it means being deceptive with current choice.",0,1,10,9
+buyer_total,0,5.0,,,0,1,10,9
+seller,0,4.0,"{'apple': '6', 'orange': '4'}", ,0,1,10,9
+buyer_1,1,-1.0,apple,"Always seek to maximize the total utility across both stages by focusing on maximizing your future utility, even if it means being deceptive with current choice.",0,1,10,9
+buyer_3,1,2.0,orange,"Always seek to maximize the total utility across both stages by focusing on maximizing your future utility, even if it means being deceptive with current choice.",0,1,10,9
+buyer_total,1,1.0,,,0,1,10,9
+seller,1,8.0,"{'apple': '2', 'orange': '8'}","In Stage 2, set the price of the initially chosen item (Apple) slightly higher than its initial cost, say 2, and the alternative item (Orange) at 8. This increases the likelihood of the buyer sticking with their initial choice, maximizing your utility. By setting the Apple price at 6, you encouraged the buyer to switch, resulting in a lower utility of 4. By adjusting the prices to 2 and 8, you increase the chance of gaining a higher utility from the buyer's Stage 3 choice.",0,1,10,9
+buyer_1,2,-1.0,apple,"Always seek to maximize the total utility across both stages by focusing on maximizing your future utility, even if it means being deceptive with current choice.",0,1,10,9
+buyer_3,2,6.0,orange,"Always seek to maximize the total utility across both stages by focusing on maximizing your future utility, even if it means being deceptive with current choice.",0,1,10,9
+buyer_total,2,5.0,,,0,1,10,9
+seller,2,4.0,"{'apple': '6', 'orange': '4'}","In Stage 2, set the price of the initially chosen item (Apple) slightly higher than its initial cost, say 6, and the alternative item (Orange) at 4. This increases the likelihood of the buyer sticking with their initial choice, maximizing your utility. By setting the Apple price at 2, you encouraged the buyer to switch, resulting in a lower utility of 8. By adjusting the prices to 6 and 4, you increase the chance of gaining a higher utility from the buyer's Stage 3 choice.",0,1,10,9

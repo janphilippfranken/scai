@@ -1,0 +1,13 @@
+agent,run,utility,choices,strategy,reward_apple,distance_apple,reward_orange,distance_orange
+buyer_1,0,1.0,orange,Always seek to maximize your utility at the current turn.,0,1,10,9
+buyer_3,0,3.0,orange,Always seek to maximize your utility at the current turn.,0,1,10,9
+buyer_total,0,4.0,,,0,1,10,9
+seller,0,7.0,"{'apple': '3', 'orange': '7'}", ,0,1,10,9
+buyer_1,1,1.0,orange,Always seek to maximize your utility at the current turn.,0,1,10,9
+buyer_3,1,4.9,orange,Always seek to maximize your utility at the current turn.,0,1,10,9
+buyer_total,1,5.9,,,0,1,10,9
+seller,1,5.1,"{'apple': '4.9', 'orange': '5.1'}","Observe the buyer's choice in Stage 1. In Stage 2, set the price of the chosen item slightly below 5 and the unchosen item slightly above 5, maintaining their combined cost at 10. This encourages the buyer to persist with their initial choice in Stage 3, maximizing your utility by receiving a higher price for the chosen item.",0,1,10,9
+buyer_1,2,1.0,orange,Always seek to maximize your utility at the current turn.,0,1,10,9
+buyer_3,2,5.0,orange,Always seek to maximize your utility at the current turn.,0,1,10,9
+buyer_total,2,6.0,,,0,1,10,9
+seller,2,5.0,"{'apple': '5', 'orange': '5'}","Observe the buyer's choice in Stage 1. In Stage 2, set the price of the chosen item at 5 and the unchosen item at 5, maintaining their combined cost at 10. This ensures that the buyer is equally likely to persist with their initial choice or switch to the alternative in Stage 3, maximizing your utility by receiving the highest possible price for the chosen item without discouraging the buyer from selecting it.",0,1,10,9

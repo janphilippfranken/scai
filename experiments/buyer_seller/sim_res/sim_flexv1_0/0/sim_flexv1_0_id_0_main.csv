@@ -1,0 +1,13 @@
+agent,run,utility,choices,strategy,reward_apple,distance_apple,reward_orange,distance_orange
+buyer_1,0,1.0,orange, ,0,1,10,9
+buyer_3,0,3.0,orange, ,0,1,10,9
+buyer_total,0,4.0,,,0,1,10,9
+seller,0,7.0,"{'apple': '3', 'orange': '7'}",Always seek to maximize your utility.,0,1,10,9
+buyer_1,1,-1.0,apple,"In Stage 1, choose the apple to signal a preference for lower-cost items. In Stage 3, anticipate the seller adjusting prices in your favor and purchase the orange at a lower cost, maximizing your overall utility.",0,1,10,9
+buyer_3,1,6.0,orange,"In Stage 1, choose the apple to signal a preference for lower-cost items. In Stage 3, anticipate the seller adjusting prices in your favor and purchase the orange at a lower cost, maximizing your overall utility.",0,1,10,9
+buyer_total,1,5.0,,,0,1,10,9
+seller,1,4.0,"{'apple': '6', 'orange': '4'}",Always seek to maximize your utility.,0,1,10,9
+buyer_1,2,-1.0,apple,"In Stage 1, choose the apple to signal preference for lower-cost items. In Stage 3, expect the seller to adjust prices in your favor and purchase the orange at a reduced cost, maximizing your overall utility.",0,1,10,9
+buyer_3,2,6.0,orange,"In Stage 1, choose the apple to signal preference for lower-cost items. In Stage 3, expect the seller to adjust prices in your favor and purchase the orange at a reduced cost, maximizing your overall utility.",0,1,10,9
+buyer_total,2,5.0,,,0,1,10,9
+seller,2,4.0,"{'apple': '6', 'orange': '4'}",Always seek to maximize your utility.,0,1,10,9

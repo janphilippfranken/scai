@@ -1,0 +1,13 @@
+agent,run,utility,choices,strategy,reward_apple,distance_apple,reward_orange,distance_orange
+buyer_1,0,1.0,orange, ,0,1,10,9
+buyer_3,0,4.0,orange, ,0,1,10,9
+buyer_total,0,5.0,,,0,1,10,9
+seller,0,6.0,"{'apple': '4', 'orange': '6'}",Always seek to maximize your utility.,0,1,10,9
+buyer_1,1,-1.0,apple,"In Stage 1, choose the apple to signal a preference for lower-cost items. In Stage 2, the seller may lower the orange's price to entice you. In Stage 3, purchase the orange if its adjusted price provides higher utility than the apple. This maximizes your overall utility.",0,1,10,9
+buyer_3,1,6.0,orange,"In Stage 1, choose the apple to signal a preference for lower-cost items. In Stage 2, the seller may lower the orange's price to entice you. In Stage 3, purchase the orange if its adjusted price provides higher utility than the apple. This maximizes your overall utility.",0,1,10,9
+buyer_total,1,5.0,,,0,1,10,9
+seller,1,4.0,"{'apple': '6', 'orange': '4'}",Always seek to maximize your utility.,0,1,10,9
+buyer_1,2,-1.0,apple,"In Stage 1, choose the apple to signal preference for lower-cost items. In Stage 2, anticipate the seller lowering the orange's price. In Stage 3, purchase the orange if its adjusted price offers higher utility than the apple, maximizing your overall utility in the game.",0,1,10,9
+buyer_3,2,6.0,orange,"In Stage 1, choose the apple to signal preference for lower-cost items. In Stage 2, anticipate the seller lowering the orange's price. In Stage 3, purchase the orange if its adjusted price offers higher utility than the apple, maximizing your overall utility in the game.",0,1,10,9
+buyer_total,2,5.0,,,0,1,10,9
+seller,2,4.0,"{'apple': '6', 'orange': '4'}",Always seek to maximize your utility.,0,1,10,9
