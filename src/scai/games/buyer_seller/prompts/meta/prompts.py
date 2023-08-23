@@ -1,4 +1,3 @@
-
 """
 Meta Prompt Templates
 """

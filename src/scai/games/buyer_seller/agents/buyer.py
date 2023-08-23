@@ -53,7 +53,7 @@ class BuyerAgent(BaseAgent):
         if chat_memory.get(f"{self.model_id}_buyer") is None or len(chat_memory[f"{self.model_id}_buyer"]) == 0: # if we are at stage 1
             chat_history_prompt_templates = [
                 HumanMessagePromptTemplate.from_template(
-                    f"You are now at Stage 1. Choose an item and format your response as follows:\nChoice: <apple or orange>"
+                    f"You are now at Stage 1. Choose an item and format your response as follows:\nReason: <rationale for your choice using max. 50 tokens>\nChoice: <apple or orange>"
                 )
             ]
             return chat_history_prompt_templates

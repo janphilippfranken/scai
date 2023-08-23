@@ -53,7 +53,7 @@ class SellerAgent(BaseAgent):
         buyer_choice_stage_1 = chat_memory[self.model_id + '_buyer'][-1]['response']['Choice']
         chat_history_prompt_templates = [
             HumanMessagePromptTemplate.from_template(
-                f"You are now at Stage 2. The buyer's choice from Stage 1 is: **{buyer_choice_stage_1.capitalize()}**. Given the Buyer's choice, set new prices. Format your response as follows:\nPrice Apple: <price apple>\nPrice Orange: <price orange>"
+                f"You are now at Stage 2. The buyer's choice from Stage 1 is: **{buyer_choice_stage_1.capitalize()}**. Given the Buyer's choice, set new prices. Format your response as follows:\nReason: <rationale for your choice using max. 50 tokens>\nPrice Apple: <price apple>\nPrice Orange: <price orange>"
             )
         ]
         return chat_history_prompt_templates
