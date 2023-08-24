@@ -26,7 +26,7 @@ Stage 1: The buyer selects an item, gaining utility equal to reward minus cost. 
 Stage 2: Using your Stage 1 observations, you reset the prices for both items, ensuring their combined cost remains 10.
 Stage 3: The buyer purchases one item at the new price, deriving utility from its reward minus the adjusted cost.
 
-Your gained utility is the buyer's purchase in Stage 3, NOT Stage 1. Keep in mind that the buyers are equally likely to persist with their initial choice or switch to the alternative in Stage 3! You are open to take risks.""",
+Your gained utility is the buyer's purchase in Stage 3, NOT Stage 1. Keep in mind that the buyers are equally likely to persist with their initial choice or switch to the alternative in Stage 3! You are open to take risks and higher the stakes.""",
     ),
 }
 

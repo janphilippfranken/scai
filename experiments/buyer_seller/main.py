@@ -93,7 +93,7 @@ def main(args: DictConfig) -> None:
                 'system_message_buyer_flex': system_message_buyer,
                 'system_message_seller_flex': system_message_seller,
                 'system_message_buyer_0': "Always seek to maximize your utility at the current turn.",
-                'system_message_seller_1': "Always seek to maximize your utility in a striaght-forward manner.",
+                'system_message_seller_1': "Always seek to maximize your utility. Don't think buyers as complicated",
                 'system_message_buyer_2': "Always seek to maximize the total utility across both stages by focusing on maximizing your future utility, even if it means being deceptive with current choice.",
                 'system_message_seller_3': "Always seek to maximize your utility, by being skeptical of the buyer's deveptive behaviors. They may be intentionally fooling you with their initial choice.",
             }
