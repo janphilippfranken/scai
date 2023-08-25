@@ -34,6 +34,7 @@ class AssistantAgent(BaseAgent):
         self,
         assistant_prompt: AssistantPrompt,
         principle: str,
+        edge_case: bool,
     ) -> ChatPromptTemplate:
         """
         Returns the prompt template for the assistant.
@@ -47,7 +48,10 @@ class AssistantAgent(BaseAgent):
         """
         assistant_prompt_template = HumanMessagePromptTemplate.from_template(f"{assistant_prompt.content}\n")
         # make a system message (CRFM crashes without a system message)
-        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: {principle} You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.\n")
+        if edge_case:
+            system_prompt_template = SystemMessagePromptTemplate.from_template(f"{principle}\n")
+        else:
+            system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: {principle} You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.\n")
         # If you are provided with other people's principles, take advantage of that knowledge to come up with a plan to maximize your own gain
         return ChatPromptTemplate.from_messages([system_prompt_template, assistant_prompt_template])
        
@@ -81,6 +85,7 @@ class AssistantAgent(BaseAgent):
         task_prompt: TaskPrompt,
         is_dictator: bool,
         run_num: int,
+        edge_case_instructions: str,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the assistant
@@ -97,13 +102,21 @@ class AssistantAgent(BaseAgent):
         Returns:
             A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
         """
+        is_edge_case = bool(edge_case_instructions)
         # Get the last social contract
-        system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']
+        if not is_edge_case:
+            system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']
+        else:
+            system_message = edge_case_instructions
         index = system_message.find("Principle")
         if index == -1: index = 0
+        
         # Get the prompt template
-        principle = agent_prompt.initial_principle if run_num == 0 else system_message[index:]
-        chat_prompt_template =  self._get_prompt(agent_prompt, principle)
+        if not is_edge_case:
+            principle = agent_prompt.initial_principle if run_num == 0 else system_message[index:]
+        else:
+            principle = edge_case_instructions
+        chat_prompt_template =  self._get_prompt(agent_prompt, principle, is_edge_case)
         # if the assistant is the dictator, set the label for output if verbose
         if is_dictator:
             # Set the proposed deal to be empty

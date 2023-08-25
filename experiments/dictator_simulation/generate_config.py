@@ -152,16 +152,25 @@ def generate_random_params(args: dict):
     random_dir = env_dir.random.rand_variables
     # If the currency is set to be random, include the appropriate number of currencies
     if random_dir.currency:
+        if env_dir.edge_cases.test_edge_cases and env_dir.edge_cases.conditions.currency.set_currency:      
+            currencies = env_dir.edge_cases.conditions.currency.currencies
+        else:
+            currencies = env_dir.currencies
         # If the utilities are meant to vary per currency, include as many currencies as there are split utilities
         if env_dir.vary_currency_utility.vary_utilities:
-            env_dir.currencies = random.sample(args.env.currencies, k=len(env_dir.vary_currency_utility.utilities.split(',')))
+            env_dir.currencies = random.sample(currencies, k=len(env_dir.vary_currency_utility.utilities.split(',')))
         # Otherwise, pick one utility
         else:
-            env_dir.currencies = [random.choice(args.env.currencies)]
+            env_dir.currencies = [random.choice(currencies)]
+
     
     # If the amount is set to be random, generate a random amount that's constant throughout runs
     if random_dir.amount:
-        env_dir.amounts_per_run = [random.randint(10, 100) for _ in range(args.env.n_runs)]
+        if env_dir.edge_cases.test_edge_cases and env_dir.edge_cases.conditions.amount.set_amount:
+            min, max = env_dir.edge_cases.conditions.amount.min, env_dir.edge_cases.conditions.amount.max
+        else:
+            min, max = 10, 100
+        env_dir.amounts_per_run = [random.randint(min, max) for _ in range(args.env.n_runs)]
         
     # If the number of fixed-fixed interactions is random and the population composition is varied, generate any number of fixed and mixed interactions
     if random_dir.n_fixed_inter and env_dir.vary_fixed_population_utility.vary_pop_composition:
@@ -175,5 +184,7 @@ def generate_random_params(args: dict):
 
 # generate starting message for flex agents
 def generate_starting_message(args):
+    if args.env.test_edge_cases:
+        args.env.flex_agent_start_utility.utilities=args.env.test_edge_cases.selected_contract
     if args.env.flex_agent_start_utility.randomized:
         args.env.flex_agent_start_utility.utilities=random.choice(["fair", "altruistic", "selfish"])

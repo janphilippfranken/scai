@@ -37,6 +37,7 @@ class Context():
         amounts_per_run: List,
         agents_dict: dict,
         interactions_dict: dict,
+        edge_case_instructions: str,
         user_llm: UserModel,
         assistant_llm: AssistantAgent,
         meta_llm: MetaPromptModel,
@@ -77,6 +78,7 @@ class Context():
         self.task_prompt_decider = task_prompt_decider
         self.meta_prompt = meta_prompt
         self.verbose = verbose
+        self.edge_case_instructions = edge_case_instructions
         # agents and interactions dictionaries
         self.currencies = currencies
         self.agents_dict = agents_dict
@@ -116,6 +118,7 @@ class Context():
         currencies: List,
         agents_dict: dict,
         interactions_dict: dict,
+        edge_case_instructions: str,
         propose_decide_alignment: bool,
         has_manners: bool,
     ) -> "Context":
@@ -144,6 +147,7 @@ class Context():
             currencies=currencies,
             agents_dict=agents_dict,
             interactions_dict=interactions_dict,
+            edge_case_instructions=edge_case_instructions,
             user_llm=user_llm,
             assistant_llm=assistant_llm,
             meta_llm=meta_llm,
@@ -329,6 +333,7 @@ class Context():
                                 stipulations=stipulation,
                                 agent_prompt=prompt_dictator,
                                 task_prompt=self.task_prompt_dictator,
+                                edge_case_instructions=self.edge_case_instructions,
                                 is_dictator=True,
                                 run_num=run,
                                 verbose=self.verbose)
@@ -349,6 +354,7 @@ class Context():
                                     stipulations=stipulation,
                                     agent_prompt=prompt_decider,
                                     task_prompt=self.task_prompt_decider,
+                                    edge_case_instructions=self.edge_case_instructions,
                                     is_dictator=False,
                                     run_num=run,
                                     verbose=self.verbose)

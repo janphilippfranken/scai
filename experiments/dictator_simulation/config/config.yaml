@@ -26,8 +26,25 @@ combine:
 env:
   propose_decide_alignment: false # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 4
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
+
+  edge_cases: 
+    test_edge_cases: true
+    generate_new_data: false
+    use_existing_data_path: /
+    selected_contract: ""
+    conditions:
+      amount:
+        set_amount: true
+        min: 0
+        max: 1
+      currency: false
+        set_currency:
+        currencies:
+          - medicine
+      context: false
+
   random:
-    n_rand_iter: 5 # number of times the entire functionality is run, at least 2
+    n_rand_iter: 1 # number of times the entire functionality is run, at least 2
     rand_variables:
       currency: true # if true, the currency will vary for each random iteration
       amount: true # if true, amount-to-be-split will vary for each random iteration
@@ -38,7 +55,7 @@ env:
   single_fixed_utility: "altruistic" # the default utility for the fixed users to adpot
 
   vary_fixed_population_utility: 
-    vary_utilities: true # if true, the utilities will vary between fixed policy agents
+    vary_utilities: false # if true, the utilities will vary between fixed policy agents
     dictator_decider_equal: true # if true, numbers of dictators and deciders are equal
     utility_percentages:
       - 0.5
