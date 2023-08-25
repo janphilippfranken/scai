@@ -21,7 +21,7 @@ from generate_config import get_num_interactions, generate_agents, generate_inte
 # save and plot results
 from utils import save_as_csv
 from plots import plot_results, plot_all_averages
-from edge_case_utils import agent_pick_contract, create_prompt_string, set_args, run_edge_case, get_existing_data
+from generalize_utils import agent_pick_contract, create_prompt_string, set_args, run_edge_case, get_existing_data
 
 # create context
 def create_context(

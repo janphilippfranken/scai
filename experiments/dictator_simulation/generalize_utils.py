@@ -85,6 +85,7 @@ def get_existing_data(args: DictConfig) -> dict:
 
 def set_args(args, prompt_string):
     args.env.random.n_rand_iter = 1
+    args.sim.sim_dir = f"{args.sim.sim_dir}/edge_case"
     args.env.edge_cases.selected_contract = prompt_string
 
 def run_edge_case():
