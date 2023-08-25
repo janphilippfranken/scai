@@ -81,7 +81,7 @@ def generate_flex_agents(args, num_flex_agents):
     flex_agents = []
     for m in range(num_flex_agents):
         manners = random.choice(manners_across_population)
-        initial_util = random.choice(['fair', 'altruistic', 'selfish']) if args.env.flex_agent_start_utility.randomized else initial_utils_list[m]
+        initial_util = random.choice(['fair', 'altruistic', 'selfish']) if args.env.flex_agent_start_utility.randomized else 'empty'
         agent = {
             'name': f'flex_agent_{m + 1}',
             'manners': manners,

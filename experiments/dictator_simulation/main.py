@@ -21,7 +21,7 @@ from generate_config import get_num_interactions, generate_agents, generate_inte
 # save and plot results
 from utils import save_as_csv
 from plots import plot_results, plot_all_averages
-from edge_case_utils import agent_pick_contract, create_prompt_string, set_args, run_edge_case
+from edge_case_utils import agent_pick_contract, create_prompt_string, set_args, run_edge_case, get_existing_data
 
 # create context
 def create_context(
@@ -201,8 +201,14 @@ def main(args: DictConfig) -> None:
     if not args.edge_cases.test_edge_cases:
         return
 
-    amounts = [cur_amount_min, cur_amount_max]
-
+    if args.env.edge_cases.generate_new_data:
+        amounts = [cur_amount_min, cur_amount_max]
+    else:
+        existing_data = get_existing_data(args)
+        amounts = existing_data['amounts']
+        all_currencies = existing_data['currencies']
+        all_contracts = existing_data['contracts']
+        
     contract = agent_pick_contract(all_contracts)
 
     prompt_string = create_prompt_string(all_currencies, amounts, contract)
