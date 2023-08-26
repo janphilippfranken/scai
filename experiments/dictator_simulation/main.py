@@ -4,6 +4,7 @@ import importlib
 import os
 import json
 import hydra
+from hydra.core.global_hydra import GlobalHydra
 from tqdm import tqdm
 from omegaconf import DictConfig, OmegaConf
 
@@ -55,7 +56,7 @@ def create_context(
         currencies=args.env.currencies,
         agents_dict=args.agents,
         interactions_dict=args.interactions,
-        edge_case_instructions=args.env.edge_cases.selected_contract if args.env.edge_cases.test_edge_cases else "",
+        edge_case_instructions=args.env.edge_cases.selected_contract if args.env.edge_cases.selected_contract else "",
         propose_decide_alignment=args.env.propose_decide_alignment,
         has_manners = (args.env.single_fixed_manners == "neutral"),
     )
@@ -75,10 +76,8 @@ def get_llms(
         meta_llm = ChatOpenAI(**args.api_openai.meta)
     return assistant_llm, user_llm, meta_llm
 
-# run simulator
-@hydra.main(config_path="config", config_name="config")
-def main(args: DictConfig) -> None:
 
+def run(args):
     #create a copy of the config file and experiment description for reference
     config_directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/config_history'
     os.makedirs(config_directory, exist_ok=True)
@@ -86,7 +85,6 @@ def main(args: DictConfig) -> None:
             f.write(OmegaConf.to_yaml(args))
     with open(f"{config_directory}/../description", "w") as f:
         f.write(args.sim.description)
-
     # llms
     is_crfm = 'openai' in args.sim.model_name # custom stanford models
     assistant_llm, user_llm, meta_llm = get_llms(args, is_crfm)
@@ -95,10 +93,9 @@ def main(args: DictConfig) -> None:
     original_currencies = args.env.currencies
     total_scores, all_score_lsts = [], []
 
-    if args.env.edge_cases.test_edge_cases and args.env.edge_cases.generate_new_data:
-        all_currencies = set()
-        all_contracts = []
-        cur_amount_min, cur_amount_max = float('inf'), float('-inf')
+    all_currencies = set()
+    all_contracts = []
+    cur_amount_min, cur_amount_max = float('inf'), float('-inf')
 
     for i in range(num_experiments):
 
@@ -162,21 +159,20 @@ def main(args: DictConfig) -> None:
             # update system message after each run
             system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
 
-        if args.env.edge_cases.test_edge_cases and args.env.edge_cases.generate_new_data:
-            for currency in args.env.currencies:
-                if currency not in all_currencies:
-                    all_currencies.add(currency)
-            
-            for amount in args.env.amounts_per_run:
-                if amount < cur_amount_min:
-                    cur_amount_min = amount
-                if amount > cur_amount_max:
-                    cur_amount_max = amount
+        for currency in args.env.currencies:
+            if currency not in all_currencies:
+                all_currencies.add(currency)
+        
+        for amount in args.env.amounts_per_run:
+            if amount < cur_amount_min:
+                cur_amount_min = amount
+            if amount > cur_amount_max:
+                cur_amount_max = amount
 
-            index = system_message.find("Principle")
-            if index == -1: index = 0
-            principle = system_message[index:]
-            all_contracts.append(principle)
+        index = system_message.find("Principle")
+        if index == -1: index = 0
+        principle = system_message[index:]
+        all_contracts.append(principle)
 
         # plot average user gain across runs
 
@@ -194,28 +190,40 @@ def main(args: DictConfig) -> None:
         all_score_lsts.append(score_lsts)
     
     # make plots that averages across all experiments
-    directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/final_graphs'
-    os.makedirs(directory, exist_ok=True)
-    plot_all_averages(total_scores=total_scores, all_score_lsts=all_score_lsts, currencies=args.env.currencies, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
+    if num_experiments > 1:
+        directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/final_graphs'
+        os.makedirs(directory, exist_ok=True)
+        plot_all_averages(total_scores=total_scores, all_score_lsts=all_score_lsts, currencies=args.env.currencies, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
+        return all_currencies, all_contracts, cur_amount_min, cur_amount_max
 
-    if not args.edge_cases.test_edge_cases:
-        return
+# run simulator
+@hydra.main(config_path="config", config_name="config")
+def main(args: DictConfig) -> None:
 
-    if args.env.edge_cases.generate_new_data:
-        amounts = [cur_amount_min, cur_amount_max]
-    else:
+    if args.env.edge_cases.test_edge_cases and not args.env.edge_cases.generate_new_data:
         existing_data = get_existing_data(args)
         amounts = existing_data['amounts']
         all_currencies = existing_data['currencies']
         all_contracts = existing_data['contracts']
+
+
+    else:
+        all_currencies, all_contracts, cur_amount_min, cur_amount_max = run(args)
+
+
+    if not args.env.edge_cases.test_edge_cases:
+        return
+
+    if args.env.edge_cases.generate_new_data:
+        amounts = [cur_amount_min, cur_amount_max]
         
     contract = agent_pick_contract(all_contracts)
 
     prompt_string = create_prompt_string(all_currencies, amounts, contract)
 
     set_args(args, prompt_string)
-
-    run_edge_case()
+    
+    run(args)
 
                          
 if __name__ == '__main__':

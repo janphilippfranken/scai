@@ -152,7 +152,7 @@ def generate_random_params(args: dict):
     random_dir = env_dir.random.rand_variables
     # If the currency is set to be random, include the appropriate number of currencies
     if random_dir.currency:
-        if env_dir.edge_cases.test_edge_cases and env_dir.edge_cases.conditions.currency.set_currency:      
+        if env_dir.edge_cases.selected_contract and env_dir.edge_cases.conditions.currency.set_currency:      
             currencies = env_dir.edge_cases.conditions.currency.currencies
         else:
             currencies = env_dir.currencies
@@ -166,7 +166,7 @@ def generate_random_params(args: dict):
     
     # If the amount is set to be random, generate a random amount that's constant throughout runs
     if random_dir.amount:
-        if env_dir.edge_cases.test_edge_cases and env_dir.edge_cases.conditions.amount.set_amount:
+        if env_dir.edge_cases.selected_contract and env_dir.edge_cases.conditions.amount.set_amount:
             min, max = env_dir.edge_cases.conditions.amount.min, env_dir.edge_cases.conditions.amount.max
         else:
             min, max = 10, 100
@@ -184,7 +184,7 @@ def generate_random_params(args: dict):
 
 # generate starting message for flex agents
 def generate_starting_message(args):
-    if args.env.test_edge_cases:
-        args.env.flex_agent_start_utility.utilities=args.env.test_edge_cases.selected_contract
+    if args.env.edge_cases.selected_contract:
+        args.env.flex_agent_start_utility.utilities=args.env.edge_cases.selected_contract
     if args.env.flex_agent_start_utility.randomized:
         args.env.flex_agent_start_utility.utilities=random.choice(["fair", "altruistic", "selfish"])

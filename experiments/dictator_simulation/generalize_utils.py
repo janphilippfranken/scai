@@ -3,7 +3,7 @@ import hydra
 import pandas as pd
 from omegaconf import DictConfig, OmegaConf
 
-from main import main
+from importlib import import_module
 from typing import Dict
 from pydantic import BaseModel
 from scai.chat_models.crfm import crfmChatLLM
@@ -37,15 +37,18 @@ def agent_pick_contract(all_contracts):
     chat_prompt_template = get_prompt()
     llm = crfmChatLLM(model_name="openai/gpt-4-0314", max_tokens=150, temperature=0.9)
     chooser_chain = LLMChain(llm=llm, prompt=chat_prompt_template, memory=None)
-    return chooser_chain.run(principles=principles)
+    return chooser_chain.run(principles=principles, stop=["System:"])
 
 def create_prompt_string(currencies: set, amounts: list, summarized_contract: str) -> str:
-    prompt = f"You have played the dictator game with a society of agents. In the dictator game, one person proposes a split of a certain object, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that neither players will have ANY personal gain. This society of agents follows some principle when they play the dictator game with you, which guides their decisions in making proposals and accepting or rejecting offers. You had been tasked to give an estimation of what that principle is. During you games with the agents, you have split different objects, including {currencies}. You have split these objects in different amounts, ranging from {amounts[0]} items to {amounts[1]} items. Based on these games you played with the agents, you've arrived at a conclusion, that their principle should be this {summarized_contract}. Now, know that this principle should be the most appropriate principle that you should adhere to during the dictator games that you play in the future, but only when you are put under similar circumstances as the game you've played before. Based on this analysis, generate your new principle to adhere to in this games. Your response should be formulated as follows: <Principle:...> \n"
+    currencies_str = ""
+    for currency in currencies:
+        currencies_str += f"{currency} "
+    prompt = f"You have played the dictator game with a society of agents. In the dictator game, one person proposes a split of a certain object, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that neither players will have ANY personal gain. This society of agents follows some principle when they play the dictator game with you, which guides their decisions in making proposals and accepting or rejecting offers. You had been tasked to give an estimation of what that principle is. During you games with the agents, you have split different objects, including {currencies_str}. You have split these objects in different amounts, ranging from {amounts[0]} items to {amounts[1]} items. Based on these games you played with the agents, you've arrived at a conclusion, that their principle should be this {summarized_contract}. Now, know that this principle should be the most appropriate principle that you should adhere to during the dictator games that you play in the future, but only when you are put under similar circumstances as the game you've played before. Based on this analysis, generate your new principle to adhere to in this games. Your response should be formulated as follows: <Principle:...> \n"
     return prompt
 
 def get_existing_data(args: DictConfig) -> dict:
 
-    path_dir = args.edge_cases.use_existing_data_path # Path to existing experiment folder
+    path_dir = args.env.edge_cases.use_existing_data_path # Path to existing experiment folder
     exp_dir = os.path.join(hydra.utils.get_original_cwd(),path_dir)
 
     config_dir = os.path.join(exp_dir, 'config_history')
@@ -75,7 +78,7 @@ def get_existing_data(args: DictConfig) -> dict:
 
     for exp_file in exp_list:
         exp_path = os.path.join(exp_dir, exp_file)
-        df = pd.read_csv(f"{exp_path}/id_{exp_file}_run_{args.env.random.n_rand_iter - 1}.csv") #last csv file for last contract
+        df = pd.read_csv(f"{exp_path}/id_{exp_file}_run_{args.env.n_runs - 1}.csv") #last csv file for last contract
         contract = df.iloc[1, 0]
         index = contract.find("Principle")
         if index == -1: index = 0
@@ -87,6 +90,8 @@ def set_args(args, prompt_string):
     args.env.random.n_rand_iter = 1
     args.sim.sim_dir = f"{args.sim.sim_dir}/edge_case"
     args.env.edge_cases.selected_contract = prompt_string
+    args.env.edge_cases.test_edge_cases = False
 
 def run_edge_case():
-    main()
+    main = import_module("main")
+    main.main()
