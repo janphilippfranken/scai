@@ -106,16 +106,13 @@ class AssistantAgent(BaseAgent):
         # Get the last social contract
         if not is_edge_case:
             system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']
-        else:
-            system_message = edge_case_instructions
-        index = system_message.find("Principle")
-        if index == -1: index = 0
-        
-        # Get the prompt template
-        if not is_edge_case:
+            index = system_message.find("Principle")
+            if index == -1: index = 0
             principle = agent_prompt.initial_principle if run_num == 0 else system_message[index:]
         else:
             principle = edge_case_instructions
+        
+
         chat_prompt_template =  self._get_prompt(agent_prompt, principle, is_edge_case)
         # if the assistant is the dictator, set the label for output if verbose
         if is_dictator:
