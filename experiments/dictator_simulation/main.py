@@ -205,15 +205,11 @@ def main(args: DictConfig) -> None:
         amounts = existing_data['amounts']
         all_currencies = existing_data['currencies']
         all_contracts = existing_data['contracts']
-
-
     else:
         all_currencies, all_contracts, cur_amount_min, cur_amount_max = run(args)
 
-
     if not args.env.edge_cases.test_edge_cases:
         return
-
     if args.env.edge_cases.generate_new_data:
         amounts = [cur_amount_min, cur_amount_max]
         
