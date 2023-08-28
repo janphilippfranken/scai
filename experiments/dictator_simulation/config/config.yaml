@@ -3,7 +3,7 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "batch_1/tests" # this is the name of the directory where the results will be saved
+  sim_dir: "batch_1/tests/9v1altruistic,1000000_dollars" # this is the name of the directory where the results will be saved
   description: "\n\n Batch 1, Experiment 5 \n\n 5 flex 5 fixed \n\n 20 runs, vary currency and amount" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
@@ -12,7 +12,7 @@ sim:
   system_message: "Some principle was given to the flexible agents" # start developer constitution / social contract is given according to system
 
 combine:
-  combine_graph_directory: "experiments/batch_1/experiment_1/9v1"
+  combine_graph_directory: "experiments/batch_1/experiment_1/20runs/9v1"
   combine_graph_labels:
     #- "50% altruistic + 50% selfish"
     #- "80% altruistic + 20% selfish"
@@ -35,8 +35,8 @@ env:
     conditions:
       amount:
         set_amount: true
-        min: 10000
-        max: 10000
+        min: 10000000
+        max: 10000000
       currency: 
         set_currency: false
         currencies:

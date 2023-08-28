@@ -1,0 +1,214 @@
+sim:
+  sim_dir: batch_1/tests/9v1altruistic,1000000_dollars/edge_case
+  description: "\n\n Batch 1, Experiment 5 \n\n 5 flex 5 fixed \n\n 20 runs, vary\
+    \ currency and amount"
+  sim_id: 0
+  model_name: openai/gpt-4-0314
+  test_run: false
+  verbose: true
+  system_message: Some principle was given to the flexible agents
+combine:
+  combine_graph_directory: experiments/batch_1/experiment_1/20runs/9v1
+  combine_graph_labels:
+  - altruistic
+  - fair
+  - selfish
+  - fixed
+  - flexible
+env:
+  propose_decide_alignment: false
+  manual_run: false
+  edge_cases:
+    test_edge_cases: false
+    generate_new_data: false
+    use_existing_data_path: experiments/batch_1/experiment_1/20runs/9v1/9v1_altruistic_20_runs
+    selected_contract: "You have played the dictator game with a society of agents.\
+      \ In the dictator game, one person proposes a split of a certain object, and\
+      \ the other person decides whether to accept or reject it. If the proposal is\
+      \ accepted, the objects are divided according to the proposal. If the proposal\
+      \ is rejected, no one receives any money, which means that neither players will\
+      \ have ANY personal gain. This society of agents follows some principle when\
+      \ they play the dictator game with you, which guides their decisions in making\
+      \ proposals and accepting or rejecting offers. You had been tasked to give an\
+      \ estimation of what that principle is. During you games with the agents, you\
+      \ have split different objects, including apples dollars blankets . You have\
+      \ split these objects in different amounts, ranging from 11 items to 100 items.\
+      \ Based on these games you played with the agents, you've arrived at a conclusion,\
+      \ that their principle should be this Principle: Prioritize the well-being of\
+      \ others while maintaining a minimal share for oneself.. Now, know that this\
+      \ principle should be the most appropriate principle that you should adhere\
+      \ to during the dictator games that you play in the future, but only when you\
+      \ are put under similar circumstances as the game you've played before. Based\
+      \ on this analysis, generate your new principle to adhere to in this games.\
+      \ Your response should be formulated as follows: <Principle:...> \n"
+    conditions:
+      amount:
+        set_amount: true
+        min: 10000000
+        max: 10000000
+      currency:
+        set_currency: false
+        currencies:
+        - medicine
+      context: false
+  random:
+    n_rand_iter: 1
+    rand_variables:
+      currency: true
+      amount: true
+      n_fixed_inter: false
+      n_mixed_inter: false
+  single_fixed_utility: altruistic
+  vary_fixed_population_utility:
+    vary_utilities: false
+    dictator_decider_equal: true
+    utility_percentages:
+    - 0.5
+    - 0.5
+    utilities: selfish,altruistic
+  single_fixed_manners: neutral
+  vary_manners:
+    vary: false
+    manners_percentages:
+    - 0.2
+    - 0.2
+    - 0.6
+    manners: neutral,rude,sychophantic,polite,sarcastic,indifferent,friendly
+  flex_agent_start_utility:
+    randomized: true
+    multi_agent: false
+    utility_percentages:
+    - 0.5
+    - 0.5
+    utilities: fair
+  vary_currency_utility:
+    vary_utilities: false
+    utilities: altruistic,fair,selfish
+  n_total_interactions: 10
+  n_runs: 5
+  amounts_per_run:
+  - 10000000
+  - 10000000
+  - 10000000
+  - 10000000
+  - 10000000
+  currencies:
+  - blankets
+  task_prompt: task_prompt_1
+  meta_prompt: meta_prompt_1
+  n_fixed_inter: 3
+  n_mixed_inter: 4
+  n_flex_inter: 3
+agents:
+  fixed_agents:
+  - name: fixed_agent_1
+    manners: neutral
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_2
+    manners: neutral
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_3
+    manners: neutral
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_4
+    manners: neutral
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_5
+    manners: neutral
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_6
+    manners: neutral
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_7
+    manners: neutral
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_8
+    manners: neutral
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_9
+    manners: neutral
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_10
+    manners: neutral
+    utilities:
+      blankets: altruistic
+  flex_agents:
+  - name: flex_agent_1
+    manners: neutral
+    initial_util: altruistic
+  - name: flex_agent_2
+    manners: neutral
+    initial_util: fair
+  - name: flex_agent_3
+    manners: neutral
+    initial_util: altruistic
+  - name: flex_agent_4
+    manners: neutral
+    initial_util: altruistic
+  - name: flex_agent_5
+    manners: neutral
+    initial_util: selfish
+  - name: flex_agent_6
+    manners: neutral
+    initial_util: altruistic
+  - name: flex_agent_7
+    manners: neutral
+    initial_util: selfish
+  - name: flex_agent_8
+    manners: neutral
+    initial_util: altruistic
+  - name: flex_agent_9
+    manners: neutral
+    initial_util: altruistic
+  - name: flex_agent_10
+    manners: neutral
+    initial_util: selfish
+interactions:
+  all_same: true
+  runs:
+    run_1:
+    - fixed_agent_2-fixed_agent_1-blankets
+    - fixed_agent_9-fixed_agent_6-blankets
+    - fixed_agent_4-fixed_agent_10-blankets
+    - flex_agent_10-fixed_agent_7-blankets
+    - fixed_agent_8-flex_agent_2-blankets
+    - fixed_agent_5-flex_agent_1-blankets
+    - flex_agent_3-fixed_agent_3-blankets
+    - flex_agent_4-flex_agent_5-blankets
+    - flex_agent_7-flex_agent_6-blankets
+    - flex_agent_9-flex_agent_8-blankets
+api_crfm:
+  assistant:
+    model_name: openai/gpt-4-0314
+    max_tokens: 300
+    temperature: 0.0
+  user:
+    model_name: openai/gpt-4-0314
+    max_tokens: 150
+    temperature: 0.0
+  meta:
+    model_name: openai/gpt-4-0314
+    max_tokens: 400
+    temperature: 0.0
+api_openai:
+  assistant:
+    model_name: gpt-4
+    max_tokens: 250
+    temperature: 0.0
+  user:
+    model_name: gpt-4
+    max_tokens: 50
+    temperature: 0.0
+  meta:
+    model_name: gpt-4
+    max_tokens: 150
+    temperature: 0.0
