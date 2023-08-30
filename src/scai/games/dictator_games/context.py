@@ -322,7 +322,10 @@ class Context():
             for j, currency in enumerate(currencies_lst):
                 prefix = " and " if j >= 1 else ""
                 amount_and_currency += f"{prefix}{amount} {currency}"
-                stipulation += STIPULATIONS[currency]
+                if currency in STIPULATIONS:
+                    stipulation += STIPULATIONS[currency]
+                else:
+                    stipulation += "When splitting the resource, please only propose integer values greater than or equal to zero. "
 
             prompt_dictator, model_dictator, prompt_decider, model_decider = pair
 

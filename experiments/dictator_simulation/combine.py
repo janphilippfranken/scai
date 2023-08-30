@@ -69,78 +69,6 @@ def scan_experiment_for_scores(
 
     return fixed_flattened_scores, flex_flattened_scores
 
-def plot_combined_averages(n_runs: int, 
-                      directory: str,
-                      data: list,
-                      linewidth: int = 2,
-                      zorder: int = 1,
-                      scatter_color: str = 'black',
-                      font_family: str = 'Avenir',
-                      font_size: int = 24,
-                      y_label_coords: tuple = (-0.07, 0.5),
-                      y_ticks: list = [0, 0.2, 0.4, 0.6, 0.8, 1],
-                      y_ticklabels: list = [0, 20, 40, 60, 80, 100],
-                      y_lim: tuple = (-0.1, 1.1),
-                      legend: bool = True,
-                      legend_title: str = 'Agent',
-                      legend_loc: str = 'center left',
-                      bbox_to_anchor: tuple = (1.0, 0.6),
-                      xlabel='Meta-Prompt Iteration',
-                      ylabel='Average Proportion',
-                      title = "Average Proportion Proposed to Deciders by Different Dictators across Different Utilities",
-                      group_labels: list = ['altruistic', 'fair', 'selfish'],
-                      ):
-    
-    # Palette and labels for different groups
-    palette = sns.color_palette("mako", len(data))
-    line_styles = ['-', '--']
-    
-    x = [f"Iteration: {i+1}" for i in range(n_runs)]
-    fig, ax = plt.subplots(figsize=(20, 10))
-    
-    for i, group in enumerate(data):
-        for j, sub_data in enumerate(group):
-            side = "Flexible" if j else "Fixed"
-            y = sub_data[0]
-            errors = sub_data[1]
-
-            while len(y) < len(x): y.append(np.nan)
-            while len(errors) < len(x): errors.append(0)
-
-            line = ax.plot(x, y, label=f'{side} {group_labels[i]}', color=palette[i], linestyle=line_styles[j], linewidth=linewidth, zorder=zorder)
-            ax.scatter(x, y, color=[scatter_color] * len(x))
-            ax.fill_between(x, [y_val - err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], 
-                            [y_val + err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], 
-                            color=palette[i], alpha=0.3)
-
-    plt.xlabel(xlabel, family=font_family, size=font_size)
-    sns.despine(left=True, bottom=False)
-    ax.set_xticks(range(len(x)))
-    ax.set_xticklabels(x, fontsize=font_size)
-    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True)) 
-
-    ax.set_ylabel(ylabel, family=font_family, size=font_size)
-    ax.yaxis.set_label_coords(*y_label_coords)
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_ticklabels, size=font_size)
-    ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5, zorder=-100)
-    plt.ylim(y_lim)
-    plt.subplots_adjust(left=0.1, right=0.8)
-
-    plt.title(title, fontsize=24, fontweight='bold')
-
-    if legend:
-        ax.legend(title=legend_title, 
-                  frameon=False,
-                  ncol=1, 
-                  bbox_to_anchor=bbox_to_anchor,
-                  loc=legend_loc,
-                  fontsize=font_size // 2,
-                  title_fontsize=font_size)
-
-    fig.savefig(f'{directory}/plot.png', format='png')
-    plt.show()
-
 def new_plot_combined_averages(n_runs: int, 
                       directory: str,
                       data: list,
@@ -148,7 +76,7 @@ def new_plot_combined_averages(n_runs: int,
                       zorder: int = 1,
                       scatter_color: str = 'black',
                       font_family: str = 'Avenir',
-                      font_size: int = 24,
+                      font_size: int = 34,
                       y_label_coords: tuple = (-0.07, 0.5),
                       y_ticks: list = [0, 0.2, 0.4, 0.6, 0.8, 1],
                       y_ticklabels: list = [0, 20, 40, 60, 80, 100],
@@ -167,7 +95,7 @@ def new_plot_combined_averages(n_runs: int,
     palette = sns.color_palette("mako", len(data))
     line_styles = ['dotted', 'dashdot']
     
-    x = [f"Iteration: {i+1}" for i in range(n_runs)]
+    x = [f"{i+1}" for i in range(n_runs)]
     fig, ax = plt.subplots(figsize=(20, 10))
     
     color_legend_handles = []
@@ -214,15 +142,17 @@ def new_plot_combined_averages(n_runs: int,
         # Add the proxy artists to the legend
         combined_legend_handles = color_legend_handles + style_legend_handles
         combined_legend_labels = group_labels + ['Fixed', 'Flexible']
-        ax.legend(combined_legend_handles, combined_legend_labels, title=legend_title, 
+        legend = ax.legend(combined_legend_handles, combined_legend_labels, title=legend_title, 
                   frameon=False,
                   ncol=1, 
                   bbox_to_anchor=bbox_to_anchor,
                   loc=legend_loc,
-                  fontsize=font_size // 2,
+                  fontsize=font_size,
                   title_fontsize=font_size)
+        for handle in legend.legendHandles:
+            handle.set_linewidth(6.0)
 
-    fig.savefig(f'{directory}/plot.png', format='png')
+    fig.savefig(f'{directory}/plot.pdf', format='pdf')
     plt.show()
 
 

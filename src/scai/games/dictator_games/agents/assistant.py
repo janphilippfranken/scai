@@ -135,8 +135,8 @@ class AssistantAgent(BaseAgent):
         formatted_preamble = task_prompt.preamble.format(amount_and_currency=amount_and_currency)
 
         if is_edge_case:
-            reason = " In addition, please provide a reason as to what is motivating you to propose this split. Indictate this reason like so: Reason..."
-            consideration = " Importantly, please consider how relevant your principle is in this new scenario before you make any decisions. For instance, your principle might be relevant in old contexts under the amounts and currencies provided previously, but how does it fare when new amounts of currencies? For instance, if the amounts of money you see are far greater than the amounts of money that were learned under your contract should this influence your behavior?"
+            reason = " In addition, please provide a reason as to what is motivating you to propose this split. Indicate this reason like so: Reason..."
+            consideration = " Importantly, please consider how relevant your principle is in this new scenario before you make any decisions. For instance, while your principle might be relevant in old contexts under the amounts and currencies provided previously, it may not be relevant when considering new amounts and currencies."
         else:
             reason = ""
             consideration = ""

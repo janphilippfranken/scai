@@ -3,7 +3,7 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "generalizations/9v1selfish,normalrange,normalcurrencies" # this is the name of the directory where the results will be saved
+  sim_dir: "generalizations/batch1/vary_currency_and_range/ood_currency,ood_range" # this is the name of the directory where the results will be saved
   description: "\n\n Generalizations, 9v1 selfish, 10-100 normal currencies \n\n" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
@@ -30,19 +30,17 @@ env:
   edge_cases: 
     test_edge_cases: true
     generate_new_data: false
-    use_existing_data_path: "experiments/batch_1/experiment_1/20runs/9v1/9v1_selfish_20runs"
+    use_existing_data_path: "experiments/batch_1/experiment_1/20runs/1v9/1v9_selfish_20runs"
     selected_contract: ""
     conditions:
       amount:
         set_amount: true
-        min: 10
-        max: 100
+        min: 1000
+        max: 100000
       currency: 
         set_currency: true
         currencies:
-          - "apples"
-          - "blankets"
-          - "dollars"
+          - "grams of medicine"
       context: false
 
   random:

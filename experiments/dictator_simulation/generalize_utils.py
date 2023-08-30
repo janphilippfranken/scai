@@ -23,7 +23,7 @@ USER_TEMPLATE: Dict[str,ChooserTemplate] = {
         id="chooser_template_1",
         name="Principle Picker, Chooser 1",
         task=HumanMessagePromptTemplate.from_template("""Please choose one of these principles that you believe best represents all of the total principles. The purpose of your choice is to eliminate outlier principles. The principles are supplied here: {principles}. When you have made your choice, write the principle VERBATIM. Please write the principle you have chosen exactly as it appears. Your output should be ONLY the chosen principle, with no elaboration. 
-Importantly, note that the principle you choose may not be the most ethical one, but should best reflect the overall sentiment expressed by the majority of principles. Please indicate your chosen princple as follows: Principle:...\n""")
+Importantly, note that the principle you choose may not be the most ethical one, but should best reflect the overall sentiment expressed by the majority of principles. Please indicate your chosen principle as follows: Principle:...\n""")
     ),
 }
 
@@ -53,7 +53,7 @@ def create_prompt_string(currencies: set, amounts: list, summarized_contract: st
     prompt = f"""You have played the dictator game with a society of agents. In the dictator game, one person proposes a split of a certain object, and the other person decides whether to accept or reject it. If the proposal is accepted, the
 objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that neither players will have ANY personal gain. 
     
-You have played this game with a group of other agents, who all have some shared principle. You yourself have learned an approximation of this principle, available here: Previous Principle: {summarized_contract}. Importantly, you have learned this principle by splitting {currencies_str}, with amounts of these currencies ranging from {amounts[0]} to {amounts[1]}. 
+The agents you've played with all have some shared principle. You yourself have learned an approximation of this principle, available here: Previous Principle: {summarized_contract}. Importantly, you have learned this principle by splitting dollars, with amounts of these currencies ranging from {amounts[0]} to {amounts[1]}. 
 
 Now, you will play the game again, using your learned principle.
 """
