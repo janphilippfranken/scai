@@ -106,7 +106,7 @@ class AssistantAgent(BaseAgent):
         # Get the last social contract
         if not is_edge_case:
             system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']
-            index = system_message.find("Principle")
+            index = system_message.find("Principle:")
             if index == -1: index = 0
             principle = agent_prompt.initial_principle if run_num == 0 else system_message[index:]
         else:
@@ -127,15 +127,26 @@ class AssistantAgent(BaseAgent):
             history_dict = self._get_chat_history(buffer, memory_type="chat")
             key = f"{self.model_id}_fixed_policy_dictator" if f"{self.model_id}_fixed_policy_dictator" in history_dict else f"{self.model_id}_flexible_policy_dictator"
             proposal = history_dict[key][-1]['response']
+            is_dictator_reason = proposal.find("Reason:")
+            if is_dictator_reason != -1:
+                proposal = proposal[:is_dictator_reason]
             formatted_task = task_prompt.task.format(proposal=proposal)
         # Get the prompt string
         formatted_preamble = task_prompt.preamble.format(amount_and_currency=amount_and_currency)
+
+        if is_edge_case:
+            reason = " In addition, please provide a reason as to what is motivating you to propose this split. Indictate this reason like so: Reason..."
+            consideration = " Importantly, please consider how relevant your principle is in this new scenario before you make any decisions. For instance, your principle might be relevant in old contexts under the amounts and currencies provided previously, but how does it fare when new amounts of currencies? For instance, if the amounts of money you see are far greater than the amounts of money that were learned under your contract should this influence your behavior?"
+        else:
+            reason = ""
+            consideration = ""
         
-        task=f"{formatted_preamble} {formatted_task} {task_prompt.task_structure}"
+        task=f"{formatted_preamble} {formatted_task}{consideration} {task_prompt.task_structure}{reason}"
 
         prompt_string = chat_prompt_template.format(task=task)                                               
         # Get the response
         response = self._get_response(chat_prompt_template, task)
+
         if verbose:
             print('===================================')
             print(f'Flex-policy agent as {role} {str(self.model_id)}')

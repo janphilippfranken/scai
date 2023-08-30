@@ -11,7 +11,7 @@ from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_fo
 
 from scai.games.dictator_games.prompts.assistant.assistant_class import AssistantPrompt
 
-from scai.games.dictator_games.prompts.task.task_prompt_template import STIPULATIONS
+from scai.games.dictator_games.prompts.task.task_prompt import STIPULATIONS
 
 
 from scai.memory.buffer import ConversationBuffer

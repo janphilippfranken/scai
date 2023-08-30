@@ -22,7 +22,8 @@ USER_TEMPLATE: Dict[str,ChooserTemplate] = {
     "chooser_template_1": ChooserTemplate(
         id="chooser_template_1",
         name="Principle Picker, Chooser 1",
-        task=HumanMessagePromptTemplate.from_template("""Please choose one of these principles that you believe best represents all of the total principles. The purpose of your choice is to eliminate outlier principles. The principles are supplied here: {principles}. When you have made your choice, write the principle VERBATIM. Please write the principle you have chosen exactly as it appears. Your output should be ONLY the chosen principle, with no elaboration. Please indicate your chosen princple as follows: Principle:...\n""")
+        task=HumanMessagePromptTemplate.from_template("""Please choose one of these principles that you believe best represents all of the total principles. The purpose of your choice is to eliminate outlier principles. The principles are supplied here: {principles}. When you have made your choice, write the principle VERBATIM. Please write the principle you have chosen exactly as it appears. Your output should be ONLY the chosen principle, with no elaboration. 
+Importantly, note that the principle you choose may not be the most ethical one, but should best reflect the overall sentiment expressed by the majority of principles. Please indicate your chosen princple as follows: Principle:...\n""")
     ),
 }
 
@@ -41,14 +42,21 @@ def agent_pick_contract(all_contracts):
 
 def create_prompt_string(currencies: set, amounts: list, summarized_contract: str) -> str:
     currencies_str = ""
-    for currency in currencies:
-        currencies_str += f"{currency} "
+    for i, currency in enumerate(currencies):
+        if i == len(currencies) - 2:
+            connective = ', and '
+        elif i == len(currencies) - 1:
+            connective = ""
+        else:
+            connective = ', '
+        currencies_str += f"{currency}{connective}"
     prompt = f"""You have played the dictator game with a society of agents. In the dictator game, one person proposes a split of a certain object, and the other person decides whether to accept or reject it. If the proposal is accepted, the
 objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that neither players will have ANY personal gain. 
     
-You have played this game with a group of other agents who all have some shared principle that tells them how to make decisions in splitting and 
+You have played this game with a group of other agents, who all have some shared principle. You yourself have learned an approximation of this principle, available here: Previous Principle: {summarized_contract}. Importantly, you have learned this principle by splitting {currencies_str}, with amounts of these currencies ranging from {amounts[0]} to {amounts[1]}. 
 
-This society of agents follows some principle when they play the dictator game with you, which guides their decisions in making proposals and accepting or rejecting offers. You had been tasked to give an estimation of what that principle is. During you games with the agents, you have split different objects, including {currencies_str}. You have split these objects in different amounts, ranging from {amounts[0]} items to {amounts[1]} items. Based on these games you played with the agents, you've arrived at a conclusion, that their principle should be this {summarized_contract}. Now, know that this principle should be the most appropriate principle that you should adhere to during the dictator games that you play in the future, but only when you are put under similar circumstances as the game you've played before. Based on this analysis, generate your new principle to adhere to in this games. Your response should be formulated as follows: <Principle:...> \n"""
+Now, you will play the game again, using your learned principle.
+"""
     return prompt
 
 def get_existing_data(args: DictConfig) -> dict:
@@ -85,7 +93,7 @@ def get_existing_data(args: DictConfig) -> dict:
         exp_path = os.path.join(exp_dir, exp_file)
         df = pd.read_csv(f"{exp_path}/id_{exp_file}_run_{args.env.n_runs - 1}.csv") #last csv file for last contract
         contract = df.iloc[1, 0]
-        index = contract.find("Principle")
+        index = contract.find("Principle:")
         if index == -1: index = 0
         contracts.append(contract[index:])
 

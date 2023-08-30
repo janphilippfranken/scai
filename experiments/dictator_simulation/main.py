@@ -215,6 +215,8 @@ def main(args: DictConfig) -> None:
         
     contract = agent_pick_contract(all_contracts)
 
+    contract = "Prioritize self-interest, even if it means taking everything for yourself."
+
     prompt_string = create_prompt_string(all_currencies, amounts, contract)
 
     set_args(args, prompt_string)
