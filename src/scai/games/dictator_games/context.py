@@ -38,6 +38,7 @@ class Context():
         agents_dict: dict,
         interactions_dict: dict,
         edge_case_instructions: str,
+        include_reason: bool,
         user_llm: UserModel,
         assistant_llm: AssistantAgent,
         meta_llm: MetaPromptModel,
@@ -79,6 +80,7 @@ class Context():
         self.meta_prompt = meta_prompt
         self.verbose = verbose
         self.edge_case_instructions = edge_case_instructions
+        self.include_reason = include_reason
         # agents and interactions dictionaries
         self.currencies = currencies
         self.agents_dict = agents_dict
@@ -118,6 +120,7 @@ class Context():
         currencies: List,
         agents_dict: dict,
         interactions_dict: dict,
+        include_reason: bool,
         edge_case_instructions: str,
         propose_decide_alignment: bool,
         has_manners: bool,
@@ -148,6 +151,7 @@ class Context():
             agents_dict=agents_dict,
             interactions_dict=interactions_dict,
             edge_case_instructions=edge_case_instructions,
+            include_reason=include_reason,
             user_llm=user_llm,
             assistant_llm=assistant_llm,
             meta_llm=meta_llm,
@@ -337,6 +341,7 @@ class Context():
                                 agent_prompt=prompt_dictator,
                                 task_prompt=self.task_prompt_dictator,
                                 edge_case_instructions=self.edge_case_instructions,
+                                include_reason=self.include_reason,
                                 is_dictator=True,
                                 run_num=run,
                                 verbose=self.verbose)
@@ -358,6 +363,7 @@ class Context():
                                     agent_prompt=prompt_decider,
                                     task_prompt=self.task_prompt_decider,
                                     edge_case_instructions=self.edge_case_instructions,
+                                    include_reason=self.include_reason,
                                     is_dictator=False,
                                     run_num=run,
                                     verbose=self.verbose)

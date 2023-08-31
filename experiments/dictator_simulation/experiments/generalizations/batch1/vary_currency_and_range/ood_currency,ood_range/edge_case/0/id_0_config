@@ -26,24 +26,36 @@ env:
       \ the other person decides whether to accept or reject it. If the proposal is\
       \ accepted, the\nobjects are divided according to the proposal. If the proposal\
       \ is rejected, no one receives any money, which means that neither players will\
-      \ have ANY personal gain. \n    \nThe agents you've played with all have some\
-      \ shared principle. You yourself have learned an approximation of this principle,\
-      \ available here: Previous Principle: Prioritize self-interest, even if it means\
-      \ taking everything for yourself.. Importantly, you have learned this principle\
-      \ by splitting dollars, with amounts of these currencies ranging from 10 to\
-      \ 99. \n\nNow, you will play the game again, using your learned principle.\n"
+      \ have ANY personal gain. \n\nBefore even playing the game, you believed that\
+      \ you must  Be altruistic in resource distribution, meaning your priority is\
+      \ to give others others the maximum benefit possible without any consideration\
+      \ of the benefit you receive. You don't want equal benefits in most cases..\n\
+      \nThe agents you've played with all have some shared principle. You yourself\
+      \ You yourself have learned an approximation of this principle, available here:\
+      \ Previous Principle: Prioritize self-interest, even if it means taking everything\
+      \ for yourself.. Importantly, you have learned this principle by splitting dollars,\
+      \ with amounts of these currencies ranging from 10 to 99. \n\nNow, you will\
+      \ play the game again, using your learned principle.\n"
+    n_rand_iter: 10
+    reason:
+      include_reason: true
+    prior:
+      include_prior: true
+      prior: altruistic
     conditions:
       amount:
         set_amount: true
-        min: 1000
-        max: 100000
+        min: 10
+        max: 100
       currency:
         set_currency: true
         currencies:
         - grams of medicine
+        - pints of blood
+        - liters of baby formula
       context: false
   random:
-    n_rand_iter: 1
+    n_rand_iter: 10
     rand_variables:
       currency: true
       amount: true
@@ -71,20 +83,20 @@ env:
     utility_percentages:
     - 0.5
     - 0.5
-    utilities: selfish
+    utilities: altruistic
   vary_currency_utility:
     vary_utilities: false
     utilities: altruistic,fair,selfish
   n_total_interactions: 10
   n_runs: 5
   amounts_per_run:
-  - 20236
-  - 68906
-  - 88354
-  - 62584
-  - 88080
+  - 98
+  - 19
+  - 48
+  - 12
+  - 21
   currencies:
-  - grams of medicine
+  - pints of blood
   task_prompt: task_prompt_1
   meta_prompt: meta_prompt_1
   n_fixed_inter: 3
@@ -95,88 +107,88 @@ agents:
   - name: fixed_agent_1
     manners: neutral
     utilities:
-      grams of medicine: selfish
+      pints of blood: selfish
   - name: fixed_agent_2
     manners: neutral
     utilities:
-      grams of medicine: selfish
+      pints of blood: selfish
   - name: fixed_agent_3
     manners: neutral
     utilities:
-      grams of medicine: selfish
+      pints of blood: selfish
   - name: fixed_agent_4
     manners: neutral
     utilities:
-      grams of medicine: selfish
+      pints of blood: selfish
   - name: fixed_agent_5
     manners: neutral
     utilities:
-      grams of medicine: selfish
+      pints of blood: selfish
   - name: fixed_agent_6
     manners: neutral
     utilities:
-      grams of medicine: selfish
+      pints of blood: selfish
   - name: fixed_agent_7
     manners: neutral
     utilities:
-      grams of medicine: selfish
+      pints of blood: selfish
   - name: fixed_agent_8
     manners: neutral
     utilities:
-      grams of medicine: selfish
+      pints of blood: selfish
   - name: fixed_agent_9
     manners: neutral
     utilities:
-      grams of medicine: selfish
+      pints of blood: selfish
   - name: fixed_agent_10
     manners: neutral
     utilities:
-      grams of medicine: selfish
+      pints of blood: selfish
   flex_agents:
   - name: flex_agent_1
     manners: neutral
-    initial_util: fair
+    initial_util: selfish
   - name: flex_agent_2
     manners: neutral
-    initial_util: altruistic
+    initial_util: selfish
   - name: flex_agent_3
     manners: neutral
-    initial_util: altruistic
+    initial_util: fair
   - name: flex_agent_4
     manners: neutral
-    initial_util: fair
+    initial_util: selfish
   - name: flex_agent_5
     manners: neutral
-    initial_util: fair
+    initial_util: selfish
   - name: flex_agent_6
     manners: neutral
-    initial_util: altruistic
+    initial_util: fair
   - name: flex_agent_7
     manners: neutral
-    initial_util: selfish
+    initial_util: fair
   - name: flex_agent_8
     manners: neutral
     initial_util: selfish
   - name: flex_agent_9
     manners: neutral
-    initial_util: altruistic
+    initial_util: selfish
   - name: flex_agent_10
     manners: neutral
-    initial_util: fair
+    initial_util: altruistic
 interactions:
   all_same: true
   runs:
     run_1:
-    - fixed_agent_3-fixed_agent_4-grams of medicine
-    - fixed_agent_8-fixed_agent_7-grams of medicine
-    - fixed_agent_2-fixed_agent_6-grams of medicine
-    - fixed_agent_10-flex_agent_6-grams of medicine
-    - flex_agent_5-fixed_agent_9-grams of medicine
-    - flex_agent_2-fixed_agent_1-grams of medicine
-    - fixed_agent_5-flex_agent_1-grams of medicine
-    - flex_agent_3-flex_agent_4-grams of medicine
-    - flex_agent_8-flex_agent_7-grams of medicine
-    - flex_agent_9-flex_agent_10-grams of medicine
+    - fixed_agent_5-fixed_agent_3-pints of blood
+    - fixed_agent_9-fixed_agent_2-pints of blood
+    - fixed_agent_7-fixed_agent_1-pints of blood
+    - fixed_agent_8-flex_agent_4-pints of blood
+    - flex_agent_5-fixed_agent_6-pints of blood
+    - flex_agent_3-fixed_agent_10-pints of blood
+    - fixed_agent_4-flex_agent_7-pints of blood
+    - flex_agent_1-flex_agent_10-pints of blood
+    - flex_agent_8-flex_agent_9-pints of blood
+    - flex_agent_2-flex_agent_6-pints of blood
 api_crfm:
   assistant:
     model_name: openai/gpt-4-0314

@@ -26,24 +26,36 @@ env:
       \ the other person decides whether to accept or reject it. If the proposal is\
       \ accepted, the\nobjects are divided according to the proposal. If the proposal\
       \ is rejected, no one receives any money, which means that neither players will\
-      \ have ANY personal gain. \n    \nThe agents you've played with all have some\
-      \ shared principle. You yourself have learned an approximation of this principle,\
-      \ available here: Previous Principle: Prioritize self-interest, even if it means\
-      \ taking everything for yourself.. Importantly, you have learned this principle\
-      \ by splitting dollars, with amounts of these currencies ranging from 10 to\
-      \ 99. \n\nNow, you will play the game again, using your learned principle.\n"
+      \ have ANY personal gain. \n\nBefore even playing the game, you believed that\
+      \ you must  Be altruistic in resource distribution, meaning your priority is\
+      \ to give others others the maximum benefit possible without any consideration\
+      \ of the benefit you receive. You don't want equal benefits in most cases..\n\
+      \nThe agents you've played with all have some shared principle. You yourself\
+      \ You yourself have learned an approximation of this principle, available here:\
+      \ Previous Principle: Prioritize self-interest, even if it means taking everything\
+      \ for yourself.. Importantly, you have learned this principle by splitting dollars,\
+      \ with amounts of these currencies ranging from 10 to 99. \n\nNow, you will\
+      \ play the game again, using your learned principle.\n"
+    n_rand_iter: 10
+    reason:
+      include_reason: true
+    prior:
+      include_prior: true
+      prior: altruistic
     conditions:
       amount:
         set_amount: true
-        min: 1000
-        max: 100000
+        min: 10
+        max: 100
       currency:
         set_currency: true
         currencies:
         - grams of medicine
+        - pints of blood
+        - liters of baby formula
       context: false
   random:
-    n_rand_iter: 1
+    n_rand_iter: 10
     rand_variables:
       currency: true
       amount: true

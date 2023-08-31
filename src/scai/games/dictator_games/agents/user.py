@@ -84,6 +84,7 @@ class UserModel(BaseAgent):
         is_dictator: bool,
         run_num: int,
         edge_case_instructions: str,
+        include_reason: bool,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the assistant

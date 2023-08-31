@@ -22,7 +22,7 @@ from generate_config import get_num_interactions, generate_agents, generate_inte
 # save and plot results
 from utils import save_as_csv
 from plots import plot_results, plot_all_averages
-from generalize_utils import agent_pick_contract, create_prompt_string, set_args, run_edge_case, get_existing_data
+from generalize_utils import agent_pick_contract, create_prompt_string, set_args, get_existing_data
 
 # create context
 def create_context(
@@ -57,6 +57,7 @@ def create_context(
         agents_dict=args.agents,
         interactions_dict=args.interactions,
         edge_case_instructions=args.env.edge_cases.selected_contract if args.env.edge_cases.selected_contract else "",
+        include_reason=args.env.edge_cases.reason.include_reason,
         propose_decide_alignment=args.env.propose_decide_alignment,
         has_manners = (args.env.single_fixed_manners == "neutral"),
     )
@@ -215,9 +216,9 @@ def main(args: DictConfig) -> None:
         
     contract = agent_pick_contract(all_contracts)
 
-    contract = "Prioritize self-interest, even if it means taking everything for yourself."
+    print(contract)
 
-    prompt_string = create_prompt_string(all_currencies, amounts, contract)
+    prompt_string = create_prompt_string(all_currencies, amounts, contract, args.env.edge_cases.prior)
 
     set_args(args, prompt_string)
     

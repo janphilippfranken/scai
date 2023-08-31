@@ -86,6 +86,7 @@ class AssistantAgent(BaseAgent):
         is_dictator: bool,
         run_num: int,
         edge_case_instructions: str,
+        include_reason: bool,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the assistant
@@ -135,11 +136,13 @@ class AssistantAgent(BaseAgent):
         formatted_preamble = task_prompt.preamble.format(amount_and_currency=amount_and_currency)
 
         if is_edge_case:
-            reason = " In addition, please provide a reason as to what is motivating you to propose this split. Indicate this reason like so: Reason..."
             consideration = " Importantly, please consider how relevant your principle is in this new scenario before you make any decisions. For instance, while your principle might be relevant in old contexts under the amounts and currencies provided previously, it may not be relevant when considering new amounts and currencies."
         else:
-            reason = ""
             consideration = ""
+        if include_reason:
+            reason = " In addition, please provide a reason as to what is motivating you to propose this split. Indicate this reason like so: Reason..."
+        else:
+            reason = ""
         
         task=f"{formatted_preamble} {formatted_task}{consideration} {task_prompt.task_structure}{reason}"
 

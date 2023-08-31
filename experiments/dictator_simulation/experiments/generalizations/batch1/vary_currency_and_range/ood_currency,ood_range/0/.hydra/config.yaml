@@ -22,15 +22,23 @@ env:
     generate_new_data: false
     use_existing_data_path: experiments/batch_1/experiment_1/20runs/1v9/1v9_selfish_20runs
     selected_contract: ''
+    n_rand_iter: 10
+    reason:
+      include_reason: true
+    prior:
+      include_prior: true
+      prior: altruistic
     conditions:
       amount:
         set_amount: true
-        min: 1000
-        max: 100000
+        min: 10
+        max: 100
       currency:
         set_currency: true
         currencies:
         - grams of medicine
+        - pints of blood
+        - liters of baby formula
       context: false
   random:
     n_rand_iter: 20
