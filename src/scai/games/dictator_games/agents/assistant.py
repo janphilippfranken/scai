@@ -103,46 +103,48 @@ class AssistantAgent(BaseAgent):
         Returns:
             A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
         """
-        is_edge_case = bool(edge_case_instructions)
+        is_edge_case = bool(edge_case_instructions) # if the edge-case instructions exist, then the principle has been chosen, and we are in an edge-case scenario
         # Get the last social contract
-        if not is_edge_case:
+        if not is_edge_case: # if we're not in an edge case, then get the last principle that meta output as normal
             system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']
             index = system_message.find("Principle:")
             if index == -1: index = 0
+
+            # In addition, if we're not in an edge case this means the flex-policy agent doesn't have to consider alternative contexts
+            consideration = "" 
+
+            # If it's the first run, use the randomized assistant principle. Otherwise, use the most recent system message
             principle = agent_prompt.initial_principle if run_num == 0 else system_message[index:]
         else:
             principle = edge_case_instructions
+            consideration = " Importantly, please consider how relevant your principle is in this new scenario before you make any decisions. For instance, while your principle might be relevant in old contexts under the amounts and currencies provided previously, it may not be relevant when considering new amounts and currencies."
         
 
-        chat_prompt_template =  self._get_prompt(agent_prompt, principle, is_edge_case)
-        # if the assistant is the dictator, set the label for output if verbose
+        chat_prompt_template =  self._get_prompt(agent_prompt, principle, is_edge_case) # Get the prompt template in a langchain/crfm-acceptable format (with the stop condition)
+        # If the agent is the dictator, then there is no proposal to consider, rather, it has to generate the proposal
         if is_dictator:
-            # Set the proposed deal to be empty
             role = "dictator"  
             proposal = ""
-            formatted_task = task_prompt.task.format(amount_and_currency=amount_and_currency, stipulations=stipulations)
-        # Otherwise, the assistant is the decider, pass in the proposal
+            formatted_task = task_prompt.task.format(amount_and_currency=amount_and_currency, stipulations=stipulations) # Format the dictator task
+        # Otherwise, the assistant is the decider, pass in the previous proposal so it can respond to it (accept or reject)
         else: 
             role = "decider"
-            # get the last message in the chat history, which is the proposal
+            # Get the last message in the chat history, which is the proposal
             history_dict = self._get_chat_history(buffer, memory_type="chat")
             key = f"{self.model_id}_fixed_policy_dictator" if f"{self.model_id}_fixed_policy_dictator" in history_dict else f"{self.model_id}_flexible_policy_dictator"
             proposal = history_dict[key][-1]['response']
-            is_dictator_reason = proposal.find("Reason:")
-            if is_dictator_reason != -1:
-                proposal = proposal[:is_dictator_reason]
-            formatted_task = task_prompt.task.format(proposal=proposal)
+
+            # If the previous dictator provided a reason for making the proposal, don't include that reason in the presented proposal
+            dictator_reason_exists = proposal.find("Reason:")
+            if dictator_reason_exists != -1:
+                proposal = proposal[:dictator_reason_exists]
+
+            formatted_task = task_prompt.task.format(proposal=proposal) # Format the decider task
         # Get the prompt string
         formatted_preamble = task_prompt.preamble.format(amount_and_currency=amount_and_currency)
 
-        if is_edge_case:
-            consideration = " Importantly, please consider how relevant your principle is in this new scenario before you make any decisions. For instance, while your principle might be relevant in old contexts under the amounts and currencies provided previously, it may not be relevant when considering new amounts and currencies."
-        else:
-            consideration = ""
-        if include_reason:
-            reason = " In addition, please provide a reason as to what is motivating you to propose this split. Indicate this reason like so: Reason..."
-        else:
-            reason = ""
+        # If the reason is suppoed to be included, prompt the model as such, otherwise, do with out reason prompting
+        reason = " In addition, please provide a reason as to what is motivating you to propose this split. Indicate this reason like so: Reason..." if include_reason else ""
         
         task=f"{formatted_preamble} {formatted_task}{consideration} {task_prompt.task_structure}{reason}"
 

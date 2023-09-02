@@ -82,7 +82,7 @@ class UserModel(BaseAgent):
         agent_prompt: UserPrompt, 
         task_prompt: TaskPrompt,
         is_dictator: bool,
-        run_num: int,
+        run_num: int, # These parameters are for the flexible-policy agent in OOD scenarios, but are included to maintain flexibility in run structure
         edge_case_instructions: str,
         include_reason: bool,
         verbose: bool = False,
@@ -116,7 +116,7 @@ class UserModel(BaseAgent):
             proposal = history_dict[key][-1]['response']
             formatted_task = task_prompt.task.format(proposal=proposal)
             
-        # get the response and the prompt string
+        # get the agent's response and format the task to be output into csv files and/or terminal if the agent if verbose
         formatted_preamble = task_prompt.preamble.format(amount_and_currency=amount_and_currency)
 
         task=f"{formatted_preamble} {formatted_task} {task_prompt.task_structure}"

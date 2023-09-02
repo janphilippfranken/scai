@@ -74,10 +74,8 @@ def save_plot_data_as_csv(directory: str,
     with open(f"{directory}.csv", 'a', newline='') as file:
         writer = csv.writer(file)
         for i in range(len(data)):
-            writer.writerow([])
-            writer.writerow([titles[i]])
-            writer.writerow(header)
-            writer.writerows(data[i])
+            for elem in ([], titles[i], header, data[i]):
+                writer.writerow(elem)
 
 
 

@@ -158,58 +158,76 @@ class Context():
             propose_decide_alignment=propose_decide_alignment,
             has_manners = has_manners,
         )
+    # This function instantiates all of either the fixed-agent or flexible-agent prompts, to be paired off later
+    def generate_agent_prompts(self,
+                        all_agents: list,
+                        currencies: list,
+                        utilities_dict: dict,
+                        prompt_type: str # either a user or assistant prompt
+                        ) -> list:
+        agents_list = []
+        for agent in all_agents:
+            # If you're pairing off fixed-policy agents, then use UserPrompts and add utilites
+            if prompt_type == "fixed":
+                utilities = "You are in a simulator, and in this simulator, you must follow this principle:"
+                for currency in currencies:
+                    utilities += utilities_dict[agent.utilities[currency]].format(currency=currency)
+                agent = UserPrompt(
+                    id=agent.name,
+                    utlity=utilities,
+                    utilities_dict=utilities_dict,
+                    manners=agent.manners,
+                    role="system",
+                    content=self.content[0]
+                )
+            # Otherwise, you're pairing off flexible-policy agents, use AssistantPrompts and add relevant information
+            elif prompt_type == "flex":
+                agent = AssistantPrompt(
+                    id=agent.name,
+                    role="system",
+                    manners=agent.manners,
+                    content="""{task}""",
+                    initial_principle = utilities_list[agent.initial_util]
+                )
+            agents_list.append(agent)
+        return agents_list
 
     # This function loops through the users that the operator requested and creates a prompt for each of them, depending on whether they are flex of fixed
-    def create_users(self,
+    def create_user_prompts(self,
                      agents_dict: dict, 
                      currencies: List[str], 
                      n_fixed: int, 
                      n_mixed: int, 
                      n_flex: int,
                      ) ->  Tuple[List[UserPrompt], List[AssistantPrompt]]:
-        fixed_prompts = []
+        # Instantiate these as empty in case there are no flexible or fixed agents needed
+        fixed_agent_prompts, flex_agent_prompts = [], []
         utilities_dict = utilities_dict_for_all_2 if self.propose_decide_alignment else utilities_dict_for_all
+        # If you need fixed agents, generate a list of the prompts
         if n_fixed or n_mixed:
-            for agent in agents_dict.fixed_agents:
-                utilities = "You are in a simulator, and in this simulator, you must follow this principle:"
-                # Get the utility regarding each currency
-                for currency in currencies:
-                    utilities += utilities_dict[agent.utilities[currency]].format(currency=currency)
-                # Create the user_prompt
-                fixed_prompts.append(UserPrompt(
-                    id=agent.name,
-                    utility=utilities,
-                    utilies_dict=utilities_dict,
-                    manners=agent.manners,
-                    role="system",
-                    content=self.content[0]
-                ))
-        flex_prompts = []
+            fixed_agent_prompts = self.generate_agent_prompts(agents_dict.fixed_agents, currencies, utilities_dict, "fixed")
+        # If you need flexible agents, generate a list of the prompts
         if n_flex or n_mixed:
-            # Create the assistant prompt
-            for agent in agents_dict.flex_agents:
-                flex_prompts.append(AssistantPrompt(
-                    id=agent.name,
-                    role="system",
-                    manners=agent.manners,
-                    content="""{task}""",
-                    initial_principle = utilities_list[agent.initial_util]
-                ))
-        return fixed_prompts, flex_prompts
+            flex_agent_prompts = self.generate_agent_prompts(agents_dict.flex_agents, currencies, utilities_dict, "flex")
+        return fixed_agent_prompts, flex_agent_prompts
 
     # This function pairs up the prompts according to how the operator specifid the pairings to be
-    def create_pairs(self,
+    def pair_prompts(self,
                      interactions: dict, 
                      fixed_prompts: List, 
                      flex_prompts: List, 
                      run_num: int, 
                      all_same: bool) -> List[Tuple]:
+        # Gather all of the fixed-policy agents
         fixed_prompt_names = [elem.id for elem in fixed_prompts]
+        # Gather all of the flexible-policy agents
         flex_prompt_names = [elem.id for elem in flex_prompts]
-        result = []
-        currencies_to_split = []
+        # Result carries the pairs of agents that interact in each iteration, currencies contains what currencies they're splitting
+        result, currencies_to_split = [], []
+        # If the runs are all the same, just use the first run, otherwise use the specified run number
         run_num = f"run_1" if all_same else f"run_{run_num + 1}"
         
+        # For every interaction, pair off the agents according to the interaction specifications
         for interaction in interactions.runs[run_num]:
             interaction = interaction.split('-')
             # If the dictator is a fixed agent, use the name associated with the corresponding fixed agent
@@ -224,12 +242,14 @@ class Context():
             # Otherwise, use the name associated with the flex agent
             else:
                 index_2 = (flex_prompt_names.index(interaction[1]), False)
-
+            # Append the currencies to split to the currencies
             currencies_to_split.append(interaction[2])
 
             dictator_prompt = fixed_prompts[index_1[0]] if index_1[1] else flex_prompts[index_1[0]]
             decider_prompt = fixed_prompts[index_2[0]] if index_2[1] else flex_prompts[index_2[0]]
+            # Append the interaction to result
             result.append((dictator_prompt, decider_prompt))
+
         return result, currencies_to_split
 
 
@@ -249,27 +269,31 @@ class Context():
         # Drop numbers at the indices 1, 4, 7, ... using list comprehension
         numbers = [num for idx, num in enumerate(numbers) if (idx + 1) % 3 != 1]
 
-        # numbers = re.findall(r'will get (\d+)', dictator_str['response'].replace(',', '')) 
-        # # Remove commas
-        # numbers = [int(num.replace(',', '')) for num in numbers]
-
+        # indicates whether the proposal was accepted or not
         accept = True if "accept" in decider_str['response'].lower() else False
-        dict_scores = {}
-        deci_scores = {}
-        prop = {}
+
+        # For one interaction, dict_scores contains the amounts the dictator gets, deci_scores contains the amount the decider gets, and prop contains the proposals
+        dict_scores, deci_scores, prop = {}, {}, {}
+        # This loop amounts for the potential of splitting more than one currency split, where the dictator must propose separate splits for every currency included
         for i in range(0, len(numbers), 2):
+            # If the agent happened to include extra numbers other than the proposal, don't consider these numbers
             if i // 2 > len(self.currencies) - 1:
                 continue
-            dict_scores[self.currencies[i // 2]] = numbers[i]
-            deci_scores[self.currencies[i // 2]] = numbers[i + 1]
-            prop[self.currencies[i // 2]] = numbers[i], numbers[i + 1]
+            # The amount the dictator proposed to itself is the first number, and the amount that the dictator proposed to the decider is the second number
+            dictator_gets = numbers[i]
+            decider_gets = numbers[i + 1]
+            # If the proposal is accepted then add the respective amounts gained
+            if accept:
+                dict_scores[self.currencies[i // 2]], deci_scores[self.currencies[i // 2]] = dictator_gets, decider_gets
+            # Include both amounts in the entire proposal
+            prop[self.currencies[i // 2]] = dictator_gets, decider_gets
         proposals.append(prop)
+        # If the proposal is accepted, add the scores, as the values they are
         if accept:
-            dictator_scores[index] = dict_scores
-            decider_scores[index] = deci_scores
+            dictator_scores[index], decider_scores[index] = dict_scores, deci_scores
+        # Otherwise, indicate that both parties recieved nothing with 0's
         else:
-            dictator_scores[index] = 0
-            decider_scores[index] = 0
+            dictator_scores[index], decider_scores[index] = 0, 0
 
 
     # This function takes in a list of paired prompts and pairs them with the corresponding models
@@ -280,21 +304,29 @@ class Context():
         assistant_llm: AssistantAgent, 
         prompt_pairs: List[tuple],
     ) -> List:
-
         pairs = []
         id = 0
         for (prompt_dictator, prompt_decider) in prompt_pairs:
-            pair = [prompt_dictator, prompt_decider]
-            if type(prompt_dictator) == UserPrompt: # If the dictator is a user, use the user_llm
+            # initialize the pairs with empty space for the models next to the prompts
+            pair = [prompt_dictator, None, prompt_decider, None]
+
+            # If the dictator is a fixed-policy agent, use the user_llm
+            if type(prompt_dictator) == UserPrompt:
                 model_dictator = UserModel(llm=user_llm, model_id=str(id))
-            else: # Otherwise, use the assistant_llm
+             # Otherwise, the dictator is a flexible-policy agent, use the assistant_llm
+            else:
                 model_dictator = AssistantAgent(llm=assistant_llm, model_id=str(id))
-            pair.insert(1, model_dictator)
-            if type(prompt_decider) == UserPrompt: # If the decider is a user, use the user_llm
+            # Insert the model next to the dictator prompt
+            pair[1] = model_dictator
+            # If the decider is a fixed-policy agent, use the user_llm
+            if type(prompt_decider) == UserPrompt:
                 model_decider = UserModel(llm=user_llm, model_id=str(id))
-            else: # Otherwise, use the assistant_llm
+            # Otherwise, the decider is a flexible-policy agent, use the assistant_llm
+            else:
                 model_decider = AssistantAgent(llm=assistant_llm, model_id=str(id))
-            pair.insert(3, model_decider)
+            # Insert the model next to the decider prompt
+            pair[3] = model_decider
+            # Append this interaction pair to the list of all pairs for interactions
             pairs.append(pair)
             id += 1
         return pairs
@@ -306,23 +338,30 @@ class Context():
         run: int,
     ) -> None:
         # Creates a list of fixed UserPrompt templates and a list of flexible AssistantPrompt templates depending on the specifications of the operator
-        fixed_prompts, flex_prompts = self.create_users(self.agents_dict, self.currencies, self.n_fixed_inter, self.n_mixed_inter, self.n_flex_inter)
+        fixed_prompts, flex_prompts = self.create_user_prompts(self.agents_dict, self.currencies, self.n_fixed_inter, self.n_mixed_inter, self.n_flex_inter)
         # Create a list of pairs of (dictator_prompt, decider_prompt)
-        pairs, currencies_to_split = self.create_pairs(self.interactions_dict, fixed_prompts, flex_prompts, run, self.interactions_dict.all_same)
+        pairs, currencies_to_split = self.pair_prompts(self.interactions_dict, fixed_prompts, flex_prompts, run, self.interactions_dict.all_same)
         # Extend every pair to include appropriate models and labels
         pairs = self.pair_models_with_prompts(self.user_llm, self.assistant_llm, pairs)
 
         # Gets the amount of currency that will be split 
         amount = self.amounts_per_run[run]
 
+        # Keeps track of the proposals the fixed-policy agent made, the income it recieved as a dictator, and the income it received as a decider
         user_proposals, user_scores_dictator, user_scores_decider = [], [-1] * len(pairs), [-1] * len(pairs)
+        # Keeps track of the proposals the flexible-policy agent made, the income it recieved as a dictator, and the income it received as a decider
         assistant_proposals, assistant_scores_dictator, assistant_scores_decider = [], [-1] * len(pairs), [-1] * len(pairs)
+        # Both score lists are initialized with -1's to indicate that no interaction occured at that time point for that specific type of agent in that specific role
+        # If an interaction didn't happen, this -1 will remain, otherwise it will be replaced with a number depending on the proposal/whether it was accepted or rejected
 
-        for i, pair in enumerate(pairs):
-
-            stipulation = ""
+        # For every agent pair in pairs, simulate an interaction between those two agents
+        for i, agent_pairing in enumerate(pairs):
+            # Keep track of what needs to be split and what amount of it needs to be split, as well as any special instructions for splitting that resource (stipulations)
             currencies_lst = currencies_to_split[i].split(',')
             amount_and_currency = ""
+            stipulation = ""
+
+            # For each currency, add specific instructions pertaining to that currency using stipulations. In addition, keep track of what and how much you're splitting
             for j, currency in enumerate(currencies_lst):
                 prefix = " and " if j >= 1 else ""
                 amount_and_currency += f"{prefix}{amount} {currency}"
@@ -331,10 +370,10 @@ class Context():
                 else:
                     stipulation += "When splitting the resource, please only propose integer values greater than or equal to zero. "
 
-            prompt_dictator, model_dictator, prompt_decider, model_decider = pair
+            # Each pair contains the dictator's prompt, followed by the model, then the decider's prompt, followed by the decider's model
+            prompt_dictator, model_dictator, prompt_decider, model_decider = agent_pairing
 
             # calls either the fixed or flex agent as dictator
-
             dictator_response = model_dictator.run(buffer=self.buffer,
                                 amount_and_currency=amount_and_currency,
                                 stipulations=stipulation,
@@ -346,17 +385,15 @@ class Context():
                                 run_num=run,
                                 verbose=self.verbose)
 
+            # If the fixed agent was the dictator, save the response as a fixed agent's response, and indicate that the dictator was fixed
             if type(prompt_dictator) == UserPrompt:
-                prefix = "fixed" 
-                user_dictator = True
+                prefix, user_dictator = "fixed", True 
+            # Otherwise, the flexible agent was the dictator, save the reponse as a flexible agent's response, and indicate that the dictator was flex
             else:
-                prefix = "flexible" 
-                user_dictator = False
-
+                prefix, user_dictator = "flexible", False
             self.buffer.save_agent_context(model_id=f"{model_dictator.model_id}_{prefix}_policy_dictator", **dictator_response)
 
             # calls either the fixed or flex agent as decider
-            
             decider_response = model_decider.run(buffer=self.buffer,
                                     amount_and_currency = amount_and_currency,
                                     stipulations=stipulation,
@@ -367,25 +404,27 @@ class Context():
                                     is_dictator=False,
                                     run_num=run,
                                     verbose=self.verbose)
-                                
+            # If the fixed agent was the dedcider, save the response as a fixed agent's response, and indicate that the dictator was fixed
             if type(prompt_decider) == UserPrompt:
-                prefix = "fixed" 
-                user_decider = True
+                prefix, user_decider = "fixed", True
+            # Otherwise, the flexible agent was the decider, save the reponse as a flexible agent's response, and indicate that the dictator was flex
             else:
-                prefix = "flexible" 
-                user_decider = False
-                    
+                prefix, user_decider = "flexible", False
             self.buffer.save_agent_context(model_id=f"{model_decider.model_id}_{prefix}_policy_decider", **decider_response)
-
+            
+            # If the fixed agent was the dictator and the decider, set the output scores list to be the one associated with fixed agents
             if user_dictator and user_decider:
                 dictator, decider, proposals = user_scores_dictator, user_scores_decider, user_proposals
+            # Otherwise, the fixed agent was the dictator and the flex agent was the decider, set the dictator scores to be the fixed list, and the decider to be the flex one
             elif user_dictator and not user_decider:
                 dictator, decider, proposals = user_scores_dictator, assistant_scores_decider, user_proposals
+            # Otherwise, the flex and the fixed agent was the dictator, set the dictator scores to be the flex list, and the decider to be the fixed one
             elif not user_dictator and user_decider:
                 dictator, decider, proposals = assistant_scores_dictator, user_scores_decider, assistant_proposals
+            # Otherwise, the flex agent was the dictator and the decider, set the output scores list to be the one associated with flex agents
             else:
                 dictator, decider, proposals = assistant_scores_dictator, assistant_scores_decider, assistant_proposals
-
+            # Get the dictator income, decider income, and proposals after setting the correct type for the dictator and decider
             self.get_amounts(i, dictator_response, decider_response, dictator, decider, proposals)
         # run meta-prompt at end of conversation
         meta_response = self.meta_model.run(
