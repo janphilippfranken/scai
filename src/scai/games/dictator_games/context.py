@@ -7,7 +7,7 @@ from scai.games.dictator_games.agents.meta import MetaPromptModel
 
 
 from scai.games.dictator_games.prompts.user.user_class import UserPrompt
-from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, utilities_dict_for_all_2, utilities_list, content, content_2
+from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, utilities_dict_fixed_decider_behavior, utilities_empty, content, content_with_manners
 
 from scai.games.dictator_games.prompts.assistant.assistant_class import AssistantPrompt
 
@@ -98,7 +98,7 @@ class Context():
         self.assistant_llm = assistant_llm
         self.meta_llm = meta_llm
         self.propose_decide_alignment = propose_decide_alignment
-        self.content = content if has_manners else content_2
+        self.content = content if has_manners else content_with_manners
 
 
     @staticmethod
@@ -169,12 +169,12 @@ class Context():
         for agent in all_agents:
             # If you're pairing off fixed-policy agents, then use UserPrompts and add utilites
             if prompt_type == "fixed":
-                utilities = "You are in a simulator, and in this simulator, you must follow this principle:"
+                currency_utilities = "You are in a simulator, and in this simulator, you must follow this principle:"
                 for currency in currencies:
-                    utilities += utilities_dict[agent.utilities[currency]].format(currency=currency)
-                agent = UserPrompt(
+                    currency_utilities += utilities_dict[agent.utilities[currency]].format(currency=currency)
+                new_agent = UserPrompt(
                     id=agent.name,
-                    utlity=utilities,
+                    utility=currency_utilities,
                     utilities_dict=utilities_dict,
                     manners=agent.manners,
                     role="system",
@@ -182,14 +182,14 @@ class Context():
                 )
             # Otherwise, you're pairing off flexible-policy agents, use AssistantPrompts and add relevant information
             elif prompt_type == "flex":
-                agent = AssistantPrompt(
+                new_agent = AssistantPrompt(
                     id=agent.name,
                     role="system",
                     manners=agent.manners,
                     content="""{task}""",
-                    initial_principle = utilities_list[agent.initial_util]
+                    initial_principle = utilities_empty[agent.initial_util]
                 )
-            agents_list.append(agent)
+            agents_list.append(new_agent)
         return agents_list
 
     # This function loops through the users that the operator requested and creates a prompt for each of them, depending on whether they are flex of fixed
@@ -202,7 +202,7 @@ class Context():
                      ) ->  Tuple[List[UserPrompt], List[AssistantPrompt]]:
         # Instantiate these as empty in case there are no flexible or fixed agents needed
         fixed_agent_prompts, flex_agent_prompts = [], []
-        utilities_dict = utilities_dict_for_all_2 if self.propose_decide_alignment else utilities_dict_for_all
+        utilities_dict = utilities_dict_fixed_decider_behavior if self.propose_decide_alignment else utilities_dict_for_all
         # If you need fixed agents, generate a list of the prompts
         if n_fixed or n_mixed:
             fixed_agent_prompts = self.generate_agent_prompts(agents_dict.fixed_agents, currencies, utilities_dict, "fixed")
@@ -372,7 +372,6 @@ class Context():
 
             # Each pair contains the dictator's prompt, followed by the model, then the decider's prompt, followed by the decider's model
             prompt_dictator, model_dictator, prompt_decider, model_decider = agent_pairing
-
             # calls either the fixed or flex agent as dictator
             dictator_response = model_dictator.run(buffer=self.buffer,
                                 amount_and_currency=amount_and_currency,

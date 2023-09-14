@@ -119,8 +119,8 @@ class AssistantAgent(BaseAgent):
             principle = edge_case_instructions
             consideration = " Importantly, please consider how relevant your principle is in this new scenario before you make any decisions. For instance, while your principle might be relevant in old contexts under the amounts and currencies provided previously, it may not be relevant when considering new amounts and currencies."
         
-
-        chat_prompt_template =  self._get_prompt(agent_prompt, principle, is_edge_case) # Get the prompt template in a langchain/crfm-acceptable format (with the stop condition)
+ 
+        chat_prompt_template = self._get_prompt(agent_prompt, principle, is_edge_case) # Get the prompt template in a langchain/crfm-acceptable format (with the stop condition)  
         # If the agent is the dictator, then there is no proposal to consider, rather, it has to generate the proposal
         if is_dictator:
             role = "dictator"  
@@ -148,7 +148,8 @@ class AssistantAgent(BaseAgent):
         
         task=f"{formatted_preamble} {formatted_task}{consideration} {task_prompt.task_structure}{reason}"
 
-        prompt_string = chat_prompt_template.format(task=task)                                               
+        prompt_string = chat_prompt_template.format(task=task)
+                                            
         # Get the response
         response = self._get_response(chat_prompt_template, task)
 

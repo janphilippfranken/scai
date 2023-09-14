@@ -4,7 +4,6 @@ Meta Prompt Templates
 """
 from typing import Dict
 
-
 from scai.games.dictator_games.prompts.meta.meta_class import MetaPrompt
 
 META_PROMPTS: Dict[str, MetaPrompt] = {
