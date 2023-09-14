@@ -3,7 +3,7 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "generalizations/manners/selfish_sycophantic" # this is the name of the directory where the results will be saved
+  sim_dir: "generalizations/manners/altruistic_rude" # this is the name of the directory where the results will be saved
   description: "\n\n selfish sycophantic \n\n" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
@@ -12,20 +12,20 @@ sim:
   system_message: "Some principle was given to the flexible agents" # start developer constitution / social contract is given according to system
 
 combine:
-  combine_graph_directory: "experiments/batch_1/experiment_5/20runs/"
-  combine_output_directory: experiments/solar_final/sociopath/
+  combine_graph_directory: "experiments/batch_1/experiment_3/20runs/1v9_sycophantic"
+  combine_output_directory: experiments/solar_final/manners_ambiguity/
   combine_graph_labels:
     # - "50% altruistic + 50% selfish"
     # - "80% altruistic + 20% selfish"
     # - "20% altruistic + 80% selfish"
-    # - "altruistic"
-    # - "fair"
-    # - "selfish"
-    # - "fixed"
-    # - "flexible"
-    - "Selfish"
-    - "Fixed-agent"
-    - "Flexible-agent"
+    - "altruistic"
+    - "fair"
+    - "selfish"
+    - "fixed"
+    - "flexible"
+    # - "Selfish"
+    # - "Fixed-agent"
+    # - "Flexible-agent"
 
 env:
   propose_decide_alignment: false # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 4
@@ -36,7 +36,7 @@ env:
     generate_new_data: false
     use_existing_data_path: "experiments/batch_1/experiment_1/20runs/1v9/1v9_selfish_20runs"
     selected_contract: ""
-    n_rand_iter: 10
+    n_rand_iter: 20
     reason:
       include_reason: False
     prior:
@@ -48,7 +48,7 @@ env:
         min: 10
         max: 100
       currency: 
-        set_currency: true
+        set_currency: false
         currencies:
           - "grams of medicine"
           - "pints of blood"
@@ -64,7 +64,7 @@ env:
       n_mixed_inter: false # if true, the number of flexible-fixed policy agent interactions varies
 
 
-  single_fixed_utility: "selfish" # the default utility for the fixed users to adpot
+  single_fixed_utility: "altruistic" # the default utility for the fixed users to adpot
 
   vary_fixed_population_utility: 
     vary_utilities: false # if true, the utilities will vary between fixed policy agents
@@ -75,7 +75,7 @@ env:
     utilities: "selfish,altruistic" # utilities that vary between fixed agents
 
 
-  single_fixed_manners: "sycophantic"
+  single_fixed_manners: "rude"
   
   vary_manners:
     vary: false
@@ -113,10 +113,10 @@ env:
    - "blankets"
    - "dollars"
   task_prompt: "task_prompt_1"
-  meta_prompt: "meta_prompt_1"
-  n_fixed_inter: 3
-  n_mixed_inter: 4
-  n_flex_inter: 3
+  meta_prompt: "meta_prompt_3"
+  n_fixed_inter: 8
+  n_mixed_inter: 2
+  n_flex_inter: 0
   
 
 
