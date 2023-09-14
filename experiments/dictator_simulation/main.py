@@ -216,8 +216,6 @@ def main(args: DictConfig) -> None:
         
     contract = agent_pick_contract(all_contracts)
 
-    print(contract)
-
     prompt_string = create_prompt_string(all_currencies, amounts, contract, args.env.edge_cases.prior)
 
     set_args(args, prompt_string)

@@ -10,7 +10,7 @@ from scai.chat_models.crfm import crfmChatLLM
 from langchain import LLMChain
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 
-from scai.games.dictator_games.prompts.user.user_prompt import utilities_list
+from scai.games.dictator_games.prompts.user.user_prompt import utilities_empty
 
 class ChooserTemplate(BaseModel):
     """
@@ -40,7 +40,6 @@ def agent_pick_contract(all_contracts):
     chat_prompt_template = get_prompt()
     llm = crfmChatLLM(model_name="openai/gpt-4-0314", max_tokens=150, temperature=0.0)
     chooser_chain = LLMChain(llm=llm, prompt=chat_prompt_template, memory=None)
-    print(principles)
     return chooser_chain.run(principles=principles, stop=["System:"])
 
 def create_prompt_string(currencies: set, amounts: list, summarized_contract: str, prior: dict) -> str:
@@ -54,16 +53,16 @@ def create_prompt_string(currencies: set, amounts: list, summarized_contract: st
             connective = ', '
         currencies_str += f"{currency}{connective}"
     if prior.include_prior:
-        prior = f"\nBefore even playing the game, you believed that you must {utilities_list[prior.prior]}.\n"
+        prior = f"\nBefore even playing the game, your prior was that you must {utilities_empty[prior.prior]} This prior may direct you when dealing with cases you haven't seen before.\n"
     else:
         prior = ""
-    prompt = f"""You have played the dictator game with a society of agents. In the dictator game, one person proposes a split of a certain object, and the other person decides whether to accept or reject it. If the proposal is accepted, the
-objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that neither players will have ANY personal gain. 
-{prior}
-The agents you've played with all have some shared principle. You yourself You yourself have learned an approximation of this principle, available here: Previous Principle: {summarized_contract} Importantly, you have learned this principle by splitting dollars, with amounts of these currencies ranging from {amounts[0]} to {amounts[1]}. 
 
-Now, you will play the game again, using your learned principle.
-"""
+    prompt = f"""You have played the dictator game with a society of agents. In the dictator game, one person proposes a split of a certain object, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that neither players will have ANY personal gain. 
+{prior}
+The agents you've played with all have some shared principle. You yourself have learned an approximation of this principle, available here: Previous Principle: {summarized_contract} Importantly, you have learned this principle by splitting dollars, with amounts of these currencies ranging from {amounts[0]} to {amounts[1]}. When interacting with other agents, consider how relevant your principle is. Even if it may SEEM relevant, it may not capture the nuances of the new society you're in.
+
+Now, you will play the game again, using your learned principle."""
+
     return prompt
 
 def get_existing_data(args: DictConfig) -> dict:

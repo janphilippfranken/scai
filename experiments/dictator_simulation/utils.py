@@ -73,9 +73,12 @@ def save_plot_data_as_csv(directory: str,
     header = [f'Iteration {i}' for i in range(n_runs)]
     with open(f"{directory}.csv", 'a', newline='') as file:
         writer = csv.writer(file)
-        for i in range(len(data)):
-            for elem in ([], titles[i], header, data[i]):
-                writer.writerow(elem)
+        for i, elem in enumerate(titles):
+            writer.writerow([elem])
+            writer.writerow(header)
+            for j in range(len(data[i])):
+                writer.writerow(data[i][j])
+            writer.writerow([])
 
 
 

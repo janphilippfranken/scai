@@ -53,7 +53,6 @@ def generate_fixed_agents(args, num_fixed_agents):
 
     utilities_list = generate_agent_list(utilities_across_population, utilities_percentages, num_fixed_agents)
     manners_list = generate_agent_list(manners_across_population, manners_percentages, num_fixed_agents)
-
     if len(utilities_list) != num_fixed_agents:
         utilities_list.append(utilities_list[-1])
         manners_list.append(manners_list[-1])
