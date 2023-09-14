@@ -184,6 +184,8 @@ def combine(args: DictConfig) -> None:
             continue
         fixed_list, flex_list = scan_experiment_for_scores(directory=directory)
         all_list.append([fixed_list, flex_list])
+    print(all_list)
+    breakpoint()
     new_plot_combined_averages(n_runs=5, directory=f"{output_folder}/final_graphs_and_data", data = all_list, group_labels=args.combine.combine_graph_labels)
 
     flex_list, fixed_list = [], []

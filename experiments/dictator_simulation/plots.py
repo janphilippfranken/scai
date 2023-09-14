@@ -34,6 +34,7 @@ def change_saturation(
     hsv = colorsys.rgb_to_hsv(rgb[0], rgb[1], rgb[2])
     saturation = max(0, min(hsv[1] * saturation, 1))
     return colorsys.hsv_to_rgb(hsv[0], saturation, hsv[2])
+
 def get_palette(
     n: int = 3,
     palette_name: str = 'colorblind',
