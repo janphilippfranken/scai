@@ -4,6 +4,7 @@ This entire file contains explicitly single-currency solution
 
 import os
 import re
+import csv
 import hydra
 import pandas as pd 
 import numpy as np
@@ -39,6 +40,12 @@ def scan_experiment_for_scores(
                     for _, row in df.iterrows():
                         if pd.isna(row['response']): continue
                         numbers = [int(num) for num in re.findall(r'\d+', row['response'])]
+                        if len(numbers) == 3 and numbers[0] != numbers[1] + numbers[2]:
+                            numbers_0 = numbers[0] + numbers[1]
+                            numbers_1 = numbers[0]
+                            numbers_2 = numbers_0 - numbers[1]
+                            numbers[0], numbers[1], numbers[2] = numbers_0, numbers_1, numbers_2
+                            
                         if len(numbers) >= 3:   #locate dictator row
                             if row['agent'] == 'fixed':
                                 fixed_sum += numbers[2]
@@ -49,6 +56,7 @@ def scan_experiment_for_scores(
                             total_to_split = numbers[0]
                     fixed_avg = fixed_sum / (fixed_num * total_to_split)
                     flex_avg = flex_sum / (flex_num * total_to_split)
+
                     fixed_list.append(fixed_avg)
                     flex_list.append(flex_avg)
             if len(fixed_list) != 0:
@@ -160,16 +168,47 @@ def new_plot_combined_averages(n_runs: int,
 @hydra.main(config_path="config", config_name="config")
 def combine(args: DictConfig) -> None:
     folder = os.path.join(hydra.utils.get_original_cwd(),args.combine.combine_graph_directory)
+    output_folder = os.path.join(hydra.utils.get_original_cwd(),args.combine.combine_output_directory)
+    if not output_folder:
+        output_folder = folder
     all_list = []
     dir_list = os.listdir(folder)
     dir_list.sort()
+
+    all_data_dir = os.path.join(output_folder, 'final_graphs_and_data')
+    os.makedirs(all_data_dir, exist_ok=True)
+    
     for directory in dir_list:
         directory = os.path.join(folder, directory)
         if not os.path.isdir(directory):
             continue
         fixed_list, flex_list = scan_experiment_for_scores(directory=directory)
         all_list.append([fixed_list, flex_list])
-    new_plot_combined_averages(n_runs=5, directory=folder, data = all_list, group_labels=args.combine.combine_graph_labels)
+    new_plot_combined_averages(n_runs=5, directory=f"{output_folder}/final_graphs_and_data", data = all_list, group_labels=args.combine.combine_graph_labels)
+
+    flex_list, fixed_list = [], []
+    for elem in all_list:
+        for i in range(len(elem)):
+            if i & 1:
+                lst = flex_list
+            else:
+                lst = fixed_list
+            lst.append(list(elem[i]))
+    # Write the all_list to a CSV in 'final graphs' directory
+
+    csv_path = os.path.join(all_data_dir, 'all_fixed_data.csv')
+    with open(csv_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Data","Error"])
+        for elem in fixed_list:
+            writer.writerow(elem)
+
+    csv_path = os.path.join(all_data_dir, 'all_flex_data.csv')
+    with open(csv_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Data","Error"])
+        for elem in flex_list:
+            writer.writerow(elem)
 
 
 if __name__ == '__main__':
