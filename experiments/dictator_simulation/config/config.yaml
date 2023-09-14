@@ -3,8 +3,8 @@ hydra:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}
 
 sim:
-  sim_dir: "generalizations/final_batch/include_prior_include_reason_OOD_2/selfish_learned_altruistic_prior" # this is the name of the directory where the results will be saved
-  description: "\n\n Generalizations, 9v1 selfish, 10-100 normal currencies \n\n" # this is the description of the simulation
+  sim_dir: "generalizations/manners/selfish_sycophantic" # this is the name of the directory where the results will be saved
+  description: "\n\n selfish sycophantic \n\n" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
@@ -12,31 +12,35 @@ sim:
   system_message: "Some principle was given to the flexible agents" # start developer constitution / social contract is given according to system
 
 combine:
-  combine_graph_directory: "experiments/batch_1/experiment_1/20runs/9v1"
+  combine_graph_directory: "experiments/batch_1/experiment_5/20runs/"
+  combine_output_directory: experiments/solar_final/sociopath/
   combine_graph_labels:
-    #- "50% altruistic + 50% selfish"
-    #- "80% altruistic + 20% selfish"
-    #- "20% altruistic + 80% selfish"
-    - "altruistic"
-    - "fair"
-    - "selfish"
-    - "fixed"
-    - "flexible"
+    # - "50% altruistic + 50% selfish"
+    # - "80% altruistic + 20% selfish"
+    # - "20% altruistic + 80% selfish"
+    # - "altruistic"
+    # - "fair"
+    # - "selfish"
+    # - "fixed"
+    # - "flexible"
+    - "Selfish"
+    - "Fixed-agent"
+    - "Flexible-agent"
 
 env:
   propose_decide_alignment: false # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 4
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
 
   edge_cases: 
-    test_edge_cases: true
+    test_edge_cases: false
     generate_new_data: false
     use_existing_data_path: "experiments/batch_1/experiment_1/20runs/1v9/1v9_selfish_20runs"
     selected_contract: ""
     n_rand_iter: 10
     reason:
-      include_reason: True
+      include_reason: False
     prior:
-      include_prior: True
+      include_prior: False
       prior: "altruistic"
     conditions:
       amount:
@@ -71,7 +75,7 @@ env:
     utilities: "selfish,altruistic" # utilities that vary between fixed agents
 
 
-  single_fixed_manners: "neutral"
+  single_fixed_manners: "sycophantic"
   
   vary_manners:
     vary: false
@@ -143,15 +147,15 @@ api_crfm:
   assistant:
     model_name: "openai/gpt-4-0314"
     max_tokens: 300 # these are the actual token limits
-    temperature: 0.000000001
+    temperature: 0.000000003
   user:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 150 # these are the actual token limits
-    temperature: 0.000000001 # we want users to be low on temperature to avoid random variation in ratings
+    temperature: 0.000000003 # we want users to be low on temperature to avoid random variation in ratings
   meta:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 400 # these are the actual token limits
-    temperature: 0.000000001
+    temperature: 0.000000003
 
 api_openai:
   assistant:
