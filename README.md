@@ -7,7 +7,10 @@ SCAI is a simulator for studying practical alignment questions using verbal rein
 We are currently exploring three different directions (work in progress):
 
 1. Learning implicit group norms or preferences from observed interactions in the ultimatum game [[3](https://en.wikipedia.org/wiki/Ultimatum_game)].
+![Illustration of Ultimatum Game Setup](./assets/ultimatum_game.png)
+
 2. Exploring theory-of-mind and planning in the buyer-seller game [[4](https://openreview.net/pdf?id=yd8VOEpw8h)].
+
 3. Red-teaming language models with language models [[5](https://arxiv.org/abs/2202.03286)].
 
 
