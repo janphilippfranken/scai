@@ -11,7 +11,7 @@ We are currently exploring three different directions (work in progress):
 
 2. Exploring theory-of-mind and planning in the buyer-seller game [[4](https://openreview.net/pdf?id=yd8VOEpw8h)].
 
-3. Red-teaming language models with language models [[5](https://arxiv.org/abs/2202.03286)].
+3. Red-teaming with language models [[5](https://arxiv.org/abs/2202.03286)].
 
 
 
