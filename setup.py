@@ -19,6 +19,6 @@ setuptools.setup(
     python_requires='>=3.8.1,<4.0',
     install_requires=requirements,
     dependency_links=[
-        "git+https://github.com/stanford-crfm/helm.git@main#egg=helm",
+        "git+https://github.com/stanford-crfm/helm.git@main#egg=helm", # requirements may crash for helm
     ],
 )

@@ -1,57 +1,40 @@
-##  🕉️ SCAI: Social Contract AI
+##  🕉️ Social Contract AI: Aligning AI Assistants with Implicit Group Norms
 
-A Simulator for Learning AI Social Contracts with Meta-Prompt
-<!-- 
+
 ### 🧐 What is this?
+SCAI is a simulator for studying practical alignment questions using verbal reinforcement [[1](https://github.com/ngoodman/metaprompt), [2](https://arxiv.org/abs/2303.11366)].
 
+We are currently exploring three different directions (work in progress):
 
-#### 🔀 Background
+1. Learning implicit group norms or preferences from observed interactions in the ultimatum game [[3](https://en.wikipedia.org/wiki/Ultimatum_game)].
+2. Exploring theory-of-mind and planning in the buyer-seller game [[4](https://openreview.net/pdf?id=yd8VOEpw8h)].
+3. Red-teaming language models with language models [[5](https://arxiv.org/abs/2202.03286)].
 
-
-
-#### Our Proposal: A (Decentralized) Simulator for Learning AI Constitutions with Verbal Reinforcement -->
 
 
 ### 📂 Repro structure
-
 ```
 ├── src                  
 │   └── scai      
-│       ├── agents
-│       ├── prompts
-│       ├── context
-│       └── memory
-├── docs                
-│   ├── build            
-│   └── source           
+│       ├── chat_models
+│       ├── games
+│       └── memory       
 ├── experiments    
-│   ├── simulator
-│       ├── config  
-│       ├── custom_chat_models
-│       └── sim_res
+│   ├── ultimatum_simulation
+│   ├── buyer_seller
+│   └── red_teaming
 ├── LICENSE              
-├── requirements.txt      
+├── requirements.txt    
+├── pyproject.toml    
+├── setup.py    
 └── .gitignore           
 ```
-
-
-### 📖 Documentation
-<a name="documentation"></a>
 
 #### 🚀 Getting started 
 ##### Using miniforge
 1. install miniforge from `https://github.com/conda-forge/miniforge` (eg `Miniforge3-MacOSX-arm64`)
 2. `bash Miniforge3-MacOSX-arm64.sh`
 3. close terminal
-4. `conda create --name name-of-my-env python==3.10`
-5. `conda activate name-of-my-env`
+4. `conda create --name scai python==3.10`
+5. `conda activate scai`
 6. `pip install -e .` 
-
-<!-- ##### Using poetry (will update this later)
-1. `curl -sSL https://install.python-poetry.org | python -`
-2. `export PATH="/Users/YOUR_NAM/.local/bin:$PATH`
-3. `poetry install` -->
-
-#### 📖 Updating Docs
-1. `sphinx-build -b html docs/source docs/build` (build)
-2. `open docs/build/index.html` (open)
