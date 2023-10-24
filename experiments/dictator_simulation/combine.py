@@ -1,5 +1,5 @@
 """
-This entire file contains explicitly single-currency solution
+This program helps combine graphs from different experiemental runs, containing explicitly single-currency solutions.
 """
 
 import os
@@ -10,7 +10,6 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 
-from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from scipy.stats import sem
