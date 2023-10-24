@@ -9,9 +9,9 @@ We are currently exploring a few different directions (work in progress):
 1. Learning unknown user preferences from observed game interactions in the ultimatum game [[3](https://en.wikipedia.org/wiki/Ultimatum_game)].
 ![Illustration of Ultimatum Game Setup](./assets/ultimatum_fig.png)
 
-2. Red-teaming with language models [[5](https://arxiv.org/abs/2202.03286)].
+2. Red-teaming with language models [[4](https://arxiv.org/abs/2202.03286)].
 
-3. Exploring theory-of-mind and planning in the buyer-seller game [[4](https://openreview.net/pdf?id=yd8VOEpw8h)].
+3. Exploring theory-of-mind and planning in the buyer-seller game [[5](https://openreview.net/pdf?id=yd8VOEpw8h)].
 
 
 ### 📂 Repro structure
