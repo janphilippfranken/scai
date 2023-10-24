@@ -4,7 +4,6 @@ import importlib
 import os
 import json
 import hydra
-from hydra.core.global_hydra import GlobalHydra
 from tqdm import tqdm
 from omegaconf import DictConfig, OmegaConf
 
@@ -79,13 +78,13 @@ def get_llms(
 
 
 def run(args):
+
     #create a copy of the config file and experiment description for reference
     config_directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/config_history'
     os.makedirs(config_directory, exist_ok=True)
-    with open(f'{config_directory}/config_original', "w") as f:
-            f.write(OmegaConf.to_yaml(args))
-    with open(f"{config_directory}/../description", "w") as f:
-        f.write(args.sim.description)
+    with open(f'{config_directory}/config_original', "w") as f: f.write(OmegaConf.to_yaml(args))
+    with open(f"{config_directory}/../description", "w") as f: f.write(args.sim.description)
+    
     # llms
     is_crfm = 'openai' in args.sim.model_name # custom stanford models
     assistant_llm, user_llm, meta_llm = get_llms(args, is_crfm)
