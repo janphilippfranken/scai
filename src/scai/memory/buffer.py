@@ -56,21 +56,6 @@ class ConversationBuffer(ChatMemory):
         """
         self._chat_memory.add_message(model_id=model_id, **kwargs)
         self._full_memory.add_message(model_id=model_id, **kwargs)
-        
-    # def save_assistant_context(
-    #     self, 
-    #     model_id, 
-    #     **kwargs,
-    # ) -> None:
-    #     """
-    #     Stores assistant context.
-
-    #     Args:
-    #         model_id: A string indicating the model id.
-    #         **kwargs: A dictionary of key-value pairs to store.
-    #     """
-    #     self._chat_memory.add_message(model_id=model_id, **kwargs)
-    #     self._full_memory.add_message(model_id=model_id, **kwargs)
     
     def load_memory_variables(
         self, 

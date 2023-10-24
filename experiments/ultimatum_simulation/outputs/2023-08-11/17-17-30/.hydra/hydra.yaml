@@ -129,18 +129,18 @@ hydra:
   runtime:
     version: 1.3.2
     version_base: '1.1'
-    cwd: /Users/PatrickYe/Documents/internship_w9/scai/experiments/ultimatum_simulation
+    cwd: /Users/PatrickYe/Documents/internship_w9/scai/experiments/dictator_simulation
     config_sources:
     - path: hydra.conf
       schema: pkg
       provider: hydra
-    - path: /Users/PatrickYe/Documents/internship_w9/scai/experiments/ultimatum_simulation/config
+    - path: /Users/PatrickYe/Documents/internship_w9/scai/experiments/dictator_simulation/config
       schema: file
       provider: main
     - path: ''
       schema: structured
       provider: schema
-    output_dir: /Users/PatrickYe/Documents/internship_w9/scai/experiments/ultimatum_simulation/outputs/2023-08-11/17-17-30
+    output_dir: /Users/PatrickYe/Documents/internship_w9/scai/experiments/dictator_simulation/outputs/2023-08-11/17-17-30
     choices:
       hydra/env: default
       hydra/callbacks: null
