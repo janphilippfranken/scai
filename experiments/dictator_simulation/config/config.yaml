@@ -44,8 +44,7 @@
 # PARAMETERS:
 #   has model parameters such as token limit and temperature
 # ...
-#
-#
+
 hydra:
   run:
     dir: experiments/${sim.sim_dir}/${sim.sim_id}

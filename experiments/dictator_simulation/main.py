@@ -7,7 +7,6 @@ import hydra
 from tqdm import tqdm
 from omegaconf import DictConfig, OmegaConf
 
-
 # llm class
 from scai.chat_models.crfm import crfmChatLLM
 from langchain.chat_models import ChatOpenAI
@@ -76,7 +75,6 @@ def get_llms(
         meta_llm = ChatOpenAI(**args.api_openai.meta)
     return assistant_llm, user_llm, meta_llm
 
-
 def run(args):
 
     #create a copy of the config file and experiment description for reference
@@ -140,10 +138,10 @@ def run(args):
             context.buffer.save_system_context(model_id='system', **{
                 'response': system_message,
             })
-
+            # Keep track of the system messages
             system_messages.append(system_message)
 
-            # run context
+            # run context - this runs the simulation
             scores.append(context.run(run))
             # save results as csv
             save_as_csv(system_data=context.buffer._system_memory.messages,
@@ -159,10 +157,12 @@ def run(args):
             # update system message after each run
             system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
 
+        # keep track of currencies to use during generalization
         for currency in args.env.currencies:
             if currency not in all_currencies:
                 all_currencies.add(currency)
         
+        # keep track of amounts to use during generalization
         for amount in args.env.amounts_per_run:
             if amount < cur_amount_min:
                 cur_amount_min = amount
@@ -200,25 +200,31 @@ def run(args):
 @hydra.main(config_path="config", config_name="config")
 def main(args: DictConfig) -> None:
 
+    # if you are testing edge cases and you're reusing old data, then retrieve that data and set it 
     if args.env.edge_cases.test_edge_cases and not args.env.edge_cases.generate_new_data:
         existing_data = get_existing_data(args)
         amounts = existing_data['amounts']
         all_currencies = existing_data['currencies']
         all_contracts = existing_data['contracts']
+    # Otherwise, make everything from scratch again
     else:
+        # Run the simulation
         all_currencies, all_contracts, cur_amount_min, cur_amount_max = run(args)
 
+    # ------------ CODE FROM THIS POINT ON IS RELTAED TO GENERALIZATION ------------ #
+    # If you're not testing edge cases, then return
     if not args.env.edge_cases.test_edge_cases:
         return
+    # Otherwise, set the amounts according to the data you just generated
     if args.env.edge_cases.generate_new_data:
         amounts = [cur_amount_min, cur_amount_max]
-        
+    # Pick a contract from the list of contract generated
     contract = agent_pick_contract(all_contracts)
-
+    # Create the prompt string for the flexible agent
     prompt_string = create_prompt_string(all_currencies, amounts, contract, args.env.edge_cases.prior)
-
+    # Set the arguments according to the specified yaml arguments
     set_args(args, prompt_string)
-    
+    # Run the model again, testing generalization
     run(args)
 
                          
