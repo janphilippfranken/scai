@@ -11,22 +11,6 @@ sim:
   verbose: true # if false, no responses are printed during simulation
   system_message: "Some principle was given to the flexible agents" # start developer constitution / social contract is given according to system
 
-combine:
-  combine_graph_directory: "experiments/batch_1/experiment_3/20runs/1v9_sycophantic"
-  combine_output_directory: experiments/solar_final/manners_ambiguity/
-  combine_graph_labels:
-    # - "50% altruistic + 50% selfish"
-    # - "80% altruistic + 20% selfish"
-    # - "20% altruistic + 80% selfish"
-    - "altruistic"
-    - "fair"
-    - "selfish"
-    - "fixed"
-    - "flexible"
-    # - "Selfish"
-    # - "Fixed-agent"
-    # - "Flexible-agent"
-
 env:
   propose_decide_alignment: false # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 4
   manual_run: false # if true this generates trials with variance, otherwise defaults to manual agents and interactions below
@@ -117,9 +101,6 @@ env:
   n_fixed_inter: 8
   n_mixed_inter: 2
   n_flex_inter: 0
-  
-
-
 
 agents:
   fixed_agents:
@@ -142,20 +123,37 @@ interactions:
       - "fixed_agent_4-flex_agent_3-dollars"
       - "flex_agent_2-flex_agent_1-dollars"
 
+#This section helps combine graphs from different experiemental runs
+combine:
+  combine_graph_directory: "experiments/batch_1/experiment_3/20runs/1v9_sycophantic"
+  combine_output_directory: experiments/solar_final/manners_ambiguity/
+  combine_graph_labels:
+    # - "50% altruistic + 50% selfish"
+    # - "80% altruistic + 20% selfish"
+    # - "20% altruistic + 80% selfish"
+    - "altruistic"
+    - "fair"
+    - "selfish"
+    - "fixed"
+    - "flexible"
+    # - "Selfish"
+    # - "Fixed-agent"
+    # - "Flexible-agent"
+
 
 api_crfm:
   assistant:
     model_name: "openai/gpt-4-0314"
     max_tokens: 300 # these are the actual token limits
-    temperature: 0.000000003
+    temperature: 0.01
   user:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 150 # these are the actual token limits
-    temperature: 0.000000003 # we want users to be low on temperature to avoid random variation in ratings
+    temperature: 0.01 # we want users to be low on temperature to avoid random variation in ratings
   meta:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 400 # these are the actual token limits
-    temperature: 0.000000003
+    temperature: 0.01
 
 api_openai:
   assistant:
