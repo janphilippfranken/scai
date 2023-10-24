@@ -7,7 +7,7 @@ SCAI is a simulator for studying practical alignment questions with language fee
 We are currently exploring a few different directions (work in progress):
 
 1. Learning unknown user preferences from observed game interactions in the ultimatum game [[3](https://en.wikipedia.org/wiki/Ultimatum_game)].
-![Illustration of Ultimatum Game Setup](./assets/ultimatum_game.png)
+![Illustration of Ultimatum Game Setup](./assets/ultimatum_fig.png)
 
 2. Red-teaming with language models [[5](https://arxiv.org/abs/2202.03286)].
 
