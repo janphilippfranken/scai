@@ -110,3 +110,25 @@ def set_args(args, prompt_string):
     args.sim.sim_dir = f"{args.sim.sim_dir}/edge_case"
     args.env.edge_cases.selected_contract = prompt_string
     args.env.edge_cases.test_edge_cases = False
+
+def set_args_2(args, prompt_string):
+    original_n_rand_iter = args.env.random.n_rand_iter
+    original_sim_dir = args.sim.sim_dir
+    original_n_runs = args.env.n_runs
+
+    args.env.edge_cases.activate = True
+    args.env.random.n_rand_iter = 2
+    if not args.sim.sim_dir.endswith("/edge_case"):
+        args.sim.sim_dir = f"{args.sim.sim_dir}/edge_case"
+    args.env.edge_cases.selected_contract = prompt_string
+    args.env.n_runs = 1
+    args.env.currencycounter = args.env.currencies
+
+    return original_n_rand_iter, original_sim_dir, original_n_runs
+
+def reset_args_2(args, original_n_rand_iter, original_sim_dir, original_n_runs):
+    args.env.random.n_rand_iter = original_n_rand_iter
+    args.sim.sim_dir = original_sim_dir
+    args.env.n_runs = original_n_runs
+    args.env.edge_cases.selected_contract = ""
+    args.env.edge_cases.activate = False

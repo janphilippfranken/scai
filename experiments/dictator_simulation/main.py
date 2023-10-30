@@ -4,6 +4,7 @@ import importlib
 import os
 import json
 import hydra
+import random
 from tqdm import tqdm
 from omegaconf import DictConfig, OmegaConf
 
@@ -20,7 +21,7 @@ from generate_config import get_num_interactions, generate_agents, generate_inte
 # save and plot results
 from utils import save_as_csv
 from plots import plot_results, plot_all_averages
-from generalize_utils import agent_pick_contract, create_prompt_string, set_args, get_existing_data
+from generalize_utils import agent_pick_contract, create_prompt_string, set_args, set_args_2, reset_args_2, get_existing_data
 
 # create context
 def create_context(
@@ -98,7 +99,11 @@ def run(args):
     for i in range(num_experiments):
 
         # create directory and placeholders for results
-        args.sim.sim_id = i
+        
+        if args.env.edge_cases.activate:
+            args.sim.sim_id = f"ref_{args.env.currencycounter}_{i}"
+        else:
+            args.sim.sim_id = f"{args.env.currencies}_{i}"
         args.env.currencies = original_currencies
         DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
         os.makedirs(DATA_DIR, exist_ok=True)
@@ -188,6 +193,11 @@ def run(args):
         # save results
         total_scores.append([fixed_plot, flex_plot, fixed_bar, flex_bar])
         all_score_lsts.append(score_lsts)
+        
+        with open(f"{config_directory}/../{args.sim.sim_id}/results", "w") as f:
+            f.write(str(fixed_plot[0][-1]) + "\n" + str(flex_plot[0][-1]))
+
+
     
     # make plots that averages across all experiments
     if num_experiments > 1:
@@ -207,25 +217,41 @@ def main(args: DictConfig) -> None:
         all_currencies = existing_data['currencies']
         all_contracts = existing_data['contracts']
     # Otherwise, make everything from scratch again
-    else:
+    elif not args.env.edge_cases.test_edge_cases:
         # Run the simulation
         all_currencies, all_contracts, cur_amount_min, cur_amount_max = run(args)
 
-    # ------------ CODE FROM THIS POINT ON IS RELTAED TO GENERALIZATION ------------ #
-    # If you're not testing edge cases, then return
-    if not args.env.edge_cases.test_edge_cases:
-        return
-    # Otherwise, set the amounts according to the data you just generated
-    if args.env.edge_cases.generate_new_data:
-        amounts = [cur_amount_min, cur_amount_max]
-    # Pick a contract from the list of contract generated
-    contract = agent_pick_contract(all_contracts)
-    # Create the prompt string for the flexible agent
-    prompt_string = create_prompt_string(all_currencies, amounts, contract, args.env.edge_cases.prior)
-    # Set the arguments according to the specified yaml arguments
-    set_args(args, prompt_string)
-    # Run the model again, testing generalization
-    run(args)
+    # # ------------ CODE FROM THIS POINT ON IS RELTAED TO GENERALIZATION_v2 ------------ #
+    #If you're not testing edge cases, then return
+    else:
+        original_currencies = args.env.currencies
+        for currency in original_currencies:
+            args.env.currencies = [currency]
+            all_currencies, all_contracts, cur_amount_min, cur_amount_max = run(args)
+            if args.env.edge_cases.generate_new_data:
+                amounts = [cur_amount_min, cur_amount_max]
+            contract = random.choice(all_contracts)
+            prompt_string = create_prompt_string(all_currencies, amounts, contract, args.env.edge_cases.prior)
+            original_n_rand_iter, original_sim_dir, original_n_runs = set_args_2(args, prompt_string)
+            run(args)
+            reset_args_2(args, original_n_rand_iter, original_sim_dir, original_n_runs)
+            
+
+    # # ------------ CODE FROM THIS POINT ON IS RELTAED TO GENERALIZATION_v1 ------------ #
+    # # If you're not testing edge cases, then return
+    # if not args.env.edge_cases.test_edge_cases:
+    #     return
+    # # Otherwise, set the amounts according to the data you just generated
+    # if args.env.edge_cases.generate_new_data:
+    #     amounts = [cur_amount_min, cur_amount_max]
+    # # Pick a contract from the list of contract generated
+    # contract = agent_pick_contract(all_contracts)
+    # # Create the prompt string for the flexible agent
+    # prompt_string = create_prompt_string(all_currencies, amounts, contract, args.env.edge_cases.prior)
+    # # Set the arguments according to the specified yaml arguments
+    # set_args(args, prompt_string)
+    # # Run the model again, testing generalization
+    # run(args)
 
                          
 if __name__ == '__main__':
