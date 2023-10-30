@@ -1,4 +1,4 @@
-crfm-helm==git+https://github.com/stanford-crfm/helm.git@main
+# crfm-helm==git+https://github.com/stanford-crfm/helm.git@main
 fire==0.5.0
 hydra-core==1.3.2
 langchain==0.0.220
@@ -9,3 +9,4 @@ seaborn==0.11.2
 sphinx==6.2.1
 streamlit==1.24.0
 tqdm==4.64.1
+sentence_transformers==2.2.2

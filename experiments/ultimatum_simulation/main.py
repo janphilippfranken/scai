@@ -13,8 +13,8 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 
 # set up context
-from scai.games.dictator_games.context import Context
-from scai.games.dictator_games.prompts.task.task_prompt import DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS   
+from scai.games.ultimatum_games.context import Context
+from scai.games.ultimatum_games.prompts.task.task_prompt import DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS   
 from generate_config import get_num_interactions, generate_agents, generate_interactions, generate_random_params, generate_starting_message
 
 # save and plot results
@@ -128,7 +128,7 @@ def run(args):
 
             #import appropriate metaprompt
             game_number = int(f"{int(n_fixed)}{int(n_mixed)}{int(n_flex)}", 2)
-            meta_module = importlib.import_module(f"scai.games.dictator_games.meta_prompts.dictator_{game_number}_meta_prompts")
+            meta_module = importlib.import_module(f"scai.games.ultimatum_games.meta_prompts.dictator_{game_number}_meta_prompts")
             META_PROMPTS = meta_module.META_PROMPTS
 
             # initialize context

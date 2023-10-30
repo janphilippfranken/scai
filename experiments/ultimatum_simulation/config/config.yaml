@@ -54,7 +54,7 @@ sim:
   sim_dir: "generalizations/manners/altruistic_rude" # this is the name of the directory where the results will be saved
   description: "\n\n selfish sycophantic \n\n" # this is the description of the simulation
   sim_id: "0"
-  model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
+  model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm api use "openai/gpt-4-0314"
   test_run: false # if false this uses tokens, otherwise just prints the prompt
   verbose: true # if false, no responses are printed during simulation
   system_message: "Some principle was given to the flexible agents" # start developer constitution / social contract is given according to system
@@ -69,7 +69,7 @@ env:
     generate_new_data: false # Otherwise, data will be used from the use_existing_data_path parameter below
     use_existing_data_path: "experiments/batch_1/experiment_1/20runs/1v9/1v9_selfish_20runs"
     selected_contract: "" # Placeholder field meant to hold the selected contract for the edge-case run
-    n_rand_iter: 20 # Number of experiements that are run
+    n_rand_iter: 1 # Number of experiements that are run
     reason: 
       include_reason: False # If set to true, the model will be prompted to justify its split in a generalization case
     prior:
@@ -90,7 +90,7 @@ env:
 
   # ------------ RANDOMLY GENERATES CURRENCIES, AMOUNTS, AND INTERACTIONS TYPES FROM PROVIDED PARAMETERS FOUND BELOW ------------ #
   random:
-    n_rand_iter: 20 # number of times the entire functionality is run, at least 2
+    n_rand_iter: 1 # number of times the entire functionality is run, at least 2
     rand_variables:
       currency: true # if true, the currency will vary for each random iteration
       amount: true # if true, amount-to-be-split will vary for each random iteration

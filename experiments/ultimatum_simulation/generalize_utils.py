@@ -10,7 +10,7 @@ from scai.chat_models.crfm import crfmChatLLM
 from langchain import LLMChain
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 
-from scai.games.dictator_games.prompts.user.user_prompt import utilities_empty
+from scai.games.ultimatum_games.prompts.user.user_prompt import utilities_empty
 
 class ChooserTemplate(BaseModel):
     """
