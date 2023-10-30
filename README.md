@@ -38,4 +38,4 @@ SCAI is a simulator for aligning an AI assistant with language feedback/verbal r
 2. navigate to experiments folder `cd experiments/ultimatum_simulation`
 3. run `python main.py`
 
-For more information or to change settings, see `experiments/ultimatum_simulation/config/config.yaml`. 
+For more information (or to change settings) see `experiments/ultimatum_simulation/config/config.yaml`. 
