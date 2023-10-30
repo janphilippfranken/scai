@@ -175,7 +175,6 @@ def run(args):
         all_contracts.append(principle)
 
         # plot average user gain across runs
-
         fixed_plot, flex_plot, fixed_bar, flex_bar, score_lsts = plot_results(data_directory=DATA_DIR, 
                                                                                     sim_name=args.sim.sim_dir,
                                                                                     sim_id=args.sim.sim_id,
