@@ -34,8 +34,8 @@ SCAI is a simulator for aligning an AI assistant with language feedback/verbal r
 6. `pip install -e .` 
 
 ##### Running a simulation 
-1. Export your api key; e.g. `export CRFM_API_KEY="<yourkey>"` or export  `export OPENAI_API_KEY="<yourkey>"`
-2. Navigate to experiments folder `cd experiments/ultimatum_simulation`
-3. Run `python main.py`
+1. export key `export CRFM_API_KEY="<yourkey>"` or export  `export OPENAI_API_KEY="<yourkey>"`
+2. navigate to experiments folder `cd experiments/ultimatum_simulation`
+3. run `python main.py`
 
 For more information or to change settings, see `experiments/ultimatum_simulation/config/config.yaml`. 
