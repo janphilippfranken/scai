@@ -51,7 +51,7 @@ hydra:
 
 sim:
   # ------------ I/O PARAMETERS, MODEL TYPES, VERBOSITY ------------ #
-  sim_dir: "generalizations/v2/trial_1" # this is the name of the directory where the results will be saved
+  sim_dir: "generalizations/v2/trial_5" # this is the name of the directory where the results will be saved
   description: "" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
@@ -84,7 +84,11 @@ env:
       currency: # Sets the currency for the edge-case run
         set_currency: true
         currencies: # Types of currencies that you want to include
-          - "lifesaving portions of medicine"
+          #- "apples"
+          #- "blankets"
+          #- "dollars"
+          - "subscriptions to youtube channels"
+          #- "lifesaving portions of medicine"
           #- "grams of medicine"
           #- "pints of blood"
           #- "liters of baby formula"
@@ -146,7 +150,8 @@ env:
     - "apples"
     - "blankets"
     - "dollars"
-    - "subscriptions to youtube channels"
+    #- "subscriptions to youtube channels"
+    - "lifesaving portions of medicine"
   currencycounter: "" # placeholder for reference currency
   task_prompt: "task_prompt_1"
   meta_prompt: "meta_prompt_3"
