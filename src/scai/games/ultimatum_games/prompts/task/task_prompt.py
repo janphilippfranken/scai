@@ -23,7 +23,7 @@ DICTATOR_TASK_PROMPTS: Dict[str, TaskPrompt] = {
         task_structure="Please structure your proposal exactly the same as this: (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y.",
         content="""{task}""",
     ),
-}
+} # ask for proposal. ask for confidence (range 1-10 that proposal is correct given policy); if confidence is low (< 7 -> oracle)
 
 DECIDER_TASK_PROMPTS: Dict[str, TaskPrompt] = {
     "task_prompt_1": TaskPrompt(
