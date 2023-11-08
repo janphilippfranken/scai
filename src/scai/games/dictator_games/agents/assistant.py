@@ -117,7 +117,7 @@ class AssistantAgent(BaseAgent):
             principle = agent_prompt.initial_principle if run_num == 0 else system_message[index:]
         else:
             principle = edge_case_instructions
-            consideration = " Importantly, please consider how relevant your principle is in this new scenario before you make any decisions. For instance, while your principle might be relevant in old contexts under the amounts and currencies provided previously, it may not be relevant when considering new amounts and currencies."
+            consideration = " Importantly, please consider how relevant your principle is in this new scenario before you make any decisions. For instance, while your principle might be relevant in old contexts under the amounts and currencies provided previously, it may not be relevant when considering new amounts and currencies. If you think the principle is not longer applicable, please raise a question asking the system if the principle is applicable anymore, marking your question with two question marks: ??"
         
  
         chat_prompt_template = self._get_prompt(agent_prompt, principle, is_edge_case) # Get the prompt template in a langchain/crfm-acceptable format (with the stop condition)  
@@ -153,6 +153,21 @@ class AssistantAgent(BaseAgent):
         # Get the response
         response = self._get_response(chat_prompt_template, task)
 
+        #Generalization starts
+        # if the agent is asking a question, then the "response" is not in fact a response, it's a question that needs to be fed back into the system, answered by the system according to some rules, and then the response to that is the answer to the question
+
+        # Here we mock the system's response to the question, putting it in the form of revised consideration
+        consideration = "You can safely generalize your principle to this new context, regardless of the amounts and currencies."
+
+        if response.find("??") != -1:
+            question_string = response
+            task=f"{formatted_preamble} {formatted_task}{consideration} {task_prompt.task_structure}{reason}"
+            prompt_string = chat_prompt_template.format(task=task)
+            response = self._get_response(chat_prompt_template, task)
+
+        #Generalization ends
+
+
         if verbose:
             print('===================================')
             print(f'Flex-policy agent as {role} {str(self.model_id)}')
@@ -160,5 +175,6 @@ class AssistantAgent(BaseAgent):
             print(response)
         return {
             'prompt': prompt_string, 
-            'response': response, 
+            'response': response,
+            'internal_question': question_string if question_string else '',
         }
