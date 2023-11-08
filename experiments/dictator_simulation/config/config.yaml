@@ -89,6 +89,7 @@ env:
           #- "pints of blood"
           #- "liters of baby formula"
       context: false # If set to true, includes situations in which these splits are being made (not implemented yet)
+    plot_save_path: "generalizations/edge_case"
 
   # ------------ RANDOMLY GENERATES CURRENCIES, AMOUNTS, AND INTERACTIONS TYPES FROM PROVIDED PARAMETERS FOUND BELOW ------------ #
   random:

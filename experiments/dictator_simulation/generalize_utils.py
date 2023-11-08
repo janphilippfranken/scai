@@ -59,7 +59,7 @@ def create_prompt_string(currencies: set, amounts: list, summarized_contract: st
 
     prompt = f"""You have played the dictator game with a society of agents. In the dictator game, one person proposes a split of a certain object, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that neither players will have ANY personal gain. 
 {prior}
-The agents you've played with all have some shared principle. You yourself have learned an approximation of this principle, available here: Previous Principle: {summarized_contract} Importantly, you have learned this principle by splitting dollars, with amounts of these currencies ranging from {amounts[0]} to {amounts[1]}. When interacting with other agents, consider how relevant your principle is. Even if it may SEEM relevant, it may not capture the nuances of the new society you're in.
+The agents you've played with all have some shared principle. You yourself have learned an approximation of this principle, available here: Previous Principle: {summarized_contract} Importantly, you have learned this principle by splitting {currencies_str}, with amounts of these currencies ranging from {amounts[0]} to {amounts[1]}. When interacting with other agents, consider how relevant your principle is. Even if it may SEEM relevant, it may not capture the nuances of the new society you're in.
 
 Now, you will play the game again, using your learned principle."""
 
