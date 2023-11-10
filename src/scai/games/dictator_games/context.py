@@ -4,12 +4,15 @@ from typing import List, Tuple
 from scai.games.dictator_games.agents.user import UserModel
 from scai.games.dictator_games.agents.assistant import AssistantAgent
 from scai.games.dictator_games.agents.meta import MetaPromptModel
+from scai.games.dictator_games.agents.oracle import OracleAgent
 
 
 from scai.games.dictator_games.prompts.user.user_class import UserPrompt
 from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, utilities_dict_fixed_decider_behavior, utilities_empty, content, content_with_manners
 
 from scai.games.dictator_games.prompts.assistant.assistant_class import AssistantPrompt
+
+from scai.games.dictator_games.prompts.oracle.oracle_class import OraclePrompt
 
 from scai.games.dictator_games.prompts.task.task_prompt import STIPULATIONS
 
@@ -42,8 +45,10 @@ class Context():
         user_llm: UserModel,
         assistant_llm: AssistantAgent,
         meta_llm: MetaPromptModel,
+        oracle_llm: OracleAgent,
         propose_decide_alignment: bool,
         has_manners: bool,
+        ask_question: bool,
     ) -> None:
         """
         Initializes a context (i.e. context for the MDP / Meta-Prompt run).
@@ -81,6 +86,9 @@ class Context():
         self.verbose = verbose
         self.edge_case_instructions = edge_case_instructions
         self.include_reason = include_reason
+        self.propose_decide_alignment = propose_decide_alignment
+        self.content = content if has_manners else content_with_manners
+        self.ask_question = ask_question
         # agents and interactions dictionaries
         self.currencies = currencies
         self.agents_dict = agents_dict
@@ -97,8 +105,7 @@ class Context():
         self.user_llm = user_llm
         self.assistant_llm = assistant_llm
         self.meta_llm = meta_llm
-        self.propose_decide_alignment = propose_decide_alignment
-        self.content = content if has_manners else content_with_manners
+        self.oracle_llm = oracle_llm
 
 
     @staticmethod
@@ -106,6 +113,7 @@ class Context():
         user_llm: UserModel, 
         assistant_llm: AssistantAgent, 
         meta_llm: MetaPromptModel, 
+        oracle_llm: OracleAgent,
         _id: str, 
         name: str, 
         task_prompt_dictator: str, 
@@ -124,6 +132,7 @@ class Context():
         edge_case_instructions: str,
         propose_decide_alignment: bool,
         has_manners: bool,
+        ask_question: bool,
     ) -> "Context":
         """
         Creates a context (i.e. context for the MDP / Meta-Prompt run).
@@ -155,8 +164,10 @@ class Context():
             user_llm=user_llm,
             assistant_llm=assistant_llm,
             meta_llm=meta_llm,
+            oracle_llm=oracle_llm,
             propose_decide_alignment=propose_decide_alignment,
-            has_manners = has_manners,
+            has_manners=has_manners,
+            ask_question=ask_question
         )
     # This function instantiates all of either the fixed-agent or flexible-agent prompts, to be paired off later
     def generate_agent_prompts(self,
@@ -353,7 +364,8 @@ class Context():
         assistant_proposals, assistant_scores_dictator, assistant_scores_decider = [], [-1] * len(pairs), [-1] * len(pairs)
         # Both score lists are initialized with -1's to indicate that no interaction occured at that time point for that specific type of agent in that specific role
         # If an interaction didn't happen, this -1 will remain, otherwise it will be replaced with a number depending on the proposal/whether it was accepted or rejected
-
+        num_questions_asked = 0
+        num_total_flex_dictators = 0
         # For every agent pair in pairs, simulate an interaction between those two agents
         for i, agent_pairing in enumerate(pairs):
             # Keep track of what needs to be split and what amount of it needs to be split, as well as any special instructions for splitting that resource (stipulations)
@@ -380,9 +392,34 @@ class Context():
                                 task_prompt=self.task_prompt_dictator,
                                 edge_case_instructions=self.edge_case_instructions,
                                 include_reason=self.include_reason,
+                                ask_question=self.ask_question,
+                                asked_oracle=False,
+                                oracle_response="",
                                 is_dictator=True,
                                 run_num=run,
                                 verbose=self.verbose)
+            
+            if dictator_response['response'].find("Question?") != -1:
+                num_questions_asked += 1
+                # Prompt the oracle
+                oracle_agent = OracleAgent(llm=self.oracle_llm, model_id="0")
+                oracle_response = oracle_agent.run(agent_prompt=OraclePrompt,
+                                                      verbose=self.verbose)
+                # Prompt the agent again
+                dictator_response = model_dictator.run(buffer=self.buffer,
+                                amount_and_currency=amount_and_currency,
+                                stipulations=stipulation,
+                                agent_prompt=prompt_dictator,
+                                task_prompt=self.task_prompt_dictator,
+                                edge_case_instructions=self.edge_case_instructions,
+                                include_reason=self.include_reason,
+                                ask_question=self.ask_question,
+                                asked_oracle=True,
+                                oracle_response=oracle_response,
+                                is_dictator=True,
+                                run_num=run,
+                                verbose=self.verbose)
+                
 
             # If the fixed agent was the dictator, save the response as a fixed agent's response, and indicate that the dictator was fixed
             if type(prompt_dictator) == UserPrompt:
@@ -390,6 +427,8 @@ class Context():
             # Otherwise, the flexible agent was the dictator, save the reponse as a flexible agent's response, and indicate that the dictator was flex
             else:
                 prefix, user_dictator = "flexible", False
+                num_total_flex_dictators += 1
+
             self.buffer.save_agent_context(model_id=f"{model_dictator.model_id}_{prefix}_policy_dictator", **dictator_response)
 
             # calls either the fixed or flex agent as decider
@@ -400,6 +439,9 @@ class Context():
                                     task_prompt=self.task_prompt_decider,
                                     edge_case_instructions=self.edge_case_instructions,
                                     include_reason=self.include_reason,
+                                    ask_question=self.ask_question,
+                                    asked_oracle=False,
+                                    oracle_response="",
                                     is_dictator=False,
                                     run_num=run,
                                     verbose=self.verbose)
@@ -436,4 +478,4 @@ class Context():
                                             )                 
         # save meta-prompt response for start of next conversation
         self.buffer.save_system_context(model_id="system", **meta_response)
-        return user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals
+        return user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals, num_questions_asked / num_total_flex_dictators

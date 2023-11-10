@@ -20,7 +20,7 @@ from generate_config import get_num_interactions, generate_agents, generate_inte
 
 # save and plot results
 from utils import save_as_csv
-from plots import plot_results, plot_all_averages
+from plots import plot_results, plot_all_averages, plot_questions
 from generalize_utils import agent_pick_contract, create_prompt_string, set_args, set_args_2, reset_args_2, get_existing_data
 
 # create context
@@ -29,6 +29,7 @@ def create_context(
     assistant_llm, 
     user_llm, 
     meta_llm,
+    oracle_llm,
     Context,
     DICTATOR_TASK_PROMPTS, 
     DECIDER_TASK_PROMPTS, 
@@ -46,6 +47,7 @@ def create_context(
         user_llm=user_llm,
         assistant_llm=assistant_llm,
         meta_llm=meta_llm,
+        oracle_llm=oracle_llm,
         verbose=args.sim.verbose,
         test_run=args.sim.test_run,
         amounts_per_run=args.env.amounts_per_run,
@@ -59,6 +61,7 @@ def create_context(
         include_reason=args.env.edge_cases.reason.include_reason,
         propose_decide_alignment=args.env.propose_decide_alignment,
         has_manners = (args.env.single_fixed_manners == "neutral"),
+        ask_question=args.env.edge_cases.conditions.ask_question,
     )
 
 # create llms to be used in context
@@ -70,13 +73,17 @@ def get_llms(
         assistant_llm = crfmChatLLM(**args.api_crfm.assistant)
         user_llm = crfmChatLLM(**args.api_crfm.user)
         meta_llm = crfmChatLLM(**args.api_crfm.meta)
+        oracle_llm = crfmChatLLM(**args.api_crfm.oracle)
+
     else:
         assistant_llm = ChatOpenAI(**args.api_openai.assistant)
         user_llm = ChatOpenAI(**args.api_openai.user)
         meta_llm = ChatOpenAI(**args.api_openai.meta)
-    return assistant_llm, user_llm, meta_llm
+        oracle_llm = ChatOpenAI(**args.api_crfm.oracle)
+    return assistant_llm, user_llm, meta_llm, oracle_llm
 
 def run(args):
+    print(args.env.edge_cases.conditions.currency.currencies[0])
 
     #create a copy of the config file and experiment description for reference
     config_directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/config_history'
@@ -86,7 +93,7 @@ def run(args):
     
     # llms
     is_crfm = 'openai' in args.sim.model_name # custom stanford models
-    assistant_llm, user_llm, meta_llm = get_llms(args, is_crfm)
+    assistant_llm, user_llm, meta_llm, oracle_llm = get_llms(args, is_crfm)
 
     num_experiments = args.env.random.n_rand_iter if not args.env.manual_run else 1
     original_currencies = args.env.currencies
@@ -95,6 +102,7 @@ def run(args):
     all_currencies = set()
     all_contracts = []
     cur_amount_min, cur_amount_max = float('inf'), float('-inf')
+    all_questions = []
 
     for i in range(num_experiments):
 
@@ -110,7 +118,7 @@ def run(args):
         system_message = args.sim.system_message
         system_messages = []
         scores = []
-
+        questions = []
         # set run id, amonts, and the currency; and saving to config
         if not args.env.manual_run:
             generate_starting_message(args)
@@ -137,7 +145,7 @@ def run(args):
             META_PROMPTS = meta_module.META_PROMPTS
 
             # initialize context
-            context = create_context(args, assistant_llm, user_llm, meta_llm, Context,     
+            context = create_context(args, assistant_llm, user_llm, meta_llm, oracle_llm, Context,     
                                     DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS)
 
             context.buffer.save_system_context(model_id='system', **{
@@ -147,7 +155,8 @@ def run(args):
             system_messages.append(system_message)
 
             # run context - this runs the simulation
-            scores.append(context.run(run))
+            user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals, question = context.run(run)
+            scores.append((user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals))
             # save results as csv
             save_as_csv(system_data=context.buffer._system_memory.messages,
                         chat_data=context.buffer._chat_memory.messages,
@@ -161,6 +170,7 @@ def run(args):
             
             # update system message after each run
             system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
+            questions.append(question)
 
         # keep track of currencies to use during generalization
         for currency in args.env.currencies:
@@ -193,6 +203,7 @@ def run(args):
         # save results
         total_scores.append([fixed_plot, flex_plot, fixed_bar, flex_bar])
         all_score_lsts.append(score_lsts)
+        all_questions.append(sum(questions) / len(questions))
         
         with open(f"{config_directory}/../{args.sim.sim_id}/results", "w") as f:
             f.write(str(fixed_plot[0][-1]) + "\n" + str(flex_plot[0][-1]))
@@ -203,8 +214,9 @@ def run(args):
     if num_experiments > 1:
         directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/final_graphs'
         os.makedirs(directory, exist_ok=True)
-        plot_all_averages(total_scores=total_scores, all_score_lsts=all_score_lsts, currencies=args.env.currencies, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
-        return all_currencies, all_contracts, cur_amount_min, cur_amount_max
+        plot_all_averages(total_scores=total_scores, all_score_lsts=all_score_lsts, edge_case=args.env.edge_cases.test_edge_cases, currencies=args.env.currencies, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
+
+        return all_currencies, all_contracts, cur_amount_min, cur_amount_max, all_questions
 
 # run simulator
 @hydra.main(config_path="config", config_name="config")
@@ -225,16 +237,34 @@ def main(args: DictConfig) -> None:
     #If you're not testing edge cases, then return
     else:
         original_currencies = args.env.currencies
+        oo_dist_q = []
+        in_dist_q = []
         for currency in original_currencies:
+
+            args.env.edge_cases.test_edge_cases = False
             args.env.currencies = [currency]
-            all_currencies, all_contracts, cur_amount_min, cur_amount_max = run(args)
+
+            all_currencies, all_contracts, cur_amount_min, cur_amount_max, _ = run(args)
+
             if args.env.edge_cases.generate_new_data:
                 amounts = [cur_amount_min, cur_amount_max]
-            contract = random.choice(all_contracts)
+
+            contract = agent_pick_contract(all_contracts)
+
             prompt_string = create_prompt_string(all_currencies, amounts, contract, args.env.edge_cases.prior)
+
             original_n_rand_iter, original_sim_dir, original_n_runs = set_args_2(args, prompt_string)
-            run(args)
+
+            args.env.edge_cases.test_edge_cases = True
+
+            _, _, _, _, out_dist_questions = run(args)
+            if args.env.edge_cases.conditions.currency.currencies[0] == currency:
+                in_dist_q.append(sum(out_dist_questions) / len(out_dist_questions))
+            else:
+                oo_dist_q.append(sum(out_dist_questions) / len(out_dist_questions))
             reset_args_2(args, original_n_rand_iter, original_sim_dir, original_n_runs)
+
+        plot_questions(oo_dist_q, in_dist_q, f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/question_graphs')
             
 
     # # ------------ CODE FROM THIS POINT ON IS RELTAED TO GENERALIZATION_v1 ------------ #
