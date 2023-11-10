@@ -87,6 +87,9 @@ class AssistantAgent(BaseAgent):
         run_num: int,
         edge_case_instructions: str,
         include_reason: bool,
+        ask_question: bool,
+        asked_oracle: bool,
+        oracle_response: str,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the assistant
@@ -105,20 +108,27 @@ class AssistantAgent(BaseAgent):
         """
         is_edge_case = bool(edge_case_instructions) # if the edge-case instructions exist, then the principle has been chosen, and we are in an edge-case scenario
         # Get the last social contract
+        consideration = "" 
+        oracle_additive = ""
         if not is_edge_case: # if we're not in an edge case, then get the last principle that meta output as normal
             system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']
             index = system_message.find("Principle:")
             if index == -1: index = 0
 
             # In addition, if we're not in an edge case this means the flex-policy agent doesn't have to consider alternative contexts
-            consideration = "" 
 
             # If it's the first run, use the randomized assistant principle. Otherwise, use the most recent system message
             principle = agent_prompt.initial_principle if run_num == 0 else system_message[index:]
-        else:
+        elif is_edge_case and not asked_oracle:
             principle = edge_case_instructions
-            consideration = " Importantly, please consider how relevant your principle is in this new scenario before you make any decisions. For instance, while your principle might be relevant in old contexts under the amounts and currencies provided previously, it may not be relevant when considering new amounts and currencies. If you think the principle is not longer applicable, please raise a question asking the system if the principle is applicable anymore, marking your question with two question marks: ??"
+        elif is_edge_case and asked_oracle:
+            principle = edge_case_instructions
+            consideration += f" However, you have asked an all-seeing oracle how to split the currency, because you were not sure. The oracle said this: {oracle_response} Please follow the oracle's instructions EXACTLY!"
         
+        # If the assistant has the ability to ask a question, go ahead and do so
+        if is_edge_case and ask_question and is_dictator and not asked_oracle:
+            consideration += "\nHere you have TWO options. \n Option 1:\nIf you're dealing with new currencies than are different from the ones under which you learned your principle, ASK a clarifying question as to how you should split resources. YOU SHOULD ALWAYS ASK A QUESTION WHEN SPLITTING CURRENCIES YOU HAVEN'T SEEN BEFORE! Format it EXACTLY this: Question?:...\n Option 2:\nIf you're not asking a question, meaning that you're about to make a proposal that directly follows your learned principle, MAKE SURE YOU'RE SPLITTING CURRENCIES YOU'VE ALREADY SEEN!"
+            oracle_additive += "Please indicate which option you're choosing like so, and then proceed using the formatting previously outlined: I choose option X."
  
         chat_prompt_template = self._get_prompt(agent_prompt, principle, is_edge_case) # Get the prompt template in a langchain/crfm-acceptable format (with the stop condition)  
         # If the agent is the dictator, then there is no proposal to consider, rather, it has to generate the proposal
@@ -146,27 +156,13 @@ class AssistantAgent(BaseAgent):
         # If the reason is suppoed to be included, prompt the model as such, otherwise, do with out reason prompting
         reason = " In addition, please provide a reason as to what is motivating you to propose this split. Indicate this reason like so: Reason..." if include_reason else ""
         
-        task=f"{formatted_preamble} {formatted_task}{consideration} {task_prompt.task_structure}{reason}"
+        task=f"{formatted_preamble} {formatted_task}{consideration} {task_prompt.task_structure}{reason}{oracle_additive}"
+
 
         prompt_string = chat_prompt_template.format(task=task)
                                             
         # Get the response
         response = self._get_response(chat_prompt_template, task)
-
-        #Generalization starts
-        # if the agent is asking a question, then the "response" is not in fact a response, it's a question that needs to be fed back into the system, answered by the system according to some rules, and then the response to that is the answer to the question
-
-        # Here we mock the system's response to the question, putting it in the form of revised consideration
-        consideration = "You can safely generalize your principle to this new context, regardless of the amounts and currencies."
-
-        if response.find("??") != -1:
-            question_string = response
-            task=f"{formatted_preamble} {formatted_task}{consideration} {task_prompt.task_structure}{reason}"
-            prompt_string = chat_prompt_template.format(task=task)
-            response = self._get_response(chat_prompt_template, task)
-
-        #Generalization ends
-
 
         if verbose:
             print('===================================')
@@ -176,5 +172,4 @@ class AssistantAgent(BaseAgent):
         return {
             'prompt': prompt_string, 
             'response': response,
-            'internal_question': question_string if question_string else '',
         }

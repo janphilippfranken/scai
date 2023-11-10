@@ -85,6 +85,9 @@ class UserModel(BaseAgent):
         run_num: int, # These parameters are for the flexible-policy agent in OOD scenarios, but are included to maintain flexibility in run structure
         edge_case_instructions: str,
         include_reason: bool,
+        ask_question: bool,
+        asked_oracle: bool,
+        oracle_response: str,
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the assistant
