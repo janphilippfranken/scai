@@ -51,7 +51,7 @@ hydra:
 
 sim:
   # ------------ I/O PARAMETERS, MODEL TYPES, VERBOSITY ------------ #
-  sim_dir: "generalizations/v2/trial_5" # this is the name of the directory where the results will be saved
+  sim_dir: "generalizations/question_asking/OOD_currency" # this is the name of the directory where the results will be saved
   description: "" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
@@ -68,7 +68,7 @@ env:
     test_edge_cases: True # If set to true, then generalization cases will be tested
     activate: False # switch indicating whether we are actively testing generalization, should always be false during configuration
     generate_new_data: True # Otherwise, data will be used from the use_existing_data_path parameter below
-    use_existing_data_path: "experiments/generalizations/1vs1/fresh_youtube"
+    use_existing_data_path: "experiments/generalizations/question_asking"
     selected_contract: "" # Placeholder field meant to hold the selected contract for the edge-case run
     n_rand_iter: 2 # Number of experiements that are run
     reason: 
@@ -85,14 +85,15 @@ env:
         set_currency: true
         currencies: # Types of currencies that you want to include
           #- "apples"
-          #- "blankets"
+          # - "blankets"
           #- "dollars"
-          - "subscriptions to youtube channels"
-          #- "lifesaving portions of medicine"
+          #- "subscriptions to youtube channels"
+          - "lifesaving portions of medicine"
           #- "grams of medicine"
           #- "pints of blood"
           #- "liters of baby formula"
       context: false # If set to true, includes situations in which these splits are being made (not implemented yet)
+      ask_question: true
     plot_save_path: "generalizations/edge_case"
 
   # ------------ RANDOMLY GENERATES CURRENCIES, AMOUNTS, AND INTERACTIONS TYPES FROM PROVIDED PARAMETERS FOUND BELOW ------------ #
@@ -140,7 +141,7 @@ env:
   # ------------ EXPERIMENT CHARACTERISTICS - HOW WE CHANGE THE AVAILABLE CURRENCIES, AMOUNTS, INTERACTIONS, AND PROMPTS PER RUN ------------ #
   n_total_interactions: 12 # the number of interactions between agents per run
 
-  n_runs: 3 # The number of runs per experiment
+  n_runs: 3 # The number of meta-prompt runs per experiment
   amounts_per_run: # Contains the amounts per run, should match with the n_runs parameter
     - 10
     - 10
@@ -148,11 +149,11 @@ env:
     - 10
     - 10
   currencies: # Currencies to-be-split
-    - "apples"
+    #- "apples"
     - "blankets"
-    - "dollars"
+    # - "dollars"
     #- "subscriptions to youtube channels"
-    - "lifesaving portions of medicine"
+    #- "lifesaving portions of medicine"
   currencycounter: "" # placeholder for reference currency
   task_prompt: "task_prompt_1"
   meta_prompt: "meta_prompt_3"
@@ -204,7 +205,7 @@ api_crfm:
   assistant:
     model_name: "openai/gpt-4-0314"
     max_tokens: 300 # these are the actual token limits
-    temperature: 0.01
+    temperature: 0.401
   user:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 150 # these are the actual token limits
@@ -212,7 +213,11 @@ api_crfm:
   meta:
     model_name: "openai/gpt-4-0314" 
     max_tokens: 400 # these are the actual token limits
-    temperature: 0.01
+    temperature: 0.001
+  oracle:
+    model_name: "openai/gpt-4-0314"
+    max_tokens: 150
+    temperature: 0
 
 api_openai:
   assistant:
@@ -227,3 +232,7 @@ api_openai:
     model_name: "gpt-4"
     max_tokens: 150 # these are the actual token limits
     temperature: 0.0
+  oracle:
+    model_name: "openai/gpt-4-0314"
+    max_tokens: 150
+    temperature: 0
