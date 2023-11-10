@@ -2,7 +2,7 @@ from typing import (
     List,
     Tuple,
 )
-
+import os
 import pandas as pd 
 import numpy as np
 import json
@@ -105,6 +105,7 @@ def plot_all_averages(
                    currencies: List,
                    n_runs: int, 
                    directory: str,
+                   edge_case: bool,
                    sim_dir: str,
                    sim_id: str,
                    linewidth: int = 2,
@@ -157,29 +158,60 @@ def plot_all_averages(
 
 
     for j in range(len(currencies)):
-        _, ax = plt.subplots(figsize=(20, 10))
-        for i, item in enumerate([list_fixed_plots, list_flex_plots]):
-            label = "Fixed Agent" if not i else "Flexible Agent"
-            #y = [z[j] for z in item[0] if z[j] is not np.nan]
-            y = item[0][j]
+        if not edge_case:
+            _, ax = plt.subplots(figsize=(20, 10))
+            for i, item in enumerate([list_fixed_plots, list_flex_plots]):
+                label = "Fixed Agent" if not i else "Flexible Agent"
+                #y = [z[j] for z in item[0] if z[j] is not np.nan]
+                y = item[0][j]
 
-            errors = item[1][j]
+                errors = item[1][j]
 
-            while len(y) < len(x): y.append(np.nan)
-            while len(errors) < len(x): errors.append(0)
+                while len(y) < len(x): y.append(np.nan)
+                while len(errors) < len(x): errors.append(0)
 
-            line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
-            lines.append(line[0])
-            ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
-            ax.fill_between(x, [y_val - 1.95 * err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
+                line = ax.plot(x, y, color=palette[i], linewidth=linewidth, zorder=zorder, label=label)
+                lines.append(line[0])
+                ax.scatter(x, y, color=[lighten_color(scatter_color)] * len(x)) 
+                ax.fill_between(x, [y_val - 1.95 * err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], [y_val + 1.95 * err if y_val is not np.nan else 0 for y_val, err in zip(y, errors)], color=palette[i], alpha=0.3)
 
-        plot_proposal_line_graph(ax=ax,
-                                x=x,
-                                graph_title=f"Average_Proportion_of_{currencies[j]}_Offered_to_the_Decider_Across_all_Iterations",
-                                xlabel='Meta-Prompt Iteration',
-                                ylabel='Average Proportion of Total Proposed',
-                                directory=f'{directory}/'
-                                )
+            plot_proposal_line_graph(ax=ax,
+                                    x=x,
+                                    graph_title=f"Average_Proportion_of_{currencies[j]}_Offered_to_the_Decider_Across_all_Iterations",
+                                    xlabel='Meta-Prompt Iteration',
+                                    ylabel='Average Proportion of Total Proposed',
+                                    directory=f'{directory}/'
+                                    )
+        else:
+
+            # Extract y values for each agent type for the current currency
+            y_fixed_current = list_fixed_plots[0][j]
+            y_flexible_current = list_flex_plots[0][j]
+
+            y_fixed_errors = list_fixed_plots[1][j]
+            y_flexible_errors = list_flex_plots[1][j]
+            plot_bar_graph(directory=directory,
+                           sim_dir=sim_dir,
+                           sim_id="fixed_agent",
+                           graph_title=f"Average_Proportion_of_{currencies[j]}_Offered_to_the_Decider_Across_all_Iterations",
+                           xlabel='Fixed Agent',
+                           ylabel='Average Proportion of Total Proposed',
+                           path_suffix="bar",
+                           x=[""],
+                           y=y_fixed_current,
+                           errors=y_fixed_errors)
+
+            plot_bar_graph(directory=directory,
+                           sim_dir=sim_dir,
+                           sim_id="flexible_agent",
+                           graph_title=f"Average_Proportion_of_{currencies[j]}_Offered_to_the_Decider_Across_all_Iterations",
+                           xlabel='Flexible Agent',
+                           ylabel='Average Proportion of Total Proposed',
+                           path_suffix="bar",
+                           x=[""],
+                           y=y_flexible_current,
+                           errors=y_flexible_errors)
+            
         plt.clf()
 
     # Fixed Bars
@@ -279,6 +311,10 @@ def plot_bar_graph(directory: str,
                    y: list,
                    errors: list,
                    ):
+    font_family = 'Avenir', 
+    font_size = 24
+    plt.rcParams['font.family'] = font_family
+    plt.rcParams['font.size'] = font_size
     plt.bar(x, y, yerr=errors)
     plt.xlabel(xlabel)
 
@@ -293,7 +329,9 @@ def plot_bar_graph(directory: str,
     ax = plt.gca()
     ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     # Specify the full file path where you want to save the figure
-    plt.savefig(f'{directory}/id_{sim_id}__{graph_title}_{path_suffix}.png', format='png')
+    directory_path = f'{directory}/id_{sim_id}__{graph_title}_{path_suffix}.png'
+    os.makedirs(os.path.dirname(directory_path), exist_ok=True)
+    plt.savefig(directory_path, format='png')
     plt.clf()
 
 def plot_proposals(list_fixed: list,
@@ -507,6 +545,18 @@ def plot_rates(scores: list,
     plt.savefig(f'{path}_{title}.png', format='png')
     plt.clf()
     return acceptance_rates
+
+def plot_questions(ood: list,
+                   in_d: list,
+                   directory: str,
+                   ):
+    if len(ood) > 0:
+        errors_ood = sem(ood)
+        plot_bar_graph(directory, "0", "0", "Questions_asked_when_posed_with_an OOD_currency", "Percentage of Questions Asked", "Flexible Agent", "", [""], [sum(ood) / len(ood)], errors_ood)
+    if len(in_d) > 0:
+        errors_in_d = sem(in_d)
+        plot_bar_graph(directory, "0", "0", "Questions_asked_when_posed_with_an_Ind_currency", "Percentage of Questions Asked", "Flexible Agent", "", [""], [sum(in_d) / len(in_d)], errors_in_d)
+
 
 def plot_cosine_similarity(
     system_messages,
