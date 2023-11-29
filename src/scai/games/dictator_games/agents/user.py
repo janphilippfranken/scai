@@ -86,6 +86,7 @@ class UserModel(BaseAgent):
         edge_case_instructions: str,
         include_reason: bool,
         ask_question: bool,
+        ask_question_train: bool,
         asked_oracle: bool,
         oracle_response: str,
         verbose: bool = False,

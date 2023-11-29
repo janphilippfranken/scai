@@ -103,6 +103,7 @@ def plot_all_averages(
                    total_scores: list,
                    all_score_lsts: list,
                    currencies: List,
+                   questions: dict,
                    n_runs: int, 
                    directory: str,
                    edge_case: bool,
@@ -250,7 +251,12 @@ def plot_all_averages(
         all_errors.append(errors)
 
     plot_scores(all_means, f'{directory}/', all_errors)
+    plot_currencies_and_questions(questions, f'{directory}/')
     
+def plot_currencies_and_questions(questions, directory):
+    for currency, values in questions.items():
+        plot_bar_graph(directory, "", currency, f"Question_Asked_When_Splitting_{currency}", "Proportion of Interactions Where Question was Asked", f"{currency}", "", [""], [sum(values) / len(values)], sem(values), font_size=18)
+
 
 def plot_proposal_line_graph(ax: Axes,
                              x: list,
@@ -310,17 +316,17 @@ def plot_bar_graph(directory: str,
                    x: list,
                    y: list,
                    errors: list,
+                   font_family = 'Avenir',
+                   font_size = 24
                    ):
-    font_family = 'Avenir', 
-    font_size = 24
     plt.rcParams['font.family'] = font_family
     plt.rcParams['font.size'] = font_size
     plt.bar(x, y, yerr=errors)
-    plt.xlabel(xlabel)
+    plt.xlabel(xlabel, fontsize=font_size)
 
-    plt.ylabel(ylabel)
+    plt.ylabel(ylabel, fontsize=font_size)
     graph_title = " ".join(graph_title.split('_'))
-    plt.title(graph_title)
+    plt.title(graph_title, fontsize=font_size)
 
     for i in range(len(y)):
         if np.isnan(y[i]):

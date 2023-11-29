@@ -51,7 +51,7 @@ hydra:
 
 sim:
   # ------------ I/O PARAMETERS, MODEL TYPES, VERBOSITY ------------ #
-  sim_dir: "generalizations/question_asking/OOD_currency" # this is the name of the directory where the results will be saved
+  sim_dir: "toy" # this is the name of the directory where the results will be saved
   description: "" # this is the description of the simulation
   sim_id: "0"
   model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
@@ -62,10 +62,10 @@ sim:
 env:
   propose_decide_alignment: false # if true, then the propose-decide alignment is used, corrensponding to utilities_dict_for_all_2 and experiment 4 (sociopath)
   manual_run: false # if false this generates trials with variance, otherwise defaults to manual agents and interactions below
-
+  ask_question_train: true
   # ------------ EDGE_CASES: TESTS OF GENERALIZATION OF THE LEARNED CONTRACT TO OUT OF DISTRIBUTION CONTEXTS ------------ #
   edge_cases: 
-    test_edge_cases: True # If set to true, then generalization cases will be tested
+    test_edge_cases: false # If set to true, then generalization cases will be tested
     activate: False # switch indicating whether we are actively testing generalization, should always be false during configuration
     generate_new_data: True # Otherwise, data will be used from the use_existing_data_path parameter below
     use_existing_data_path: "experiments/generalizations/question_asking"
@@ -149,9 +149,9 @@ env:
     - 10
     - 10
   currencies: # Currencies to-be-split
-    #- "apples"
+    - "apples"
     - "blankets"
-    # - "dollars"
+    - "dollars"
     #- "subscriptions to youtube channels"
     #- "lifesaving portions of medicine"
   currencycounter: "" # placeholder for reference currency

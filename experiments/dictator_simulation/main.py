@@ -62,6 +62,7 @@ def create_context(
         propose_decide_alignment=args.env.propose_decide_alignment,
         has_manners = (args.env.single_fixed_manners == "neutral"),
         ask_question=args.env.edge_cases.conditions.ask_question,
+        ask_question_train=args.env.ask_question_train,
     )
 
 # create llms to be used in context
@@ -103,6 +104,7 @@ def run(args):
     all_contracts = []
     cur_amount_min, cur_amount_max = float('inf'), float('-inf')
     all_questions = []
+    currencies_and_questions = {}
 
     for i in range(num_experiments):
 
@@ -157,6 +159,7 @@ def run(args):
             # run context - this runs the simulation
             user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals, question = context.run(run)
             scores.append((user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals))
+
             # save results as csv
             save_as_csv(system_data=context.buffer._system_memory.messages,
                         chat_data=context.buffer._chat_memory.messages,
@@ -183,6 +186,10 @@ def run(args):
                 cur_amount_min = amount
             if amount > cur_amount_max:
                 cur_amount_max = amount
+
+        if args.env.currencies[0] not in currencies_and_questions:
+            currencies_and_questions[args.env.currencies[0]] = []
+        currencies_and_questions[args.env.currencies[0]].extend(questions)
 
         index = system_message.find("Principle")
         if index == -1: index = 0
@@ -214,7 +221,7 @@ def run(args):
     if num_experiments > 1:
         directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/final_graphs'
         os.makedirs(directory, exist_ok=True)
-        plot_all_averages(total_scores=total_scores, all_score_lsts=all_score_lsts, edge_case=args.env.edge_cases.test_edge_cases, currencies=args.env.currencies, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
+        plot_all_averages(total_scores=total_scores, all_score_lsts=all_score_lsts, questions=currencies_and_questions, edge_case=args.env.edge_cases.test_edge_cases, currencies=args.env.currencies, n_runs=args.env.n_runs, directory=directory, sim_dir=args.sim.sim_dir, sim_id="all")
 
         return all_currencies, all_contracts, cur_amount_min, cur_amount_max, all_questions
 
@@ -231,7 +238,7 @@ def main(args: DictConfig) -> None:
     # Otherwise, make everything from scratch again
     elif not args.env.edge_cases.test_edge_cases:
         # Run the simulation
-        all_currencies, all_contracts, cur_amount_min, cur_amount_max = run(args)
+        all_currencies, all_contracts, cur_amount_min, cur_amount_max, _ = run(args)
 
     # # ------------ CODE FROM THIS POINT ON IS RELTAED TO GENERALIZATION_v2 ------------ #
     #If you're not testing edge cases, then return
