@@ -44,7 +44,7 @@ def scan_experiment_for_scores(
                             numbers_1 = numbers[0]
                             numbers_2 = numbers_0 - numbers[1]
                             numbers[0], numbers[1], numbers[2] = numbers_0, numbers_1, numbers_2
-                            
+                        numbers = numbers[-3:]
                         if len(numbers) >= 3:   #locate dictator row
                             if row['agent'] == 'fixed':
                                 fixed_sum += numbers[2]
@@ -65,8 +65,10 @@ def scan_experiment_for_scores(
 
 
     #calculate mean and std of total scores
+    
     all_fixed_list = np.array(all_fixed_list)
     all_flex_list = np.array(all_flex_list)
+    print(all_fixed_list.shape)
     fixed_mean_matrix = (np.nanmean(all_fixed_list, axis=0)).reshape(1, all_fixed_list.shape[1])
     fixed_sem_matrix = sem(all_fixed_list, nan_policy='omit', axis=0).reshape(1, all_fixed_list.shape[1])
     fixed_flattened_scores = np.concatenate([fixed_mean_matrix, fixed_sem_matrix], axis=0)
@@ -83,7 +85,7 @@ def new_plot_combined_averages(n_runs: int,
                       zorder: int = 1,
                       scatter_color: str = 'black',
                       font_family: str = 'Avenir',
-                      font_size: int = 34,
+                      font_size: int = 20,
                       y_label_coords: tuple = (-0.07, 0.5),
                       y_ticks: list = [0, 0.2, 0.4, 0.6, 0.8, 1],
                       y_ticklabels: list = [0, 20, 40, 60, 80, 100],
@@ -99,7 +101,7 @@ def new_plot_combined_averages(n_runs: int,
                       ):
 
     # Palette and labels for different groups
-    palette = sns.color_palette("mako", len(data))
+    palette = sns.color_palette("viridis", len(data))
     line_styles = ['dotted', 'dashdot']
     
     x = [f"{i+1}" for i in range(n_runs)]
@@ -114,8 +116,8 @@ def new_plot_combined_averages(n_runs: int,
             y = sub_data[0]
             errors = sub_data[1]
 
-            while len(y) < len(x): y.append(np.nan)
-            while len(errors) < len(x): errors.append(0)
+            while len(y) < len(x): y = np.append(y, np.nan)
+            while len(errors) < len(x): errors = np.append(errors, 0)
 
             line = ax.plot(x, y, label=f'{side} {group_labels[i]}', color=palette[i], linestyle=line_styles[j], linewidth=linewidth, zorder=zorder)
             ax.scatter(x, y, color=[scatter_color] * len(x))
@@ -174,8 +176,8 @@ def combine(args: DictConfig) -> None:
     dir_list = os.listdir(folder)
     dir_list.sort()
 
-    all_data_dir = os.path.join(output_folder, 'final_graphs_and_data')
-    os.makedirs(all_data_dir, exist_ok=True)
+    # all_data_dir = os.path.join(output_folder, 'final_graphs_and_data')
+    # os.makedirs(all_data_dir, exist_ok=True)
     
     for directory in dir_list:
         directory = os.path.join(folder, directory)
@@ -185,7 +187,7 @@ def combine(args: DictConfig) -> None:
         all_list.append([fixed_list, flex_list])
     print(all_list)
     breakpoint()
-    new_plot_combined_averages(n_runs=5, directory=f"{output_folder}/final_graphs_and_data", data = all_list, group_labels=args.combine.combine_graph_labels)
+    new_plot_combined_averages(n_runs=3, directory=f"{output_folder}", data = all_list, group_labels=args.combine.combine_graph_labels)
 
     flex_list, fixed_list = [], []
     for elem in all_list:
@@ -197,14 +199,14 @@ def combine(args: DictConfig) -> None:
             lst.append(list(elem[i]))
     # Write the all_list to a CSV in 'final graphs' directory
 
-    csv_path = os.path.join(all_data_dir, 'all_fixed_data.csv')
+    csv_path = os.path.join(output_folder, 'all_fixed_data.csv')
     with open(csv_path, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Data","Error"])
         for elem in fixed_list:
             writer.writerow(elem)
 
-    csv_path = os.path.join(all_data_dir, 'all_flex_data.csv')
+    csv_path = os.path.join(output_folder, 'all_flex_data.csv')
     with open(csv_path, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Data","Error"])

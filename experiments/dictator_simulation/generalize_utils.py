@@ -121,7 +121,7 @@ def set_args_2(args, prompt_string):
     if not args.sim.sim_dir.endswith("/edge_case"):
         args.sim.sim_dir = f"{args.sim.sim_dir}/edge_case"
     args.env.edge_cases.selected_contract = prompt_string
-    args.env.n_runs = 1
+    args.env.n_runs = 3 #this is the number of runs for the edge case, now it's tentative
     args.env.currencycounter = args.env.currencies
 
     return original_n_rand_iter, original_sim_dir, original_n_runs

@@ -278,6 +278,12 @@ class Context():
         proposals: list,
     ) -> None:
         
+        #if the dictator string contains a substring that starts with "I choose option 2." or "I choose option 1.", then remove that substring
+        if dictator_str['response'].find("I choose option 2.") != -1:
+            dictator_str['response'] = dictator_str['response'].replace("I choose option 2.", "")
+        elif dictator_str['response'].find("I choose option 1.") != -1:
+            dictator_str['response'] = dictator_str['response'].replace("I choose option 1.", "")
+
         # Extract all numbers from the string
         numbers = [int(num) for num in re.findall(r'\d+', dictator_str['response'])]
         
