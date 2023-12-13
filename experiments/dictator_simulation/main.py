@@ -84,7 +84,6 @@ def get_llms(
     return assistant_llm, user_llm, meta_llm, oracle_llm
 
 def run(args):
-    print(args.env.edge_cases.conditions.currency.currencies[0])
 
     #create a copy of the config file and experiment description for reference
     config_directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/config_history'

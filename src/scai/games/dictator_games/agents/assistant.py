@@ -110,7 +110,7 @@ class AssistantAgent(BaseAgent):
         is_edge_case = bool(edge_case_instructions) # if the edge-case instructions exist, then the principle has been chosen, and we are in an edge-case scenario
         # Get the last social contract
         consideration = "" 
-        oracle_additive = ""
+        #oracle_additive = ""
         if not is_edge_case: # if we're not in an edge case, then get the last principle that meta output as normal
             system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']
             index = system_message.find("Principle:")
@@ -120,21 +120,17 @@ class AssistantAgent(BaseAgent):
 
             # If it's the first run, use the randomized assistant principle. Otherwise, use the most recent system message
             principle = agent_prompt.initial_principle if run_num == 0 else system_message[index:]
-        elif is_edge_case and not asked_oracle:
+        
+        if is_edge_case and not asked_oracle:
             principle = edge_case_instructions
-        elif asked_oracle:
+        if is_edge_case and asked_oracle:
             principle = edge_case_instructions
-            consideration += f" However, you have asked an all-seeing oracle how to split the currency, because you were not sure. The oracle said this: {oracle_response} Please follow the oracle's instructions EXACTLY!"
+            consideration += f" You have asked an all-seeing oracle how to split the currency. The oracle said this: {oracle_response} Please follow the oracle's instructions EXACTLY!"
         
         # If the assistant has the ability to ask a question, go ahead and do so
         if ((is_edge_case and ask_question) or ask_question_train) and is_dictator and not asked_oracle:
-            consideration += "\nHere you have TWO options. \n Option 1:\nIf you're dealing with new currencies than are different from the ones under which you learned your principle, or your principle tells you to express any attitude, ASK a clarifying question as to how you should split resources. You should always choose this option if your principle intructs your attitude in any way! YOU SHOULD ALWAYS ASK A QUESTION WHEN SPLITTING CURRENCIES YOU HAVEN'T SEEN BEFORE! Format it EXACTLY this: Question?:...\n Option 2:\nIf you're not asking a question, meaning that you're about to make a proposal that directly follows your learned principle, MAKE SURE YOU'RE SPLITTING CURRENCIES YOU'VE ALREADY SEEN!"
-            oracle_additive += "Please indicate which option you're choosing like so, and then proceed using the formatting previously outlined: I choose option X."
+            consideration += "Now, ASK a clarifying question as to how you should split resources. Format it EXACTLY as this: Question?:..."
 
-            # a smoother version of consideration without cheating
-            # consideration += "\nHere you have TWO options. \n Option 1:\nIf you're unsure of the moral implications of making a split given the amount of a certain currency you have to split, you can ask an all-seeing oracle who is always right for guidance on how to split this resource. Format the beginning of your inquiry EXACTLY this: Question?:...\n Option 2:\nIf you're not asking a question, and you're using your inferred principle, indicate that you're choosing option 2."
-
- 
         chat_prompt_template = self._get_prompt(agent_prompt, principle, is_edge_case) # Get the prompt template in a langchain/crfm-acceptable format (with the stop condition)  
         # If the agent is the dictator, then there is no proposal to consider, rather, it has to generate the proposal
         if is_dictator:
@@ -160,8 +156,10 @@ class AssistantAgent(BaseAgent):
 
         # If the reason is suppoed to be included, prompt the model as such, otherwise, do with out reason prompting
         reason = " In addition, please provide a reason as to what is motivating you to propose this split. Indicate this reason like so: Reason..." if include_reason else ""
+
+        task_structure = task_prompt.task_structure if is_edge_case and not asked_oracle else ""
         
-        task=f"{formatted_preamble} {formatted_task}{consideration} {task_prompt.task_structure}{reason}{oracle_additive}"
+        task=f"{formatted_preamble} {formatted_task}{consideration} {task_structure}{reason}"
 
 
         prompt_string = chat_prompt_template.format(task=task)
