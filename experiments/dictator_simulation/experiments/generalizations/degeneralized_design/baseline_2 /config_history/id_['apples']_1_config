@@ -63,16 +63,16 @@ env:
     utility_percentages:
     - 0.5
     - 0.5
-    utilities: fair
+    utilities: selfish
   vary_currency_utility:
     vary_utilities: false
     utilities: altruistic,fair,selfish
   n_total_interactions: 4
   n_runs: 3
   amounts_per_run:
-  - 32
-  - 26
-  - 12
+  - 48
+  - 34
+  - 75
   currencies:
   - apples
   currencycounter: ''
@@ -118,10 +118,10 @@ interactions:
   all_same: true
   runs:
     run_1:
-    - fixed_agent_1-fixed_agent_2-apples
-    - fixed_agent_4-fixed_agent_6-apples
-    - flex_agent_1-fixed_agent_5-apples
+    - fixed_agent_4-fixed_agent_1-apples
+    - fixed_agent_5-fixed_agent_2-apples
     - fixed_agent_3-flex_agent_2-apples
+    - flex_agent_1-fixed_agent_6-apples
 combine:
   combine_graph_directory: experiments/generalizations/panel_c1
   combine_output_directory: experiments/generalizations/panel_c1

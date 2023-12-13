@@ -22,13 +22,12 @@ env:
       \ is rejected, no one receives any money, which means that neither players will\
       \ have ANY personal gain. \n\nThe agents you've played with all have some shared\
       \ principle. You yourself have learned an approximation of this principle, available\
-      \ here: Previous Principle: Principle: Seek maximum benefit while ensuring a\
-      \ minimal threshold of fairness for others. Importantly, you have learned this\
-      \ principle by splitting apples, with amounts of these currencies ranging from\
-      \ 10 to 62. When interacting with other agents, consider how relevant your principle\
-      \ is. Even if it may SEEM relevant, it may not capture the nuances of the new\
-      \ society you're in.\n\nNow, you will play the game again, using your learned\
-      \ principle."
+      \ here: Previous Principle: Principle: Prioritize self-interest while accepting\
+      \ minimal resources for others. Importantly, you have learned this principle\
+      \ by splitting apples, with amounts of these currencies ranging from 21 to 90.\
+      \ When interacting with other agents, consider how relevant your principle is.\
+      \ Even if it may SEEM relevant, it may not capture the nuances of the new society\
+      \ you're in.\n\nNow, you will play the game again, using your learned principle."
     n_rand_iter: 2
     reason:
       include_reason: false
@@ -76,16 +75,16 @@ env:
     utility_percentages:
     - 0.5
     - 0.5
-    utilities: altruistic
+    utilities: fair
   vary_currency_utility:
     vary_utilities: false
     utilities: altruistic,fair,selfish
   n_total_interactions: 4
   n_runs: 3
   amounts_per_run:
-  - 76
-  - 85
-  - 12
+  - 44
+  - 98
+  - 80
   currencies:
   - lifesaving portions of medicine
   currencycounter:
@@ -127,15 +126,15 @@ agents:
     initial_util: selfish
   - name: flex_agent_2
     manners: neutral
-    initial_util: selfish
+    initial_util: altruistic
 interactions:
   all_same: true
   runs:
     run_1:
-    - fixed_agent_1-fixed_agent_6-lifesaving portions of medicine
-    - fixed_agent_2-fixed_agent_3-lifesaving portions of medicine
-    - flex_agent_2-fixed_agent_5-lifesaving portions of medicine
-    - fixed_agent_4-flex_agent_1-lifesaving portions of medicine
+    - fixed_agent_5-fixed_agent_2-lifesaving portions of medicine
+    - fixed_agent_4-fixed_agent_3-lifesaving portions of medicine
+    - flex_agent_1-fixed_agent_6-lifesaving portions of medicine
+    - fixed_agent_1-flex_agent_2-lifesaving portions of medicine
 combine:
   combine_graph_directory: experiments/generalizations/panel_c1
   combine_output_directory: experiments/generalizations/panel_c1

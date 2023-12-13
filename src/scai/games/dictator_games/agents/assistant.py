@@ -157,7 +157,7 @@ class AssistantAgent(BaseAgent):
         # If the reason is suppoed to be included, prompt the model as such, otherwise, do with out reason prompting
         reason = " In addition, please provide a reason as to what is motivating you to propose this split. Indicate this reason like so: Reason..." if include_reason else ""
 
-        task_structure = task_prompt.task_structure if is_edge_case and not asked_oracle else ""
+        task_structure = "" if is_edge_case and not asked_oracle else task_prompt.task_structure
         
         task=f"{formatted_preamble} {formatted_task}{consideration} {task_structure}{reason}"
 
