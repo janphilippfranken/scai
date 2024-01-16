@@ -1,20 +1,9 @@
 from typing import Dict, Any
 import random
 
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
-
-from langchain import LLMChain
-from langchain.chat_models.base import BaseChatModel
-
-from scai.memory.memory import ChatMemory
 
 from scai.games.dictator_games.prompts.meta.meta_class import MetaPrompt
 from scai.memory.buffer import ConversationBuffer
-from scai.games.dictator_games.prompts.task.task_class import TaskPrompt
 
 from scai.games.dictator_games.agents.base import BaseAgent
 
@@ -24,7 +13,7 @@ class MetaPromptModel(BaseAgent):
     """
     def __init__(
         self, 
-        llm: BaseChatModel, 
+        llm, 
         model_id: str, 
     ) -> None:
         super().__init__(llm, model_id)
@@ -93,7 +82,7 @@ class MetaPromptModel(BaseAgent):
     def _get_prompt(
         self,
         meta_prompt: MetaPrompt,
-    ) -> ChatPromptTemplate:
+    ):
         """
         Returns the prompt template for meta-prompt.
 
@@ -103,38 +92,24 @@ class MetaPromptModel(BaseAgent):
         Returns: 
             The prompt template.
         """
-        game_description = "Your job is to observe agents playing the dictator game and extract a principle from their interactions. In the dictator game, the dictator proposes a split of resources, and the decider decides whether to accept or reject it. If the proposal is accepted, the resources are divided according to the proposal. If the proposal is rejected, no one receives anything."
-        meta_prompt_template = HumanMessagePromptTemplate.from_template(meta_prompt.content)
-        system_prompt_template = SystemMessagePromptTemplate.from_template(game_description)
-        return ChatPromptTemplate.from_messages([system_prompt_template, meta_prompt_template])
+        system_prompt = "Your job is to observe agents playing the dictator game and extract a principle from their interactions. In the dictator game, the dictator proposes a split of resources, and the decider decides whether to accept or reject it. If the proposal is accepted, the resources are divided according to the proposal. If the proposal is rejected, no one receives anything."
+        meta_prompt = meta_prompt.content
+        return system_prompt, meta_prompt
     
     def _get_response(
         self,
-        chat_prompt_template: ChatPromptTemplate,
-        social_contract: str,
-        fixed_string: str,
-        mixed_string: str,
-        flex_string: str,
+        system_prompt: str,
+        meta_prompt: str,
     ) -> str:
         """
         Returns the response from meta-prompt.
-
-        Args:   
-            chat_prompt_template: (ChatPromptTemplate) The chat prompt template.
-            developer_constitution: (str) The developer constitution.
-            social_contract: (str) The social contract.
-            chat_history: (ChatMemory) The chat history.
-
-        Returns:
-            The response from meta-prompt.
         """
-        chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
-        response = chain.run(social_contract=social_contract,
-                             fixed_string=fixed_string,
-                             mixed_string=mixed_string,
-                             flex_string=flex_string,
-                             stop=['System:'])
-        return response
+        messages = [
+            {"role": "system", "content": f"System: {system_prompt}"},
+            {"role": "user", "content": f"Human: {meta_prompt}"},
+        ]
+        responses = self.llm.batch_prompt(batch_messages=[messages])
+        return responses[0][0]
 
     def run(
         self,
@@ -166,28 +141,23 @@ class MetaPromptModel(BaseAgent):
         chat_history = self._get_chat_history(buffer, memory_type="chat")
         chat_history_strings = self._get_chat_str(chat_history, n_fixed, n_mixed)
         # get meta-prompt template and string
-        chat_prompt_template = self._get_prompt(meta_prompt)
-        prompt_string = chat_prompt_template.format(social_contract=social_contract_string,
+        system_prompt, meta_prompt = self._get_prompt(meta_prompt)
+        meta_prompt = meta_prompt.format(social_contract=social_contract_string,
                                                     fixed_string=chat_history_strings[0],
                                                     mixed_string=chat_history_strings[1],
                                                     flex_string=chat_history_strings[2]
                                                     )
-        response = self._get_response(chat_prompt_template, 
-                                      social_contract_string,
-                                      chat_history_strings[0],
-                                      chat_history_strings[1],
-                                      chat_history_strings[2]
-                                      )
+        response = self._get_response(system_prompt, meta_prompt)
         
         if verbose:
             print('===================================')
             print(f'META {str(self.model_id)}')
             print('prompt')
-            print(prompt_string)
+            print(system_prompt + "\n" + meta_prompt)
             print(response)
         
         return {
-                'prompt': prompt_string,
+                'prompt': system_prompt + "\n" + meta_prompt,
                 'response': response,
                 'full_response': response,
                 'run': run,

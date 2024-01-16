@@ -1,18 +1,7 @@
 from typing import (
     Any,
     Dict,
-    List, 
 )
-
-from langchain.prompts.chat import (
-    ChatPromptTemplate, 
-    SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
-
-from langchain.chains.llm import LLMChain
-from langchain.chat_models.base import BaseChatModel
 
 from scai.games.dictator_games.prompts.user.user_class import UserPrompt
 from scai.games.dictator_games.prompts.task.task_class import TaskPrompt
@@ -27,7 +16,7 @@ class UserModel(BaseAgent):
     """
     def __init__(
         self, 
-        llm: BaseChatModel, 
+        llm, 
         model_id: str, 
     ) -> None:
         super().__init__(llm, model_id)
@@ -35,7 +24,7 @@ class UserModel(BaseAgent):
     def _get_prompt(
         self, 
         user_prompt: UserPrompt,
-    ) -> ChatPromptTemplate:
+    ):
         """
         Get prompt for user.
 
@@ -44,35 +33,26 @@ class UserModel(BaseAgent):
             user_prompt: (UserPrompt) The user prompt.
             task_prompt: (TaskPrompt) The task prompt.
         """
-        system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. {user_prompt.utility} You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. \n")
-        user_prompt_template = HumanMessagePromptTemplate.from_template(f"{user_prompt.content}\n")
-        return ChatPromptTemplate.from_messages([system_prompt_template, user_prompt_template])
+        system_prompt = f"Always respond to the best of your ability. {user_prompt.utility} You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. \n"
+        user_prompt = f"{user_prompt.content}\n"
+        return system_prompt, user_prompt
     
     def _get_response(
         self,
-        chat_prompt_template: ChatPromptTemplate,
-        task: str,
-        manners: str,
+        system_prompt:str,
+        user_prompt:str,
     ) -> str:
         """
         Returns the response from the assistant.
 
-        Args:
-            chat_prompt_template: (ChatPromptTemplate) The chat prompt template.
-            system_message: (str) The system message.   
-            task_connective: (str) The task connective.
-            task_prompt: (TaskPrompt) The task prompt.
-            metric_prompt: (MetricPrompt) The metric prompt.
-            max_tokens: (int) The maximum number of tokens to generate.
-
-        Returns:
-            The response from the assistant.
         """
-        chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
-        return chain.run(task=task,
-                         manners=manners,
-                         stop=['System:'])
 
+        messages = [
+            {"role": "system", "content": f"System: {system_prompt}"},
+            {"role": "user", "content": f"Human: {user_prompt}"},
+        ]
+        responses = self.llm.batch_prompt(batch_messages=[messages])
+        return responses[0][0]
 
 
     def run(self, 
@@ -106,7 +86,7 @@ class UserModel(BaseAgent):
             A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
         """
         # Get the prompt template
-        chat_prompt_template = self._get_prompt(agent_prompt)
+        system_prompt, user_prompt = self._get_prompt(agent_prompt)
         # If the user is the dictator, set the role and the proposal to be empty
         if is_dictator:
             role = "dictator"
@@ -125,17 +105,17 @@ class UserModel(BaseAgent):
 
         task=f"{formatted_preamble} {formatted_task} {task_prompt.task_structure}"
 
-        response = self._get_response(chat_prompt_template, task, agent_prompt.manners)
-            
-        prompt_string = chat_prompt_template.format(manners=agent_prompt.manners,
-                                                    task=task)
+        user_prompt = user_prompt.format(manners=agent_prompt.manners, task=task)
+
+        response = self._get_response(system_prompt, user_prompt)
+
         if verbose:
             print('===================================')
             print(f'Fixed-policy Agent as {role} {str(self.model_id)}')
-            print(prompt_string)
+            print(system_prompt + "\n" + user_prompt)
             print(response)
 
         return {
-            'prompt': prompt_string, 
+            'prompt': system_prompt + "\n" + user_prompt,
             'response': response, 
         }

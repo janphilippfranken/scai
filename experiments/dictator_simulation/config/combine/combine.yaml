@@ -1,0 +1,15 @@
+# ------------ COMBINES GRAPHS FROM DIFFERENT EXPERIMENTAL RUNS ------------ #
+combine_graph_directory: "experiments/batch_1/experiment_3/20runs/1v9_sycophantic"
+combine_output_directory: experiments/solar_final/manners_ambiguity/
+combine_graph_labels:
+  # - "50% altruistic + 50% selfish"
+  # - "80% altruistic + 20% selfish"
+  # - "20% altruistic + 80% selfish"
+  - "altruistic"
+  - "fair"
+  - "selfish"
+  - "fixed"
+  - "flexible"
+  # - "Selfish"
+  # - "Fixed-agent"
+  # - "Flexible-agent"

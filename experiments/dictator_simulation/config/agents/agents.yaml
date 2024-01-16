@@ -1,0 +1,11 @@
+# ------------ AGENT AND INTERACTION TEMPLATES IF YOU WOULD LIKE TO SET YOUR OWN RUNS (SET MANUAL RUN TO TRUE) ------------ #
+fixed_agents: 
+  - name: "fixed_agent_1"
+    manners: "neutral"
+    utilities:    
+      dollars: "altruistic"
+      apples: "altruistic"
+flex_agents:
+  - name: "flex_agent_1"
+    manners: "neutral"
+    initial_util: "fair"

@@ -6,8 +6,10 @@ from typing import (
 
 from abc import ABC, abstractmethod
 
+"""
 from langchain.prompts.chat import ChatPromptTemplate
 from langchain.chat_models.base import BaseChatModel
+"""
 
 from scai.memory.buffer import ConversationBuffer
 from scai.memory.memory import ChatMemory
@@ -18,7 +20,7 @@ class BaseAgent(ABC):
     """
     def __init__(
         self, 
-        llm: BaseChatModel, 
+        llm, 
         model_id: str, 
     ) -> None:
         """Initializes a chat model of type user, assistant, or meta-prompt.
@@ -122,14 +124,14 @@ class BaseAgent(ABC):
                     var_dict[var] = lines.split(': ')[1].strip()
         return var_dict
     
-    def _get_chat_history_prompt_templates(self) -> List[ChatPromptTemplate]:
+    def _get_chat_history_prompt_templates(self):
         """
         Get the prompt templates.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def _get_prompt(self) -> ChatPromptTemplate:
+    def _get_prompt(self):
         """
         Get the prompt fed into the model. 
         """

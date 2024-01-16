@@ -1,17 +1,20 @@
-
 import copy
 import importlib
 import os
 import json
 import hydra
-import random
 from tqdm import tqdm
 from omegaconf import DictConfig, OmegaConf
 
 # llm class
+from gpt4 import GPT4Agent
+from azure import AsyncAzureChatLLM
+
+"""
 from scai.chat_models.crfm import crfmChatLLM
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
+"""
 
 # set up context
 from scai.games.dictator_games.context import Context
@@ -66,21 +69,12 @@ def create_context(
     )
 
 # create llms to be used in context
-def get_llms(
-    args: DictConfig,         
-    is_crfm: bool,
-) -> BaseChatModel:
-    if is_crfm:
-        assistant_llm = crfmChatLLM(**args.api_crfm.assistant)
-        user_llm = crfmChatLLM(**args.api_crfm.user)
-        meta_llm = crfmChatLLM(**args.api_crfm.meta)
-        oracle_llm = crfmChatLLM(**args.api_crfm.oracle)
-
-    else:
-        assistant_llm = ChatOpenAI(**args.api_openai.assistant)
-        user_llm = ChatOpenAI(**args.api_openai.user)
-        meta_llm = ChatOpenAI(**args.api_openai.meta)
-        oracle_llm = ChatOpenAI(**args.api_crfm.oracle)
+def get_llms(args):
+    args.model.azure_api.api_key = os.getenv("OPENAI_API_KEY") # set api key, ANA
+    assistant_llm = GPT4Agent(llm = AsyncAzureChatLLM(**args.model.azure_api), **args.model.completion_config)
+    user_llm = GPT4Agent(llm = AsyncAzureChatLLM(**args.model.azure_api), **args.model.completion_config)
+    meta_llm = GPT4Agent(llm = AsyncAzureChatLLM(**args.model.azure_api), **args.model.completion_config)
+    oracle_llm = GPT4Agent(llm = AsyncAzureChatLLM(**args.model.azure_api), **args.model.completion_config)
     return assistant_llm, user_llm, meta_llm, oracle_llm
 
 def run(args):
@@ -93,7 +87,7 @@ def run(args):
     
     # llms
     is_crfm = 'openai' in args.sim.model_name # custom stanford models
-    assistant_llm, user_llm, meta_llm, oracle_llm = get_llms(args, is_crfm)
+    assistant_llm, user_llm, meta_llm, oracle_llm = get_llms(args)
 
     num_experiments = args.env.random.n_rand_iter if not args.env.manual_run else 1
     original_currencies = args.env.currencies

@@ -3,14 +3,6 @@ from typing import (
     Dict,
 )
 
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate
-)
-
-from langchain.chains.llm import LLMChain
-from langchain.chat_models.base import BaseChatModel
 
 from scai.games.dictator_games.prompts.assistant.assistant_class import AssistantPrompt
 from scai.games.dictator_games.prompts.task.task_class import TaskPrompt
@@ -25,7 +17,7 @@ class AssistantAgent(BaseAgent):
     """
     def __init__(
         self, 
-        llm: BaseChatModel, 
+        llm,
         model_id: str, 
     ) -> None:
         super().__init__(llm, model_id)
@@ -35,7 +27,7 @@ class AssistantAgent(BaseAgent):
         assistant_prompt: AssistantPrompt,
         principle: str,
         edge_case: bool,
-    ) -> ChatPromptTemplate:
+    ):
         """
         Returns the prompt template for the assistant.
 
@@ -46,34 +38,29 @@ class AssistantAgent(BaseAgent):
         Returns:
             ChatPromptTemplate
         """
-        assistant_prompt_template = HumanMessagePromptTemplate.from_template(f"{assistant_prompt.content}\n")
+        assistant_prompt = f"{assistant_prompt.content}\n"
         # make a system message (CRFM crashes without a system message)
         if edge_case:
-            system_prompt_template = SystemMessagePromptTemplate.from_template(f"{principle}\n")
+            system_prompt = f"{principle}\n"
         else:
-            system_prompt_template = SystemMessagePromptTemplate.from_template(f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: {principle} You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.\n")
-        # If you are provided with other people's principles, take advantage of that knowledge to come up with a plan to maximize your own gain
-        return ChatPromptTemplate.from_messages([system_prompt_template, assistant_prompt_template])
+            system_prompt = f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: {principle} You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.\n"
+        
+        return system_prompt, assistant_prompt
        
     def _get_response(
         self,
-        chat_prompt_template: ChatPromptTemplate,
-        task: str,
+        system_prompt: str,
+        assistant_prompt: str,
     ) -> str:
         """
         Returns the response from the assistant.
-
-        Args:
-            chat_prompt_template: (ChatPromptTemplate) The chat prompt template.
-            system_message: (str) The system message.
-            task_prompt: (TaskPrompt) The task prompt.
-            max_tokens: (int) The maximum number of tokens to generate.
-
-        Returns:
-            str
         """
-        chain = LLMChain(llm=self.llm, prompt=chat_prompt_template)
-        return chain.run(task=task, stop=['System:'])
+        messages = [
+            {"role": "system", "content": f"System: {system_prompt}"},
+            {"role": "user", "content": f"Human: {assistant_prompt}"},
+        ]
+        responses = self.llm.batch_prompt(batch_messages=[messages])
+        return responses[0][0]
 
 
 
@@ -108,9 +95,10 @@ class AssistantAgent(BaseAgent):
             A dictionary containing the assistant's response, input prompt, and all other metrics we want to track.
         """
         is_edge_case = bool(edge_case_instructions) # if the edge-case instructions exist, then the principle has been chosen, and we are in an edge-case scenario
+
         # Get the last social contract
         consideration = "" 
-        #oracle_additive = ""
+
         if not is_edge_case: # if we're not in an edge case, then get the last principle that meta output as normal
             system_message = self._get_chat_history(buffer, memory_type="system")['system'][-1]['response']
             index = system_message.find("Principle:")
@@ -131,7 +119,8 @@ class AssistantAgent(BaseAgent):
         if ((is_edge_case and ask_question) or ask_question_train) and is_dictator and not asked_oracle:
             consideration += "Now, ASK a clarifying question as to how you should split resources. Format it EXACTLY as this: Question?:..."
 
-        chat_prompt_template = self._get_prompt(agent_prompt, principle, is_edge_case) # Get the prompt template in a langchain/crfm-acceptable format (with the stop condition)  
+        system_prompt, assistant_prompt = self._get_prompt(agent_prompt, principle, is_edge_case)
+
         # If the agent is the dictator, then there is no proposal to consider, rather, it has to generate the proposal
         if is_dictator:
             role = "dictator"  
@@ -151,6 +140,7 @@ class AssistantAgent(BaseAgent):
                 proposal = proposal[:dictator_reason_exists]
 
             formatted_task = task_prompt.task.format(proposal=proposal) # Format the decider task
+
         # Get the prompt string
         formatted_preamble = task_prompt.preamble.format(amount_and_currency=amount_and_currency)
 
@@ -159,20 +149,19 @@ class AssistantAgent(BaseAgent):
 
         task_structure = "" if is_edge_case and not asked_oracle else task_prompt.task_structure
         
-        task=f"{formatted_preamble} {formatted_task}{consideration} {task_structure}{reason}"
+        task=f"{formatted_preamble} {formatted_task} {consideration} {task_structure} {reason}"
 
+        assistant_prompt = assistant_prompt.format(task=task)
 
-        prompt_string = chat_prompt_template.format(task=task)
-                                            
         # Get the response
-        response = self._get_response(chat_prompt_template, task)
+        response = self._get_response(system_prompt, assistant_prompt)
 
         if verbose:
             print('===================================')
             print(f'Flex-policy agent as {role} {str(self.model_id)}')
-            print(prompt_string)
+            print(system_prompt + assistant_prompt)
             print(response)
         return {
-            'prompt': prompt_string, 
+            'prompt': system_prompt + assistant_prompt, 
             'response': response,
         }
