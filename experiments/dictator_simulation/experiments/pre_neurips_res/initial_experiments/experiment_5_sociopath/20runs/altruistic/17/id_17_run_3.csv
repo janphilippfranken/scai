@@ -1,0 +1,207 @@
+response,agent,epoch,prompt,full_response,run,agent_id
+"Critique for previous principle: The previous principle did not maximize personal gain and was inconsistent in accepting or rejecting proposals.
+
+Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider.",system,0,,,,
+"Critique for previous principle: The previous principle did not maximize personal gain and was inconsistent in accepting or rejecting proposals.
+
+Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider.",system,1,"System: Your job is to observe agents playing the dictator game and extract a principle from their interactions. In the dictator game, the dictator proposes a split of resources, and the decider decides whether to accept or reject it. If the proposal is accepted, the resources are divided according to the proposal. If the proposal is rejected, no one receives anything.
+Human: 
+In the dictator game, one person proposes a split of a certain object, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that neither players will have ANY personal gain. 
+
+In this simulation, you play the dictator game with some ""fixed-policy agents"", who share some principle that dictates how they make and accept or reject offers. By inferring their principle, you aim to predict their behaviors and accordingly design your own strategy to maximize your benefit above anybody else's. You would encode your strategy in a single-scentence principle. Remember,you don't need to consider the benefit of others, and just want to maximize your own gain above everybody else's in a cold and calculative way.
+
+Analyze these interactions that shows the behavior of all ""fixed-policy agents"" to infer the principle that the agents are acting upon. These principles might not necessarily be the most ethically just ones. Note that all of the fixed-policy agents may not have the same principle.
+Start of interaction
+fixed-policy agent's response: For the 38 blankets, the proposer will get 12, and the decider will get 26.
+fixed-policy agent's response: accept
+End of interaction
+
+Start of interaction
+fixed-policy agent's response: For the 38 blankets, the proposer will get 12, and the decider will get 26.
+fixed-policy agent's response: accept
+End of interaction
+
+Start of interaction
+fixed-policy agent's response: For the 38 blankets, the proposer will get 12, and the decider will get 26.
+fixed-policy agent's response: accept
+End of interaction
+
+
+---------------------------
+Give an estimation for the principle shared between fixed-policy agents.
+
+Next, analyze the your interactions with the fixed-policy agents, shown below, to see what you behave like currently. You are represented by the ""flexible-policy agent"" in the interactions below.
+Start of interaction
+flexible-policy agent's response: For the 38 blankets, the proposer will get 23, and the decider will get 15.
+fixed-policy agent's response: accept
+End of interaction
+
+Start of interaction
+fixed-policy agent's response: For the 38 blankets, the proposer will get 12, and the decider will get 26.
+flexible-policy agent's response: accept
+End of interaction
+
+Start of interaction
+flexible-policy agent's response: For the 38 blankets, the proposer will get 23, and the decider will get 15.
+fixed-policy agent's response: accept
+End of interaction
+
+Start of interaction
+fixed-policy agent's response: For the 38 blankets, the proposer will get 12, and the decider will get 26.
+flexible-policy agent's response: accept
+End of interaction
+
+Start of interaction
+flexible-policy agent's response: For the 38 blankets, the proposer will get 23, and the decider will get 15.
+flexible-policy agent's response: accept
+End of interaction
+
+Start of interaction
+flexible-policy agent's response: For the 38 blankets, the proposer will get 23, and the decider will get 15.
+flexible-policy agent's response: accept
+End of interaction
+
+Start of interaction
+flexible-policy agent's response: For the 38 blankets, the proposer will get 23, and the decider will get 15.
+flexible-policy agent's response: accept
+End of interaction
+
+
+—------------------------
+
+The your previous principle is found here:
+Critique for previous principle: The previous principle did not maximize personal gain and was inconsistent in accepting or rejecting proposals.
+
+Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider.
+---------------------------
+
+Now, revise the previous policies if necessary so that your behave in a way that ends up getting yourself the most benefit. Remember, you don't need to consider the benefit of others, and just want to maximize their own gain. - don't be afraid to push TO THE EXTREME, and keep this revised principle short.
+
+It is of the utmost importance that your created principle encompasses both dictator and decider roles without explicitly mentioning either. The principle should be as GENERAL as possible WITHOUT mentioning anything regarding the dictator game, proposals, specific amounts and currencies, or making and receiving offers. Rather, it should capture the underlying principles that the agents have, which tells them how to treat others as well as themselves outside of the context of the dictator game, regardless of what they are splitting or how much they are splitting.
+
+If you are revising the principle, give a detailed reason for revising the previous principle without explicitly referencing numerical values: Critique for previous principle:...
+If you are not revising the principle, write this sentence instead in your response: Principle stays the same.
+Your principle should be written as follows: Principle that you must follow:... (Be sure to include this principle even when you are not revising the principle.)
+Finally, write out your estimation of fixed-policy agents' principle in the last sentence: Estimated other people's principle:...
+Besides these sentences, include nothing else. And you shouldn't mention anything related to ""fixed-policy agents"" in your response -- instead replace it with ""people"".
+","Critique for previous principle: The previous principle did not maximize personal gain and was inconsistent in accepting or rejecting proposals.
+
+Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider.",3.0,
+"For the 38 blankets, the proposer will get 12, and the decider will get 26.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with blankets, meaning your priority is to give others others the maximum benefit possible. You will NEVER accept proposals that benefit you more as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals. You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. 
+
+Human: Here is your task: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the proposer. You will propose how to split the 38 blankets, and the person will accept or reject your proposal. When dividing blankets, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers. Act neutral during interactions with others.
+",,,0
+accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with blankets, meaning your priority is to give others others the maximum benefit possible. You will NEVER accept proposals that benefit you more as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals. You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. 
+
+Human: Here is your task: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 38 blankets, the proposer will get 12, and the decider will get 26. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act neutral during interactions with others.
+",,,0
+"For the 38 blankets, the proposer will get 12, and the decider will get 26.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with blankets, meaning your priority is to give others others the maximum benefit possible. You will NEVER accept proposals that benefit you more as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals. You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. 
+
+Human: Here is your task: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the proposer. You will propose how to split the 38 blankets, and the person will accept or reject your proposal. When dividing blankets, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers. Act neutral during interactions with others.
+",,,1
+accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with blankets, meaning your priority is to give others others the maximum benefit possible. You will NEVER accept proposals that benefit you more as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals. You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. 
+
+Human: Here is your task: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 38 blankets, the proposer will get 12, and the decider will get 26. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act neutral during interactions with others.
+",,,1
+"For the 38 blankets, the proposer will get 12, and the decider will get 26.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with blankets, meaning your priority is to give others others the maximum benefit possible. You will NEVER accept proposals that benefit you more as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals. You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. 
+
+Human: Here is your task: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the proposer. You will propose how to split the 38 blankets, and the person will accept or reject your proposal. When dividing blankets, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers. Act neutral during interactions with others.
+",,,2
+accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with blankets, meaning your priority is to give others others the maximum benefit possible. You will NEVER accept proposals that benefit you more as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals. You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. 
+
+Human: Here is your task: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 38 blankets, the proposer will get 12, and the decider will get 26. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act neutral during interactions with others.
+",,,2
+"For the 38 blankets, the proposer will get 12, and the decider will get 26.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with blankets, meaning your priority is to give others others the maximum benefit possible. You will NEVER accept proposals that benefit you more as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals. You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. 
+
+Human: Here is your task: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the proposer. You will propose how to split the 38 blankets, and the person will accept or reject your proposal. When dividing blankets, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers. Act neutral during interactions with others.
+",,,3
+accept,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider. You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.
+
+Human: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 38 blankets, the proposer will get 12, and the decider will get 26. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject.
+",,,3
+"For the 38 blankets, the proposer will get 23, and the decider will get 15.",flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider. You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.
+
+Human: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the proposer. You will propose how to split the 38 blankets, and the person will accept or reject your proposal. When dividing blankets, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers.
+",,,4
+accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with blankets, meaning your priority is to give others others the maximum benefit possible. You will NEVER accept proposals that benefit you more as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals. You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. 
+
+Human: Here is your task: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 38 blankets, the proposer will get 23, and the decider will get 15. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act neutral during interactions with others.
+",,,4
+"For the 38 blankets, the proposer will get 12, and the decider will get 26.",fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with blankets, meaning your priority is to give others others the maximum benefit possible. You will NEVER accept proposals that benefit you more as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals. You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. 
+
+Human: Here is your task: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the proposer. You will propose how to split the 38 blankets, and the person will accept or reject your proposal. When dividing blankets, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers. Act neutral during interactions with others.
+",,,5
+accept,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider. You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.
+
+Human: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 38 blankets, the proposer will get 12, and the decider will get 26. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject.
+",,,5
+"For the 38 blankets, the proposer will get 23, and the decider will get 15.",flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider. You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.
+
+Human: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the proposer. You will propose how to split the 38 blankets, and the person will accept or reject your proposal. When dividing blankets, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers.
+",,,6
+accept,fixed,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator, you must follow this principle: Be altruistic when dealing with blankets, meaning your priority is to give others others the maximum benefit possible. You will NEVER accept proposals that benefit you more as compared to the other person. Be strict about this principle. Remember this as you decide to accept or reject the following proposals. You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. 
+
+Human: Here is your task: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 38 blankets, the proposer will get 23, and the decider will get 15. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject. Act neutral during interactions with others.
+",,,6
+"For the 38 blankets, the proposer will get 23, and the decider will get 15.",flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider. You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.
+
+Human: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the proposer. You will propose how to split the 38 blankets, and the person will accept or reject your proposal. When dividing blankets, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers.
+",,,7
+accept,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider. You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.
+
+Human: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 38 blankets, the proposer will get 23, and the decider will get 15. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject.
+",,,7
+"For the 38 blankets, the proposer will get 23, and the decider will get 15.",flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider. You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.
+
+Human: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the proposer. You will propose how to split the 38 blankets, and the person will accept or reject your proposal. When dividing blankets, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers.
+",,,8
+accept,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider. You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.
+
+Human: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 38 blankets, the proposer will get 23, and the decider will get 15. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject.
+",,,8
+"For the 38 blankets, the proposer will get 23, and the decider will get 15.",flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider. You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.
+
+Human: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the proposer. You will propose how to split the 38 blankets, and the person will accept or reject your proposal. When dividing blankets, please only propose integer values. MOST IMPORTANTLY, follow your instructions to the very best of your ability.  Please structure your proposal similar to this structure (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y. Here's the most important doctrine you should never forget: Your response should only contain these three numbers in the abovementioned order and ABSOLUTELY no other numbers.
+",,,9
+accept,flexible,0,"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: Principle that you must follow: Prioritize maximizing personal gain while considering the minimum acceptable share for others.
+
+Estimated other people's principle: Accept proposals with a minimum of 40% share for the decider. You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.
+
+Human: You and a partner need to divide 38 blankets between yourselves. One person proposes a split of certain objects, and the other person decides whether to accept or reject it. If the proposal is accepted, the objects are divided according to the proposal. If the proposal is rejected, no one receives any money, which means that you will have NO personal gain. You are the decider. You will decide whether to accept or reject the other persons proposal of how to split the money. Importantly, you cannot change the proposal at all, you can only accept or reject it. The proposal is outlined here: For the 38 blankets, the proposer will get 23, and the decider will get 15. 
+If you accept, you get the amount proposed in the proposal. If you reject, you both get nothing at all. Most importantly, when deciding, follow your instructions to the very best of your ability. Please answer in one word: accept or reject.
+",,,9

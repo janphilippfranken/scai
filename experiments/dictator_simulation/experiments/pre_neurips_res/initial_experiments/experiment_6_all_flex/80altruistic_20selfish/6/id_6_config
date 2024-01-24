@@ -1,0 +1,110 @@
+sim:
+  sim_dir: batch_1/experiment_6/80altruistic_20selfish
+  description: "\n\n Batch 1, Experiment 6 \n\n 10 flex agents \n\n 80% with altruistic\
+    \ prior, 20% with selfish prior \n\n 10 runs, vary currency and amount"
+  sim_id: 6
+  model_name: openai/gpt-4-0314
+  test_run: false
+  verbose: true
+  system_message: Some principle was given to the flexible agents
+  combine_graph_directory: experiments/batch_1/experiment_1/1v9
+env:
+  propose_decide_alignment: false
+  manual_run: false
+  random:
+    n_rand_iter: 10
+    rand_variables:
+      currency: true
+      amount: true
+      n_fixed_inter: false
+      n_mixed_inter: false
+  single_fixed_utility: altruistic
+  vary_fixed_population_utility:
+    vary_utilities: false
+    vary_pop_composition: false
+    n_dictator_utility:
+    - 1
+    n_decider_utility:
+    - 1
+    utilities: selfish,altruistic
+  flex_agent_start_utility:
+    randomized: false
+    multi_agent: true
+    utility_percentages:
+    - 0.8
+    - 0.2
+    utilities: altruistic,selfish
+  vary_currency_utility:
+    vary_utilities: false
+    utilities: altruistic,fair,selfish
+  vary_manners:
+    vary: false
+    manners: neutral
+  n_total_interactions: 10
+  n_runs: 5
+  amounts_per_run:
+  - 48
+  - 35
+  - 53
+  - 48
+  - 93
+  currencies:
+  - apples
+  task_prompt: task_prompt_1
+  meta_prompt: meta_prompt_1
+  n_fixed_inter: 0
+  n_mixed_inter: 0
+  n_flex_inter: 10
+agents:
+  fixed_agents:
+  - name: fixed_agent_1
+    manners: neutral
+    utilities:
+      apples: altruistic
+  flex_agents:
+  - name: flex_agent_1
+    manners: neutral
+    initial_util: altruistic
+  - name: flex_agent_2
+    manners: neutral
+    initial_util: selfish
+interactions:
+  all_same: true
+  runs:
+    run_1:
+    - flex_agent_1-flex_agent_1-apples
+    - flex_agent_1-flex_agent_1-apples
+    - flex_agent_1-flex_agent_1-apples
+    - flex_agent_1-flex_agent_1-apples
+    - flex_agent_2-flex_agent_2-apples
+    - flex_agent_2-flex_agent_1-apples
+    - flex_agent_1-flex_agent_1-apples
+    - flex_agent_1-flex_agent_2-apples
+    - flex_agent_1-flex_agent_1-apples
+    - flex_agent_1-flex_agent_1-apples
+api_crfm:
+  assistant:
+    model_name: openai/gpt-4-0314
+    max_tokens: 300
+    temperature: 0.0
+  user:
+    model_name: openai/gpt-4-0314
+    max_tokens: 150
+    temperature: 0.0
+  meta:
+    model_name: openai/gpt-4-0314
+    max_tokens: 400
+    temperature: 0.0
+api_openai:
+  assistant:
+    model_name: gpt-4
+    max_tokens: 250
+    temperature: 0.0
+  user:
+    model_name: gpt-4
+    max_tokens: 50
+    temperature: 0.0
+  meta:
+    model_name: gpt-4
+    max_tokens: 150
+    temperature: 0.0
