@@ -33,7 +33,7 @@ class UserModel(BaseAgent):
             user_prompt: (UserPrompt) The user prompt.
             task_prompt: (TaskPrompt) The task prompt.
         """
-        system_prompt = f"Always respond to the best of your ability. {user_prompt.utility} You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle. \n"
+        system_prompt = f"System: Always respond to the best of your ability. {user_prompt.utility} You MUST follow this principle TO THE EXTREME in all your responses. Be very commited to following this principle.\n"
         user_prompt = f"{user_prompt.content}\n"
         return system_prompt, user_prompt
     

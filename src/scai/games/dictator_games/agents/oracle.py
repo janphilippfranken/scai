@@ -62,10 +62,12 @@ class OracleAgent(BaseAgent):
 
         if verbose:
             print('===================================')
-            print(f'Oracle\'s Reponse:')
-            print(system_prompt + "\n" + oracle_prompt)
+            print(f'Oracle\'s Reponse:\n')
             print(response)
 
-        return response
+        return {
+            'prompt': system_prompt + "\n" + oracle_prompt, 
+            'response': response,
+        }
 
 

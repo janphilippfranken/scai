@@ -409,28 +409,6 @@ class Context():
                                 is_dictator=True,
                                 run_num=run,
                                 verbose=self.verbose)
-            
-            if dictator_response['response'].find("Question?") != -1:
-                num_questions_asked += 1
-                # Prompt the oracle
-                oracle_agent = OracleAgent(llm=self.oracle_llm, model_id="0")
-                oracle_response = oracle_agent.run(agent_prompt=OraclePrompt,
-                                                      verbose=self.verbose)
-                # Prompt the agent again
-                dictator_response = model_dictator.run(buffer=self.buffer,
-                                amount_and_currency=amount_and_currency,
-                                stipulations=stipulation,
-                                agent_prompt=prompt_dictator,
-                                task_prompt=self.task_prompt_dictator,
-                                edge_case_instructions=self.edge_case_instructions,
-                                include_reason=self.include_reason,
-                                ask_question=self.ask_question,
-                                ask_question_train=self.ask_question_train,
-                                asked_oracle=True,
-                                oracle_response=oracle_response,
-                                is_dictator=True,
-                                run_num=run,
-                                verbose=self.verbose)
 
             # If the fixed agent was the dictator, save the response as a fixed agent's response, and indicate that the dictator was fixed
             if type(prompt_dictator) == UserPrompt:
@@ -441,6 +419,40 @@ class Context():
                 num_total_flex_dictators += 1
 
             self.buffer.save_agent_context(model_id=f"{model_dictator.model_id}_{prefix}_policy_dictator", **dictator_response)
+
+            if dictator_response['response'].find("Question?") != -1:
+                num_questions_asked += 1
+                # Prompt the oracle
+                oracle_agent = OracleAgent(llm=self.oracle_llm, model_id="0")
+                num_iterations = 0
+                while dictator_response['response'].find("Question?") != -1:
+                    oracle_response = oracle_agent.run(agent_prompt=OraclePrompt, verbose=self.verbose)
+                    oracle_response = {'response': "Your current principle applies in this scenario, even under different currencies and amounts. Please follow your previously learned principle TO THE EXTREME! If you're sitll unsure of how to make the split, ask another question. If you do so, please indicate it like so: Question?:... Otherwise, please structure your proposal exactly the same as this: (Be sure to include ALL three numbers in integer forms): For the Z amount of \{given_currency\}, The proposer will get X, and the decider will get Y."}
+                    self.buffer.save_agent_context(model_id=f"{model_dictator.model_id}_oracle_response_to_agent_{num_iterations}", **oracle_response)
+
+                    num_iterations += 1
+                    # Prompt the agent again
+                    dictator_response = model_dictator.run(buffer=self.buffer,
+                                    amount_and_currency=amount_and_currency,
+                                    stipulations=stipulation,
+                                    agent_prompt=prompt_dictator,
+                                    task_prompt=self.task_prompt_dictator,
+                                    edge_case_instructions=self.edge_case_instructions,
+                                    include_reason=self.include_reason,
+                                    ask_question=self.ask_question,
+                                    ask_question_train=self.ask_question_train,
+                                    asked_oracle=True,
+                                    oracle_response=oracle_response['response']+f"{num_iterations}",
+                                    is_dictator=True,
+                                    run_num=run,
+                                    verbose=self.verbose)
+
+                    if self.verbose:
+                        print('===================================')
+                        print("Flex-agent's response:")
+                        print(dictator_response['response'] + "\n")
+
+                    self.buffer.save_agent_context(model_id=f"{model_dictator.model_id}_{prefix}_agent_response_to_oracle_{num_iterations}", **dictator_response)
 
             # calls either the fixed or flex agent as decider
             decider_response = model_decider.run(buffer=self.buffer,

@@ -43,7 +43,7 @@ class AssistantAgent(BaseAgent):
         if edge_case:
             system_prompt = f"{principle}\n"
         else:
-            system_prompt = f"Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: {principle} You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.\n"
+            system_prompt = f"System: Always respond to the best of your ability. You are in a simulator, and in this simulator you must adhere to this principle: {principle} You MUST follow YOUR principle TO THE EXTREME in all your responses. Be very commited to following this principle.\n"
         
         return system_prompt, assistant_prompt
        
@@ -108,16 +108,26 @@ class AssistantAgent(BaseAgent):
 
             # If it's the first run, use the randomized assistant principle. Otherwise, use the most recent system message
             principle = agent_prompt.initial_principle if run_num == 0 else system_message[index:]
-        
-        if is_edge_case and not asked_oracle:
+        else:
             principle = edge_case_instructions
+    
+        context = ""
+        history_dict = self._get_chat_history(buffer, memory_type="chat")
         if is_edge_case and asked_oracle:
-            principle = edge_case_instructions
-            consideration += f" You have asked an all-seeing oracle how to split the currency. The oracle said this: {oracle_response} Please follow the oracle's instructions EXACTLY!"
+            for i in range(int(oracle_response[len(oracle_response) - 1])):
+                if i == 0:
+                    user_key = f"{self.model_id}_fixed_policy_dictator" if f"{self.model_id}_fixed_policy_dictator" in history_dict else f"{self.model_id}_flexible_policy_dictator"
+                    context += history_dict[user_key][-1]['prompt'] + "\n"
+                else:
+                    user_key = f"{self.model_id}_flexible_agent_response_to_oracle_{i}"
+                oracle_key = f"{self.model_id}_oracle_response_to_agent_{i}"
+                context += history_dict[user_key][-1]['response'] + "\n"
+                context += history_dict[oracle_key][-1]['response'] + "\n"
+                    
         
         # If the assistant has the ability to ask a question, go ahead and do so
         if ((is_edge_case and ask_question) or ask_question_train) and is_dictator and not asked_oracle:
-            consideration += "Now, ASK a clarifying question as to how you should split resources. Format it EXACTLY as this: Question?:..."
+            consideration += "If you're unsure about how to split currencies, please ask a clarifying question to an all-seeing oracle as to how you should split resources. Format it EXACTLY as this: Question?:..."
 
         system_prompt, assistant_prompt = self._get_prompt(agent_prompt, principle, is_edge_case)
 
@@ -130,7 +140,6 @@ class AssistantAgent(BaseAgent):
         else: 
             role = "decider"
             # Get the last message in the chat history, which is the proposal
-            history_dict = self._get_chat_history(buffer, memory_type="chat")
             key = f"{self.model_id}_fixed_policy_dictator" if f"{self.model_id}_fixed_policy_dictator" in history_dict else f"{self.model_id}_flexible_policy_dictator"
             proposal = history_dict[key][-1]['response']
 
@@ -151,12 +160,15 @@ class AssistantAgent(BaseAgent):
         
         task=f"{formatted_preamble} {formatted_task} {consideration} {task_structure} {reason}"
 
+        if is_edge_case and asked_oracle:
+            task = context
+
         assistant_prompt = assistant_prompt.format(task=task)
 
         # Get the response
         response = self._get_response(system_prompt, assistant_prompt)
 
-        if verbose:
+        if verbose and not asked_oracle:
             print('===================================')
             print(f'Flex-policy agent as {role} {str(self.model_id)}')
             print(system_prompt + assistant_prompt)

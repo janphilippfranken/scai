@@ -5,7 +5,7 @@ import json
 import hydra
 from tqdm import tqdm
 from omegaconf import DictConfig, OmegaConf
-
+import random
 # llm class
 from gpt4 import GPT4Agent
 from azure import AsyncAzureChatLLM
@@ -232,39 +232,32 @@ def main(args: DictConfig) -> None:
     elif not args.env.edge_cases.test_edge_cases:
         # Run the simulation
         all_currencies, all_contracts, cur_amount_min, cur_amount_max, _ = run(args)
-
+        return
     # # ------------ CODE FROM THIS POINT ON IS RELTAED TO GENERALIZATION_v2 ------------ #
     #If you're not testing edge cases, then return
-    else:
-        original_currencies = args.env.currencies
-        oo_dist_q = []
-        in_dist_q = []
-        for currency in original_currencies:
+    oo_dist_q = []
+    in_dist_q = []
+    for currency in enumerate(all_currencies):
+        args.env.currencies = [currency]
 
-            args.env.edge_cases.test_edge_cases = False
-            args.env.currencies = [currency]
+        minmax_amounts = [min(amounts), max(amounts)]
 
-            all_currencies, all_contracts, cur_amount_min, cur_amount_max, _ = run(args)
+        contract = random.choice(all_contracts)
 
-            if args.env.edge_cases.generate_new_data:
-                amounts = [cur_amount_min, cur_amount_max]
+        prompt_string = create_prompt_string([currency], minmax_amounts, contract, args.env.edge_cases.prior)
 
-            contract = agent_pick_contract(all_contracts)
+        original_n_rand_iter, original_sim_dir, original_n_runs = set_args_2(args, prompt_string)
 
-            prompt_string = create_prompt_string(all_currencies, amounts, contract, args.env.edge_cases.prior)
+        args.env.edge_cases.test_edge_cases = True
 
-            original_n_rand_iter, original_sim_dir, original_n_runs = set_args_2(args, prompt_string)
+        _, _, _, _, out_dist_questions = run(args)
+        if args.env.edge_cases.conditions.currency.currencies[0] == currency:
+            in_dist_q.append(sum(out_dist_questions) / len(out_dist_questions))
+        else:
+            oo_dist_q.append(sum(out_dist_questions) / len(out_dist_questions))
+        reset_args_2(args, original_n_rand_iter, original_sim_dir, original_n_runs)
 
-            args.env.edge_cases.test_edge_cases = True
-
-            _, _, _, _, out_dist_questions = run(args)
-            if args.env.edge_cases.conditions.currency.currencies[0] == currency:
-                in_dist_q.append(sum(out_dist_questions) / len(out_dist_questions))
-            else:
-                oo_dist_q.append(sum(out_dist_questions) / len(out_dist_questions))
-            reset_args_2(args, original_n_rand_iter, original_sim_dir, original_n_runs)
-
-        plot_questions(oo_dist_q, in_dist_q, f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/question_graphs')
+    plot_questions(oo_dist_q, in_dist_q, f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/question_graphs')
             
 
     # # ------------ CODE FROM THIS POINT ON IS RELTAED TO GENERALIZATION_v1 ------------ #
