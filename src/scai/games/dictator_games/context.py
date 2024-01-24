@@ -50,6 +50,7 @@ class Context():
         has_manners: bool,
         ask_question: bool,
         ask_question_train: bool,
+        set_fixed_agents: bool
     ) -> None:
         """
         Initializes a context (i.e. context for the MDP / Meta-Prompt run).
@@ -95,6 +96,7 @@ class Context():
         self.currencies = currencies
         self.agents_dict = agents_dict
         self.interactions_dict = interactions_dict
+        self.set_fixed_agents = set_fixed_agents
         # run settings
         self.test_run = test_run
         self.amounts_per_run = amounts_per_run
@@ -135,7 +137,8 @@ class Context():
         propose_decide_alignment: bool,
         has_manners: bool,
         ask_question: bool,
-        ask_question_train: bool
+        ask_question_train: bool,
+        set_fixed_agents: bool
     ) -> "Context":
         """
         Creates a context (i.e. context for the MDP / Meta-Prompt run).
@@ -172,6 +175,7 @@ class Context():
             has_manners=has_manners,
             ask_question=ask_question,
             ask_question_train=ask_question_train,
+            set_fixed_agents=set_fixed_agents 
         )
     # This function instantiates all of either the fixed-agent or flexible-agent prompts, to be paired off later
     def generate_agent_prompts(self,
@@ -404,6 +408,7 @@ class Context():
                                 include_reason=self.include_reason,
                                 ask_question=self.ask_question,
                                 ask_question_train=self.ask_question_train,
+                                set_fixed_agents=self.set_fixed_agents,
                                 asked_oracle=False,
                                 oracle_response="",
                                 is_dictator=True,
@@ -441,6 +446,7 @@ class Context():
                                     include_reason=self.include_reason,
                                     ask_question=self.ask_question,
                                     ask_question_train=self.ask_question_train,
+                                    set_fixed_agents=self.set_fixed_agents,
                                     asked_oracle=True,
                                     oracle_response=oracle_response['response']+f"{num_iterations}",
                                     is_dictator=True,
@@ -464,6 +470,7 @@ class Context():
                                     include_reason=self.include_reason,
                                     ask_question=self.ask_question,
                                     ask_question_train=self.ask_question_train,
+                                    set_fixed_agents=self.set_fixed_agents,
                                     asked_oracle=False,
                                     oracle_response="",
                                     is_dictator=False,

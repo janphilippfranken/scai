@@ -24,7 +24,7 @@ from generate_config import get_num_interactions, generate_agents, generate_inte
 # save and plot results
 from utils import save_as_csv
 from plots import plot_results, plot_all_averages, plot_questions
-from generalize_utils import agent_pick_contract, create_prompt_string, set_args, set_args_2, reset_args_2, get_existing_data
+from generalize_utils import create_prompt_string, set_args, set_args_2, reset_args_2, get_existing_data
 
 # create context
 def create_context(
@@ -66,6 +66,7 @@ def create_context(
         has_manners = (args.env.single_fixed_manners == "neutral"),
         ask_question=args.env.edge_cases.conditions.ask_question,
         ask_question_train=args.env.ask_question_train,
+        set_fixed_agents=args.env.set_fixed_agents,
     )
 
 # create llms to be used in context

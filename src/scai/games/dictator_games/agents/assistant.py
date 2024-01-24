@@ -78,6 +78,7 @@ class AssistantAgent(BaseAgent):
         ask_question_train: bool,
         asked_oracle: bool,
         oracle_response: str,
+        set_fixed_agents: bool, # this is only used for the fixed agent, but is maintained to enable a generaly run structure
         verbose: bool = False,
     ) -> Dict[str, Any]:
         """Runs the assistant

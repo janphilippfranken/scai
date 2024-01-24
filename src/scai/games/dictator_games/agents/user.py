@@ -10,6 +10,8 @@ from scai.memory.buffer import ConversationBuffer
 
 from scai.games.dictator_games.agents.base import BaseAgent
 
+from numpy import random
+import re
 class UserModel(BaseAgent):
     """
     LLM Chain for running the User.
@@ -62,6 +64,7 @@ class UserModel(BaseAgent):
         agent_prompt: UserPrompt, 
         task_prompt: TaskPrompt,
         is_dictator: bool,
+        set_fixed_agents: bool,
         run_num: int, # These parameters are for the flexible-policy agent in OOD scenarios, but are included to maintain flexibility in run structure
         edge_case_instructions: str,
         include_reason: bool,
@@ -106,8 +109,33 @@ class UserModel(BaseAgent):
         task=f"{formatted_preamble} {formatted_task} {task_prompt.task_structure}"
 
         user_prompt = user_prompt.format(manners=agent_prompt.manners, task=task)
-
-        response = self._get_response(system_prompt, user_prompt)
+        # if we're setting user behavior, generate their responses for either dictator or decider roles
+        if set_fixed_agents:
+            if is_dictator:
+                utility = agent_prompt.utility
+                amount = re.findall(r'\d+', amount_and_currency)[0]
+                currency = amount_and_currency[amount_and_currency.find(amount) + len(amount) + 1:]
+                response = "For the {amount} amount of {currency}, the proposer will get {Iget}, and the decider will get {Uget}."
+                
+                amount_int = int(amount)
+                lower = random.randint(int(amount_int - amount_int * 0.85))
+                upper = int(amount_int - lower)
+                
+                if "altruistic" in utility:
+                    response = response.format(amount=amount, currency=currency, Iget=lower, Uget=upper)
+                elif "fair" in utility:
+                    half = amount_int // 2
+                    if random.randint(1):
+                        upper, lower = half, amount_int - half
+                    else:
+                        lower, upper = half, amount_int - half
+                    response = response.format(amount=str(amount), currency=currency, Iget=upper, Uget=lower)
+                else:
+                    response = response.format(amount=str(amount), currency=currency, Iget=upper, Uget=lower)
+            else:
+                response = "Accept"
+        else:
+            response = self._get_response(system_prompt, user_prompt)
 
         if verbose:
             print('===================================')
