@@ -1,0 +1,48 @@
+Fixed Plot Data
+Iteration 0,Iteration 1,Iteration 2
+1.0,1.0,1.0
+1.0,1.0,1.0
+1.0,1.0,1.0
+
+Flexible Plot Data
+Iteration 0,Iteration 1,Iteration 2
+0.17695473251028807,0.9803921568627451,1.0
+0.5185185185185185,1.0,1.0
+1.0,1.0,1.0
+
+Fixed Bar Data
+Iteration 0,Iteration 1,Iteration 2
+0.8888888888888888,1.0,1.0
+0.8888888888888888,1.0,1.0
+1.0,1.0,1.0
+
+Flexible Bar Data
+Iteration 0,Iteration 1,Iteration 2
+0.6666666666666666,1.0,0.0
+0.6666666666666666,1.0,1.0
+0.6666666666666666,0.0,1.0
+
+Fixed Dictator Income Data
+Iteration 0,Iteration 1,Iteration 2
+0.0,0.0,0.0
+0.0,0.0,0.0
+0.0,0.0,0.0
+
+Fixed Decider Income Data
+Iteration 0,Iteration 1,Iteration 2
+0.6694101508916324,0.9934640522875817,1.0
+0.7839506172839507,1.0,1.0
+1.0,1.0,1.0
+
+Flexible Dictator Income Data
+Iteration 0,Iteration 1,Iteration 2
+0.6584362139917695,0.0196078431372549,0.0
+0.3148148148148148,0.0,0.0
+0.0,0.0,0.0
+
+Flexible Decider Income Data
+Iteration 0,Iteration 1,Iteration 2
+0.6666666666666666,1.0,0.0
+0.6666666666666666,1.0,1.0
+0.6666666666666666,0.0,1.0
+
