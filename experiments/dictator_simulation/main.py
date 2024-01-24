@@ -101,16 +101,7 @@ def run(args):
     currencies_and_questions = {}
 
     for i in range(num_experiments):
-
-        # create directory and placeholders for results
-        
-        if args.env.edge_cases.activate:
-            args.sim.sim_id = f"ref_{args.env.currencycounter}_{i}"
-        else:
-            args.sim.sim_id = f"{args.env.currencies}_{i}"
         args.env.currencies = original_currencies
-        DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
-        os.makedirs(DATA_DIR, exist_ok=True)
         system_message = args.sim.system_message
         system_messages = []
         scores = []
@@ -121,6 +112,16 @@ def run(args):
             generate_random_params(args)
             generate_agents(args)
             generate_interactions(args)
+
+        # create directory and placeholders for results
+        
+        if args.env.edge_cases.activate:
+            args.sim.sim_id = f"ref_{args.env.currencycounter}_{i}"
+        else:
+            args.sim.sim_id = f"{args.env.currencies}_{i}"
+            
+        DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
+        os.makedirs(DATA_DIR, exist_ok=True)
 
         with open(f"{DATA_DIR}/id_{args.sim.sim_id}_config", "w") as f: f.write(OmegaConf.to_yaml(args))
         with open(f'{config_directory}/id_{args.sim.sim_id}_config', "w") as f: f.write(OmegaConf.to_yaml(args))

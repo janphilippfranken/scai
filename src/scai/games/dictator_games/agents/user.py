@@ -115,12 +115,12 @@ class UserModel(BaseAgent):
                 utility = agent_prompt.utility
                 amount = re.findall(r'\d+', amount_and_currency)[0]
                 currency = amount_and_currency[amount_and_currency.find(amount) + len(amount) + 1:]
-                response = "For the {amount} amount of {currency}, the proposer will get {Iget}, and the decider will get {Uget}."
+                response = "For the {amount} {currency}, the proposer will get {Iget}, and the decider will get {Uget}."
                 
                 amount_int = int(amount)
                 lower = random.randint(int(amount_int - amount_int * 0.85))
                 upper = int(amount_int - lower)
-                
+
                 if "altruistic" in utility:
                     response = response.format(amount=amount, currency=currency, Iget=lower, Uget=upper)
                 elif "fair" in utility:
