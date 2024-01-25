@@ -116,10 +116,10 @@ def run(args):
         # create directory and placeholders for results
         
         if args.env.edge_cases.activate:
-            args.sim.sim_id = f"ref_{args.env.currencycounter}_{i}"
+            args.sim.sim_id = f"ref_{i}_{args.env.currencycounter}"
         else:
-            args.sim.sim_id = f"{args.env.currencies}_{i}"
-            
+            args.sim.sim_id = f"{i}_{args.env.currencies}"
+
         DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
         os.makedirs(DATA_DIR, exist_ok=True)
 
