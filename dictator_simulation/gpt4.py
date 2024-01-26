@@ -85,7 +85,9 @@ class GPT4Agent():
         messages: List,
     ) -> Dict[str, Any]:
         """Runs the model on a single list of messages."""
+        print("awaiting response")
         response = await self.get_response(messages=messages)
+        print("response received")
         
         cost = self.calc_cost(response=response)
         logging.info(f"Cost for running gpt4: {cost}")

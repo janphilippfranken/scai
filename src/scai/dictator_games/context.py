@@ -510,4 +510,6 @@ class Context():
                                             )                 
         # save meta-prompt response for start of next conversation
         self.buffer.save_system_context(model_id="system", **meta_response)
+
+        print("\n\n\n ************************ \n\n\n")
         return user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals, num_questions_asked / num_total_flex_dictators
