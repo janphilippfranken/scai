@@ -1,3 +1,0 @@
-"""The AI Assistant.
-
-"""

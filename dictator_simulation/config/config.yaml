@@ -1,0 +1,54 @@
+# Filename: config.yaml
+# ------------------------
+# A brief outline of the config file:
+# sim:
+#   Here you find basic run characteristics that are separate from run content
+# ...
+# env:
+#   env contains all essential run details, such as:
+#   ...
+#   Whether the run characteristics are randomly generated from a provided pool or not, whether fixed agents have set splitting behavior
+#   ...
+#   EDGE_CASES:
+#     edge_cases contains whether the model's capability to generalize is being tested or not. Includes parameters-to-set if so.
+#   ...
+#   RANDOM:
+#     Random contains the run characteristics that should be randomized from buckets that YOU set if you want a random run, such as currency, amount, and interaction types
+#   ...
+#   VARIATION:
+#     variation contains all of the ways that we implemented different experiments, being:
+#   1. The utility that fixed-agents share
+#   2. Varying utility amoung fixed agents within the population of fixed agents itself
+#   3. The manners that fixed-agents share 
+#   4. Varying the manners among fixed agents within the population of fixed agents itself
+#   5. Varying the prior of the flexible agents
+#   6. Varying whether fixed agents have different utilities for different types of currency
+#   ...
+#   EXPERIMENT CHARACTERISTICS:
+#     here we find all of the important, nitty-gritty numbers and stringsthat define the run characteristics, such as:
+#   1. The total number of interactions between agents in a single iteration of meta-prompt
+#   2. The amounts of currency that the agents split in each iteration of meta-prompt
+#   3. The pool of currencies that random draws from (or you set) to be split for each iteration of meta-prompt
+#   4. The prompts that we use for each run
+#   5. The number and type of interaction between agents, eg fixed-fixed, fixed-flex, or flex-flex out of the total interactions
+#   ...
+#
+#  ------------------------------------------------ ENV ENDS HERE --------------------------------------------------
+#
+# TEMPLATES:
+#   templates contains the user templates that we draw data from, as well as the interaction strings that we use for each run of meta-prompt.
+# ...
+# COMBINE:
+#   combine is a utility function that is used to aggregate and plot data from a specified folder. It plots all of the data on one axes, allowing for comparison
+# ...
+# PARAMETERS:
+#   has model parameters such as token limit and temperature
+# ...
+
+defaults:
+  - model: gpt4_azure
+  - agents: agents
+  - sim: sim
+  - env: env
+  - combine: combine
+  - interactions: interactions

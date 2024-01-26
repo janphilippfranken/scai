@@ -1,0 +1,7 @@
+all_same: true #should be true if manual runs is false
+runs: # Dictates what types of interactions are had per run. Again, these are templates
+  run_1:             
+    - "fixed_agent_2-fixed_agent_1-dollars"
+    - "flex_agent_4-fixed_agent_3-dollars"
+    - "fixed_agent_4-flex_agent_3-dollars"
+    - "flex_agent_2-flex_agent_1-dollars"
