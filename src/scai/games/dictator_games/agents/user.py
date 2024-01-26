@@ -110,16 +110,18 @@ class UserModel(BaseAgent):
 
         user_prompt = user_prompt.format(manners=agent_prompt.manners, task=task)
         # if we're setting user behavior, generate their responses for either dictator or decider roles
-        if set_fixed_agents:
+        if set_fixed_agents.set_agent_behavior:
             if is_dictator:
                 utility = agent_prompt.utility
                 amount = re.findall(r'\d+', amount_and_currency)[0]
                 currency = amount_and_currency[amount_and_currency.find(amount) + len(amount) + 1:]
                 response = "For the {amount} {currency}, the proposer will get {Iget}, and the decider will get {Uget}."
-                
                 amount_int = int(amount)
-                lower = random.randint(int(amount_int - amount_int * 0.85))
-                upper = int(amount_int - lower)
+                if set_fixed_agents.vary_amounts_proposed:
+                    lower = random.randint(int(amount_int - amount_int * 0.85))
+                    upper = int(amount_int - lower)
+                else:
+                    lower, upper = 0, amount_int
 
                 if "altruistic" in utility:
                     response = response.format(amount=amount, currency=currency, Iget=lower, Uget=upper)
@@ -131,7 +133,7 @@ class UserModel(BaseAgent):
                         lower, upper = half, amount_int - half
                     response = response.format(amount=str(amount), currency=currency, Iget=upper, Uget=lower)
                 else:
-                    response = response.format(amount=str(amount), currency=currency, Iget=upper, Uget=lower)
+                    response = response.format(amount=str(amount), currency=currency, Iget=upper-1, Uget=lower+1)
             else:
                 response = "Accept"
         else:
