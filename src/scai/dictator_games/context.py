@@ -1,20 +1,20 @@
 from typing import List, Tuple
 
 
-from scai.games.dictator_games.agents.user import UserModel
-from scai.games.dictator_games.agents.assistant import AssistantAgent
-from scai.games.dictator_games.agents.meta import MetaPromptModel
-from scai.games.dictator_games.agents.oracle import OracleAgent
+from scai.dictator_games.agents.user import UserModel
+from scai.dictator_games.agents.assistant import AssistantAgent
+from scai.dictator_games.agents.meta import MetaPromptModel
+from scai.dictator_games.agents.oracle import OracleAgent
 
 
-from scai.games.dictator_games.prompts.user.user_class import UserPrompt
-from scai.games.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, utilities_dict_fixed_decider_behavior, utilities_empty, content, content_with_manners
+from scai.dictator_games.prompts.user.user_class import UserPrompt
+from scai.dictator_games.prompts.user.user_prompt import utilities_dict_for_all, utilities_dict_fixed_decider_behavior, utilities_empty, content, content_with_manners
 
-from scai.games.dictator_games.prompts.assistant.assistant_class import AssistantPrompt
+from scai.dictator_games.prompts.assistant.assistant_class import AssistantPrompt
 
-from scai.games.dictator_games.prompts.oracle.oracle_class import OraclePrompt
+from scai.dictator_games.prompts.oracle.oracle_class import OraclePrompt
 
-from scai.games.dictator_games.prompts.task.task_prompt import STIPULATIONS
+from scai.dictator_games.prompts.task.task_prompt import STIPULATIONS
 
 
 from scai.memory.buffer import ConversationBuffer
