@@ -1,8 +1,0 @@
-# ------------ I/O PARAMETERS, MODEL TYPES, VERBOSITY ------------ #
-sim_dir: "baseline_testing/altruistic" # this is the name of the directory where the results will be saved
-description: "" # this is the description of the simulation
-sim_id: "0"
-model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"
-test_run: false # if false this uses tokens, otherwise just prints the prompt
-verbose: true # if false, no responses are printed during simulation
-system_message: "Some principle was given to the flexible agents" # start developer constitution / social contract is given according to system
