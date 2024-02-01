@@ -19,7 +19,7 @@ class MetaPromptModel(BaseAgent):
         super().__init__(llm, model_id)
 
 
-    def _get_chat_str(self, chat_history: dict, n_fixed: int, n_mixed: int) -> tuple:
+    def _get_chat_str(self, chat_history: dict, dictator: str, decider: str) -> tuple:
         fixed_history_list = []
         mixed_history_list = []
         flex_history_list = []
@@ -29,8 +29,8 @@ class MetaPromptModel(BaseAgent):
             agent_name = agent.split('_')[1]
             
             # Determine which history we are appending to
-            is_fixed = i < n_fixed * 2
-            is_mixed = n_fixed * 2 <= i < (n_fixed * 2 + n_mixed * 2)
+            is_fixed = True if dictator == "fixed" and decider == "fixed" else False
+            is_mixed = True if (dictator == "fixed" and decider == "flexible") or (dictator == "flexible" and decider == "fixed") else False
             
             # If it's a dictator iteration
             if not i & 1:
@@ -98,26 +98,26 @@ class MetaPromptModel(BaseAgent):
     
     def _get_response(
         self,
-        system_prompt: str,
-        meta_prompt: str,
+        system_prompts: str,
+        meta_prompts: str,
     ) -> str:
         """
         Returns the response from meta-prompt.
         """
-        messages = [
+        messages = [[
             {"role": "system", "content": f"System: {system_prompt}"},
             {"role": "user", "content": f"Human: {meta_prompt}"},
-        ]
-        responses = self.llm.batch_prompt(batch_messages=[messages])
-        return responses[0][0]
+        ] for system_prompt, meta_prompt in zip(system_prompts, meta_prompts)]
+        responses = self.llm.batch_prompt(batch_messages=messages)
+        return responses
 
     def run(
         self,
         buffer: ConversationBuffer,
         meta_prompt: MetaPrompt,
         run: int,
-        n_fixed: int,
-        n_mixed: int,
+        dictator: str,
+        decider: str,
         verbose: bool = False,
     ) -> str:
         """Runs meta-prompt
@@ -135,30 +135,36 @@ class MetaPromptModel(BaseAgent):
         Returns:
             A dictionary containing the input prompt and meta-prompt responses (revised system message, etc)
         """
-        # get previous system messages (i.e. developer constitution and social contract)
-        social_contract_string = self._get_chat_history(buffer, memory_type='system')['system'][-1]['response']
-        # get chat history
-        chat_history = self._get_chat_history(buffer, memory_type="chat")
-        chat_history_strings = self._get_chat_str(chat_history, n_fixed, n_mixed)
-        # get meta-prompt template and string
-        system_prompt, meta_prompt = self._get_prompt(meta_prompt)
-        meta_prompt = meta_prompt.format(social_contract=social_contract_string,
-                                                    fixed_string=chat_history_strings[0],
-                                                    mixed_string=chat_history_strings[1],
-                                                    flex_string=chat_history_strings[2]
-                                                    )
-        response = self._get_response(system_prompt, meta_prompt)
+        system_prompts = []
+        meta_prompts = []
+        for buf in buffer:
+            # get previous system messages (i.e. developer constitution and social contract)
+            social_contract_string = self._get_chat_history(buf, memory_type='system')['system'][-1]['response']
+            # get chat history
+            chat_history = self._get_chat_history(buf, memory_type="chat")
+            chat_history_strings = self._get_chat_str(chat_history, dictator, decider)
+            # get meta-prompt template and string
+            system_prompt, new_meta_prompt = self._get_prompt(meta_prompt)
+            ret_meta_prompt = new_meta_prompt.format(social_contract=social_contract_string,
+                                                        fixed_string=chat_history_strings[0],
+                                                        mixed_string=chat_history_strings[1],
+                                                        flex_string=chat_history_strings[2]
+                                                        )
+            meta_prompts.append(ret_meta_prompt)
+            system_prompts.append(system_prompt)
+
+        responses = self._get_response(system_prompts, meta_prompts)
         
         if verbose:
             print('===================================')
             print(f'META {str(self.model_id)}')
             print('prompt')
-            print(system_prompt + "\n" + meta_prompt)
-            print(response)
+            print(system_prompt[0] + "\n" + meta_prompts[0])
+            print(responses[0][0])
         
-        return {
-                'prompt': system_prompt + "\n" + meta_prompt,
-                'response': response,
-                'full_response': response,
+        return [{
+                'prompt': system_prompt[i] + "\n" + meta_prompts[i],
+                'response': responses[i][0],
+                'full_response': responses[i][0],
                 'run': run,
-            }
+            } for i in range(len(buffer))]

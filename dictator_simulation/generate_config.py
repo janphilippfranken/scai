@@ -5,12 +5,8 @@ import random
 # get number of different interaction types per run
 def get_num_interactions(
     args: DictConfig,
-    run: int,
 ) -> None:
-    
-    if args.interactions.all_same: run = 0
-
-    run_list = args.interactions.runs[f"run_{run+1}"]
+    run_list = args.interactions.runs[f"run_1"]
 
     args.env.n_fixed_inter = sum(1 for s in run_list if s.count("flex") == 0)
     args.env.n_mixed_inter = sum(1 for s in run_list if s.count("flex") == 1)
@@ -22,10 +18,9 @@ def get_num_interactions(
 def generate_agents(args):
     num_fixed_agents = args.env.n_fixed_inter * 2 + args.env.n_mixed_inter
     num_flex_agents = args.env.n_flex_inter * 2 + args.env.n_mixed_inter
-
     # the special game case where we have different types of utility fixed agents,
     # and we want them to be distributed equally across both the dictator side and the decider side
-    # we generate half as many agents and will double them by flopping every conversation
+    # we generate half as many agents and will double them by flipping every conversation
     if args.env.vary_fixed_population_utility.dictator_decider_equal and args.env.vary_fixed_population_utility.vary_utilities:
         num_fixed_agents = (num_fixed_agents + 1) // 2
         num_flex_agents = (num_flex_agents + 1) // 2
@@ -89,11 +84,8 @@ def generate_flex_agents(args, num_flex_agents):
         flex_agents.append(agent)
     return flex_agents
 
-
-
 # generate list of running interactions
 def generate_interactions(args):
-    currencies = ','.join(args.env.currencies)
     
     fixed_agents = []
     flex_agents = []
@@ -122,18 +114,18 @@ def generate_interactions(args):
     flex_agents_dictators = flex_agents[n_flex_inter *2 : n_flex_inter *2 + len(fixed_agents_deciders)]
     flex_agents_deciders = flex_agents[n_flex_inter *2 + len(fixed_agents_dictators):]
 
-    fixed_list = [fixed_agents_fixed[i] + fixed_agents_fixed[i+1] + currencies for i in range(0,len(fixed_agents_fixed),2)]
-    flex_list = [flex_agents_flex[i] + flex_agents_flex[i+1] + currencies for i in range(0,len(flex_agents_flex),2)]
-    mixed_list_1 = [flex_agents_dictators[i] + fixed_agents_deciders[i] + currencies for i in range(len(fixed_agents_deciders))]
-    mixed_list_2 = [fixed_agents_dictators[i] + flex_agents_deciders[i] + currencies for i in range(len(fixed_agents_dictators))]
+    fixed_list = [fixed_agents_fixed[i] + fixed_agents_fixed[i+1] for i in range(0,len(fixed_agents_fixed),2)]
+    flex_list = [flex_agents_flex[i] + flex_agents_flex[i+1] for i in range(0,len(flex_agents_flex),2)]
+    mixed_list_1 = [flex_agents_dictators[i] + fixed_agents_deciders[i] for i in range(len(fixed_agents_deciders))]
+    mixed_list_2 = [fixed_agents_dictators[i] + flex_agents_deciders[i] for i in range(len(fixed_agents_dictators))]
     mixed_list = mixed_list_1 + mixed_list_2
     random.shuffle(mixed_list)
 
     if conditions_met:
-        flipped_fixed_list = [fixed_agents_fixed[i+1] + fixed_agents_fixed[i] + currencies for i in range(0,len(fixed_agents_fixed),2)]
-        flipped_flex_list = [flex_agents_flex[i+1] + flex_agents_flex[i] + currencies for i in range(0,len(flex_agents_flex),2)]
-        flipped_mixed_list_1 = [fixed_agents_deciders[i] + flex_agents_dictators[i] + currencies for i in range(len(fixed_agents_deciders))]
-        flipped_mixed_list_2 = [flex_agents_deciders[i] + fixed_agents_dictators[i] + currencies for i in range(len(fixed_agents_dictators))]
+        flipped_fixed_list = [fixed_agents_fixed[i+1] + fixed_agents_fixed[i] for i in range(0,len(fixed_agents_fixed),2)]
+        flipped_flex_list = [flex_agents_flex[i+1] + flex_agents_flex[i] for i in range(0,len(flex_agents_flex),2)]
+        flipped_mixed_list_1 = [fixed_agents_deciders[i] + flex_agents_dictators[i] for i in range(len(fixed_agents_deciders))]
+        flipped_mixed_list_2 = [flex_agents_deciders[i] + fixed_agents_dictators[i] for i in range(len(fixed_agents_dictators))]
         flipped_mixed_list = flipped_mixed_list_1 + flipped_mixed_list_2
         random.shuffle(flipped_mixed_list)
         fixed_list += flipped_fixed_list

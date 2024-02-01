@@ -4,14 +4,6 @@ Task Prompt Templates
 from typing import Dict
 from scai.dictator_games.prompts.task.task_class import TaskPrompt
 
-STIPULATIONS: Dict[str, str] = {
-    "dollars": "When dividing dollars, please only propose integer values greater than or equal to zero.",
-    "apples" : "When dividing apples, please only propose integer values greater than or equal to zero.",
-    "medicine" : "When dividing medicine, please only propose integer values greater than or equal to zero.",
-    "coconuts" : "When dividing coconuts, please only propose integer values.",
-    "blankets": "When dividing blankets, please only propose integer values."
-}
-
 DICTATOR_TASK_PROMPTS: Dict[str, TaskPrompt] = {
     "task_prompt_1": TaskPrompt(
         id="task_prompt_1",

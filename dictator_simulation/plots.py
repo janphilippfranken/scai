@@ -251,7 +251,7 @@ def plot_all_averages(
         all_errors.append(errors)
 
     plot_scores(all_means, f'{directory}/', all_errors)
-    plot_currencies_and_questions(questions, f'{directory}/')
+    # plot_currencies_and_questions(questions, f'{directory}/')
     
 def plot_currencies_and_questions(questions, directory):
     for currency, values in questions.items():
@@ -418,7 +418,8 @@ def plot_results(
     ):
     """
     Plot average user and assistant income when the assistant is a dictator and a decider
-    """
+    """ 
+    os.makedirs(data_directory, exist_ok=True)
     # user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals
     fixed_dict_scores, fixed_deci_scores, flex_dict_scores, flex_deci_scores = [], [], [], []
     all_score_lsts = [fixed_dict_scores, fixed_deci_scores, flex_dict_scores, flex_deci_scores]
@@ -427,6 +428,7 @@ def plot_results(
         for j in range(num_score_lists):
             total, earned = 0, 0
             for value in scores[i][j]:
+
                 if value != -1:
                     total += amounts_per_run[i]
                     if value:

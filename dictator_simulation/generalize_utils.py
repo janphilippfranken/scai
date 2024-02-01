@@ -5,45 +5,6 @@ from omegaconf import DictConfig, OmegaConf
 
 from scai.dictator_games.prompts.user.user_prompt import utilities_empty
 
-#---------CRFM and langchain import statements --------
-# from scai.chat_models.crfm import crfmChatLLM
-# from langchain import LLMChain
-# from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
-# from importlib import import_module
-# from typing import Dict
-# from pydantic import BaseModel
-
-# --------- LANGCHAIN implementation of a contract chooser, old use for CRFM cluster ---------
-# class ChooserTemplate(BaseModel):
-#     """
-#     User Template Class
-#     """
-#     id: str = "template id"
-#     name: str = "name of the template"
-#     task: HumanMessagePromptTemplate = "user generation template"
-
-# USER_TEMPLATE: Dict[str,ChooserTemplate] = {
-#     "chooser_template_1": ChooserTemplate(
-#         id="chooser_template_1",
-#         name="Principle Picker, Chooser 1",
-#         task=HumanMessagePromptTemplate.from_template("""Please choose one of these principles that you believe best represents all of the total principles. The purpose of your choice is to eliminate outlier principles. The principles are supplied here: {principles}. When you have made your choice, write the principle VERBATIM. Please write the principle you have chosen exactly as it appears. Your output should be ONLY the chosen principle, with no elaboration. 
-# Importantly, note that the principle you choose may not be the most ethical one, but should best reflect the overall sentiment expressed by the majority of principles. Please indicate your chosen principle as follows: Principle:...\n""")
-#     ),
-# }
-
-# def get_prompt():
-#     system_prompt_template = SystemMessagePromptTemplate.from_template("Your task is to choose a prompt. Please follow your task, described below, to the best of your ability.\n")
-#     return ChatPromptTemplate.from_messages([system_prompt_template, USER_TEMPLATE["chooser_template_1"].task])
-
-# def agent_pick_contract(all_contracts):
-#     principles = "Contracts:\n"
-#     for contract in all_contracts:
-#         principles += f"{contract}\n"
-#     chat_prompt_template = get_prompt()
-#     llm = crfmChatLLM(model_name="openai/gpt-4-0314", max_tokens=150, temperature=0.0)
-#     chooser_chain = LLMChain(llm=llm, prompt=chat_prompt_template, memory=None)
-#     return chooser_chain.run(principles=principles, stop=["System:"])
-
 def create_prompt_string(currencies: set, amounts: list, summarized_contract: str, prior: dict) -> str:
     currencies_str = ""
     for i, currency in enumerate(currencies):

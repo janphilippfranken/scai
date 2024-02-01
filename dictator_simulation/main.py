@@ -6,6 +6,7 @@ import hydra
 from tqdm import tqdm
 from omegaconf import DictConfig, OmegaConf
 import random
+from typing import List
 # llm class
 from gpt4 import GPT4Agent
 from azure import AsyncAzureChatLLM
@@ -28,7 +29,8 @@ from generalize_utils import create_prompt_string, set_args, set_args_2, reset_a
 
 # create context
 def create_context(
-    args: DictConfig, 
+    static_args: DictConfig, 
+    variable_args: List[DictConfig],
     assistant_llm, 
     user_llm, 
     meta_llm,
@@ -41,25 +43,29 @@ def create_context(
     """
     Create context
     """
+    ids, amounts, currencies, agents = [], [], [], []
+    for args in variable_args:
+        ids.append(args.sim.sim_id)
+        amounts.append(args.env.amounts_per_run)
+        currencies.append(args.env.currencies)
+        agents.append(args.agents)
+        
     return Context.create(
-        _id=args.sim.sim_id,
-        name=args.sim.sim_dir,
-        task_prompt_dictator = DICTATOR_TASK_PROMPTS[args.env.task_prompt],
-        task_prompt_decider = DECIDER_TASK_PROMPTS[args.env.task_prompt],
-        meta_prompt=META_PROMPTS[args.env.meta_prompt],
+        _id=ids, # VARIABLE ARGUMENT
+        name=static_args.sim.sim_dir, #  the directory will be the same regardless
+        task_prompt_dictator = DICTATOR_TASK_PROMPTS[static_args.env.task_prompt],
+        task_prompt_decider = DECIDER_TASK_PROMPTS[static_args.env.task_prompt],
+        meta_prompt=META_PROMPTS[static_args.env.meta_prompt],
         user_llm=user_llm,
         assistant_llm=assistant_llm,
         meta_llm=meta_llm,
         oracle_llm=oracle_llm,
-        verbose=args.sim.verbose,
-        test_run=args.sim.test_run,
-        amounts_per_run=args.env.amounts_per_run,
-        n_fixed_inter=args.env.n_fixed_inter,
-        n_mixed_inter=args.env.n_mixed_inter,
-        n_flex_inter=args.env.n_flex_inter,
-        currencies=args.env.currencies,
-        agents_dict=args.agents,
-        interactions_dict=args.interactions,
+        verbose=static_args.sim.verbose,
+        test_run=static_args.sim.test_run,
+        amounts_per_run=amounts, # this contains the amounts of currencies that are being split each run, created in main
+        currencies=currencies, # this contains the currencies to be split for each run
+        agents_dict=agents, # this contains the agents for each run
+        interactions_dict=args.interactions, # this contains the interactions for each run
         edge_case_instructions=args.env.edge_cases.selected_contract if args.env.edge_cases.selected_contract else "",
         include_reason=args.env.edge_cases.reason.include_reason,
         propose_decide_alignment=args.env.propose_decide_alignment,
@@ -79,102 +85,44 @@ def get_llms(args):
     return assistant_llm, user_llm, meta_llm, oracle_llm
 
 def run(args):
-
+    static_args = args
     #create a copy of the config file and experiment description for reference
     config_directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/config_history'
     os.makedirs(config_directory, exist_ok=True)
-    with open(f'{config_directory}/config_original', "w") as f: f.write(OmegaConf.to_yaml(args))
+    with open(f'{config_directory}/config_original', "w") as f: f.write(OmegaConf.to_yaml(args))  
     with open(f"{config_directory}/../description", "w") as f: f.write(args.sim.description)
     
-    # llms
-    is_crfm = 'openai' in args.sim.model_name # custom stanford models
     assistant_llm, user_llm, meta_llm, oracle_llm = get_llms(args)
 
-    num_experiments = args.env.random.n_rand_iter if not args.env.manual_run else 1
+    num_experiments = args.env.random.n_rand_iter
     original_currencies = args.env.currencies
-    total_scores, all_score_lsts = [], []
 
-    all_currencies = set()
-    all_contracts = []
+    DATA_DIRS = []
+    variable_args = []
+
+    generate_agents(args)
+    generate_interactions(args)
+    
+    sim_ids = []
+    all_currencies = []
+    amounts_per_run =  []
     cur_amount_min, cur_amount_max = float('inf'), float('-inf')
-    all_questions = []
-    currencies_and_questions = {}
-
+    # This loops generates num_experiments different data dictionaries for each run
     for i in range(num_experiments):
+        # Make each data directory to save to for each separate experiment
+
         args.env.currencies = original_currencies
-        system_message = args.sim.system_message
-        system_messages = []
-        scores = []
-        questions = []
-        # set run id, amonts, and the currency; and saving to config
-        if not args.env.manual_run:
-            generate_starting_message(args)
-            generate_random_params(args)
-            generate_agents(args)
-            generate_interactions(args)
+        # set run id, amounts, currency, and write into the current config
+        generate_starting_message(args)
+        generate_random_params(args)
+        generate_agents(args)
 
-        # create directory and placeholders for results
-        
-        if args.env.edge_cases.activate:
-            args.sim.sim_id = f"ref_{i}_{args.env.currencycounter}"
-        else:
-            args.sim.sim_id = f"{i}_{args.env.currencies}"
+        # Keep track of currencies to use during generalization
 
-        DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
-        os.makedirs(DATA_DIR, exist_ok=True)
+        all_currencies.append(args.env.currencies)
 
-        with open(f"{DATA_DIR}/id_{args.sim.sim_id}_config", "w") as f: f.write(OmegaConf.to_yaml(args))
-        with open(f'{config_directory}/id_{args.sim.sim_id}_config', "w") as f: f.write(OmegaConf.to_yaml(args))
+        amounts_per_run.append(args.env.amounts_per_run)
 
-        # run meta-prompt
-        for run in tqdm(range(args.env.n_runs)):
-
-            # get interaction numbers
-            get_num_interactions(args, 0)
-            get_num_interactions(args, run)
-            n_fixed = 1 if args.env.n_fixed_inter else 0
-            n_mixed = 1 if args.env.n_mixed_inter else 0
-            n_flex = 1 if args.env.n_flex_inter else 0
-
-            #import appropriate metaprompt
-            game_number = int(f"{int(n_fixed)}{int(n_mixed)}{int(n_flex)}", 2)
-            meta_module = importlib.import_module(f"scai.dictator_games.meta_prompts.dictator_{game_number}_meta_prompts")
-            META_PROMPTS = meta_module.META_PROMPTS
-
-            # initialize context
-            context = create_context(args, assistant_llm, user_llm, meta_llm, oracle_llm, Context,     
-                                    DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS)
-
-            context.buffer.save_system_context(model_id='system', **{
-                'response': system_message,
-            })
-            # Keep track of the system messages
-            system_messages.append(system_message)
-
-            # run context - this runs the simulation
-            user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals, question = context.run(run)
-            scores.append((user_scores_dictator, user_scores_decider, assistant_scores_dictator, assistant_scores_decider, user_proposals, assistant_proposals))
-
-            # save results as csv
-            save_as_csv(system_data=context.buffer._system_memory.messages,
-                        chat_data=context.buffer._chat_memory.messages,
-                        data_directory=DATA_DIR, 
-                        sim_name=args.sim.sim_dir,
-                        sim_id=args.sim.sim_id,
-                        run=run)
-            # save results json
-            with open(f'{DATA_DIR}/id_{args.sim.sim_id}_run_{run}.json', 'w') as f:
-                json.dump(context.buffer._full_memory.messages, f)
-            
-            # update system message after each run
-            system_message = copy.deepcopy(context.buffer.load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
-            questions.append(question)
-
-        # keep track of currencies to use during generalization
-        for currency in args.env.currencies:
-            if currency not in all_currencies:
-                all_currencies.add(currency)
-        
         # keep track of amounts to use during generalization
         for amount in args.env.amounts_per_run:
             if amount < cur_amount_min:
@@ -182,36 +130,104 @@ def run(args):
             if amount > cur_amount_max:
                 cur_amount_max = amount
 
-        if args.env.currencies[0] not in currencies_and_questions:
-            currencies_and_questions[args.env.currencies[0]] = []
-        currencies_and_questions[args.env.currencies[0]].extend(questions)
+        args.sim.sim_id = f"generalization_{i}_{args.env.currencycounter}" if args.env.edge_cases.activate else f"{i}_{args.env.currencies}"
 
-        index = system_message.find("Principle")
-        if index == -1: index = 0
-        principle = system_message[index:]
-        all_contracts.append(principle)
+        sim_ids.append(args.sim.sim_id)
 
-        # plot average user gain across runs
+        with open(f'{config_directory}/id_{args.sim.sim_id}_config', "w") as f: f.write(OmegaConf.to_yaml(args))    
 
-        fixed_plot, flex_plot, fixed_bar, flex_bar, score_lsts = plot_results(data_directory=DATA_DIR, 
-                                                                                    sim_name=args.sim.sim_dir,
-                                                                                    sim_id=args.sim.sim_id,
-                                                                                    scores=scores,
-                                                                                    n_runs=args.env.n_runs,
-                                                                                    currencies=args.env.currencies,
-                                                                                    amounts_per_run=args.env.amounts_per_run
-                                                                                    )
+        DATA_DIR = f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/{args.sim.sim_id}'
+        os.makedirs(DATA_DIR, exist_ok=True)
+
+        DATA_DIRS.append(DATA_DIR)
+
+        variable_args.append(copy.deepcopy(args))
+
+    get_num_interactions(args)
+    game_number = int(f"{int(1 if args.env.n_fixed_inter else 0)}{int(1 if args.env.n_mixed_inter else 0)}{int(1 if args.env.n_flex_inter else 0)}", 2)
+    meta_module = importlib.import_module(f"scai.dictator_games.meta_prompts.dictator_{game_number}_meta_prompts")
+
+    META_PROMPTS = meta_module.META_PROMPTS
+    ############
+    # scores stores the scores in the form of the amounts proposed for one context run
+    scores = [[] for _ in range(num_experiments)]
+    # stores the scores in the form of the amounts proposed for one context run
+    questions = []
+    ############
+
+    # This stores all the scores for plotting as well as just the raw scores from each run 
+    total_scores, all_score_lsts = [], []
+
+    all_questions = []
+
+    currencies_and_questions = {}
+
+    system_messages = [[""] for _ in range(num_experiments)]
+    # run meta-prompt
+    for run in tqdm(range(args.env.n_runs)):
+
+        # initialize context that has info for all of the runs in the args dictionaries
+        context = create_context(static_args, variable_args, assistant_llm, user_llm, meta_llm, oracle_llm, Context,     
+                                DICTATOR_TASK_PROMPTS, DECIDER_TASK_PROMPTS, META_PROMPTS)
+        for i in range(num_experiments):
+            context.buffer[i].save_system_context(model_id='system', **{
+                'response': system_messages[i][run],
+            })
+
+        # run context - this runs the simulation
+        all_proposals, question = context.run(run)
+
+
+        # save results as csv
+        for j in range(num_experiments):
+            scores[j].append(all_proposals[j])
+
+            save_as_csv(system_data=context.buffer[j]._system_memory.messages,
+                        chat_data=context.buffer[j]._chat_memory.messages,
+                        data_directory=DATA_DIRS[j], 
+                        sim_name=args.sim.sim_dir,
+                        sim_id=sim_ids[j],
+                        run=run)
+            # save results json
+            with open(f'{DATA_DIRS[j]}/id_{sim_ids[j]}_run_{run}.json', 'w') as f:
+                json.dump(context.buffer[j]._full_memory.messages, f)
         
-        # save results
+        # update system message after each run
+            system_message = copy.deepcopy(context.buffer[j].load_memory_variables(memory_type='system')['system'][-1]['response']) # replace current system message with the new one (i.e. new constitution)
+            system_messages[j].append(system_message)
+
+        questions.append(question)
+
+    # deal with this later
+    if args.env.currencies[0] not in currencies_and_questions:
+        currencies_and_questions[args.env.currencies[0]] = []
+    currencies_and_questions[args.env.currencies[0]].extend(questions)
+
+    final_messages = [system_message[-1] for system_message in system_messages]
+    all_contracts = []
+    for system_message in final_messages:
+        index = system_message.find("Principle:")
+        if index == -1: index = 0
+        all_contracts.append(system_messages[index:])
+
+    # plot average user gain across runs
+    for j in range(num_experiments):
+        fixed_plot, flex_plot, fixed_bar, flex_bar, score_lsts = plot_results(data_directory=f"{config_directory}/../{sim_ids[j]}/graphs", 
+                                                                            sim_name=args.sim.sim_dir,
+                                                                            sim_id=sim_ids[j],
+                                                                            scores=scores[j], # all I have to do is craft scores, and functionality is the same
+                                                                            n_runs=args.env.n_runs,
+                                                                            currencies=all_currencies[j], # at this point, currencies is decided
+                                                                            amounts_per_run=amounts_per_run[j] # at this point, amounts_per_run is decided
+                                                                            )
         total_scores.append([fixed_plot, flex_plot, fixed_bar, flex_bar])
         all_score_lsts.append(score_lsts)
-        all_questions.append(sum(questions) / len(questions))
-        
-        with open(f"{config_directory}/../{args.sim.sim_id}/results", "w") as f:
+        # all_questions.append(sum(questions) / len(questions))
+
+        # save results
+        with open(f"{config_directory}/../{sim_ids[j]}/results", "w") as f:
             f.write(str(fixed_plot[0][-1]) + "\n" + str(flex_plot[0][-1]))
 
-
-    
     # make plots that averages across all experiments
     if num_experiments > 1:
         directory=f'{hydra.utils.get_original_cwd()}/experiments/{args.sim.sim_dir}/final_graphs'
