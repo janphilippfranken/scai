@@ -18,6 +18,8 @@ from scai.memory.buffer import ConversationBuffer
 
 import re
 
+import time
+
 class Context():
     def __init__(
         self, 
@@ -284,12 +286,12 @@ class Context():
                 continue
             # The amount the dictator proposed to itself is the first number, and the amount that the dictator proposed to the decider is the second number
             dictator_gets = numbers[i]
-            decider_gets = numbers[i + 1]
+            decider_gets = numbers[i+1] if len(numbers) > i+1 else 1
             # If the proposal is accepted then add the respective amounts gained
             if accept:
-                dict_scores[currencies[i // 2]], deci_scores[currencies[i // 2]] = dictator_gets, decider_gets
+                dict_scores[currencies[0]], deci_scores[currencies[0]] = dictator_gets, decider_gets
             # Include both amounts in the entire proposal
-            prop[currencies[i // 2]] = dictator_gets, decider_gets
+            prop[currencies[0]] = dictator_gets, decider_gets
         proposals.append(prop)
         # If the proposal is accepted, add the scores, as the values they are
         if accept:
@@ -410,6 +412,8 @@ class Context():
                                 is_dictator=True,
                                 run_num=run,
                                 verbose=self.verbose)
+            
+            time.sleep(10)
 
             # If the fixed agent was the dictator, save the response as a fixed agent's response, and indicate that the dictator was fixed
             if type(model_dictator) == UserModel:
@@ -474,6 +478,8 @@ class Context():
                                     is_dictator=False,
                                     run_num=run,
                                     verbose=self.verbose)
+            
+            time.sleep(10)
                                 
             # If the fixed agent was the dedcider, save the response as a fixed agent's response, and indicate that the dictator was fixed
             if type(model_decider) == UserPrompt:
@@ -514,5 +520,7 @@ class Context():
         # save meta-prompt response for start of next conversation
         for j, buf in enumerate(self.buffer):
             buf.save_system_context(model_id="system", **meta_response[j])
+
+        time.sleep(self.total_experiments*10)
 
         return all_proposals, [question / num_total_flex_dictators for question in num_questions_asked]

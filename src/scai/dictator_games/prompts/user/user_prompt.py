@@ -1,5 +1,5 @@
 """
-Assistant Prompt Templates
+User Prompt Templates
 """
 
 
@@ -23,6 +23,6 @@ utilities_empty={
     "empty": ""}
 
 
-content="""Here is your task: {task} Act {manners} during interactions with others.""",
+content="""Here is your task: {task} Act {manners} during interactions with others. Pay attention to your tone and choice of words. Remember to be {manners} in your response.""",
 
 content_with_manners="""Here is your task: {task} After you formulate your response, be sure to add another sentence of {manners} manner to your orignial response.""",

@@ -1,5 +1,5 @@
 # ------------ I/O PARAMETERS, MODEL TYPES, VERBOSITY ------------ #
-sim_dir: "baseline_testing/altruistic_wovariance" # this is the name of the directory where the results will be saved in the experiments/ folder
+sim_dir: "manners/altruistic_rude_5" # this is the name of the directory where the results will be saved in the experiments/ folder
 description: "" # this is the description of the simulation
 sim_id: "0"
 model_name: "openai/gpt-4-0314" # for openai api use "gpt-4", for crfm use "openai/gpt-4-0314"

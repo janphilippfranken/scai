@@ -76,10 +76,10 @@ agents:
     initial_util: selfish
   - name: flex_agent_2
     manners: neutral
-    initial_util: altruistic
+    initial_util: fair
   - name: flex_agent_3
     manners: neutral
-    initial_util: altruistic
+    initial_util: selfish
 sim:
   sim_dir: baseline_testing/altruistic_wovariance
   description: ''
@@ -154,11 +154,11 @@ env:
   n_total_interactions: 8
   n_runs: 5
   amounts_per_run:
-  - 60
-  - 21
-  - 96
-  - 74
-  - 91
+  - 86
+  - 68
+  - 99
+  - 70
+  - 73
   currencies:
   - apples
   currencycounter: ''
@@ -179,11 +179,11 @@ combine:
 interactions:
   runs:
     run_1:
+    - fixed_agent_13-fixed_agent_4-
+    - fixed_agent_10-fixed_agent_3-
     - fixed_agent_12-fixed_agent_8-
-    - fixed_agent_5-fixed_agent_10-
-    - fixed_agent_9-fixed_agent_1-
-    - fixed_agent_4-fixed_agent_2-
-    - fixed_agent_6-fixed_agent_7-
-    - fixed_agent_13-flex_agent_2-
-    - flex_agent_3-fixed_agent_3-
-    - flex_agent_2-fixed_agent_11-
+    - fixed_agent_11-fixed_agent_6-
+    - fixed_agent_2-fixed_agent_7-
+    - flex_agent_3-fixed_agent_1-
+    - fixed_agent_5-flex_agent_1-
+    - flex_agent_1-fixed_agent_9-
