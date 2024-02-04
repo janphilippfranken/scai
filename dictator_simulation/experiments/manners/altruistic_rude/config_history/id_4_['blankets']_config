@@ -1,0 +1,194 @@
+model:
+  hydra:
+    run:
+      dir: experiments/${sim.sim_dir}/${sim.sim_id}
+  model_type: openai
+  name: gpt4
+  api_type: azure
+  azure_api:
+    api_key: db352a193acb449f99b9bf295c800b64
+    azure_endpoint: https://philipp.openai.azure.com/
+    api_version: '2023-05-15'
+  completion_config:
+    model: gpt-4
+    temperature: 0.0
+    top_p: 0
+    max_tokens: 300
+    'n': 1
+  batch_size: 1
+agents:
+  fixed_agents:
+  - name: fixed_agent_1
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_2
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_3
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_4
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_5
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_6
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_7
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_8
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_9
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_10
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_11
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_12
+    manners: rude
+    utilities:
+      blankets: altruistic
+  - name: fixed_agent_13
+    manners: rude
+    utilities:
+      blankets: altruistic
+  flex_agents:
+  - name: flex_agent_1
+    manners: rude
+    initial_util: fair
+  - name: flex_agent_2
+    manners: rude
+    initial_util: selfish
+  - name: flex_agent_3
+    manners: rude
+    initial_util: altruistic
+sim:
+  sim_dir: manners/altruistic_rude_5
+  description: ''
+  sim_id: 4_['blankets']
+  model_name: openai/gpt-4-0314
+  test_run: false
+  verbose: false
+  system_message: Some principle was given to the flexible agents
+env:
+  propose_decide_alignment: false
+  ask_question_train: false
+  set_fixed_agents:
+    set_agent_behavior: true
+    vary_amounts_proposed: false
+  edge_cases:
+    test_edge_cases: false
+    activate: false
+    generate_new_data: true
+    use_existing_data_path: experiments/generalizations/question_asking
+    selected_contract: ''
+    n_rand_iter: 2
+    reason:
+      include_reason: false
+    prior:
+      include_prior: false
+      prior: altruistic
+    conditions:
+      amount:
+        set_amount: true
+        min: 10
+        max: 100
+      currency:
+        set_currency: true
+        currencies:
+        - lifesaving portions of medicine
+      context: false
+      ask_question: true
+    plot_save_path: generalizations/edge_case
+  random:
+    n_rand_iter: 20
+    rand_variables:
+      currency: true
+      amount: true
+      n_fixed_inter: false
+      n_mixed_inter: false
+  single_fixed_utility: altruistic
+  vary_fixed_population_utility:
+    vary_utilities: false
+    dictator_decider_equal: true
+    utility_percentages:
+    - 0.5
+    - 0.5
+    utilities: selfish,altruistic
+  single_fixed_manners: rude
+  vary_manners:
+    vary: false
+    manners_percentages:
+    - 0.2
+    - 0.2
+    - 0.6
+    manners: neutral,rude,sychophantic
+  flex_agent_start_utility:
+    randomized: true
+    multi_agent: false
+    utility_percentages:
+    - 0.5
+    - 0.5
+    utilities: fair
+  vary_currency_utility:
+    vary_utilities: false
+    utilities: altruistic,fair,selfish
+  n_total_interactions: 8
+  n_runs: 10
+  amounts_per_run:
+  - 42
+  - 65
+  - 76
+  - 53
+  - 73
+  - 97
+  - 67
+  - 43
+  - 88
+  - 83
+  currencies:
+  - blankets
+  currencycounter: ''
+  task_prompt: task_prompt_1
+  meta_prompt: meta_prompt_3
+  n_fixed_inter: 5
+  n_mixed_inter: 3
+  n_flex_inter: 0
+combine:
+  combine_graph_directory: experiments/batch_1/experiment_3/20runs/1v9_sycophantic
+  combine_output_directory: experiments/solar_final/manners_ambiguity/
+  combine_graph_labels:
+  - altruistic
+  - fair
+  - selfish
+  - fixed
+  - flexible
+interactions:
+  runs:
+    run_1:
+    - fixed_agent_5-fixed_agent_9-
+    - fixed_agent_4-fixed_agent_7-
+    - fixed_agent_2-fixed_agent_10-
+    - fixed_agent_1-fixed_agent_3-
+    - fixed_agent_12-fixed_agent_11-
+    - flex_agent_3-fixed_agent_6-
+    - flex_agent_2-fixed_agent_8-
+    - fixed_agent_13-flex_agent_3-
